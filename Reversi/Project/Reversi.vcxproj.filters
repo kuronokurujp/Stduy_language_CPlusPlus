@@ -10,9 +10,6 @@
     <Filter Include="Code\Header">
       <UniqueIdentifier>{99ad4900-8896-4d81-b1e4-d9abf5de43a7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Header\Interface">
-      <UniqueIdentifier>{684c843d-76a7-48ef-a133-faf611237525}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Code\Header\Actor">
       <UniqueIdentifier>{d384968a-9ebc-4d43-a840-0c5f8f7b9595}</UniqueIdentifier>
     </Filter>
@@ -25,28 +22,79 @@
     <Filter Include="Code\Source\Component">
       <UniqueIdentifier>{1a85a0fe-c38b-4b29-957c-f61a631e0b4e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Header\Component\AI">
-      <UniqueIdentifier>{32d31eea-6a3c-44e7-b95c-39f65f9dcf53}</UniqueIdentifier>
+    <Filter Include="Code\Header\Scene">
+      <UniqueIdentifier>{1793efe1-4fc6-48b7-b7f9-e53b91965d4b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Source\Component\AI">
-      <UniqueIdentifier>{c756aa22-bbff-4778-bfbd-b3c04dfc91c4}</UniqueIdentifier>
+    <Filter Include="Code\Header\Scene\Game">
+      <UniqueIdentifier>{31a80ae9-e3fa-474d-9141-fdde838bc86e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Header\Evaluator">
+    <Filter Include="Code\Header\Model">
+      <UniqueIdentifier>{ab70664c-3d1d-47d6-ba68-33da12075a3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\System">
+      <UniqueIdentifier>{da78a877-bc03-49c7-b21b-9532a4f257f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Scene\Game\Actor">
+      <UniqueIdentifier>{a6f0c811-7e7a-41d5-a7f1-f0a67a963d60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Scene\Game\Evaluator">
       <UniqueIdentifier>{6e68a465-db73-47dd-af0e-e120558df66d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Source\Evaluator">
+    <Filter Include="Code\Header\Scene\Game\Interface">
+      <UniqueIdentifier>{c99ea5ed-4879-4473-9b87-567e2329b729}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\System\Interface">
+      <UniqueIdentifier>{684c843d-76a7-48ef-a133-faf611237525}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\System\Platform">
+      <UniqueIdentifier>{be5beb38-bc05-486a-ad30-b6c27c3525b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\System\Platform\CUI">
+      <UniqueIdentifier>{2a0066ec-4ab6-4333-993d-205bc3e3a37e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\System\Platform\Win32">
+      <UniqueIdentifier>{0578ac95-24a1-4377-99d8-f79228ae66c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\System">
+      <UniqueIdentifier>{fe82aa67-787b-478b-897e-d2fdde458fda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\System\Platform">
+      <UniqueIdentifier>{ffb30a61-aede-45d1-8268-755da482bafd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\System\Platform\CUI">
+      <UniqueIdentifier>{ad768d19-29ad-406d-b7bf-84ffc3a0f094}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\Model">
+      <UniqueIdentifier>{965fd54a-fa9b-4a21-9e54-fa7aa4cbd9d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\Scene">
+      <UniqueIdentifier>{76ec0098-3497-407d-8f00-c795009a8c1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\Scene\Game">
+      <UniqueIdentifier>{0a0f608a-058c-4073-b506-f4c65e933fb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\Scene\Game\Evaluator">
       <UniqueIdentifier>{72255716-3d2f-4619-b60e-f8df137056e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\Scene\Game\Actor">
+      <UniqueIdentifier>{29523fcb-b1ef-4568-b543-5423dcde107a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\Scene\Game\Component">
+      <UniqueIdentifier>{1778ffbb-c467-4e5b-b722-d8c63bb9404b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\Scene\Game\Component\AI">
+      <UniqueIdentifier>{c756aa22-bbff-4778-bfbd-b3c04dfc91c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Scene\Game\Component">
+      <UniqueIdentifier>{ff5a272a-8f47-4e67-8d51-89ff43b04974}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Scene\Game\Component\AI">
+      <UniqueIdentifier>{32d31eea-6a3c-44e7-b95c-39f65f9dcf53}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\main.cpp">
       <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\consoleRenderer.cpp">
-      <Filter>Code\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\keyboard.cpp">
-      <Filter>Code\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Source\Actor\actor.cpp">
       <Filter>Code\Source\Actor</Filter>
@@ -54,133 +102,154 @@
     <ClCompile Include="..\Code\Source\Component\component.cpp">
       <Filter>Code\Source\Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\gameWorld.cpp">
+    <ClCompile Include="..\Code\Source\game_controller.cpp">
       <Filter>Code\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\Actor\actorManager.cpp">
+    <ClCompile Include="..\Code\Source\Actor\actor_manager.cpp">
       <Filter>Code\Source\Actor</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\Component\renderComponent.cpp">
-      <Filter>Code\Source\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\Component\boardRenderComponent.cpp">
-      <Filter>Code\Source\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\Component\terminalRenderComponent.cpp">
-      <Filter>Code\Source\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\Component\playerComponent.cpp">
-      <Filter>Code\Source\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\Component\stoneHandComponent.cpp">
-      <Filter>Code\Source\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\Component\enemyComponent.cpp">
-      <Filter>Code\Source\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\Actor\boardActor.cpp">
+    <ClCompile Include="..\Code\Source\Actor\terminal_actor.cpp">
       <Filter>Code\Source\Actor</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\Actor\terminalActor.cpp">
-      <Filter>Code\Source\Actor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\Actor\userActor.cpp">
-      <Filter>Code\Source\Actor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\Component\AI\aiAlphaBetaComponent.cpp">
-      <Filter>Code\Source\Component\AI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\fps.cpp">
-      <Filter>Code\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\Evaluator\stoneDifferencePlacementStoneEvaluator.cpp">
-      <Filter>Code\Source\Evaluator</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\Evaluator\learnBoradPlacementStoneEvaluator.cpp">
-      <Filter>Code\Source\Evaluator</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\Component\textAnimationComponent.cpp">
+    <ClCompile Include="..\Code\Source\Component\render_component.cpp">
       <Filter>Code\Source\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Component\terminal_render_component.cpp">
+      <Filter>Code\Source\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Component\text_animation_component.cpp">
+      <Filter>Code\Source\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Scene\Game\Actor\board_actor.cpp">
+      <Filter>Code\Source\Scene\Game\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Scene\Game\Actor\user_actor.cpp">
+      <Filter>Code\Source\Scene\Game\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Scene\Game\Component\board_render_component.cpp">
+      <Filter>Code\Source\Scene\Game\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Scene\Game\Component\enemy_component.cpp">
+      <Filter>Code\Source\Scene\Game\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Scene\Game\Component\player_component.cpp">
+      <Filter>Code\Source\Scene\Game\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Scene\Game\Component\stonehand_component.cpp">
+      <Filter>Code\Source\Scene\Game\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Scene\Game\Component\AI\ai_alphabeta_component.cpp">
+      <Filter>Code\Source\Scene\Game\Component\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Scene\Game\Evaluator\learn_borad_placement_stone_evaluator.cpp">
+      <Filter>Code\Source\Scene\Game\Evaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Scene\Game\Evaluator\stone_difference_placement_stone_evaluator.cpp">
+      <Filter>Code\Source\Scene\Game\Evaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\System\fps.cpp">
+      <Filter>Code\Source\System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\System\Platform\CUI\console_renderer.cpp">
+      <Filter>Code\Source\System\Platform\CUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\System\Platform\CUI\keyboard.cpp">
+      <Filter>Code\Source\System\Platform\CUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Scene\Game\game_scene_model.cpp">
+      <Filter>Code\Source\Scene\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Scene\Game\game_scene_controller.cpp">
+      <Filter>Code\Source\Scene\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Code\Header\consoleRenderer.h">
-      <Filter>Code\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\keyboard.h">
-      <Filter>Code\Header</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Header\Actor\actor.h">
       <Filter>Code\Header\Actor</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Header\Component\component.h">
       <Filter>Code\Header\Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\Interface\consoleRenderInterface.h">
-      <Filter>Code\Header\Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Component\playerComponent.h">
-      <Filter>Code\Header\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Component\enemyComponent.h">
-      <Filter>Code\Header\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\gameWorld.h">
-      <Filter>Code\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Interface\keyboardInterface.h">
-      <Filter>Code\Header\Interface</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Header\common.h">
       <Filter>Code\Header</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\Actor\actorManager.h">
-      <Filter>Code\Header\Actor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Component\renderComponent.h">
-      <Filter>Code\Header\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Component\boardRenderComponent.h">
-      <Filter>Code\Header\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Component\terminalRenderComponent.h">
-      <Filter>Code\Header\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Component\stoneHandComponent.h">
-      <Filter>Code\Header\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Interface\boardInterface.h">
-      <Filter>Code\Header\Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Actor\boardActor.h">
-      <Filter>Code\Header\Actor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Actor\terminalActor.h">
-      <Filter>Code\Header\Actor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Actor\userActor.h">
-      <Filter>Code\Header\Actor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Component\AI\aiAlphaBetaComponent.h">
-      <Filter>Code\Header\Component\AI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Interface\aiComponentInterface.h">
-      <Filter>Code\Header\Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\fps.h">
+    <ClInclude Include="..\Code\Header\game_controller.h">
       <Filter>Code\Header</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\Interface\placementStoneEvaluatorInterface.h">
-      <Filter>Code\Header\Interface</Filter>
+    <ClInclude Include="..\Code\Header\view_controller.h">
+      <Filter>Code\Header</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\Evaluator\learnBoradPlacementStoneEvaluator.h">
-      <Filter>Code\Header\Evaluator</Filter>
+    <ClInclude Include="..\Code\Header\Actor\actor_manager.h">
+      <Filter>Code\Header\Actor</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\Evaluator\stoneDifferencePlacementStoneEvaluator.h">
-      <Filter>Code\Header\Evaluator</Filter>
+    <ClInclude Include="..\Code\Header\Actor\terminal_actor.h">
+      <Filter>Code\Header\Actor</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\Component\textAnimationComponent.h">
+    <ClInclude Include="..\Code\Header\Component\render_component.h">
       <Filter>Code\Header\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Component\terminal_render_component.h">
+      <Filter>Code\Header\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Component\text_animation_component.h">
+      <Filter>Code\Header\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Actor\board_actor.h">
+      <Filter>Code\Header\Scene\Game\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Actor\user_actor.h">
+      <Filter>Code\Header\Scene\Game\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\board_render_component.h">
+      <Filter>Code\Header\Scene\Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\enemy_component.h">
+      <Filter>Code\Header\Scene\Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\player_component.h">
+      <Filter>Code\Header\Scene\Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\stonehand_component.h">
+      <Filter>Code\Header\Scene\Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\AI\ai_alphabeta_component.h">
+      <Filter>Code\Header\Scene\Game\Component\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Evaluator\learn_borad_placement_stone_evaluator.h">
+      <Filter>Code\Header\Scene\Game\Evaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Evaluator\stone_difference_placement_stone_evaluator.h">
+      <Filter>Code\Header\Scene\Game\Evaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Interface\ai_component_interface.h">
+      <Filter>Code\Header\Scene\Game\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Interface\board_Interface.h">
+      <Filter>Code\Header\Scene\Game\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Interface\placement_stone_evaluator_interface.h">
+      <Filter>Code\Header\Scene\Game\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\System\fps.h">
+      <Filter>Code\Header\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\System\Interface\console_render_interface.h">
+      <Filter>Code\Header\System\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\System\Interface\keyboard_interface.h">
+      <Filter>Code\Header\System\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\System\Platform\CUI\console_renderer.h">
+      <Filter>Code\Header\System\Platform\CUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\System\Platform\CUI\keyboard.h">
+      <Filter>Code\Header\System\Platform\CUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\game_scene_controller.h">
+      <Filter>Code\Header\Scene\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\game_scene_model.h">
+      <Filter>Code\Header\Scene\Game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

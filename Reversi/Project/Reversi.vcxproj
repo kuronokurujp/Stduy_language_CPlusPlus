@@ -21,104 +21,91 @@
   <ItemGroup>
     <ClCompile Include="..\Code\main.cpp" />
     <ClCompile Include="..\Code\Source\Actor\actor.cpp" />
-    <ClCompile Include="..\Code\Source\Actor\actorManager.cpp" />
-    <ClCompile Include="..\Code\Source\Actor\boardActor.cpp" />
-    <ClCompile Include="..\Code\Source\Actor\terminalActor.cpp" />
-    <ClCompile Include="..\Code\Source\Actor\userActor.cpp" />
-    <ClCompile Include="..\Code\Source\Component\AI\aiAlphaBetaComponent.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\Component\boardRenderComponent.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
+    <ClCompile Include="..\Code\Source\Actor\actor_manager.cpp" />
+    <ClCompile Include="..\Code\Source\Actor\terminal_actor.cpp" />
     <ClCompile Include="..\Code\Source\Component\component.cpp" />
-    <ClCompile Include="..\Code\Source\Component\enemyComponent.cpp">
+    <ClCompile Include="..\Code\Source\Component\render_component.cpp">
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\Component\playerComponent.cpp">
+    <ClCompile Include="..\Code\Source\Component\terminal_render_component.cpp">
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\Component\renderComponent.cpp">
+    <ClCompile Include="..\Code\Source\Component\text_animation_component.cpp" />
+    <ClCompile Include="..\Code\Source\game_controller.cpp">
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\Component\stoneHandComponent.cpp">
+    <ClCompile Include="..\Code\Source\Scene\Game\Actor\board_actor.cpp" />
+    <ClCompile Include="..\Code\Source\Scene\Game\Actor\user_actor.cpp" />
+    <ClCompile Include="..\Code\Source\Scene\Game\Component\AI\ai_alphabeta_component.cpp" />
+    <ClCompile Include="..\Code\Source\Scene\Game\Component\board_render_component.cpp" />
+    <ClCompile Include="..\Code\Source\Scene\Game\Component\enemy_component.cpp" />
+    <ClCompile Include="..\Code\Source\Scene\Game\Component\player_component.cpp" />
+    <ClCompile Include="..\Code\Source\Scene\Game\Component\stonehand_component.cpp" />
+    <ClCompile Include="..\Code\Source\Scene\Game\Evaluator\learn_borad_placement_stone_evaluator.cpp" />
+    <ClCompile Include="..\Code\Source\Scene\Game\Evaluator\stone_difference_placement_stone_evaluator.cpp" />
+    <ClCompile Include="..\Code\Source\Scene\Game\game_scene_controller.cpp">
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\Component\terminalRenderComponent.cpp">
+    <ClCompile Include="..\Code\Source\Scene\Game\game_scene_model.cpp">
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\Component\textAnimationComponent.cpp" />
-    <ClCompile Include="..\Code\Source\consoleRenderer.cpp" />
-    <ClCompile Include="..\Code\Source\Evaluator\learnBoradPlacementStoneEvaluator.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\Evaluator\stoneDifferencePlacementStoneEvaluator.cpp" />
-    <ClCompile Include="..\Code\Source\fps.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\gameWorld.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\keyboard.cpp" />
+    <ClCompile Include="..\Code\Source\System\fps.cpp" />
+    <ClCompile Include="..\Code\Source\System\Platform\CUI\console_renderer.cpp" />
+    <ClCompile Include="..\Code\Source\System\Platform\CUI\keyboard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Header\Actor\actor.h" />
-    <ClInclude Include="..\Code\Header\Actor\actorManager.h" />
-    <ClInclude Include="..\Code\Header\Actor\boardActor.h" />
-    <ClInclude Include="..\Code\Header\Actor\terminalActor.h" />
-    <ClInclude Include="..\Code\Header\Actor\userActor.h" />
+    <ClInclude Include="..\Code\Header\Actor\actor_manager.h" />
+    <ClInclude Include="..\Code\Header\Actor\terminal_actor.h" />
     <ClInclude Include="..\Code\Header\common.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\Component\AI\aiAlphaBetaComponent.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Component\boardRenderComponent.h" />
     <ClInclude Include="..\Code\Header\Component\component.h" />
-    <ClInclude Include="..\Code\Header\Component\enemyComponent.h" />
-    <ClInclude Include="..\Code\Header\Component\playerComponent.h" />
-    <ClInclude Include="..\Code\Header\Component\renderComponent.h" />
-    <ClInclude Include="..\Code\Header\Component\stoneHandComponent.h" />
-    <ClInclude Include="..\Code\Header\Component\terminalRenderComponent.h">
+    <ClInclude Include="..\Code\Header\Component\render_component.h" />
+    <ClInclude Include="..\Code\Header\Component\terminal_render_component.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\Component\textAnimationComponent.h" />
-    <ClInclude Include="..\Code\Header\consoleRenderer.h" />
-    <ClInclude Include="..\Code\Header\Evaluator\learnBoradPlacementStoneEvaluator.h" />
-    <ClInclude Include="..\Code\Header\Evaluator\stoneDifferencePlacementStoneEvaluator.h" />
-    <ClInclude Include="..\Code\Header\fps.h">
+    <ClInclude Include="..\Code\Header\Component\text_animation_component.h" />
+    <ClInclude Include="..\Code\Header\game_controller.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\gameWorld.h">
+    <ClInclude Include="..\Code\Header\Scene\Game\Actor\board_actor.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\Actor\user_actor.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\AI\ai_alphabeta_component.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\board_render_component.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\enemy_component.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\player_component.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\stonehand_component.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\Evaluator\learn_borad_placement_stone_evaluator.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\Evaluator\stone_difference_placement_stone_evaluator.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\game_scene_controller.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\Interface\aiComponentInterface.h">
+    <ClInclude Include="..\Code\Header\Scene\Game\game_scene_model.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\Interface\boardInterface.h" />
-    <ClInclude Include="..\Code\Header\Interface\consoleRenderInterface.h" />
-    <ClInclude Include="..\Code\Header\Interface\keyboardInterface.h">
+    <ClInclude Include="..\Code\Header\Scene\Game\Interface\ai_component_interface.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\Interface\board_Interface.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\Interface\placement_stone_evaluator_interface.h" />
+    <ClInclude Include="..\Code\Header\System\fps.h" />
+    <ClInclude Include="..\Code\Header\System\Interface\console_render_interface.h" />
+    <ClInclude Include="..\Code\Header\System\Interface\keyboard_interface.h" />
+    <ClInclude Include="..\Code\Header\System\Platform\CUI\console_renderer.h" />
+    <ClInclude Include="..\Code\Header\System\Platform\CUI\keyboard.h" />
+    <ClInclude Include="..\Code\Header\view_controller.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\Interface\placementStoneEvaluatorInterface.h" />
-    <ClInclude Include="..\Code\Header\keyboard.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

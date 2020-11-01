@@ -1,4 +1,5 @@
-﻿#ifndef __COMMON_H__
+﻿// ゲーム共通利用するロジック
+#ifndef __COMMON_H__
 #define __COMMON_H__
 
 #include <stdio.h>

@@ -1,7 +1,7 @@
-﻿#include "consoleRenderer.h"
-#include "keyboard.h"
-#include "gameWorld.h"
-#include "fps.h"
+﻿#include "System/Platform/CUI/console_renderer.h"
+#include "System/Platform/CUI/keyboard.h"
+#include "game_controller.h"
+#include "System/fps.h"
 
 /// <summary>
 /// プログラムメイン.
@@ -19,15 +19,16 @@ int main(int argc, const char * argv[])
 
 	Fps fps;
 
-	GameWorld gameWorld(&renderer, &keyboard);
+	GameController gameController(&renderer, &keyboard);
 	float deltaTimeSecond = 0.0f;
-	while (true)
+
+	while (gameController.IsPlaying())
 	{
 		deltaTimeSecond = fps.WaitUpdate();
 
 		keyboard.Input();
 
-		gameWorld.Update(deltaTimeSecond);
+		gameController.Update(deltaTimeSecond);
 
 		renderer.Draw();
 	}
