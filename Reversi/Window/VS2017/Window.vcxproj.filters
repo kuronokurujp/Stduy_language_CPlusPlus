@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Code">
+      <UniqueIdentifier>{b3eb92e5-d9c5-4d8e-95a3-d5ae1e599326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header">
+      <UniqueIdentifier>{64b6fdc1-349e-40d2-b2d6-ca91b775047d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source">
+      <UniqueIdentifier>{e4d58fda-6a29-4c31-afa6-7c506d3eee77}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Code\main.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\frame_buffer.cpp">
+      <Filter>Code\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\window_frame_buffer.cpp">
+      <Filter>Code\Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Code\Header\frame_buffer.h">
+      <Filter>Code\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\window_frame_buffer.h">
+      <Filter>Code\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\vec3.h">
+      <Filter>Code\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\color.h">
+      <Filter>Code\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\ray.h">
+      <Filter>Code\Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

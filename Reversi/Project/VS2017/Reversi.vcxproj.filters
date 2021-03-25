@@ -7,53 +7,11 @@
     <Filter Include="Code\Source">
       <UniqueIdentifier>{ed3b8211-184a-4c83-8ccf-899810b008c4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Header">
-      <UniqueIdentifier>{99ad4900-8896-4d81-b1e4-d9abf5de43a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Code\Header\Actor">
-      <UniqueIdentifier>{d384968a-9ebc-4d43-a840-0c5f8f7b9595}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Code\Source\Actor">
       <UniqueIdentifier>{ae407700-c54e-493b-a705-acbea29853e8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Header\Component">
-      <UniqueIdentifier>{546ee345-dac3-4661-a675-89d34e1b0c15}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Code\Source\Component">
       <UniqueIdentifier>{1a85a0fe-c38b-4b29-957c-f61a631e0b4e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Code\Header\Scene">
-      <UniqueIdentifier>{1793efe1-4fc6-48b7-b7f9-e53b91965d4b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Code\Header\Scene\Game">
-      <UniqueIdentifier>{31a80ae9-e3fa-474d-9141-fdde838bc86e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Code\Header\Model">
-      <UniqueIdentifier>{ab70664c-3d1d-47d6-ba68-33da12075a3c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Code\Header\System">
-      <UniqueIdentifier>{da78a877-bc03-49c7-b21b-9532a4f257f9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Code\Header\Scene\Game\Actor">
-      <UniqueIdentifier>{a6f0c811-7e7a-41d5-a7f1-f0a67a963d60}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Code\Header\Scene\Game\Evaluator">
-      <UniqueIdentifier>{6e68a465-db73-47dd-af0e-e120558df66d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Code\Header\Scene\Game\Interface">
-      <UniqueIdentifier>{c99ea5ed-4879-4473-9b87-567e2329b729}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Code\Header\System\Interface">
-      <UniqueIdentifier>{684c843d-76a7-48ef-a133-faf611237525}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Code\Header\System\Platform">
-      <UniqueIdentifier>{be5beb38-bc05-486a-ad30-b6c27c3525b8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Code\Header\System\Platform\CUI">
-      <UniqueIdentifier>{2a0066ec-4ab6-4333-993d-205bc3e3a37e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Code\Header\System\Platform\Win32">
-      <UniqueIdentifier>{0578ac95-24a1-4377-99d8-f79228ae66c6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Code\Source\System">
       <UniqueIdentifier>{fe82aa67-787b-478b-897e-d2fdde458fda}</UniqueIdentifier>
@@ -85,11 +43,53 @@
     <Filter Include="Code\Source\Scene\Game\Component\AI">
       <UniqueIdentifier>{c756aa22-bbff-4778-bfbd-b3c04dfc91c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code\Header">
+      <UniqueIdentifier>{99ad4900-8896-4d81-b1e4-d9abf5de43a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Actor">
+      <UniqueIdentifier>{d384968a-9ebc-4d43-a840-0c5f8f7b9595}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Component">
+      <UniqueIdentifier>{546ee345-dac3-4661-a675-89d34e1b0c15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Scene">
+      <UniqueIdentifier>{1793efe1-4fc6-48b7-b7f9-e53b91965d4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Scene\Game">
+      <UniqueIdentifier>{31a80ae9-e3fa-474d-9141-fdde838bc86e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Scene\Game\Actor">
+      <UniqueIdentifier>{a6f0c811-7e7a-41d5-a7f1-f0a67a963d60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Scene\Game\Evaluator">
+      <UniqueIdentifier>{6e68a465-db73-47dd-af0e-e120558df66d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Scene\Game\Interface">
+      <UniqueIdentifier>{c99ea5ed-4879-4473-9b87-567e2329b729}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Code\Header\Scene\Game\Component">
       <UniqueIdentifier>{ff5a272a-8f47-4e67-8d51-89ff43b04974}</UniqueIdentifier>
     </Filter>
     <Filter Include="Code\Header\Scene\Game\Component\AI">
       <UniqueIdentifier>{32d31eea-6a3c-44e7-b95c-39f65f9dcf53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Model">
+      <UniqueIdentifier>{ab70664c-3d1d-47d6-ba68-33da12075a3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\System">
+      <UniqueIdentifier>{da78a877-bc03-49c7-b21b-9532a4f257f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\System\Interface">
+      <UniqueIdentifier>{684c843d-76a7-48ef-a133-faf611237525}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\System\Platform">
+      <UniqueIdentifier>{be5beb38-bc05-486a-ad30-b6c27c3525b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\System\Platform\CUI">
+      <UniqueIdentifier>{2a0066ec-4ab6-4333-993d-205bc3e3a37e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\System\Platform\Win32">
+      <UniqueIdentifier>{0578ac95-24a1-4377-99d8-f79228ae66c6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
