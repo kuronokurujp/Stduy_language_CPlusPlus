@@ -138,6 +138,10 @@
     <ClCompile Include="..\Code\Source\window_frame_buffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Code\Header\camera.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="..\Code\Header\color.h">
       <SubType>
       </SubType>

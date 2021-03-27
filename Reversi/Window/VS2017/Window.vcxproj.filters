@@ -56,5 +56,8 @@
     <ClInclude Include="..\Code\Header\rtweekend.h">
       <Filter>Code\Header</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Header\camera.h">
+      <Filter>Code\Header</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

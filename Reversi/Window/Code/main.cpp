@@ -12,6 +12,7 @@
 #include "color.h"
 #include "hit_table_list.h"
 #include "sphere.h"
+#include "camera.h"
 
 // レイトレースを行う空間
 class RayTraceSpace
@@ -19,26 +20,11 @@ class RayTraceSpace
 public:
 	RayTraceSpace(const int in_screen_size, const double in_w_size, const double in_h_size)
 	{
-		// 画面アスペクトを決める
-		this->_aspect_ratio = in_w_size / in_h_size;
+		this->_camera.Init(in_w_size, in_h_size);
 
 		// ウィンドウの縦横サイズ
 		this->_width = in_screen_size;
-		this->_height = static_cast<int>(static_cast<double>(this->_width) / this->_aspect_ratio);
-
-		// ビューポート
-		// 縦のビューポートサイズは固定
-		this->_viewport_height = 2.0;
-		// 横のビューポートサイズはアスペクト比に合わせて延ばす
-		// つまり横基準の画面
-		this->_viewport_width = this->_viewport_height * this->_aspect_ratio;
-
-		// 縦横のビューポートサイズ
-		this->_horizontal.Set(this->_viewport_width, 0.0, 0.0);
-		this->_half_horizontal = this->_horizontal * 0.5;
-
-		this->_vertical.Set(0.0, this->_viewport_height, 0.0);
-		this->_half_vertical = this->_vertical * 0.5;
+		this->_height = static_cast<int>(static_cast<double>(this->_width) / this->_camera._aspect_ratio);
 
 		this->_screen_upper_corrner_color.Set(1.0, 1.0, 1.0);
 		this->_screen_under_corrner_color.Set(0.5, 0.7, 1.0);
@@ -67,31 +53,16 @@ public:
 	}
 
 public:
-	// 画面アスペクトを決める
-	double _aspect_ratio;
 
 	// ウィンドウを作る
 	int _width;
 	int _height;
 
-	// ビューポート
-	// 縦のビューポートサイズは固定
-	double _viewport_height;
-	// 横のビューポートサイズはアスペクト比に合わせて延ばす
-	// つまり横基準の画面
-	double _viewport_width;
-
-	// 縦横のビューポートサイズ
-	Math::Vec3 _horizontal;
-	Math::Vec3 _half_horizontal;
-
 	Color _screen_upper_corrner_color;
 	Color _screen_under_corrner_color;
 
-	Math::Vec3 _vertical;
-	Math::Vec3 _half_vertical;
-
 	HitTableList world;
+	Camera _camera;
 };
 
 LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -269,15 +240,6 @@ void Update(FrameBuffer& in_r_frame_buffer, RayTraceSpace& in_r_space)
 	const double inv_d_width = 1.0 / d_width;
 	const double inv_d_heigth = 1.0 / d_height;
 
-	// レイの原点
-	auto origin = Color(0.0, 0.0, 0.0);
-
-	// レイの視線の長さ
-	auto focal_length = 1.0;
-	// レイの視線先を作成
-	auto lower_left_corrner =
-		origin - (in_r_space._half_vertical) - (in_r_space._half_horizontal) - Math::Vec3(0.0, 0.0, focal_length);
-
 	double u, v;
 	Ray ray;
 	Color color;
@@ -290,12 +252,9 @@ void Update(FrameBuffer& in_r_frame_buffer, RayTraceSpace& in_r_space)
 			u = double(x) * inv_d_width;
 			v = double(y) * inv_d_heigth;
 
-			ray.Set(
-				origin,
-				// originを起点へレイを延ばす方向ベクトル
-				(lower_left_corrner + (u * in_r_space._horizontal) + (v * in_r_space._vertical)) - origin);
-
+			in_r_space._camera.OutputRay(&ray, u, v);
 			in_r_space.OutputRayColor(&color, ray);
+
 			ir = ColorUtility::ConverRGB01ToRGB255(color.x());
 			ig = ColorUtility::ConverRGB01ToRGB255(color.y());
 			ib = ColorUtility::ConverRGB01ToRGB255(color.z());
