@@ -36,6 +36,17 @@ inline double RandomDouble(double in_min, double in_max)
 	return in_min + (in_max - in_min) * RandomDouble();
 }
 
+inline double Clamp(double in_x, double in_min, double in_max)
+{
+	if (in_x <= in_min)
+		return in_min;
+
+	if (in_x >= in_max)
+		return in_max;
+
+	return in_x;
+}
+
 // 共通ヘッダー
 #include "ray.h"
 #include "vec3.h"

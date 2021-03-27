@@ -30,6 +30,30 @@ public:
 		this->_screen_under_corrner_color.Set(0.5, 0.7, 1.0);
 	}
 
+	void OutputScreenColor(int* out_p_r, int* out_p_g, int* out_p_b, Color& in_r_color, int in_sample_per_pixel)
+	{
+		auto r = in_r_color.x();
+		auto g = in_r_color.y();
+		auto b = in_r_color.z();
+
+		if (in_sample_per_pixel <= 1)
+		{
+			*out_p_r = ColorUtility::ConverRGB01ToRGB255(r);
+			*out_p_g = ColorUtility::ConverRGB01ToRGB255(g);
+			*out_p_b = ColorUtility::ConverRGB01ToRGB255(b);
+			return;
+		}
+
+		double scale = 1.0 / in_sample_per_pixel;
+		r *= scale;
+		g *= scale;
+		b *= scale;
+
+		*out_p_r = ColorUtility::ConverRGB01ToRGB255(r);
+		*out_p_g = ColorUtility::ConverRGB01ToRGB255(g);
+		*out_p_b = ColorUtility::ConverRGB01ToRGB255(b);
+	}
+
 	// レイ照射して取得した色を取得
 	void OutputRayColor(Color* in_p_out, const Ray& in_r_ray)
 	{
@@ -243,22 +267,41 @@ void Update(FrameBuffer& in_r_frame_buffer, RayTraceSpace& in_r_space)
 	double u, v;
 	Ray ray;
 	Color color;
+	Color temp_color;
+	// 100位にしないときれいなラインにならない
+	// でもそうすると負荷がでかくてFPSが激落ちするのでいったんアンチエイリアスはやらない
+	const int sample_per_pixel = 1;
 
 	// 横ラインを先に書き込む
 	for (int y = height - 1; y >= 0; --y)
 	{
 		for (int x = 0; x < width; ++x)
 		{
-			u = double(x) * inv_d_width;
-			v = double(y) * inv_d_heigth;
+			color.Set(0.0, 0.0, 0.0);
+			temp_color.Set(0.0, 0.0, 0.0);
+			double d_x = double(x);
+			if (sample_per_pixel > 1)
+			{
+				for (int s = 0; s < sample_per_pixel; ++s)
+				{
+					u = (d_x + RandomDouble()) * inv_d_width;
+					v = (double(y) + RandomDouble()) * inv_d_heigth;
 
-			in_r_space._camera.OutputRay(&ray, u, v);
-			in_r_space.OutputRayColor(&color, ray);
+					in_r_space._camera.OutputRay(&ray, u, v);
+					in_r_space.OutputRayColor(&temp_color, ray);
+					color += temp_color;
+				}
+			}
+			else
+			{
+				u = d_x * inv_d_width;
+				v = double(y) * inv_d_heigth;
 
-			ir = ColorUtility::ConverRGB01ToRGB255(color.x());
-			ig = ColorUtility::ConverRGB01ToRGB255(color.y());
-			ib = ColorUtility::ConverRGB01ToRGB255(color.z());
+				in_r_space._camera.OutputRay(&ray, u, v);
+				in_r_space.OutputRayColor(&color, ray);
+			}
 
+			in_r_space.OutputScreenColor(&ir, &ig, &ib, color, sample_per_pixel);
 			in_r_frame_buffer.SetPixel(x, y, ir, ig, ib);
 		}
 	}
