@@ -127,6 +127,14 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="..\Code\Source\frame_buffer.cpp" />
+    <ClCompile Include="..\Code\Source\hit_table_list.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\sphere.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="..\Code\Source\window_frame_buffer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -135,10 +143,17 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="..\Code\Header\frame_buffer.h" />
+    <ClInclude Include="..\Code\Header\hit_table.h" />
+    <ClInclude Include="..\Code\Header\hit_table_list.h" />
     <ClInclude Include="..\Code\Header\ray.h">
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="..\Code\Header\rtweekend.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\sphere.h" />
     <ClInclude Include="..\Code\Header\vec3.h">
       <SubType>
       </SubType>

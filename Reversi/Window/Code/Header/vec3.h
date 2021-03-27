@@ -132,6 +132,11 @@ inline Math::Vec3 operator/(Math::Vec3& v, const double s)
 	return (1.0 / s) * v;
 }
 
+inline Math::Vec3 operator/(const Math::Vec3& v, const double s)
+{
+	return (1.0 / s) * v;
+}
+
 // 内積計算
 inline double Dot(const Math::Vec3& u, const Math::Vec3& v)
 {
@@ -153,6 +158,11 @@ inline Math::Vec3 Cross(const Math::Vec3& u, const Math::Vec3& v)
 
 // 単位ベクトル計算
 inline Math::Vec3 UnitVector3(Math::Vec3& v)
+{
+	return v / v.Length();
+}
+
+inline Math::Vec3 UnitVector3(const Math::Vec3& v)
 {
 	return v / v.Length();
 }

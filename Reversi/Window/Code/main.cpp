@@ -7,9 +7,11 @@
 #include <string>
 
 #include "window_frame_buffer.h"
-#include "vec3.h"
+
+#include "rtweekend.h"
 #include "color.h"
-#include "ray.h"
+#include "hit_table_list.h"
+#include "sphere.h"
 
 // レイトレースを行う空間
 class RayTraceSpace
@@ -33,7 +35,35 @@ public:
 
 		// 縦横のビューポートサイズ
 		this->_horizontal.Set(this->_viewport_width, 0.0, 0.0);
+		this->_half_horizontal = this->_horizontal * 0.5;
+
 		this->_vertical.Set(0.0, this->_viewport_height, 0.0);
+		this->_half_vertical = this->_vertical * 0.5;
+
+		this->_screen_upper_corrner_color.Set(1.0, 1.0, 1.0);
+		this->_screen_under_corrner_color.Set(0.5, 0.7, 1.0);
+	}
+
+	// レイ照射して取得した色を取得
+	void OutputRayColor(Color* in_p_out, const Ray& in_r_ray)
+	{
+		hit_record rec;
+		if (this->world.Hit(in_r_ray, 0, c_infinity, rec))
+		{
+			*in_p_out = 0.5 * (rec.normal + Color(1, 1, 1));
+			return;
+		}
+
+		const Math::Vec3& dir = in_r_ray._dir;
+		Math::Vec3 unit_direction = UnitVector3(dir);
+		// yは-1 < y < 1となる
+		// y + 1.0 => 0 < y < 2
+		// (y + 1.0) * 0.5 => 0 < y < 1
+		// となり0 から 1の値に変換
+		auto t = 0.5 * (unit_direction.y() + 1.0);
+		// 線形補間で色を決めている
+		// 画面上がt=1で下がt=0
+		*in_p_out = (1.0 - t) * this->_screen_upper_corrner_color + t * this->_screen_under_corrner_color;
 	}
 
 public:
@@ -53,13 +83,21 @@ public:
 
 	// 縦横のビューポートサイズ
 	Math::Vec3 _horizontal;
+	Math::Vec3 _half_horizontal;
+
+	Color _screen_upper_corrner_color;
+	Color _screen_under_corrner_color;
+
 	Math::Vec3 _vertical;
+	Math::Vec3 _half_vertical;
+
+	HitTableList world;
 };
 
 LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 // 更新処理
-void Update(FrameBuffer& in_r_frame_buffer, const RayTraceSpace& in_r_screen_space);
+static void Update(FrameBuffer& in_r_frame_buffer, RayTraceSpace& in_r_screen_space);
 
 /// <summary>
 /// Mains the specified argc.
@@ -111,7 +149,11 @@ int main(int argc, const char * argv[])
 
 	// レイトレースする空間情報を作成
 	// 横の長さを基準なので横のサイズを値を渡す
-	auto raytrace_space = RayTraceSpace(640, 16.0, 9.0);
+	auto raytrace_space = RayTraceSpace(480, 16.0, 9.0);
+	{
+		raytrace_space.world.Add(make_shared<Sphere>(Point3(0, 0, -1.0), 0.5));
+		raytrace_space.world.Add(make_shared<Sphere>(Point3(0, -100.5, -1.0), 100));
+	}
 
 	{
 		h_wnd = ::CreateWindowEx(
@@ -215,7 +257,7 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-void Update(FrameBuffer& in_r_frame_buffer, const RayTraceSpace& in_r_space)
+void Update(FrameBuffer& in_r_frame_buffer, RayTraceSpace& in_r_space)
 {
 	in_r_frame_buffer.Cls(128);
 
@@ -228,13 +270,13 @@ void Update(FrameBuffer& in_r_frame_buffer, const RayTraceSpace& in_r_space)
 	const double inv_d_heigth = 1.0 / d_height;
 
 	// レイの原点
-	auto origin = Point3(0.0, 0.0, 0.0);
+	auto origin = Color(0.0, 0.0, 0.0);
 
 	// レイの視線の長さ
 	auto focal_length = 1.0;
 	// レイの視線先を作成
 	auto lower_left_corrner =
-		origin - (in_r_space._vertical * 0.5) - (in_r_space._horizontal * 0.5) - Math::Vec3(0.0, 0.0, focal_length);
+		origin - (in_r_space._half_vertical) - (in_r_space._half_horizontal) - Math::Vec3(0.0, 0.0, focal_length);
 
 	double u, v;
 	Ray ray;
@@ -250,9 +292,10 @@ void Update(FrameBuffer& in_r_frame_buffer, const RayTraceSpace& in_r_space)
 
 			ray.Set(
 				origin,
-				lower_left_corrner + (u * in_r_space._horizontal) + (v * in_r_space._vertical) - origin);
+				// originを起点へレイを延ばす方向ベクトル
+				(lower_left_corrner + (u * in_r_space._horizontal) + (v * in_r_space._vertical)) - origin);
 
-			OutputRayColor(&color, ray);
+			in_r_space.OutputRayColor(&color, ray);
 			ir = ColorUtility::ConverRGB01ToRGB255(color.x());
 			ig = ColorUtility::ConverRGB01ToRGB255(color.y());
 			ib = ColorUtility::ConverRGB01ToRGB255(color.z());
