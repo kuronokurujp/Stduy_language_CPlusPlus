@@ -45,9 +45,9 @@ public:
 		}
 
 		double scale = 1.0 / in_sample_per_pixel;
-		r *= scale;
-		g *= scale;
-		b *= scale;
+		r = r * scale;
+		g = g * scale;
+		b = b * scale;
 
 		*out_p_r = ColorUtility::ConverRGB01ToRGB255(r);
 		*out_p_g = ColorUtility::ConverRGB01ToRGB255(g);
@@ -55,12 +55,46 @@ public:
 	}
 
 	// レイ照射して取得した色を取得
-	void OutputRayColor(Color* in_p_out, const Ray& in_r_ray)
+	void OutputRayColor(Color* in_p_out, const Ray& in_r_ray, const int in_depth)
 	{
-		hit_record rec;
-		if (this->world.Hit(in_r_ray, 0, c_infinity, rec))
+		if (in_depth <= 0)
 		{
-			*in_p_out = 0.5 * (rec.normal + Color(1, 1, 1));
+			in_p_out->Set(0.0, 0.0, 0.0);
+			return;
+		}
+
+		hit_record rec;
+		if (this->world.Hit(in_r_ray, 0.001, c_infinity, rec))
+		{
+			// 物体とライトの照射方向とのマテリアル計算
+			Point3 L0;
+			L0.Set(2, 5, -1);
+			auto L = rec.p - L0;
+			L = UnitVector3(L);
+			{
+				auto kd = 0.7, ks = 0.7, ke = 0.3;
+				auto V = UnitVector3(in_r_ray._dir);
+				auto N = UnitVector3(rec.normal);
+				Point3 R = L - 2.0 * (L * N) * N;
+				auto d = Dot(-N, L);
+				auto rv = Dot(-R, V);
+				auto s = 1.0;
+				auto c = Color(1.0, 0.0, 0.0);
+
+				auto cc = ks * pow(Max(rv, 0), 20) * s * Color(1, 1, 1);
+
+				auto out_c = kd * Max(d, 0.0) * s * c + cc + ke * c;
+				*in_p_out += out_c;
+			}
+
+			// 物体の法線方向を元にして作成した反射ベクトルを使ったレイで再帰計算
+			/*
+						Point3 target = rec.p + rec.normal + RandomInUnitSphere();
+						Ray ray;
+						ray.Set(rec.p, target - rec.p);
+						this->OutputRayColor(in_p_out, ray, in_depth - 1);
+						*in_p_out *= 0.5;
+						*/
 			return;
 		}
 
@@ -268,9 +302,10 @@ void Update(FrameBuffer& in_r_frame_buffer, RayTraceSpace& in_r_space)
 	Ray ray;
 	Color color;
 	Color temp_color;
-	// 100位にしないときれいなラインにならない
+	// 100位にしないときれいにならない
 	// でもそうすると負荷がでかくてFPSが激落ちするのでいったんアンチエイリアスはやらない
 	const int sample_per_pixel = 1;
+	const int max_depth = 2;
 
 	// 横ラインを先に書き込む
 	for (int y = height - 1; y >= 0; --y)
@@ -288,7 +323,7 @@ void Update(FrameBuffer& in_r_frame_buffer, RayTraceSpace& in_r_space)
 					v = (double(y) + RandomDouble()) * inv_d_heigth;
 
 					in_r_space._camera.OutputRay(&ray, u, v);
-					in_r_space.OutputRayColor(&temp_color, ray);
+					in_r_space.OutputRayColor(&temp_color, ray, max_depth);
 					color += temp_color;
 				}
 			}
@@ -298,7 +333,7 @@ void Update(FrameBuffer& in_r_frame_buffer, RayTraceSpace& in_r_space)
 				v = double(y) * inv_d_heigth;
 
 				in_r_space._camera.OutputRay(&ray, u, v);
-				in_r_space.OutputRayColor(&color, ray);
+				in_r_space.OutputRayColor(&color, ray, max_depth);
 			}
 
 			in_r_space.OutputScreenColor(&ir, &ig, &ib, color, sample_per_pixel);

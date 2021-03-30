@@ -2,6 +2,7 @@
 #define __MATH_VEC3_H__
 
 #include <cmath>
+#include "rtweekend.h"
 
 namespace Math
 {
@@ -12,6 +13,21 @@ namespace Math
 	public:
 		Vec3() : _e{ 0.0, 0.0, 0.0 } {}
 		Vec3(double in_e0, double in_e1, double in_e2) : _e{ in_e0, in_e1, in_e2 } {}
+
+		// ランダムの値のベクトル取得
+		inline static Vec3 Random()
+		{
+			return Vec3(RandomDouble(), RandomDouble(), RandomDouble());
+		}
+
+		// ランダムの値のベクトル取得
+		inline static Vec3 Random(const double in_min, const double in_max)
+		{
+			return Vec3(
+				RandomDouble(in_min, in_max),
+				RandomDouble(in_min, in_max),
+				RandomDouble(in_min, in_max));
+		}
 
 		inline void Set(const double in_e0, const double in_e1, const double in_e2)
 		{
@@ -165,6 +181,22 @@ inline Math::Vec3 UnitVector3(Math::Vec3& v)
 inline Math::Vec3 UnitVector3(const Math::Vec3& v)
 {
 	return v / v.Length();
+}
+
+// 長さが１のベクトルのランダムを取得
+inline Math::Vec3 RandomInUnitSphere()
+{
+	Math::Vec3 p;
+	// 無限ループはきつい
+	// ランダムデータを収めたテーブルに入れ替えよう
+	while (true)
+	{
+		p.Set(Math::Vec3::Random(-1.0, 1.0));
+		if (p.LengthSquared() >= 1.0)
+			continue;
+
+		return p;
+	}
 }
 
 #endif // __MATH_VEC3_H__

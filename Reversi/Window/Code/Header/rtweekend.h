@@ -47,6 +47,14 @@ inline double Clamp(double in_x, double in_min, double in_max)
 	return in_x;
 }
 
+inline double Max(double in_x, double in_max)
+{
+	if (in_x >= in_max)
+		return in_max;
+
+	return in_x;
+}
+
 // 共通ヘッダー
 #include "ray.h"
 #include "vec3.h"
