@@ -24,7 +24,7 @@ class RayTraceSpace
 public:
 	RayTraceSpace(const int in_screen_size, const double in_w_size, const double in_h_size)
 	{
-		this->_camera.Init(in_w_size, in_h_size);
+		this->_camera.Init(Point3(-2.0, 2.0, 1.0), Point3(0.0, 0.0, -1.0), Math::Vec3(0.0, 1.0, 0.0), 90.0, in_w_size, in_h_size);
 
 		// ウィンドウの縦横サイズ
 		this->_width = in_screen_size;
@@ -208,6 +208,12 @@ int main(int argc, const char * argv[])
 
 		raytrace_space.world.Add(make_shared<Sphere>(Point3(1, 0, -1.0), 0.5, make_shared<Metal>(Color(0.8, 0.6, 0.2))));
 		raytrace_space.world.Add(make_shared<Sphere>(Point3(-1, 0, -1.0), 0.5, make_shared<Metal>(Color(0.8, 0.8, 0.8))));
+
+		/*
+		auto R = cos(c_pi / 4.0);
+		raytrace_space.world.Add(make_shared<Sphere>(Point3(-R, 0, -1.0), R, make_shared<Lambertian>(Color(0.0, 0.0, 1.0))));
+		raytrace_space.world.Add(make_shared<Sphere>(Point3(R, 0, -1.0), R, make_shared<Lambertian>(Color(1.0, 0.0, 0.0))));
+		*/
 	}
 
 	{
