@@ -12,6 +12,7 @@ public:
 	{
 		this->_orgin.Set(in_r_origin);
 		this->_dir.Set(in_r_dir);
+		this->_unit_dir.Set(UnitVector3(in_r_dir));
 	}
 
 	Point3 At(const double t) const
@@ -22,6 +23,7 @@ public:
 public:
 	Math::Vec3 _orgin;
 	Math::Vec3 _dir;
+	Math::Vec3 _unit_dir;
 };
 
 #endif // __RAY_H__

@@ -32,7 +32,8 @@ public:
 		// レイの原点
 		this->_origin = Color(0.0, 0.0, 0.0);
 
-		// レイの視線先を作成
+		// viewport画面の左下の座標位置
+		// (-w / 2, -1.0)となる
 		this->_lower_left_cornner.Set(
 			this->_origin - (half_vertical)-(half_horizontal)-Math::Vec3(0.0, 0.0, focal_length));
 	}

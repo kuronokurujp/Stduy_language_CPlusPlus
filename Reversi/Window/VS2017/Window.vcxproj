@@ -36,7 +36,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -149,6 +149,22 @@
     <ClInclude Include="..\Code\Header\frame_buffer.h" />
     <ClInclude Include="..\Code\Header\hit_table.h" />
     <ClInclude Include="..\Code\Header\hit_table_list.h" />
+    <ClInclude Include="..\Code\Header\lambertian.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\light.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\material.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\metal.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="..\Code\Header\ray.h">
       <SubType>
       </SubType>

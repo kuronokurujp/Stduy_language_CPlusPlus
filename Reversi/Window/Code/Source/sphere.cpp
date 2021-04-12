@@ -1,7 +1,8 @@
 ﻿#include "sphere.h"
+#include "combaseapi.h"
 
 bool Sphere::Hit(
-	const Ray & in_r_ray, double in_tmin, double in_tmax, hit_record & out_r_rec) const
+	const Ray & in_r_ray, double in_tmin, double in_tmax, hit_record & out_r_rec, int in_skip_object_handle) const
 {
 	// レイとと球の衝突判定を2次方程式の判別式で行っている
 
@@ -29,7 +30,12 @@ bool Sphere::Hit(
 		out_r_rec.t = temp;
 		out_r_rec.p = in_r_ray.At(out_r_rec.t);
 		Math::Vec3 outward_normal = (out_r_rec.p - this->_center) / this->_radius;
-		out_r_rec.SetFaceNormal(in_r_ray, outward_normal);
+
+		auto N = UnitVector3(outward_normal);
+		out_r_rec.SetFaceNormal(in_r_ray, N);
+		out_r_rec.map_ptr = this->_map_ptr;
+
+		out_r_rec.object_handle = this->Handle();
 
 		return true;
 	}
@@ -42,9 +48,21 @@ bool Sphere::Hit(
 
 		Math::Vec3 outward_normal = (out_r_rec.p - this->_center) / this->_radius;
 		out_r_rec.SetFaceNormal(in_r_ray, outward_normal);
+		out_r_rec.map_ptr = this->_map_ptr;
+
+		out_r_rec.object_handle = this->Handle();
 
 		return true;
 	}
 
 	return false;
+}
+
+void Sphere::Init()
+{
+	// オブジェクトのユニークなIDを生成する
+	// オブジェクトの識別に利用
+	GUID guid;
+	CoCreateGuid(&guid);
+	this->_handle = guid.Data1;
 }

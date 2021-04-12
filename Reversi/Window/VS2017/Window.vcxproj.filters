@@ -59,5 +59,17 @@
     <ClInclude Include="..\Code\Header\camera.h">
       <Filter>Code\Header</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Header\material.h">
+      <Filter>Code\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\light.h">
+      <Filter>Code\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\lambertian.h">
+      <Filter>Code\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\metal.h">
+      <Filter>Code\Header</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

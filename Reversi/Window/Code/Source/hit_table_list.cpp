@@ -1,7 +1,7 @@
 ﻿#include "hit_table_list.h"
 
 bool HitTableList::Hit(
-	const Ray& in_r_ray, double in_t_min, double in_t_max, hit_record& out_r_rec
+	const Ray& in_r_ray, double in_t_min, double in_t_max, hit_record& out_r_rec, int in_skip_object_handle
 ) const
 {
 	// in_t_maxは初期値は無限値とする
@@ -13,12 +13,17 @@ bool HitTableList::Hit(
 	auto closest_so_far = in_t_max;
 	for (const auto& object : this->_objects)
 	{
-		if (object->Hit(in_r_ray, in_t_min, closest_so_far, temp_rec))
+		auto handle = object->Handle();
+		if (object->Hit(in_r_ray, in_t_min, closest_so_far, temp_rec, in_skip_object_handle))
 		{
 			// オブジェクトにレイがヒット
 			// レイのヒット範囲を更新
 			// こうする事で奥のオブジェクトにヒットする事がなくなる
-			hit_anything = true;
+			if (handle == in_skip_object_handle)
+				hit_anything = false;
+			else
+				hit_anything = true;
+
 			closest_so_far = temp_rec.t;
 			out_r_rec = temp_rec;
 		}
