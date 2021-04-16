@@ -12,19 +12,31 @@
 #include "color.h"
 #include "hit_table_list.h"
 #include "sphere.h"
+#include "plane.h"
+#include "cylinder.h"
 #include "camera.h"
 #include "material.h"
 #include "light.h"
 #include "lambertian.h"
 #include "metal.h"
 
+// テクスチャー
+#include "solid_color.h"
+#include "checker_texture.h"
+
+// パストレースの幾何学計算は以下のサイトにまとまっている
+// 神様のページ
+// https://iquilezles.org/www/articles/intersectors/intersectors.htm
+
 // レイトレースを行う空間
 class RayTraceSpace
 {
 public:
-	RayTraceSpace(const int in_screen_size, const double in_w_size, const double in_h_size)
+	RayTraceSpace(const int in_screen_size, const double in_w_size, const double in_h_size) :
+		// ライトスペース情報を設定
+		_light_space(Math::Vec3(0.0, -1.0, 0.0), Color(1.0, 1.0, 1.0))
 	{
-		this->_camera.Init(Point3(-2.0, 2.0, 1.0), Point3(0.0, 0.0, -1.0), Math::Vec3(0.0, 1.0, 0.0), 90.0, in_w_size, in_h_size);
+		this->_camera._Init(Point3(0.0, 1.5, 1.0), Point3(0.0, -1.0, 0.0), Math::Vec3(0.0, 1.0, 0.0), 90.0, in_w_size, in_h_size);
 
 		// ウィンドウの縦横サイズ
 		this->_width = in_screen_size;
@@ -32,14 +44,6 @@ public:
 
 		this->_screen_upper_corrner_color.Set(1.0, 1.0, 1.0);
 		this->_screen_under_corrner_color.Set(0.5, 0.7, 1.0);
-
-		// ライトスペース情報を設定
-		{
-			// ライト位置
-			this->_light_space._pos.Set(2, 10, 1);
-			// アンビエントライトカラー
-			this->_light_space._ambient_color.Set(1, 1, 1);
-		}
 	}
 
 	void OutputScreenColor(int* out_p_r, int* out_p_g, int* out_p_b, Color& in_r_color, int in_sample_per_pixel)
@@ -56,7 +60,7 @@ public:
 			return;
 		}
 
-		double scale = 1.0 / in_sample_per_pixel;
+		double scale = 1.0;// / in_sample_per_pixel;
 		r = r * scale;
 		g = g * scale;
 		b = b * scale;
@@ -77,6 +81,7 @@ public:
 		{
 			// 影つけるか決める
 			bool shadow_flag = false;
+			/*
 			{
 				// 物体とライトの照射方向とのマテリアル計算
 				auto L = rec.p - this->_light_space._pos;
@@ -90,6 +95,7 @@ public:
 					shadow_flag = true;
 				}
 			}
+			*/
 
 			// マテリアルによるピクセル色を出力
 			auto c = Color(0.0, 0.0, 0.0);
@@ -99,26 +105,8 @@ public:
 			}
 
 			*in_p_out += c;
-
-			// 物体の法線方向を元にして作成した反射ベクトルを使ったレイで再帰計算
-			// 負荷が高くリアルタイムに向かないのでやらない
-			/*
-			{
-				Point3 target = rec.p + rec.normal - R;// RandomInUnitSphere();
-				Ray ray;
-				ray.Set(rec.p, target - rec.p);
-				this->OutputRayColor(in_p_out, ray, in_depth - 1, in_max_depth);
-				*in_p_out *= 0.5;
-			}
-			*/
-
 			return;
 		}
-
-		/*
-		if (in_depth != in_max_depth)
-			return;
-			*/
 
 		const Math::Vec3& dir = in_r_ray._dir;
 		Math::Vec3 unit_direction = UnitVector3(dir);
@@ -201,19 +189,29 @@ int main(int argc, const char * argv[])
 
 	// レイトレースする空間情報を作成
 	// 横の長さを基準なので横のサイズを値を渡す
-	auto raytrace_space = RayTraceSpace(480, 16.0, 9.0);
+	auto raytrace_space = RayTraceSpace(640, 16.0, 9.0);
 	{
-		raytrace_space.world.Add(make_shared<Sphere>(Point3(0, 0, -1.0), 0.5, make_shared<Lambertian>(Color(0.7, 0.3, 0.3))));
-		raytrace_space.world.Add(make_shared<Sphere>(Point3(0, -100.5, -1.0), 100, make_shared<Lambertian>(Color(0.8, 0.8, 0))));
+		shared_ptr<CheckerTexture> checkerTexture = make_shared<CheckerTexture>(
+			make_shared<SolidColor>(Color(0.0, 1.0, 1.0)),
+			make_shared<SolidColor>(Color(0.0, 1.0, 0.0)),
+			8);
 
-		raytrace_space.world.Add(make_shared<Sphere>(Point3(1, 0, -1.0), 0.5, make_shared<Metal>(Color(0.8, 0.6, 0.2))));
-		raytrace_space.world.Add(make_shared<Sphere>(Point3(-1, 0, -1.0), 0.5, make_shared<Metal>(Color(0.8, 0.8, 0.8))));
+		auto black = make_shared<SolidColor>(Color(0.0, 0.0, 0.0));
+		auto white = make_shared<SolidColor>(Color(1.0, 1.0, 1.0));
 
-		/*
-		auto R = cos(c_pi / 4.0);
-		raytrace_space.world.Add(make_shared<Sphere>(Point3(-R, 0, -1.0), R, make_shared<Lambertian>(Color(0.0, 0.0, 1.0))));
-		raytrace_space.world.Add(make_shared<Sphere>(Point3(R, 0, -1.0), R, make_shared<Lambertian>(Color(1.0, 0.0, 0.0))));
-		*/
+		// 版に石を載せた
+		for (int y = 0; y < 8; ++y)
+		{
+			for (int x = 0; x < 8; ++x)
+			{
+				raytrace_space.world.Add(
+					make_shared<Cylinder>(
+						Point3(-1.0 + 0.25 + (static_cast<double>(x) * 0.215), 0.0, -1.0 + 0.4 + (static_cast<double>(y) * 0.21)),
+						Math::Vec3(0.0, 0.01, 0.0), 0.1,
+						make_shared<Lambertian>(white)));
+			}
+		}
+		raytrace_space.world.Add(make_shared<Plane>(-1, 1, -1, 1, -0.3, make_shared<Lambertian>(checkerTexture)));
 	}
 
 	{

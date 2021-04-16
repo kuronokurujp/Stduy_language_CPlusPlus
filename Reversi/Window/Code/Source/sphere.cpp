@@ -37,6 +37,8 @@ bool Sphere::Hit(
 
 		out_r_rec.object_handle = this->Handle();
 
+		Sphere::_OutputUV(out_r_rec.p - this->_center, &out_r_rec.u, &out_r_rec.v);
+
 		return true;
 	}
 
@@ -58,11 +60,20 @@ bool Sphere::Hit(
 	return false;
 }
 
-void Sphere::Init()
+void Sphere::_Init()
 {
 	// オブジェクトのユニークなIDを生成する
 	// オブジェクトの識別に利用
 	GUID guid;
 	CoCreateGuid(&guid);
 	this->_handle = guid.Data1;
+}
+
+void Sphere::_OutputUV(const Math::Vec3 & in_r_p, double * in_p_u, double * in_p_v)
+{
+	auto phi = atan2(in_r_p.z(), in_r_p.x());
+	auto theta = asin(in_r_p.y());
+
+	*in_p_u = 1.0 - (phi + c_pi) / (2 * c_pi);
+	*in_p_v = (theta + c_pi / 2.0) / c_pi;
 }

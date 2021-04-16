@@ -24,6 +24,7 @@ public:
 			out_r_attenuation.Set(0, 0, 0);
 			return true;
 		}
+		/*
 
 		// 物体とライトの照射方向とのマテリアル計算
 		auto L = in_r_hit_recode.p - in_r_light_space._pos;
@@ -48,6 +49,7 @@ public:
 
 			out_r_attenuation = kd * Max(d, 0.0) * s * this->_albedo + cc + ke * this->_albedo;
 		}
+		*/
 
 		return true;
 	}

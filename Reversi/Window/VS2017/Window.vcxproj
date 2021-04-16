@@ -142,7 +142,12 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="..\Code\Header\checker_texture.h" />
     <ClInclude Include="..\Code\Header\color.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\cylinder.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -165,6 +170,10 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="..\Code\Header\plane.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="..\Code\Header\ray.h">
       <SubType>
       </SubType>
@@ -173,7 +182,12 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="..\Code\Header\solid_color.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="..\Code\Header\sphere.h" />
+    <ClInclude Include="..\Code\Header\texture.h" />
     <ClInclude Include="..\Code\Header\vec3.h">
       <SubType>
       </SubType>

@@ -71,5 +71,20 @@
     <ClInclude Include="..\Code\Header\metal.h">
       <Filter>Code\Header</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Header\plane.h">
+      <Filter>Code\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\cylinder.h">
+      <Filter>Code\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\solid_color.h">
+      <Filter>Code\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\texture.h">
+      <Filter>Code\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\checker_texture.h">
+      <Filter>Code\Header</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

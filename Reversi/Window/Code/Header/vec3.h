@@ -154,6 +154,15 @@ inline Math::Vec3 operator/(const Math::Vec3& v, const double s)
 }
 
 // 内積計算
+// 2次元の内積
+inline double Dot2(const Math::Vec3& u, const Math::Vec3& v)
+{
+	return
+		u._e[0] * v._e[0] +
+		u._e[1] * v._e[1];
+}
+
+// 3次元の内積
 inline double Dot(const Math::Vec3& u, const Math::Vec3& v)
 {
 	return

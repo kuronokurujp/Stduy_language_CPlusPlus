@@ -8,7 +8,7 @@ class Camera
 public:
 	Camera() {}
 
-	void Init(Point3 in_lookfrom, Point3 in_lookat, Math::Vec3 in_vup, const double in_fov_degress, const double in_w_size, const double in_h_size)
+	void _Init(Point3 in_lookfrom, Point3 in_lookat, Math::Vec3 in_vup, const double in_fov_degress, const double in_w_size, const double in_h_size)
 	{
 		auto w = UnitVector3(in_lookfrom - in_lookat);
 		auto u = UnitVector3(Cross(in_vup, w));

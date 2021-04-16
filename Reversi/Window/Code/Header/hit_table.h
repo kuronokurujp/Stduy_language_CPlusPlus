@@ -13,6 +13,9 @@ struct hit_record
 	Math::Vec3 normal;
 	shared_ptr<Material> map_ptr;
 	double t;
+	// テクスチャーマッピングのUV値
+	double u, v;
+
 	bool front_face;
 	long object_handle;
 

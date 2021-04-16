@@ -11,10 +11,10 @@ class Material;
 class Sphere : public HitTable
 {
 public:
-	Sphere() { this->Init(); }
+	Sphere() { this->_Init(); }
 	Sphere(const Point3& in_r_cen, const double in_r, shared_ptr<Material> in_map_ptr)
 	{
-		this->Init();
+		this->_Init();
 		this->Set(in_r_cen, in_r, in_map_ptr);
 	}
 
@@ -38,7 +38,8 @@ public:
 	shared_ptr<Material> _map_ptr;
 
 private:
-	void Init();
+	void _Init();
+	static void _OutputUV(const Math::Vec3& in_r_p, double* in_p_u, double* in_p_v);
 };
 
 #endif // __SPHERE_H__
