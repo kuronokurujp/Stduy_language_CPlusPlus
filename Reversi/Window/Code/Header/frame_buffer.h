@@ -32,13 +32,11 @@ public:
 	/// <param name="in_x">The in x.</param>
 	/// <param name="in_y">The in y.</param>
 	/// <returns></returns>
-	inline void* GetAddressPixel(const int in_x, const int in_y)
-	{
+	inline void* GetAddressPixel(const int in_x, const int in_y) {
 		return (this->_width * in_y + in_x) * this->_pixel_byte_size + (unsigned char*)this->_p_buffer;
 	}
 
-	inline const void* GetAddressPixel(const int in_x, const int in_y) const
-	{
+	inline const void* GetAddressPixel(const int in_x, const int in_y) const {
 		return (this->_width * in_y + in_x) * this->_pixel_byte_size + (unsigned char*)this->_p_buffer;
 	}
 

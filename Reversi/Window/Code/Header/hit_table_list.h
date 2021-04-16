@@ -15,18 +15,15 @@ class HitTableList : public HitTable
 {
 public:
 	HitTableList() {}
-	HitTableList(shared_ptr<HitTable> in_object)
-	{
+	HitTableList(shared_ptr<HitTable> in_object) {
 		this->Add(in_object);
 	}
 
-	void Clear()
-	{
+	void Clear() {
 		this->_objects.clear();
 	}
 
-	void Add(shared_ptr<HitTable> in_object)
-	{
+	void Add(shared_ptr<HitTable> in_object) {
 		this->_objects.push_back(in_object);
 	}
 

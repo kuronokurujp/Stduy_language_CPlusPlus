@@ -29,7 +29,7 @@ public:
 		const Ray& in_r_ray, double in_tmin, double in_tmax, hit_record& in_r_rec, int in_skip_object_handle
 	) const override;
 
-	long Handle() const override { return this->_handle; };
+	inline long Handle() const override { return this->_handle; };
 
 public:
 	Point3 _center;

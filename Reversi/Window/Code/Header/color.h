@@ -6,8 +6,7 @@
 
 namespace ColorUtility
 {
-	inline int ConverRGB01ToRGB255(const double a)
-	{
+	inline int ConverRGB01ToRGB255(const double a) {
 		return static_cast<int>(256 * Clamp(a, 0.0, 0.999));
 	}
 }

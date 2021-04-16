@@ -41,7 +41,7 @@ public:
 		const Ray& in_r_ray, double in_t_min, double in_t_max, hit_record& out_r_rec, int in_skip_object_handle
 	) const = 0;
 
-	virtual long Handle() const = 0;
+	virtual inline long Handle() const = 0;
 };
 
 #endif // __HIT_TABELE_H__

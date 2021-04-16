@@ -60,7 +60,7 @@ public:
 			return;
 		}
 
-		double scale = 1.0;// / in_sample_per_pixel;
+		double scale = 1.0 / in_sample_per_pixel;
 		r = r * scale;
 		g = g * scale;
 		b = b * scale;
@@ -79,42 +79,22 @@ public:
 		hit_record rec;
 		if (this->world.Hit(in_r_ray, 0.001, c_infinity, rec, -1))
 		{
-			// 影つけるか決める
-			bool shadow_flag = false;
-			/*
-			{
-				// 物体とライトの照射方向とのマテリアル計算
-				auto L = rec.p - this->_light_space._pos;
-				L = UnitVector3(L);
-
-				Ray chk_ray;
-				chk_ray.Set(this->_light_space._pos, L);
-
-				hit_record rec02;
-				if (world.Hit(chk_ray, 0.0001, c_infinity, rec02, rec.object_handle)) {
-					shadow_flag = true;
-				}
-			}
-			*/
-
 			// マテリアルによるピクセル色を出力
 			auto c = Color(0.0, 0.0, 0.0);
 			{
 				Ray chk_ray;
-				rec.map_ptr->Scatter(in_r_ray, rec, c, chk_ray, this->_light_space, shadow_flag);
+				rec.map_ptr->Scatter(in_r_ray, rec, c, chk_ray, this->_light_space, false);
 			}
 
 			*in_p_out += c;
 			return;
 		}
 
-		const Math::Vec3& dir = in_r_ray._dir;
-		Math::Vec3 unit_direction = UnitVector3(dir);
 		// yは-1 < y < 1となる
 		// y + 1.0 => 0 < y < 2
 		// (y + 1.0) * 0.5 => 0 < y < 1
 		// となり0 から 1の値に変換
-		auto t = 0.5 * (unit_direction.y() + 1.0);
+		auto t = 0.5 * (in_r_ray._unit_dir.y() + 1.0);
 		// 線形補間で色を決めている
 		// 画面上がt=1で下がt=0
 		*in_p_out = (1.0 - t) * this->_screen_upper_corrner_color + t * this->_screen_under_corrner_color;
@@ -188,8 +168,8 @@ int main(int argc, const char * argv[])
 	}
 
 	// レイトレースする空間情報を作成
-	// 横の長さを基準なので横のサイズを値を渡す
-	auto raytrace_space = RayTraceSpace(640, 16.0, 9.0);
+	// 横の長さが基準なので横のサイズ値を渡す
+	auto raytrace_space = RayTraceSpace(480, 16.0, 9.0);
 	{
 		shared_ptr<CheckerTexture> checkerTexture = make_shared<CheckerTexture>(
 			make_shared<SolidColor>(Color(0.0, 1.0, 1.0)),
@@ -199,19 +179,22 @@ int main(int argc, const char * argv[])
 		auto black = make_shared<SolidColor>(Color(0.0, 0.0, 0.0));
 		auto white = make_shared<SolidColor>(Color(1.0, 1.0, 1.0));
 
+		// 版を作成
+		raytrace_space.world.Add(make_shared<Plane>(-1, 1, -1, 1, -0.3, make_shared<Lambertian>(checkerTexture)));
+
 		// 版に石を載せた
-		for (int y = 0; y < 8; ++y)
+		const int stone_count = 8;
+		for (int y = 0; y < stone_count; ++y)
 		{
-			for (int x = 0; x < 8; ++x)
+			for (int x = 0; x < stone_count; ++x)
 			{
 				raytrace_space.world.Add(
 					make_shared<Cylinder>(
-						Point3(-1.0 + 0.25 + (static_cast<double>(x) * 0.215), 0.0, -1.0 + 0.4 + (static_cast<double>(y) * 0.21)),
+						Point3(-1.0 + 0.25 + (static_cast<double>(x) * 0.215), 0.01, -1.0 + 0.4 + (static_cast<double>(y) * 0.21)),
 						Math::Vec3(0.0, 0.01, 0.0), 0.1,
-						make_shared<Lambertian>(white)));
+						make_shared<Lambertian>(black)));
 			}
 		}
-		raytrace_space.world.Add(make_shared<Plane>(-1, 1, -1, 1, -0.3, make_shared<Lambertian>(checkerTexture)));
 	}
 
 	{
@@ -340,11 +323,15 @@ void Update(FrameBuffer& in_r_frame_buffer, RayTraceSpace& in_r_space)
 	// 横ラインを先に書き込む
 	for (int y = height - 1; y >= 0; --y)
 	{
+		double d_y = double(y);
+		v = d_y * inv_d_heigth;
+
 		for (int x = 0; x < width; ++x)
 		{
 			color.Set(0.0, 0.0, 0.0);
 			temp_color.Set(0.0, 0.0, 0.0);
 			double d_x = double(x);
+			/*
 			if (sample_per_pixel > 1)
 			{
 				for (int s = 0; s < sample_per_pixel; ++s)
@@ -358,9 +345,9 @@ void Update(FrameBuffer& in_r_frame_buffer, RayTraceSpace& in_r_space)
 				}
 			}
 			else
+			*/
 			{
 				u = d_x * inv_d_width;
-				v = double(y) * inv_d_heigth;
 
 				in_r_space._camera.OutputRay(&ray, u, v);
 				in_r_space.OutputRayColor(&color, ray, max_depth, max_depth);

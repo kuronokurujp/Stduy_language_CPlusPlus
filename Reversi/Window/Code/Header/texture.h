@@ -5,7 +5,8 @@
 #include "vec3.h"
 
 // テクスチャのインターフェイス
-class Texture {
+class Texture
+{
 public:
 	Texture() {}
 	virtual Color Value(double in_u, double in_v, const Point3& in_r_p) = 0;

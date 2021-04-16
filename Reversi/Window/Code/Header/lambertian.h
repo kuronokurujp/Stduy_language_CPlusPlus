@@ -6,7 +6,8 @@
 #include "texture.h"
 
 // ランバート拡散モデルのマテリアル
-class Lambertian : public Material {
+class Lambertian : public Material
+{
 public:
 	Lambertian(shared_ptr<Texture> in_texture) {
 		this->_albedo = in_texture;
@@ -18,7 +19,8 @@ public:
 		Color& out_r_attenuation,
 		Ray& out_r_scattered,
 		LightSpace& in_r_light_space,
-		const bool in_b_shadow) const override {
+		const bool in_b_shadow) const override
+	{
 		if (in_b_shadow) {
 			out_r_attenuation.Set(0, 0, 0);
 			return true;

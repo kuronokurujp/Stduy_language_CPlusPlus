@@ -15,7 +15,8 @@ class Cylinder : public HitTable
 {
 public:
 	Cylinder() { this->_Init(); }
-	Cylinder(Point3 in_center, const Math::Vec3& in_r_axis, const double in_radius, shared_ptr<Material> in_map_ptr) {
+	Cylinder(Point3 in_center, const Math::Vec3& in_r_axis, const double in_radius, shared_ptr<Material> in_map_ptr)
+	{
 		this->_Init();
 
 		Math::Vec3 top(in_r_axis * 0.5);
@@ -28,23 +29,23 @@ public:
 		this->_map_ptr = in_map_ptr;
 
 		this->_ba = this->_pb - this->_pa;
+		this->_baba = Dot(this->_ba, this->_ba);
+		this->_inv_baba = 1.0 / this->_baba;
+		this->_r2baba = this->_radius * this->_radius * this->_baba;
 	}
 
 	bool Hit(
 		const Ray& in_r_ray, double in_tmin, double in_tmax, hit_record& out_r_rec, int in_skip_object_handle
-	) const override {
-		Math::Vec3 rd(UnitVector3(in_r_ray._dir));
+	) const override
+	{
 		Math::Vec3 oc = in_r_ray._orgin - this->_pa;
 
-		//Math::Vec3 ba = this->_pb - this->_pa;
-
-		double baba = Dot(this->_ba, this->_ba);
-		double bard = Dot(this->_ba, rd);
+		double bard = Dot(this->_ba, in_r_ray._unit_dir);
 		double baoc = Dot(this->_ba, oc);
 
-		double k2 = baba - bard * bard;
-		double k1 = baba * Dot(oc, rd) - baoc * bard;
-		double k0 = baba * Dot(oc, oc) - baoc * baoc - this->_radius * this->_radius * baba;
+		double k2 = this->_baba - bard * bard;
+		double k1 = this->_baba * Dot(oc, in_r_ray._unit_dir) - baoc * bard;
+		double k0 = this->_baba * Dot(oc, oc) - baoc * baoc - this->_r2baba;
 
 		double h = k1 * k1 - k2 * k0;
 		if (h < 0.0)
@@ -55,13 +56,13 @@ public:
 
 		// body
 		double y = baoc + t * bard;
-		if (y > 0.0 && y < baba) {
-			if (!is_0X(t, in_tmin, in_tmax))
+		if (y > 0.0 && y < this->_baba) {
+			if (!IsMinMax(t, in_tmin, in_tmax))
 				return false;
 
 			out_r_rec.t = t;
 			out_r_rec.p = in_r_ray.At(t);
-			Math::Vec3 aa = (oc + t * rd - this->_ba * y / baba);
+			Math::Vec3 aa = (oc + t * in_r_ray._unit_dir - this->_ba * y * this->_inv_baba);
 			Math::Vec3 outward_normal = aa / this->_radius;
 
 			auto N = UnitVector3(outward_normal);
@@ -74,9 +75,9 @@ public:
 		}
 
 		// caps
-		t = (((y < 0.0) ? 0.0 : baba) - baoc) / bard;
+		t = (((y < 0.0) ? 0.0 : this->_baba) - baoc) / bard;
 		if (abs(k1 + k2 * t) < h) {
-			if (!is_0X(t, in_tmin, in_tmax))
+			if (!IsMinMax(t, in_tmin, in_tmax))
 				return false;
 
 			out_r_rec.t = t;
@@ -88,7 +89,7 @@ public:
 			else if (y < 0.0)
 				cc = -1.0;
 
-			Math::Vec3 outward_normal = this->_ba * cc / baba;
+			Math::Vec3 outward_normal = this->_ba * cc * this->_inv_baba;
 
 			auto N = UnitVector3(outward_normal);
 			out_r_rec.SetFaceNormal(in_r_ray, N);
@@ -101,12 +102,12 @@ public:
 		return false;
 	}
 
-	//0からmaxまでにxが入ってるかどうか
-	static inline bool is_0X(double x, double min, double max) {
-		return (min < x&&x < max);
+	//in_minからin_maxまでにin_xが入ってるかどうか
+	static inline bool IsMinMax(double in_x, double in_min, double in_max) {
+		return (in_min < in_x && in_x < in_max);
 	}
 
-	long Handle() const override {
+	inline long Handle() const override {
 		return this->_handle;
 	}
 
@@ -122,8 +123,12 @@ private:
 
 private:
 	Math::Vec3 _ba;
+	double _baba;
+	double _inv_baba;
+	double _r2baba;
 
-	void _Init() {
+	void _Init()
+	{
 		// オブジェクトのユニークなIDを生成する
 		// オブジェクトの識別に利用
 		GUID guid;

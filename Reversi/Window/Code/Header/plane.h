@@ -22,7 +22,8 @@ public:
 		const double in_z0, const double in_z1,
 		// 高さになる
 		const double in_k,
-		shared_ptr<Material> in_mat) {
+		shared_ptr<Material> in_mat)
+	{
 		this->_Init();
 
 		this->_x0 = in_x0;
@@ -32,6 +33,9 @@ public:
 
 		this->_k = in_k;
 		this->_map_ptr = in_mat;
+
+		this->_inv_x10 = 1.0 / (this->_x1 - this->_x0);
+		this->_inv_z10 = 1.0 / (this->_z1 - this->_z0);
 	}
 
 	bool Hit(
@@ -50,8 +54,8 @@ public:
 		if (x < this->_x0 || x > this->_x1 || z < this->_z0 || z > this->_z1)
 			return false;
 
-		out_r_rec.u = (x - this->_x0) / (this->_x1 - this->_x0);
-		out_r_rec.v = (z - this->_z0) / (this->_z1 - this->_z0);
+		out_r_rec.u = (x - this->_x0) * this->_inv_x10;
+		out_r_rec.v = (z - this->_z0) * this->_inv_z10;
 		out_r_rec.t = t;
 
 		auto outward_normal = Math::Vec3(0, 1, 0);
@@ -63,8 +67,7 @@ public:
 		return true;
 	}
 
-	long Handle() const
-	{
+	inline long Handle() const {
 		return this->_handle;
 	}
 
@@ -73,6 +76,7 @@ public:
 	// この最大・最小の間を長方形として描画する
 	double _x0, _x1, _z0, _z1;
 	double _k;
+	double _inv_x10, _inv_z10;
 	shared_ptr<Material> _map_ptr;
 
 	long _handle;
