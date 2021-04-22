@@ -1,7 +1,6 @@
-﻿#ifndef __COLOR_H__
-#define __COLOR_H__
+﻿#ifndef __COMMON_COLOR_H__
+#define __COMMON_COLOR_H__
 
-#include "vec3.h"
 #include "rtweekend.h"
 
 namespace ColorUtility
@@ -11,4 +10,4 @@ namespace ColorUtility
 	}
 }
 
-#endif // __COLOR_H__
+#endif // __COMMON_COLOR_H__

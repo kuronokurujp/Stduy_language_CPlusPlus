@@ -1,8 +1,8 @@
 ﻿#ifndef __PLANE_H__
 #define __PLANE_H__
 
-#include "hit_table.h"
-#include "vec3.h"
+#include "Render/PathTracing/Collision/hit_table.h"
+#include "Math/vec3.h"
 
 // shader_ptrなどで使う
 #include <memory>
@@ -69,6 +69,24 @@ public:
 
 	inline long Handle() const {
 		return this->_handle;
+	}
+
+	// AABBによる衝突に必要な情報
+	bool BoundingBox(double in_t0, double in_t1, AABB& out_box) const override
+	{
+		// 中心位置から半径への大きさから最大・最小位置を設定
+		double min_x = fmin(this->_x0, this->_x1);
+		double max_x = fmax(this->_x0, this->_x1);
+
+		double min_z = fmin(this->_z0, this->_z1);
+		double max_z = fmax(this->_z0, this->_z1);
+		// XZは最小・最大の値を設定
+		// Yの高さは適当
+		out_box = AABB(
+			Math::Vec3(min_x, this->_k - 0.5, min_z),
+			Math::Vec3(max_x, this->_k + 0.5, max_z));
+
+		return true;
 	}
 
 public:

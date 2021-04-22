@@ -1,8 +1,8 @@
 ﻿#ifndef __CYLINDER_H__
 #define __CYLINDER_H__
 
-#include "hit_table.h"
-#include "vec3.h"
+#include "Render/PathTracing/Collision/hit_table.h"
+#include "Math/vec3.h"
 
 // shader_ptrなどで使う
 #include <memory>
@@ -102,13 +102,36 @@ public:
 		return false;
 	}
 
-	//in_minからin_maxまでにin_xが入ってるかどうか
-	static inline bool IsMinMax(double in_x, double in_min, double in_max) {
-		return (in_min < in_x && in_x < in_max);
+	// AABBによる衝突に必要な情報
+	bool BoundingBox(double in_t0, double in_t1, AABB& out_box) const override
+	{
+		// 一旦Y軸限定で計算
+
+		// 中心位置から半径への大きさから最大・最小位置を設定
+		double min_x = fmin(this->_pb.x() - this->_radius, this->_pa.x() - this->_radius);
+		double max_x = fmax(this->_pb.x() + this->_radius, this->_pa.x() + this->_radius);
+
+		double min_y = fmin(this->_pb.y(), this->_pa.y());
+		double max_y = fmax(this->_pb.y(), this->_pa.y());
+
+		double min_z = fmin(this->_pb.z() - this->_radius, this->_pa.z() - this->_radius);
+		double max_z = fmax(this->_pb.z() + this->_radius, this->_pa.z() + this->_radius);
+
+		// シリンダの上下キャップ位置を設定
+		out_box = AABB(
+			Math::Vec3(min_x, min_y, min_z),
+			Math::Vec3(max_x, max_y, max_z));
+
+		return true;
 	}
 
 	inline long Handle() const override {
 		return this->_handle;
+	}
+
+	//in_minからin_maxまでにin_xが入ってるかどうか
+	static inline bool IsMinMax(double in_x, double in_min, double in_max) {
+		return (in_min < in_x && in_x < in_max);
 	}
 
 private:

@@ -1,7 +1,7 @@
 ﻿#ifndef __WINDOW_FRAMBUFFER_H__
 #define __WINDOW_FRAMBUFFER_H__
 
-#include "frame_buffer.h"
+#include "Render/frame_buffer.h"
 #include <windows.h>
 
 /// <summary>

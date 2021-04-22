@@ -1,4 +1,4 @@
-﻿#include "hit_table_list.h"
+﻿#include "Render/PathTracing/Collision/hit_table_list.h"
 
 bool HitTableList::Hit(
 	const Ray& in_r_ray, double in_t_min, double in_t_max, hit_record& out_r_rec, int in_skip_object_handle

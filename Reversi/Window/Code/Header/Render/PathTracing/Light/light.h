@@ -1,7 +1,7 @@
 ﻿#ifndef __LIGHT_H__
 #define __LIGHT_H__
 
-#include "vec3.h"
+#include "Math/vec3.h"
 
 class LightSpace
 {

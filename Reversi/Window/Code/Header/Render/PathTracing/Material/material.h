@@ -1,10 +1,10 @@
 ﻿#ifndef __MATERIAL_H__
 #define __MATERIAL_H__
 
-#include "ray.h"
-#include "hit_table.h"
-#include "color.h"
-#include "light.h"
+#include "Math/ray.h"
+
+#include "Render/PathTracing/Collision/hit_table.h"
+#include "Render/PathTracing/Light/light.h"
 
 // メッシュのマテリアルクラス
 class Material {

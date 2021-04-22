@@ -42,14 +42,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -90,6 +90,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\Code\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -116,6 +117,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\Code\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -127,73 +129,34 @@
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\frame_buffer.cpp" />
-    <ClCompile Include="..\Code\Source\hit_table_list.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\sphere.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\window_frame_buffer.cpp" />
+    <ClCompile Include="..\Code\Source\GUIWindow\Win\window_frame_buffer.cpp" />
+    <ClCompile Include="..\Code\Source\Render\frame_buffer.cpp" />
+    <ClCompile Include="..\Code\Source\Render\PathTracing\Collision\hit_table_list.cpp" />
+    <ClCompile Include="..\Code\Source\Render\PathTracing\Figure\sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Code\Header\camera.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\checker_texture.h" />
-    <ClInclude Include="..\Code\Header\color.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\cylinder.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\frame_buffer.h" />
-    <ClInclude Include="..\Code\Header\hit_table.h" />
-    <ClInclude Include="..\Code\Header\hit_table_list.h" />
-    <ClInclude Include="..\Code\Header\lambertian.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\light.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\material.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\metal.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\plane.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\ray.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\rtweekend.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\solid_color.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\sphere.h" />
-    <ClInclude Include="..\Code\Header\texture.h" />
-    <ClInclude Include="..\Code\Header\vec3.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\window_frame_buffer.h" />
+    <ClInclude Include="..\Code\Header\Common\color.h" />
+    <ClInclude Include="..\Code\Header\Common\rtweekend.h" />
+    <ClInclude Include="..\Code\Header\GUIWindow\Win\gui_window_win.h" />
+    <ClInclude Include="..\Code\Header\GUIWindow\Win\window_frame_buffer.h" />
+    <ClInclude Include="..\Code\Header\Math\ray.h" />
+    <ClInclude Include="..\Code\Header\Math\vec3.h" />
+    <ClInclude Include="..\Code\Header\Render\frame_buffer.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Camera\camera.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Collision\bvh_node.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Collision\hit_table.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Collision\hit_table_list.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Figure\aabb.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Figure\cylinder.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Figure\plane.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Figure\sphere.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Light\light.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Material\lambertian.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Material\material.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Material\metal.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Texture\checker_texture.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Texture\solid_color.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Texture\texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -6,23 +6,34 @@
 #include <chrono>
 #include <string>
 
-#include "window_frame_buffer.h"
+#include "GUIWindow/Win/window_frame_buffer.h"
 
-#include "rtweekend.h"
-#include "color.h"
-#include "hit_table_list.h"
-#include "sphere.h"
-#include "plane.h"
-#include "cylinder.h"
-#include "camera.h"
-#include "material.h"
-#include "light.h"
-#include "lambertian.h"
-#include "metal.h"
+#include "Common/rtweekend.h"
+#include "Common/color.h"
+
+#include "Math/vec3.h"
+#include "Math/ray.h"
+
+#include "Render/PathTracing/Collision/hit_table_list.h"
+
+#include "Render/PathTracing/Figure/sphere.h"
+#include "Render/PathTracing/Figure/plane.h"
+#include "Render/PathTracing/Figure/cylinder.h"
+#include "Render/PathTracing/Figure/aabb.h"
+
+#include "Render/PathTracing/Camera/camera.h"
+
+#include "Render/PathTracing/Material/material.h"
+#include "Render/PathTracing/Material/lambertian.h"
+#include "Render/PathTracing/Material/metal.h"
+
+#include "Render/PathTracing/Light/light.h"
+
+#include "Render/PathTracing/Collision/bvh_node.h"
 
 // テクスチャー
-#include "solid_color.h"
-#include "checker_texture.h"
+#include "Render/PathTracing/Texture/solid_color.h"
+#include "Render/PathTracing/Texture/checker_texture.h"
 
 // パストレースの幾何学計算は以下のサイトにまとまっている
 // 神様のページ
@@ -77,7 +88,8 @@ public:
 			return;
 
 		hit_record rec;
-		if (this->world.Hit(in_r_ray, 0.001, c_infinity, rec, -1))
+		//if (this->world.Hit(in_r_ray, 0.001, c_infinity, rec, -1))
+		if (this->bvh_node->Hit(in_r_ray, 0.001, c_infinity, rec, -1))
 		{
 			// マテリアルによるピクセル色を出力
 			auto c = Color(0.0, 0.0, 0.0);
@@ -110,6 +122,7 @@ public:
 	Color _screen_under_corrner_color;
 
 	HitTableList world;
+	shared_ptr<BvhNode> bvh_node;
 	Camera _camera;
 	LightSpace _light_space;
 };
@@ -169,7 +182,7 @@ int main(int argc, const char * argv[])
 
 	// レイトレースする空間情報を作成
 	// 横の長さが基準なので横のサイズ値を渡す
-	auto raytrace_space = RayTraceSpace(480, 16.0, 9.0);
+	auto raytrace_space = RayTraceSpace(640, 16.0, 9.0);
 	{
 		shared_ptr<CheckerTexture> checkerTexture = make_shared<CheckerTexture>(
 			make_shared<SolidColor>(Color(0.0, 1.0, 1.0)),
@@ -195,6 +208,9 @@ int main(int argc, const char * argv[])
 						make_shared<Lambertian>(black)));
 			}
 		}
+
+		// オブジェクトをノードツリーで配置してレイ衝突検知を最適化
+		raytrace_space.bvh_node = make_shared<BvhNode>(raytrace_space.world, 0, 0);
 	}
 
 	{

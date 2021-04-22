@@ -1,7 +1,7 @@
 ﻿#ifndef __CAMERA_H__
 #define __CAMERA_H__
 
-#include "rtweekend.h"
+#include "Common/rtweekend.h"
 
 class Camera
 {

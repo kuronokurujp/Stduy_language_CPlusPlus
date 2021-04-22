@@ -10,81 +10,141 @@
     <Filter Include="Code\Source">
       <UniqueIdentifier>{e4d58fda-6a29-4c31-afa6-7c506d3eee77}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code\Header\GUIWindow">
+      <UniqueIdentifier>{d47d0f17-5852-4ec0-a1b7-3064c629d94b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Render">
+      <UniqueIdentifier>{fc48c04c-a5cd-4330-8d63-82314cb70872}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Math">
+      <UniqueIdentifier>{11e10446-ef8a-4a78-a61d-049d308b2d9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Common">
+      <UniqueIdentifier>{f69698b2-1904-4f36-9edf-21783bd25416}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Render\PathTracing">
+      <UniqueIdentifier>{aa6f7da0-4882-4803-92ce-622f1cc1a0a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Render\PathTracing\Materal">
+      <UniqueIdentifier>{b0342540-09a0-4977-9ef9-809d6660e2cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Render\PathTracing\Figure">
+      <UniqueIdentifier>{054577f2-5f87-4f62-a1c6-8474e41adcf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Render\PathTracing\Light">
+      <UniqueIdentifier>{2e6d00bf-0036-47de-bcec-62c3c8822c94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Render\PathTracing\Camera">
+      <UniqueIdentifier>{144290a5-9541-443b-8544-1237b09a1554}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Render\PathTracing\Texture">
+      <UniqueIdentifier>{43bc4e86-dffc-4cc0-bfa1-1ecd250ce410}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\GUIWindow">
+      <UniqueIdentifier>{bc0fbc14-d589-44d4-b036-b594395244be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\Render">
+      <UniqueIdentifier>{0e6a3637-2283-4151-8e73-da2fb97dc544}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\Render\PathTracing">
+      <UniqueIdentifier>{b7d1bcf2-d993-4ae0-8b69-2c31f5c69b89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\Render\PathTracing\Coillsion">
+      <UniqueIdentifier>{5291a32b-81f0-46fd-8194-508a03cdbef5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\Render\PathTracing\Figure">
+      <UniqueIdentifier>{c86692fd-6863-47c7-ab4c-3d63af97f573}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\GUIWindow\Win">
+      <UniqueIdentifier>{7fab1e9c-8e7c-4b2c-a1a9-b8881452aac5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Render\PathTracing\Collision">
+      <UniqueIdentifier>{bef6bb2b-0c23-4792-8cb7-27fe25ef0a29}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\main.cpp">
       <Filter>Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\frame_buffer.cpp">
-      <Filter>Code\Source</Filter>
+    <ClCompile Include="..\Code\Source\GUIWindow\Win\window_frame_buffer.cpp">
+      <Filter>Code\Source\GUIWindow</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\window_frame_buffer.cpp">
-      <Filter>Code\Source</Filter>
+    <ClCompile Include="..\Code\Source\Render\PathTracing\Collision\hit_table_list.cpp">
+      <Filter>Code\Source\Render\PathTracing\Coillsion</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\sphere.cpp">
-      <Filter>Code\Source</Filter>
+    <ClCompile Include="..\Code\Source\Render\PathTracing\Figure\sphere.cpp">
+      <Filter>Code\Source\Render\PathTracing\Figure</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\hit_table_list.cpp">
-      <Filter>Code\Source</Filter>
+    <ClCompile Include="..\Code\Source\Render\frame_buffer.cpp">
+      <Filter>Code\Source\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Code\Header\frame_buffer.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Common\color.h">
+      <Filter>Code\Header\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\window_frame_buffer.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Common\rtweekend.h">
+      <Filter>Code\Header\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\vec3.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\GUIWindow\Win\window_frame_buffer.h">
+      <Filter>Code\Header\GUIWindow\Win</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\color.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\GUIWindow\Win\gui_window_win.h">
+      <Filter>Code\Header\GUIWindow\Win</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\ray.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Math\ray.h">
+      <Filter>Code\Header\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\sphere.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Math\vec3.h">
+      <Filter>Code\Header\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\hit_table.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Render\frame_buffer.h">
+      <Filter>Code\Header\Render</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\hit_table_list.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Camera\camera.h">
+      <Filter>Code\Header\Render\PathTracing\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\rtweekend.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Collision\bvh_node.h">
+      <Filter>Code\Header\Render\PathTracing\Collision</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\camera.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Collision\hit_table.h">
+      <Filter>Code\Header\Render\PathTracing\Collision</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\material.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Collision\hit_table_list.h">
+      <Filter>Code\Header\Render\PathTracing\Collision</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\light.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Figure\aabb.h">
+      <Filter>Code\Header\Render\PathTracing\Figure</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\lambertian.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Figure\cylinder.h">
+      <Filter>Code\Header\Render\PathTracing\Figure</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\metal.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Figure\plane.h">
+      <Filter>Code\Header\Render\PathTracing\Figure</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\plane.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Figure\sphere.h">
+      <Filter>Code\Header\Render\PathTracing\Figure</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\cylinder.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Light\light.h">
+      <Filter>Code\Header\Render\PathTracing\Light</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\solid_color.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Material\lambertian.h">
+      <Filter>Code\Header\Render\PathTracing\Materal</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\texture.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Material\material.h">
+      <Filter>Code\Header\Render\PathTracing\Materal</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\checker_texture.h">
-      <Filter>Code\Header</Filter>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Material\metal.h">
+      <Filter>Code\Header\Render\PathTracing\Materal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Texture\checker_texture.h">
+      <Filter>Code\Header\Render\PathTracing\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Texture\solid_color.h">
+      <Filter>Code\Header\Render\PathTracing\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\Texture\texture.h">
+      <Filter>Code\Header\Render\PathTracing\Texture</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

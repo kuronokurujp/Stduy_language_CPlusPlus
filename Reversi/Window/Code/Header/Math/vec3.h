@@ -2,7 +2,7 @@
 #define __MATH_VEC3_H__
 
 #include <cmath>
-#include "rtweekend.h"
+#include "Common/rtweekend.h"
 
 namespace Math
 {

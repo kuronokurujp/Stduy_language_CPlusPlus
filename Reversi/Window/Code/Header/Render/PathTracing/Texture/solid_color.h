@@ -1,7 +1,7 @@
 ﻿#ifndef __SOLID_COLOR_H__
 #define __SOLID_COLOR_H__
 
-#include "Texture.h"
+#include "texture.h"
 
 // ソリッドカラーのテクスチャ
 class SolidColor : public Texture {

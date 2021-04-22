@@ -2,8 +2,9 @@
 #define __MATERIAL_METAL_H__
 
 #include "material.h"
-#include "light.h"
-#include "vec3.h"
+
+#include "Render/PathTracing/Light/light.h"
+#include "Math/vec3.h"
 
 // 金属マテリアル
 class Metal : public Material {

@@ -1,9 +1,11 @@
 ﻿#ifndef __HIT_TABELE_H__
 #define __HIT_TABELE_H__
 
-#include "ray.h"
+#include "Math/ray.h"
 // shader_ptrなどで使う
 #include <memory>
+
+#include "Render/PathTracing/Figure/aabb.h"
 
 class Material;
 
@@ -40,6 +42,9 @@ public:
 	virtual bool Hit(
 		const Ray& in_r_ray, double in_t_min, double in_t_max, hit_record& out_r_rec, int in_skip_object_handle
 	) const = 0;
+
+	// AABBによる衝突に必要な情報
+	virtual bool BoundingBox(double in_t0, double in_t1, AABB& out_box) const = 0;
 
 	virtual inline long Handle() const = 0;
 };
