@@ -193,7 +193,7 @@ int main(int argc, const char * argv[])
 		auto white = make_shared<SolidColor>(Color(1.0, 1.0, 1.0));
 
 		// 版を作成
-		raytrace_space.world.Add(make_shared<Plane>(-1, 1, -1, 1, -0.3, make_shared<Lambertian>(checkerTexture)));
+		raytrace_space.world.Add(make_shared<Plane>(-0.85, 0.85, -0.7, 1.0, 0.0, make_shared<Lambertian>(checkerTexture)));
 
 		// 版に石を載せた
 		const int stone_count = 8;
@@ -203,7 +203,7 @@ int main(int argc, const char * argv[])
 			{
 				raytrace_space.world.Add(
 					make_shared<Cylinder>(
-						Point3(-1.0 + 0.25 + (static_cast<double>(x) * 0.215), 0.01, -1.0 + 0.4 + (static_cast<double>(y) * 0.21)),
+						Point3(-1.0 + 0.25 + (static_cast<double>(x) * 0.215), 0.0, -1.0 + 0.4 + (static_cast<double>(y) * 0.21)),
 						Math::Vec3(0.0, 0.01, 0.0), 0.1,
 						make_shared<Lambertian>(black)));
 			}
