@@ -6,7 +6,9 @@
 #include <chrono>
 #include <string>
 
-#include "GUIWindow/Win/window_frame_buffer.h"
+#include "GUIWindow/Model/gui_window_model.h"
+#include "GUIWindow/View/Win/gui_window_win_view.h"
+#include "GUIWindow/gui_window_controller.h"
 
 #include "Common/rtweekend.h"
 #include "Common/color.h"
@@ -127,10 +129,91 @@ public:
 	LightSpace _light_space;
 };
 
-LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+// 描画データモデル
+// レイトレース空間から描画データを生成する
+class GUITestWindowModel : public GUIWindowModel
+{
+public:
+	// 制御モデルは外部から受け取る
+	GUITestWindowModel(
+		std::shared_ptr<RayTraceSpace> in_raytrace_space) :
+		GUIWindowModel(in_raytrace_space->_width, in_raytrace_space->_height)
+	{
+		this->_raytrace_space = in_raytrace_space;
+	}
 
-// 更新処理
-static void Update(FrameBuffer& in_r_frame_buffer, RayTraceSpace& in_r_screen_space);
+	// 描画バッファを更新
+	void UpdateRender() override
+	{
+		// レイトレース空間の情報から画面に表示するピクセルを取得してフレームバッファに書き込む
+		{
+			auto p_frame_buffer = this->_p_frame_buffer[this->_frame_buffer_count];
+			RayTraceSpace& r_space = *this->_raytrace_space;
+
+			p_frame_buffer->Cls(128);
+
+			int width = r_space._width;
+			int height = r_space._height;
+			int ir, ig, ib = 0;
+			const double d_width = width - 1;
+			const double d_height = height - 1;
+			const double inv_d_width = 1.0 / d_width;
+			const double inv_d_heigth = 1.0 / d_height;
+
+			double u, v;
+			Ray ray;
+			Color color;
+			Color temp_color;
+			// 100位にしないときれいにならない
+			// でもそうすると負荷がでかくてFPSが激落ちするのでいったんアンチエイリアスはやらない
+			const int sample_per_pixel = 1;
+			const int max_depth = 1;
+
+			// 横ラインを先に書き込む
+			for (int y = height - 1; y >= 0; --y)
+			{
+				double d_y = double(y);
+				v = d_y * inv_d_heigth;
+
+				for (int x = 0; x < width; ++x)
+				{
+					color.Set(0.0, 0.0, 0.0);
+					temp_color.Set(0.0, 0.0, 0.0);
+					double d_x = double(x);
+					/*
+					if (sample_per_pixel > 1)
+					{
+						for (int s = 0; s < sample_per_pixel; ++s)
+						{
+							u = (d_x + RandomDouble()) * inv_d_width;
+							v = (double(y) + RandomDouble()) * inv_d_heigth;
+
+							in_r_space._camera.OutputRay(&ray, u, v);
+							in_r_space.OutputRayColor(&temp_color, ray, max_depth, max_depth);
+							color += temp_color;
+						}
+					}
+					else
+					*/
+					{
+						u = d_x * inv_d_width;
+
+						r_space._camera.OutputRay(&ray, u, v);
+						r_space.OutputRayColor(&color, ray, max_depth, max_depth);
+					}
+
+					r_space.OutputScreenColor(&ir, &ig, &ib, color, sample_per_pixel);
+					p_frame_buffer->SetPixel(x, y, ir, ig, ib);
+				}
+			}
+		}
+
+		GUIWindowModel::UpdateRender();
+	}
+
+private:
+	std::shared_ptr<RayTraceSpace> _raytrace_space;
+};
 
 /// <summary>
 /// Mains the specified argc.
@@ -142,47 +225,9 @@ int main(int argc, const char * argv[])
 {
 	setlocale(LC_ALL, "Japanse");
 
-	HWND h_wnd;
-	MSG msg;
-
-	// アプリのインスタンス
-	HINSTANCE h_instance = ::GetModuleHandle(NULL);
-
-	// クラス名称
-	const TCHAR* cp_class_name = _T("MainWindowClass");
-
-	// メニュー
-	const TCHAR* cp_menu = MAKEINTRESOURCE(NULL);
-
-	// ウィンドウのタイトル名
-	const TCHAR* cp_window_name = _T("テスト");
-
-	// ウィンドウクラスのパラメータ設定
-	WNDCLASSEX wnd_class;
-	{
-		wnd_class.cbSize = sizeof(WNDCLASSEX);
-		wnd_class.style = CS_HREDRAW | CS_VREDRAW;
-		wnd_class.lpfnWndProc = MainWindowProc;
-		wnd_class.cbClsExtra = 0;
-		wnd_class.cbWndExtra = 0;
-		wnd_class.hInstance = h_instance;
-		wnd_class.hIcon = ::LoadIcon(NULL, IDI_APPLICATION);
-		wnd_class.hCursor = ::LoadCursor(NULL, IDC_ARROW);
-		wnd_class.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-		wnd_class.lpszMenuName = cp_menu;
-		wnd_class.lpszClassName = cp_class_name;
-		wnd_class.hIconSm = NULL;
-	}
-
-	// ウィンドウクラス生成
-	{
-		if (0 == ::RegisterClassEx(&wnd_class))
-			return -1;
-	}
-
 	// レイトレースする空間情報を作成
 	// 横の長さが基準なので横のサイズ値を渡す
-	auto raytrace_space = RayTraceSpace(640, 16.0, 9.0);
+	auto raytrace_space = make_shared<RayTraceSpace>(640, 16.0, 9.0);
 	{
 		shared_ptr<CheckerTexture> checkerTexture = make_shared<CheckerTexture>(
 			make_shared<SolidColor>(Color(0.0, 1.0, 1.0)),
@@ -193,7 +238,7 @@ int main(int argc, const char * argv[])
 		auto white = make_shared<SolidColor>(Color(1.0, 1.0, 1.0));
 
 		// 版を作成
-		raytrace_space.world.Add(make_shared<Plane>(-0.85, 0.85, -0.7, 1.0, 0.0, make_shared<Lambertian>(checkerTexture)));
+		raytrace_space->world.Add(make_shared<Plane>(-0.85, 0.85, -0.7, 1.0, 0.0, make_shared<Lambertian>(checkerTexture)));
 
 		// 版に石を載せた
 		const int stone_count = 8;
@@ -201,7 +246,7 @@ int main(int argc, const char * argv[])
 		{
 			for (int x = 0; x < stone_count; ++x)
 			{
-				raytrace_space.world.Add(
+				raytrace_space->world.Add(
 					make_shared<Cylinder>(
 						Point3(-1.0 + 0.25 + (static_cast<double>(x) * 0.215), 0.0, -1.0 + 0.4 + (static_cast<double>(y) * 0.21)),
 						Math::Vec3(0.0, 0.01, 0.0), 0.1,
@@ -210,167 +255,15 @@ int main(int argc, const char * argv[])
 		}
 
 		// オブジェクトをノードツリーで配置してレイ衝突検知を最適化
-		raytrace_space.bvh_node = make_shared<BvhNode>(raytrace_space.world, 0, 0);
+		raytrace_space->bvh_node = make_shared<BvhNode>(raytrace_space->world, 0, 0);
 	}
 
-	{
-		h_wnd = ::CreateWindowEx(
-			0,
-			wnd_class.lpszClassName,
-			cp_window_name,
-			WS_OVERLAPPEDWINDOW,
-			CW_USEDEFAULT,
-			CW_USEDEFAULT,
-			// ウィンドウの横サイズ
-			raytrace_space._width,
-			// ウィンドウの縦サイズ
-			raytrace_space._height,
-			NULL,
-			NULL,
-			h_instance,
-			(VOID*)0x12345678
-		);
-	}
+	std::shared_ptr<GUITestWindowModel> model = std::make_shared<GUITestWindowModel>(raytrace_space);
+	std::shared_ptr<GUIWindowWinView> view = std::make_shared<GUIWindowWinView>();
 
-	// ウィンドウに転送する画像情報を転送するバッファ
-	WindowFrameBuffer window_frame_buffer(raytrace_space._width, raytrace_space._height);
+	GUIWindowController ctrl(model, view);
+	if (ctrl.Start() == false)
+		return -1;
 
-	// アプリ側が書き込む画像情報
-	// ダブルバッファを用意
-	FrameBuffer* p_frame_buffer[2] = {
-		new FrameBuffer(raytrace_space._width, raytrace_space._height),
-		new FrameBuffer(raytrace_space._width, raytrace_space._height)
-	};
-	int frame_buffer_count = 0;
-
-	// メッセージループ
-	{
-		TCHAR t[256] = { 0 };
-		do
-		{
-			Sleep(1);
-
-			// FPS値をウィンドウのタイトルバーに表示している
-			auto start = std::chrono::high_resolution_clock::now();
-			{
-				if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-				{
-					::TranslateMessage(&msg);
-					::DispatchMessage(&msg);
-				}
-				else
-				{
-					// 更新
-					Update(*(p_frame_buffer[frame_buffer_count]), raytrace_space);
-
-					// カレントフレームバッファで書き込む
-					window_frame_buffer.Flash(p_frame_buffer[frame_buffer_count]);
-					// バッファを切り替え
-					frame_buffer_count = (frame_buffer_count + 1) % 2;
-
-					// フレームバッファで書き込んだ情報を元に転送
-					window_frame_buffer.Display(h_wnd, 0, 0);
-				}
-			}
-			auto end = std::chrono::high_resolution_clock::now();
-			auto dur = end - start;
-			auto msec = std::chrono::duration_cast<std::chrono::microseconds>(dur).count();
-			auto fps = 1000.0f * 1000.0f / (double)msec;
-			ZeroMemory(t, sizeof(t));
-			_stprintf_s(t, 256, _T("fps: %lld"), (long long)fps);
-			SetWindowText(h_wnd, t);
-		} while (msg.message != WM_QUIT);
-	}
-
-	for (int i = 0; i < 2; ++i)
-	{
-		delete p_frame_buffer[i];
-		p_frame_buffer[i] = NULL;
-	}
-	window_frame_buffer.Free();
-
-	return msg.wParam;
-}
-
-// メインウィンドウイベント処理
-LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	switch (uMsg)
-	{
-		// ウィンドウ生成時に呼ばれる
-	case WM_CREATE:
-	{
-		::ShowWindow(hWnd, SW_SHOW);
-		break;
-	}
-	case WM_CLOSE:
-	{
-		::PostMessage(hWnd, WM_QUIT, 0, 0);
-		break;
-	}
-	default:
-		break;
-	}
-
-	return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
-}
-
-void Update(FrameBuffer& in_r_frame_buffer, RayTraceSpace& in_r_space)
-{
-	in_r_frame_buffer.Cls(128);
-
-	int width = in_r_space._width;
-	int height = in_r_space._height;
-	int ir, ig, ib = 0;
-	const double d_width = width - 1;
-	const double d_height = height - 1;
-	const double inv_d_width = 1.0 / d_width;
-	const double inv_d_heigth = 1.0 / d_height;
-
-	double u, v;
-	Ray ray;
-	Color color;
-	Color temp_color;
-	// 100位にしないときれいにならない
-	// でもそうすると負荷がでかくてFPSが激落ちするのでいったんアンチエイリアスはやらない
-	const int sample_per_pixel = 1;
-	const int max_depth = 1;
-
-	// 横ラインを先に書き込む
-	for (int y = height - 1; y >= 0; --y)
-	{
-		double d_y = double(y);
-		v = d_y * inv_d_heigth;
-
-		for (int x = 0; x < width; ++x)
-		{
-			color.Set(0.0, 0.0, 0.0);
-			temp_color.Set(0.0, 0.0, 0.0);
-			double d_x = double(x);
-			/*
-			if (sample_per_pixel > 1)
-			{
-				for (int s = 0; s < sample_per_pixel; ++s)
-				{
-					u = (d_x + RandomDouble()) * inv_d_width;
-					v = (double(y) + RandomDouble()) * inv_d_heigth;
-
-					in_r_space._camera.OutputRay(&ray, u, v);
-					in_r_space.OutputRayColor(&temp_color, ray, max_depth, max_depth);
-					color += temp_color;
-				}
-			}
-			else
-			*/
-			{
-				u = d_x * inv_d_width;
-
-				in_r_space._camera.OutputRay(&ray, u, v);
-				in_r_space.OutputRayColor(&color, ray, max_depth, max_depth);
-			}
-
-			in_r_space.OutputScreenColor(&ir, &ig, &ib, color, sample_per_pixel);
-			in_r_frame_buffer.SetPixel(x, y, ir, ig, ib);
-		}
-	}
+	return 0;
 }

@@ -129,7 +129,19 @@
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\GUIWindow\Win\window_frame_buffer.cpp" />
+    <ClCompile Include="..\Code\Source\GUIWindow\gui_window_controller.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\GUIWindow\Model\gui_window_model.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\GUIWindow\Model\window_frame_buffer.cpp" />
+    <ClCompile Include="..\Code\Source\GUIWindow\Win\View\Win\gui_window_win_view.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="..\Code\Source\Render\frame_buffer.cpp" />
     <ClCompile Include="..\Code\Source\Render\PathTracing\Collision\hit_table_list.cpp" />
     <ClCompile Include="..\Code\Source\Render\PathTracing\Figure\sphere.cpp" />
@@ -137,8 +149,16 @@
   <ItemGroup>
     <ClInclude Include="..\Code\Header\Common\color.h" />
     <ClInclude Include="..\Code\Header\Common\rtweekend.h" />
-    <ClInclude Include="..\Code\Header\GUIWindow\Win\gui_window_win.h" />
-    <ClInclude Include="..\Code\Header\GUIWindow\Win\window_frame_buffer.h" />
+    <ClInclude Include="..\Code\Header\GUIWindow\gui_window_controller.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\GUIWindow\Model\gui_window_model.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\GUIWindow\Model\window_frame_buffer.h" />
+    <ClInclude Include="..\Code\Header\GUIWindow\View\Win\gui_window_win_view.h" />
     <ClInclude Include="..\Code\Header\Math\ray.h" />
     <ClInclude Include="..\Code\Header\Math\vec3.h" />
     <ClInclude Include="..\Code\Header\Render\frame_buffer.h" />

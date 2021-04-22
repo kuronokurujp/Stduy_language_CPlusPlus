@@ -55,19 +55,31 @@
     <Filter Include="Code\Source\Render\PathTracing\Figure">
       <UniqueIdentifier>{c86692fd-6863-47c7-ab4c-3d63af97f573}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Header\GUIWindow\Win">
-      <UniqueIdentifier>{7fab1e9c-8e7c-4b2c-a1a9-b8881452aac5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Code\Header\Render\PathTracing\Collision">
       <UniqueIdentifier>{bef6bb2b-0c23-4792-8cb7-27fe25ef0a29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\GUIWindow\View">
+      <UniqueIdentifier>{d6a339b8-26b3-4acd-b847-da9d4c3dd211}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\GUIWindow\View\Win">
+      <UniqueIdentifier>{7fab1e9c-8e7c-4b2c-a1a9-b8881452aac5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\GUIWindow\Model">
+      <UniqueIdentifier>{a3d57cb2-0394-402b-bd0b-97614ab344af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\GUIWindow\View">
+      <UniqueIdentifier>{c65fba72-607c-427c-b82a-dc947cdcf4ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\GUIWindow\Model">
+      <UniqueIdentifier>{bda459b5-b2c0-4678-994e-b597b6ee4103}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Source\GUIWindow\View\Win">
+      <UniqueIdentifier>{9acf399b-05ce-4121-9a80-bca4d69f3e19}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\main.cpp">
       <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Source\GUIWindow\Win\window_frame_buffer.cpp">
-      <Filter>Code\Source\GUIWindow</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Source\Render\PathTracing\Collision\hit_table_list.cpp">
       <Filter>Code\Source\Render\PathTracing\Coillsion</Filter>
@@ -78,6 +90,18 @@
     <ClCompile Include="..\Code\Source\Render\frame_buffer.cpp">
       <Filter>Code\Source\Render</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\Source\GUIWindow\Model\window_frame_buffer.cpp">
+      <Filter>Code\Source\GUIWindow\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\GUIWindow\Win\View\Win\gui_window_win_view.cpp">
+      <Filter>Code\Source\GUIWindow\View\Win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\GUIWindow\gui_window_controller.cpp">
+      <Filter>Code\Source\GUIWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\GUIWindow\Model\gui_window_model.cpp">
+      <Filter>Code\Source\GUIWindow\Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Header\Common\color.h">
@@ -85,12 +109,6 @@
     </ClInclude>
     <ClInclude Include="..\Code\Header\Common\rtweekend.h">
       <Filter>Code\Header\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\GUIWindow\Win\window_frame_buffer.h">
-      <Filter>Code\Header\GUIWindow\Win</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\GUIWindow\Win\gui_window_win.h">
-      <Filter>Code\Header\GUIWindow\Win</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Header\Math\ray.h">
       <Filter>Code\Header\Math</Filter>
@@ -145,6 +163,18 @@
     </ClInclude>
     <ClInclude Include="..\Code\Header\Render\PathTracing\Texture\texture.h">
       <Filter>Code\Header\Render\PathTracing\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\GUIWindow\View\Win\gui_window_win_view.h">
+      <Filter>Code\Header\GUIWindow\View\Win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\GUIWindow\gui_window_controller.h">
+      <Filter>Code\Header\GUIWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\GUIWindow\Model\gui_window_model.h">
+      <Filter>Code\Header\GUIWindow\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\GUIWindow\Model\window_frame_buffer.h">
+      <Filter>Code\Header\GUIWindow\Model</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

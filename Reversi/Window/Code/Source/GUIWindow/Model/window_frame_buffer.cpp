@@ -1,4 +1,4 @@
-﻿#include "GUIWindow/Win/window_frame_buffer.h"
+﻿#include "GUIWindow/Model/window_frame_buffer.h"
 
 #include <stdio.h>
 #include <assert.h>
