@@ -46,7 +46,7 @@ bool FrameBuffer::Resize(const int in_width, const int in_height)
 
 	// バッファメモリ確保
 	// 画素１つが4バイト前提
-	this->_p_buffer = malloc(this->_buffer_size);
+	this->_p_buffer = (unsigned long*)malloc(this->_buffer_size);
 
 	return true;
 }
@@ -72,7 +72,7 @@ unsigned long FrameBuffer::GetPixel(const int in_x, const int in_y) const
 {
 	assert(this->_p_buffer != NULL);
 
-	unsigned long* p_address = (unsigned long*)this->GetAddressPixel(in_x, in_y);
+	const unsigned long* p_address = this->GetAddressPixel(in_x, in_y);
 	return *p_address;
 }
 

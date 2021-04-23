@@ -32,12 +32,12 @@ public:
 	/// <param name="in_x">The in x.</param>
 	/// <param name="in_y">The in y.</param>
 	/// <returns></returns>
-	inline void* GetAddressPixel(const int in_x, const int in_y) {
-		return (this->_width * in_y + in_x) * this->_pixel_byte_size + (unsigned char*)this->_p_buffer;
+	inline unsigned long* GetAddressPixel(const int in_x, const int in_y) {
+		return (this->_width * in_y + in_x) + this->_p_buffer;
 	}
 
-	inline const void* GetAddressPixel(const int in_x, const int in_y) const {
-		return (this->_width * in_y + in_x) * this->_pixel_byte_size + (unsigned char*)this->_p_buffer;
+	inline const unsigned long* GetAddressPixel(const int in_x, const int in_y) const {
+		return (this->_width * in_y + in_x) + this->_p_buffer;
 	}
 
 	/// <summary>
@@ -95,7 +95,9 @@ protected:
 	virtual void _FreeBuffer();
 
 	int _width, _height;
-	void* _p_buffer;
+	//void* _p_buffer;
+	unsigned long* _p_buffer;
+
 	long _buffer_size;
 	long _pixel_byte_size;
 

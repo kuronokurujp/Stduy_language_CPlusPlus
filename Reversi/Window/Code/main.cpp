@@ -5,6 +5,9 @@
 #include <wingdi.h>
 #include <chrono>
 #include <string>
+#include <thread>
+#include <mutex>
+#include <vector>
 
 #include "GUIWindow/Model/gui_window_model.h"
 #include "GUIWindow/View/Win/gui_window_win_view.h"
@@ -140,79 +143,121 @@ public:
 		GUIWindowModel(in_raytrace_space->_width, in_raytrace_space->_height)
 	{
 		this->_raytrace_space = in_raytrace_space;
+		int width = this->_raytrace_space->_width;
+		int height = this->_raytrace_space->_height;
+		const double d_width = width - 1;
+		const double d_height = height - 1;
+		this->_inv_d_width = 1.0 / d_width;
+		this->_inv_d_heigth = 1.0 / d_height;
 	}
 
 	// 描画バッファを更新
 	void UpdateRender() override
 	{
 		// レイトレース空間の情報から画面に表示するピクセルを取得してフレームバッファに書き込む
+#if 1
 		{
 			auto p_frame_buffer = this->_p_frame_buffer[this->_frame_buffer_count];
-			RayTraceSpace& r_space = *this->_raytrace_space;
-
 			p_frame_buffer->Cls(128);
 
-			int width = r_space._width;
-			int height = r_space._height;
-			int ir, ig, ib = 0;
-			const double d_width = width - 1;
-			const double d_height = height - 1;
-			const double inv_d_width = 1.0 / d_width;
-			const double inv_d_heigth = 1.0 / d_height;
+			this->_Update(0, this->_raytrace_space->_width, 0, this->_raytrace_space->_height - 1);
+			/*
+			int w0 = 0;
+			int w1 = 0;
+			int h0 = 0;
+			int h1 = 0;
+			int thread_max = std::thread::hardware_concurrency();
+			int width = this->_raytrace_space->_width;// / thread_max;
+			w1 = width;
+			int height = this->_raytrace_space->_height / thread_max;
 
-			double u, v;
-			Ray ray;
-			Color color;
-			Color temp_color;
-			// 100位にしないときれいにならない
-			// でもそうすると負荷がでかくてFPSが激落ちするのでいったんアンチエイリアスはやらない
-			const int sample_per_pixel = 1;
-			const int max_depth = 1;
+			std::vector<std::thread> threads;
+			for (int i = 0; i < thread_max; ++i) {
+				threads.emplace_back(
+					[w0, w1, h0, h1, this]() {
+					//_mtx.lock();
 
-			// 横ラインを先に書き込む
-			for (int y = height - 1; y >= 0; --y)
-			{
-				double d_y = double(y);
-				v = d_y * inv_d_heigth;
+					_Update(w0, w1, h0, h1 - 1);
 
-				for (int x = 0; x < width; ++x)
-				{
-					color.Set(0.0, 0.0, 0.0);
-					temp_color.Set(0.0, 0.0, 0.0);
-					double d_x = double(x);
-					/*
-					if (sample_per_pixel > 1)
-					{
-						for (int s = 0; s < sample_per_pixel; ++s)
-						{
-							u = (d_x + RandomDouble()) * inv_d_width;
-							v = (double(y) + RandomDouble()) * inv_d_heigth;
+					//_mtx.unlock();
+				});
 
-							in_r_space._camera.OutputRay(&ray, u, v);
-							in_r_space.OutputRayColor(&temp_color, ray, max_depth, max_depth);
-							color += temp_color;
-						}
-					}
-					else
-					*/
-					{
-						u = d_x * inv_d_width;
-
-						r_space._camera.OutputRay(&ray, u, v);
-						r_space.OutputRayColor(&color, ray, max_depth, max_depth);
-					}
-
-					r_space.OutputScreenColor(&ir, &ig, &ib, color, sample_per_pixel);
-					p_frame_buffer->SetPixel(x, y, ir, ig, ib);
-				}
+				h0 += height;
+				h1 = h0 + height;
 			}
+
+			for (auto& t : threads) {
+				t.join();
+			}
+			*/
 		}
+#endif
 
 		GUIWindowModel::UpdateRender();
 	}
 
 private:
+	void _Update(const int in_w0, const int in_w1, const int in_h0, const int in_h1)
+	{
+		auto p_frame_buffer = this->_p_frame_buffer[this->_frame_buffer_count];
+		RayTraceSpace& r_space = *this->_raytrace_space;
+
+		int ir, ig, ib = 0;
+
+		double u, v;
+		Ray ray;
+		Color color;
+		Color temp_color;
+		// 100位にしないときれいにならない
+		// でもそうすると負荷がでかくてFPSが激落ちするのでいったんアンチエイリアスはやらない
+		const int sample_per_pixel = 1;
+		const int max_depth = 1;
+
+		// 横ラインを先に書き込む
+		for (int y = in_h1; y >= in_h0; --y)
+		{
+			double d_y = double(y);
+			v = d_y * this->_inv_d_heigth;
+
+			for (int x = in_w0; x < in_w1; ++x)
+			{
+				color.Set(0.0, 0.0, 0.0);
+				temp_color.Set(0.0, 0.0, 0.0);
+				double d_x = double(x);
+				/*
+				if (sample_per_pixel > 1)
+				{
+					for (int s = 0; s < sample_per_pixel; ++s)
+					{
+						u = (d_x + RandomDouble()) * inv_d_width;
+						v = (double(y) + RandomDouble()) * inv_d_heigth;
+
+						in_r_space._camera.OutputRay(&ray, u, v);
+						in_r_space.OutputRayColor(&temp_color, ray, max_depth, max_depth);
+						color += temp_color;
+					}
+				}
+				else
+				*/
+				{
+					u = d_x * this->_inv_d_width;
+
+					r_space._camera.OutputRay(&ray, u, v);
+					r_space.OutputRayColor(&color, ray, max_depth, max_depth);
+				}
+
+				r_space.OutputScreenColor(&ir, &ig, &ib, color, sample_per_pixel);
+				p_frame_buffer->SetPixel(x, y, ir, ig, ib);
+			}
+		}
+	}
+
+private:
+
 	std::shared_ptr<RayTraceSpace> _raytrace_space;
+	double _inv_d_width;
+	double _inv_d_heigth;
+	std::mutex _mtx;  //! ミューテックス
 };
 
 /// <summary>
