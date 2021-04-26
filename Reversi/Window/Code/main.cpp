@@ -13,7 +13,7 @@
 #include "GUIWindow/View/Win/gui_window_win_view.h"
 #include "GUIWindow/gui_window_controller.h"
 
-#include "Common/rtweekend.h"
+#include "Common/utility.h"
 #include "Common/color.h"
 
 #include "Math/vec3.h"

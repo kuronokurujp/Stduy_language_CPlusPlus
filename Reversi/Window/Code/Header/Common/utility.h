@@ -1,5 +1,5 @@
-﻿#ifndef __COMMON__RTWEEKEND_H__
-#define __COMMON__RTWEEKEND_H__
+﻿#ifndef __COMMON__UITLITY_H__
+#define __COMMON__UITLITY_H__
 
 // 共通で使うのを定義
 
@@ -72,4 +72,4 @@ inline double Max(double in_x, double in_max)
 #include "Math/ray.h"
 #include "Math/vec3.h"
 
-#endif // __COMMON__RTWEEKEND_H__
+#endif // __COMMON__UITLITY_H__

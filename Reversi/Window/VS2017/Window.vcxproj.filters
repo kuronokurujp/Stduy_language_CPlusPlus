@@ -116,9 +116,6 @@
     <ClInclude Include="..\Code\Header\Common\color.h">
       <Filter>Code\Header\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\Common\rtweekend.h">
-      <Filter>Code\Header\Common</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Header\Math\ray.h">
       <Filter>Code\Header\Math</Filter>
     </ClInclude>
@@ -184,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="..\Code\Header\GUIWindow\Model\window_frame_buffer.h">
       <Filter>Code\Header\GUIWindow\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Common\utility.h">
+      <Filter>Code\Header\Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

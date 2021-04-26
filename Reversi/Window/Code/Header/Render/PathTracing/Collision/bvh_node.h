@@ -1,7 +1,7 @@
 ﻿#ifndef __BVH_NODE_H__
 #define __BVH_NODE_H__
 
-#include "Common/rtweekend.h"
+#include "Common/utility.h"
 #include "hit_table.h"
 #include "hit_table_list.h"
 #include "Render/PathTracing/Figure/aabb.h"
