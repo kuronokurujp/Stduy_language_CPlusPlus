@@ -91,6 +91,9 @@
     <Filter Include="Code\Header\System\Platform\Win32">
       <UniqueIdentifier>{0578ac95-24a1-4377-99d8-f79228ae66c6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code\Source\System\Platform\Wn32">
+      <UniqueIdentifier>{528d5491-f55f-4b36-ae0b-9ca1dd56ccc5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\main.cpp">
@@ -250,6 +253,9 @@
     </ClInclude>
     <ClInclude Include="..\Code\Header\Scene\Game\game_scene_model.h">
       <Filter>Code\Header\Scene\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\System\Platform\Win32\win32_frame_renderer.h">
+      <Filter>Code\Header\System\Platform\Win32</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
