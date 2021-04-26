@@ -75,26 +75,26 @@ void GUIWindowWinView::CreateObject(GUIWindowController* in_p_ctr)
 		{
 			Sleep(1);
 
-			// FPS値をウィンドウのタイトルバーに表示している
-			auto start = std::chrono::high_resolution_clock::now();
+			if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 			{
-				if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-				{
-					::TranslateMessage(&msg);
-					::DispatchMessage(&msg);
-				}
-				else
+				::TranslateMessage(&msg);
+				::DispatchMessage(&msg);
+			}
+			else
+			{
+				// FPS値をウィンドウのタイトルバーに表示している
+				auto start = std::chrono::high_resolution_clock::now();
 				{
 					// 描画実行
 					this->_p_ctrl->Render();
 				}
+				auto end = std::chrono::high_resolution_clock::now();
+				auto dur = end - start;
+				auto msec = std::chrono::duration_cast<std::chrono::microseconds>(dur).count();
+				auto fps = 1000.0f * 1000.0f / (double)msec;
+				ZeroMemory(t, sizeof(t));
+				_stprintf_s(t, 256, _T("fps: %lld"), (long long)fps);
 			}
-			auto end = std::chrono::high_resolution_clock::now();
-			auto dur = end - start;
-			auto msec = std::chrono::duration_cast<std::chrono::microseconds>(dur).count();
-			auto fps = 1000.0f * 1000.0f / (double)msec;
-			ZeroMemory(t, sizeof(t));
-			_stprintf_s(t, 256, _T("fps: %lld"), (long long)fps);
 
 			SetWindowText(this->_h_wnd, t);
 		} while (msg.message != WM_QUIT);
