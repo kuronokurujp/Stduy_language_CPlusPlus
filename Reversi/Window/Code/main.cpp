@@ -97,7 +97,7 @@ public:
 		if (this->bvh_node->Hit(in_r_ray, 0.001, c_infinity, rec, -1))
 		{
 			// マテリアルによるピクセル色を出力
-			auto c = Color(0.0, 0.0, 0.0);
+			auto c = Color();
 			{
 				Ray chk_ray;
 				rec.map_ptr->Scatter(in_r_ray, rec, c, chk_ray, this->_light_space, false);
@@ -221,24 +221,9 @@ private:
 
 			for (int x = in_w0; x < in_w1; ++x)
 			{
-				color.Set(0.0, 0.0, 0.0);
-				temp_color.Set(0.0, 0.0, 0.0);
+				color.Zero();
+				temp_color.Zero();
 				double d_x = double(x);
-				/*
-				if (sample_per_pixel > 1)
-				{
-					for (int s = 0; s < sample_per_pixel; ++s)
-					{
-						u = (d_x + RandomDouble()) * inv_d_width;
-						v = (double(y) + RandomDouble()) * inv_d_heigth;
-
-						in_r_space._camera.OutputRay(&ray, u, v);
-						in_r_space.OutputRayColor(&temp_color, ray, max_depth, max_depth);
-						color += temp_color;
-					}
-				}
-				else
-				*/
 				{
 					u = d_x * this->_inv_d_width;
 
