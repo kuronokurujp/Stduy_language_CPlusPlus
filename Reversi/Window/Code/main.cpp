@@ -62,30 +62,6 @@ public:
 		this->_screen_under_corrner_color.Set(0.5, 0.7, 1.0);
 	}
 
-	void OutputScreenColor(int* out_p_r, int* out_p_g, int* out_p_b, Color& in_r_color, int in_sample_per_pixel)
-	{
-		auto r = in_r_color.x();
-		auto g = in_r_color.y();
-		auto b = in_r_color.z();
-
-		if (in_sample_per_pixel <= 1)
-		{
-			*out_p_r = ColorUtility::ConverRGB01ToRGB255(r);
-			*out_p_g = ColorUtility::ConverRGB01ToRGB255(g);
-			*out_p_b = ColorUtility::ConverRGB01ToRGB255(b);
-			return;
-		}
-
-		double scale = 1.0 / in_sample_per_pixel;
-		r = r * scale;
-		g = g * scale;
-		b = b * scale;
-
-		*out_p_r = ColorUtility::ConverRGB01ToRGB255(r);
-		*out_p_g = ColorUtility::ConverRGB01ToRGB255(g);
-		*out_p_b = ColorUtility::ConverRGB01ToRGB255(b);
-	}
-
 	// レイ照射して取得した色を取得
 	void OutputRayColor(Color* in_p_out, const Ray& in_r_ray, const int in_depth, const int in_max_depth)
 	{
@@ -93,7 +69,6 @@ public:
 			return;
 
 		hit_record rec;
-		//if (this->world.Hit(in_r_ray, 0.001, c_infinity, rec, -1))
 		if (this->bvh_node->Hit(in_r_ray, 0.001, c_infinity, rec, -1))
 		{
 			// マテリアルによるピクセル色を出力
@@ -155,43 +130,37 @@ public:
 	void UpdateRender() override
 	{
 		// レイトレース空間の情報から画面に表示するピクセルを取得してフレームバッファに書き込む
-#if 1
 		{
 			auto p_frame_buffer = this->_p_frame_buffer[this->_frame_buffer_count];
 			p_frame_buffer->Cls(128);
 
-			this->_Update(0, this->_raytrace_space->_width, 0, this->_raytrace_space->_height - 1);
-			/*
 			int w0 = 0;
 			int w1 = 0;
 			int h0 = 0;
 			int h1 = 0;
 			int thread_max = std::thread::hardware_concurrency();
-			int width = this->_raytrace_space->_width;// / thread_max;
+			int width = this->_raytrace_space->_width;
 			w1 = width;
 			int height = this->_raytrace_space->_height / thread_max;
 
 			std::vector<std::thread> threads;
 			for (int i = 0; i < thread_max; ++i) {
+				// 書き込むと高さの始めと終わりの位置を計算
+				h0 = height * i;
+				h1 = height * (i + 1);
+
 				threads.emplace_back(
 					[w0, w1, h0, h1, this]() {
-					//_mtx.lock();
+					// 読み取りがメインで書き込み先は競合しないのでロックはしない
 
 					_Update(w0, w1, h0, h1 - 1);
-
-					//_mtx.unlock();
 				});
-
-				h0 += height;
-				h1 = h0 + height;
 			}
 
 			for (auto& t : threads) {
 				t.join();
 			}
-			*/
 		}
-#endif
 
 		GUIWindowModel::UpdateRender();
 	}
@@ -202,7 +171,8 @@ private:
 		auto p_frame_buffer = this->_p_frame_buffer[this->_frame_buffer_count];
 		RayTraceSpace& r_space = *this->_raytrace_space;
 
-		int ir, ig, ib = 0;
+		int ir, ig, ib;
+		ir = ig = ib = 0;
 
 		double u, v;
 		Ray ray;
@@ -224,6 +194,7 @@ private:
 				color.Zero();
 				temp_color.Zero();
 				double d_x = double(x);
+
 				{
 					u = d_x * this->_inv_d_width;
 
@@ -231,18 +202,21 @@ private:
 					r_space.OutputRayColor(&color, ray, max_depth, max_depth);
 				}
 
-				r_space.OutputScreenColor(&ir, &ig, &ib, color, sample_per_pixel);
+				{
+					ir = ColorUtility::ConverRGB01ToRGB255(color.x());
+					ig = ColorUtility::ConverRGB01ToRGB255(color.y());
+					ib = ColorUtility::ConverRGB01ToRGB255(color.z());
+				}
+
 				p_frame_buffer->SetPixel(x, y, ir, ig, ib);
 			}
 		}
 	}
 
 private:
-
 	std::shared_ptr<RayTraceSpace> _raytrace_space;
 	double _inv_d_width;
 	double _inv_d_heigth;
-	std::mutex _mtx;  //! ミューテックス
 };
 
 /// <summary>
