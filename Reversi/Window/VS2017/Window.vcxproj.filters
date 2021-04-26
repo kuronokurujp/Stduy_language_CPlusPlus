@@ -102,6 +102,15 @@
     <ClCompile Include="..\Code\Source\GUIWindow\Model\gui_window_model.cpp">
       <Filter>Code\Source\GUIWindow\Model</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\Source\Render\PathTracing\Figure\aabb.cpp">
+      <Filter>Code\Source\Render\PathTracing\Figure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Render\PathTracing\Figure\cylinder.cpp">
+      <Filter>Code\Source\Render\PathTracing\Figure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Render\PathTracing\Figure\plane.cpp">
+      <Filter>Code\Source\Render\PathTracing\Figure</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Header\Common\color.h">

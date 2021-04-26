@@ -71,7 +71,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(MSBuildProjectDirectory)\..\Bin\$(Configuration)</OutDir>
-    <IntDir>OutputIntermediate\$(Configuration)\</IntDir>
+    <IntDir>$(MSBuildProjectDirectory)\..\Bin\$(Configuration)\Obj</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(MSBuildProjectDirectory)\..\Bin\$(Configuration)</OutDir>
+    <IntDir>$(MSBuildProjectDirectory)\..\Bin\$(Configuration)\Obj</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -82,6 +86,11 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\Code\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <OpenMPSupport>true</OpenMPSupport>
+      <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerListingLocation>$(MSBuildProjectDirectory)\..\Bin\$(Configuration)\Asm\</AssemblerListingLocation>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -144,6 +153,18 @@
     </ClCompile>
     <ClCompile Include="..\Code\Source\Render\frame_buffer.cpp" />
     <ClCompile Include="..\Code\Source\Render\PathTracing\Collision\hit_table_list.cpp" />
+    <ClCompile Include="..\Code\Source\Render\PathTracing\Figure\aabb.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Render\PathTracing\Figure\cylinder.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Render\PathTracing\Figure\plane.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="..\Code\Source\Render\PathTracing\Figure\sphere.cpp" />
   </ItemGroup>
   <ItemGroup>

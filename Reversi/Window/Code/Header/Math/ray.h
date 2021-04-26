@@ -1,5 +1,5 @@
-﻿#ifndef __RAY_H__
-#define __RAY_H__
+﻿#ifndef __MATH_RAY_H__
+#define __MATH_RAY_H__
 
 #include "Math/vec3.h"
 
@@ -26,4 +26,4 @@ public:
 	Math::Vec3 _unit_dir;
 };
 
-#endif // __RAY_H__
+#endif // __MATH_RAY_H__

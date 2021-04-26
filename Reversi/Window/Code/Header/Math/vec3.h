@@ -43,6 +43,11 @@ namespace Math
 			this->_e[2] = in_r_copy._e[2];
 		}
 
+		inline void Zero()
+		{
+			::memset(this->_e, 0, sizeof(this->_e));
+		}
+
 		// ベクトルのxyz要素
 		inline double x() const { return this->_e[0]; }
 		inline double y() const { return this->_e[1]; }

@@ -32,15 +32,7 @@ public:
 	inline long Handle() const override { return this->_handle; };
 
 	// AABBによる衝突に必要な情報
-	bool BoundingBox(double in_t0, double in_t1, AABB& out_box) const override
-	{
-		// 球の中心位置から半径への大きさから最大・最小位置を設定
-		out_box = AABB(
-			this->_center - Math::Vec3(this->_radius, this->_radius, this->_radius),
-			this->_center + Math::Vec3(this->_radius, this->_radius, this->_radius));
-
-		return true;
-	}
+	bool BoundingBox(double in_t0, double in_t1, AABB& out_box) const override;
 
 public:
 	Point3 _center;
