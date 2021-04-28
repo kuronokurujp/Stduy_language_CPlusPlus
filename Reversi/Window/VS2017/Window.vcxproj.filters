@@ -111,6 +111,9 @@
     <ClCompile Include="..\Code\Source\Render\PathTracing\Figure\plane.cpp">
       <Filter>Code\Source\Render\PathTracing\Figure</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\Source\Render\PathTracing\raytrace_space.cpp">
+      <Filter>Code\Source\Render\PathTracing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Header\Common\color.h">
@@ -184,6 +187,9 @@
     </ClInclude>
     <ClInclude Include="..\Code\Header\Common\utility.h">
       <Filter>Code\Header\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Render\PathTracing\raytrace_space.h">
+      <Filter>Code\Header\Render\PathTracing</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

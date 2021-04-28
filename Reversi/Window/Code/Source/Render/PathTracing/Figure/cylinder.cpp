@@ -25,6 +25,9 @@ bool Cylinder::Hit(
 	hit_record& out_r_rec, int in_skip_object_handle
 ) const
 {
+	if (this->_b_hit_enable == false)
+		return false;
+
 	Math::Vec3 oc = in_r_ray._orgin - this->_pa;
 
 	double bard = Dot(this->_ba, in_r_ray._unit_dir);

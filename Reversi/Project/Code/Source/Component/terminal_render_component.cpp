@@ -12,20 +12,20 @@ TerminalRenderComponent::TerminalRenderComponent(Actor* in_pActor, RenderingInte
 	this->_textRectHalfCharactersMemSize = 0;
 	// 描画するデータ作成
 	{
-		this->_textRectWidth = in_pRendering->GetTextRenderWidth();
-		this->_textRectHeight = 10;
+		this->_text_rect_width = in_pRendering->GetTextRenderWidth();
+		this->_text_rect_height = 10;
 
 		// 描画メモリを確保
-		this->_textRectHalfCharactersMemSize = this->_textRectWidth * this->_textRectHeight;
+		this->_textRectHalfCharactersMemSize = this->_text_rect_width * this->_text_rect_height;
 		// 描画バッファを用意
-		this->_pDstBufferDrawRectHalfCharacter = reinterpret_cast<char*>(new char[this->_textRectHalfCharactersMemSize]);
-		memset(this->_pDstBufferDrawRectHalfCharacter, this->_renderClsCharacterCode, this->_textRectHalfCharactersMemSize);
+		this->_p_dst_buffer_draw_rect_half_character = reinterpret_cast<char*>(new char[this->_textRectHalfCharactersMemSize]);
+		memset(this->_p_dst_buffer_draw_rect_half_character, this->_renderClsCharacterCode, this->_textRectHalfCharactersMemSize);
 	}
 }
 
 TerminalRenderComponent::~TerminalRenderComponent()
 {
-	SAFETY_MEM_RELEASE(this->_pDstBufferDrawRectHalfCharacter);
+	SAFETY_MEM_RELEASE(this->_p_dst_buffer_draw_rect_half_character);
 }
 
 /// <summary>
@@ -33,7 +33,7 @@ TerminalRenderComponent::~TerminalRenderComponent()
 /// </summary>
 void TerminalRenderComponent::Cls()
 {
-	memset(this->_pDstBufferDrawRectHalfCharacter, this->_renderClsCharacterCode, this->_textRectHalfCharactersMemSize);
+	memset(this->_p_dst_buffer_draw_rect_half_character, this->_renderClsCharacterCode, this->_textRectHalfCharactersMemSize);
 }
 
 /// <summary>
@@ -42,9 +42,9 @@ void TerminalRenderComponent::Cls()
 void TerminalRenderComponent::ScrollLineText()
 {
 	// 一行下にずらす
-	char* pWriteTextPointer = &this->_pDstBufferDrawRectHalfCharacter[this->_textRectWidth * 1];
-	unsigned lineMemSize = this->_textRectHalfCharactersMemSize / this->_textRectHeight;
-	memcpy(pWriteTextPointer, this->_pDstBufferDrawRectHalfCharacter, this->_textRectHalfCharactersMemSize - lineMemSize);
+	char* pWriteTextPointer = &this->_p_dst_buffer_draw_rect_half_character[this->_text_rect_width * 1];
+	unsigned lineMemSize = this->_textRectHalfCharactersMemSize / this->_text_rect_height;
+	memcpy(pWriteTextPointer, this->_p_dst_buffer_draw_rect_half_character, this->_textRectHalfCharactersMemSize - lineMemSize);
 }
 
 /// <summary>
@@ -52,13 +52,13 @@ void TerminalRenderComponent::ScrollLineText()
 /// </summary>
 bool TerminalRenderComponent::WriteLineText(const unsigned int in_linePosition, const char* in_pWriteText)
 {
-	if (this->_textRectHeight <= in_linePosition)
+	if (this->_text_rect_height <= in_linePosition)
 	{
 		return false;
 	}
 
-	char* pWriteTextPointer = &this->_pDstBufferDrawRectHalfCharacter[this->_textRectWidth * in_linePosition];
-	unsigned lineMemSize = this->_textRectHalfCharactersMemSize / this->_textRectHeight;
+	char* pWriteTextPointer = &this->_p_dst_buffer_draw_rect_half_character[this->_text_rect_width * in_linePosition];
+	unsigned lineMemSize = this->_textRectHalfCharactersMemSize / this->_text_rect_height;
 	// 描画ラインのクリア
 	memset(pWriteTextPointer, this->_renderClsCharacterCode, lineMemSize);
 
@@ -76,20 +76,20 @@ void TerminalRenderComponent::Draw(RenderingInterface* in_pRendering)
 {
 	// 描画バッファに転送
 	in_pRendering->FlashRectHalfCharacter(
-		this->_pDstBufferDrawRectHalfCharacter,
+		this->_p_dst_buffer_draw_rect_half_character,
 		0,
 		20,
-		this->_textRectWidth,
-		this->_textRectHeight
+		this->_text_rect_width,
+		this->_text_rect_height
 	);
 }
 
 void TerminalRenderComponent::_Clear()
 {
-	this->_textRectHeight = 0;
-	this->_textRectWidth = 0;
+	this->_text_rect_height = 0;
+	this->_text_rect_width = 0;
 	this->_textRectHalfCharactersMemSize = 0;
 	this->_renderClsCharacterCode = 0;
 
-	this->_pDstBufferDrawRectHalfCharacter = NULL;
+	this->_p_dst_buffer_draw_rect_half_character = NULL;
 }

@@ -1,5 +1,4 @@
 ﻿// ゲーム全体をコントロール
-
 #ifndef __GAME_WORLD_H__
 #define __GAME_WORLD_H__
 
@@ -15,6 +14,8 @@ public:
 	~GameController();
 
 	void Update(const float in_deltaTimeSecond);
+
+	void Render();
 
 	/// <summary>
 	/// ゲーム終了しているか検知.

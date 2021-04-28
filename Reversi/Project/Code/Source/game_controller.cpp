@@ -44,6 +44,11 @@ void GameController::Update(const float in_deltaTimeSecond)
 	}
 }
 
+void GameController::Render()
+{
+	this->_pRendering->Draw();
+}
+
 void GameController::_Clear()
 {
 	this->_pActorManger = NULL;

@@ -64,7 +64,7 @@ private:
 	// 現在のターンで指し手している最中のユーザー
 	sUserInfo* _pNowTurnPlayUser;
 
-	BoardActor* _pBoard;
+	BoardActor* _p_board;
 
 	// ターミナル
 	TerminalActor* _pTerminal;

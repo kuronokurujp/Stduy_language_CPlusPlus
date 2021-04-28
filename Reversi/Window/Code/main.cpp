@@ -40,72 +40,11 @@
 #include "Render/PathTracing/Texture/solid_color.h"
 #include "Render/PathTracing/Texture/checker_texture.h"
 
+#include "Render/PathTracing/raytrace_space.h"
+
 // パストレースの幾何学計算は以下のサイトにまとまっている
 // 神様のページ
 // https://iquilezles.org/www/articles/intersectors/intersectors.htm
-
-// レイトレースを行う空間
-class RayTraceSpace
-{
-public:
-	RayTraceSpace(const int in_screen_size, const double in_w_size, const double in_h_size) :
-		// ライトスペース情報を設定
-		_light_space(Math::Vec3(0.0, -1.0, 0.0), Color(1.0, 1.0, 1.0))
-	{
-		this->_camera._Init(Point3(0.0, 1.5, 1.0), Point3(0.0, -1.0, 0.0), Math::Vec3(0.0, 1.0, 0.0), 90.0, in_w_size, in_h_size);
-
-		// ウィンドウの縦横サイズ
-		this->_width = in_screen_size;
-		this->_height = static_cast<int>(static_cast<double>(this->_width) / this->_camera._aspect_ratio);
-
-		this->_screen_upper_corrner_color.Set(1.0, 1.0, 1.0);
-		this->_screen_under_corrner_color.Set(0.5, 0.7, 1.0);
-	}
-
-	// レイ照射して取得した色を取得
-	void OutputRayColor(Color* in_p_out, const Ray& in_r_ray, const int in_depth, const int in_max_depth)
-	{
-		if (in_depth <= 0)
-			return;
-
-		hit_record rec;
-		if (this->bvh_node->Hit(in_r_ray, 0.001, c_infinity, rec, -1))
-		{
-			// マテリアルによるピクセル色を出力
-			auto c = Color();
-			{
-				Ray chk_ray;
-				rec.map_ptr->Scatter(in_r_ray, rec, c, chk_ray, this->_light_space, false);
-			}
-
-			*in_p_out += c;
-			return;
-		}
-
-		// yは-1 < y < 1となる
-		// y + 1.0 => 0 < y < 2
-		// (y + 1.0) * 0.5 => 0 < y < 1
-		// となり0 から 1の値に変換
-		auto t = 0.5 * (in_r_ray._unit_dir.y() + 1.0);
-		// 線形補間で色を決めている
-		// 画面上がt=1で下がt=0
-		*in_p_out = (1.0 - t) * this->_screen_upper_corrner_color + t * this->_screen_under_corrner_color;
-	}
-
-public:
-
-	// ウィンドウを作る
-	int _width;
-	int _height;
-
-	Color _screen_upper_corrner_color;
-	Color _screen_under_corrner_color;
-
-	HitTableList world;
-	shared_ptr<BvhNode> bvh_node;
-	Camera _camera;
-	LightSpace _light_space;
-};
 
 // 描画データモデル
 // レイトレース空間から描画データを生成する
@@ -177,26 +116,20 @@ private:
 		double u, v;
 		Ray ray;
 		Color color;
-		Color temp_color;
-		// 100位にしないときれいにならない
-		// でもそうすると負荷がでかくてFPSが激落ちするのでいったんアンチエイリアスはやらない
+
 		const int sample_per_pixel = 1;
 		const int max_depth = 1;
 
 		// 横ラインを先に書き込む
 		for (int y = in_h1; y >= in_h0; --y)
 		{
-			double d_y = double(y);
-			v = d_y * this->_inv_d_heigth;
+			v = double(y) * this->_inv_d_heigth;
 
 			for (int x = in_w0; x < in_w1; ++x)
 			{
 				color.Zero();
-				temp_color.Zero();
-				double d_x = double(x);
-
 				{
-					u = d_x * this->_inv_d_width;
+					u = double(x) * this->_inv_d_width;
 
 					r_space._camera.OutputRay(&ray, u, v);
 					r_space.OutputRayColor(&color, ray, max_depth, max_depth);

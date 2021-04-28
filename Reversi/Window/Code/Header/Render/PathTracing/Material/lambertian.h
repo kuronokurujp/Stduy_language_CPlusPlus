@@ -27,20 +27,17 @@ public:
 		}
 
 		// 物体とライトの照射方向とのマテリアル計算
+		auto albedo = this->_albedo->Value(in_r_hit_recode.u, in_r_hit_recode.v, in_r_hit_recode.p);
 		{
 			auto L_Revers = -in_r_light_space._dir;
-			auto kd = 1.0;
 			auto V = in_r_ray._unit_dir;
-			auto N = UnitVector3(in_r_hit_recode.normal);
 			// 拡散値
-			auto d = Dot(N, L_Revers);
-
-			auto albedo = this->_albedo->Value(in_r_hit_recode.u, in_r_hit_recode.v, in_r_hit_recode.p);
+			auto d = Dot(UnitVector3(in_r_hit_recode.normal), L_Revers);
 
 			// アンビエントカラーと乗算したのを基準色とする
 			albedo.Set(albedo * in_r_light_space._ambient_color);
 
-			out_r_attenuation = kd * Clamp(d, 0.0, 1.0) * albedo;
+			out_r_attenuation = 1.0 * Clamp(d, 0.0, 1.0) * albedo;
 		}
 
 		return true;

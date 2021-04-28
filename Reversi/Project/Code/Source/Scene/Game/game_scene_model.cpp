@@ -23,7 +23,7 @@ GameSceneModel::GameSceneModel()
 GameSceneModel::~GameSceneModel()
 {
 	SAFETY_MEM_RELEASE(this->_pTerminal);
-	SAFETY_MEM_RELEASE(this->_pBoard);
+	SAFETY_MEM_RELEASE(this->_p_board);
 
 	// ゲームプレイヤーのユーザーを破棄
 	{
@@ -51,8 +51,8 @@ void GameSceneModel::Initlize(RenderingInterface* in_pRendering, KeyboardInterfa
 
 	// 盤のアクター作成
 	{
-		this->_pBoard = new BoardActor(in_pRendering);
-		this->_pActorManger->AddActorMemData(this->_pBoard);
+		this->_p_board = new BoardActor(in_pRendering);
+		this->_pActorManger->AddActorMemData(this->_p_board);
 	}
 
 	// 白と黒の指し手を生成
@@ -121,7 +121,7 @@ void GameSceneModel::GameStart()
 			case BoardData::eStone_ColorWhite:
 			{
 				// 白色の打ち手に敵のコンポーネント設定
-				new EnemyComponent(pUser, pOtherActor, this->_pBoard, this->_pBoard);
+				new EnemyComponent(pUser, pOtherActor, this->_p_board, this->_p_board);
 				break;
 			}
 			default:
@@ -134,10 +134,10 @@ void GameSceneModel::GameStart()
 	this->_turn = 0;
 
 	this->_pTerminal->Cls();
-	this->_pBoard->Reset();
+	this->_p_board->Reset();
 
 	this->_pNowTurnPlayUser = &this->_userInfoGroup.aUsers[this->_turn];
-	this->_pNowTurnPlayUser->pUserActor->StartTurn(this->_pBoard, this->_pBoard);
+	this->_pNowTurnPlayUser->pUserActor->StartTurn(this->_p_board, this->_p_board);
 
 	this->_gameState = eGameState_BeginGame;
 }
@@ -166,7 +166,7 @@ bool GameSceneModel::UpdateGame()
 	{
 		// すでにボードのマス目に石が埋まっている
 		// ゲーム終了かチェック
-		if (this->_pBoard->IsCannotPlacementStone() == true)
+		if (this->_p_board->IsCannotPlacementStone() == true)
 		{
 			return false;
 		}
@@ -181,7 +181,7 @@ bool GameSceneModel::UpdateGame()
 			unsigned int nowUserIndex = this->_turn % StaticSingleArrayLength(this->_userInfoGroup.aUsers);
 
 			this->_pNowTurnPlayUser = &this->_userInfoGroup.aUsers[nowUserIndex];
-			this->_pNowTurnPlayUser->pUserActor->StartTurn(this->_pBoard, this->_pBoard);
+			this->_pNowTurnPlayUser->pUserActor->StartTurn(this->_p_board, this->_p_board);
 		}
 	}
 
@@ -194,11 +194,11 @@ void GameSceneModel::EndTurn()
 
 	// すでにボードのマス目に石が埋まっている
 	// ゲーム終了かチェック
-	if (this->_pBoard->IsCannotPlacementStone() == true)
+	if (this->_p_board->IsCannotPlacementStone() == true)
 	{
 		// ゲーム結果
-		const int placeWhiteStone = this->_pBoard->GetPlaceStoneCount(BoardData::eStone_ColorWhite);
-		const int placeBlackStone = this->_pBoard->GetPlaceStoneCount(BoardData::eStone_ColorBlack);
+		const int placeWhiteStone = this->_p_board->GetPlaceStoneCount(BoardData::eStone_ColorWhite);
+		const int placeBlackStone = this->_p_board->GetPlaceStoneCount(BoardData::eStone_ColorBlack);
 
 		std::string winnerText("winner: ");
 		if (placeBlackStone > placeWhiteStone)
@@ -245,7 +245,7 @@ void GameSceneModel::EndTurn()
 		unsigned int nowUserIndex = this->_turn % StaticSingleArrayLength(this->_userInfoGroup.aUsers);
 
 		this->_pNowTurnPlayUser = &this->_userInfoGroup.aUsers[nowUserIndex];
-		this->_pNowTurnPlayUser->pUserActor->StartTurn(this->_pBoard, this->_pBoard);
+		this->_pNowTurnPlayUser->pUserActor->StartTurn(this->_p_board, this->_p_board);
 	}
 }
 
@@ -265,7 +265,7 @@ void GameSceneModel::_Clear()
 	this->_pActorManger = NULL;
 	this->_pKeyboard = NULL;
 	this->_pNowTurnPlayUser = NULL;
-	this->_pBoard = NULL;
+	this->_p_board = NULL;
 
 	this->_pTerminal = NULL;
 	this->_gameState = eGameState_Boot;

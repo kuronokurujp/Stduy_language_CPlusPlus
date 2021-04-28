@@ -129,9 +129,6 @@
     <ClCompile Include="..\Code\Source\Scene\Game\Actor\user_actor.cpp">
       <Filter>Code\Source\Scene\Game\Actor</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Source\Scene\Game\Component\board_render_component.cpp">
-      <Filter>Code\Source\Scene\Game\Component</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Source\Scene\Game\Component\enemy_component.cpp">
       <Filter>Code\Source\Scene\Game\Component</Filter>
     </ClCompile>
@@ -164,6 +161,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\Source\Scene\Game\game_scene_controller.cpp">
       <Filter>Code\Source\Scene\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\System\Platform\Win32\win32_frame_rendere.cpp">
+      <Filter>Code\Source\System\Platform\Wn32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Source\Scene\Game\Component\board_render_component.cpp">
+      <Filter>Code\Source\Scene\Game\Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -203,21 +206,6 @@
     <ClInclude Include="..\Code\Header\Scene\Game\Actor\user_actor.h">
       <Filter>Code\Header\Scene\Game\Actor</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\board_render_component.h">
-      <Filter>Code\Header\Scene\Game\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\enemy_component.h">
-      <Filter>Code\Header\Scene\Game\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\player_component.h">
-      <Filter>Code\Header\Scene\Game\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\stonehand_component.h">
-      <Filter>Code\Header\Scene\Game\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\AI\ai_alphabeta_component.h">
-      <Filter>Code\Header\Scene\Game\Component\AI</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Header\Scene\Game\Evaluator\learn_borad_placement_stone_evaluator.h">
       <Filter>Code\Header\Scene\Game\Evaluator</Filter>
     </ClInclude>
@@ -256,6 +244,21 @@
     </ClInclude>
     <ClInclude Include="..\Code\Header\System\Platform\Win32\win32_frame_renderer.h">
       <Filter>Code\Header\System\Platform\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Component\enemy_component.h">
+      <Filter>Code\Header\Scene\Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Component\player_component.h">
+      <Filter>Code\Header\Scene\Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Component\stonehand_component.h">
+      <Filter>Code\Header\Scene\Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Component\AI\ai_alphabeta_component.h">
+      <Filter>Code\Header\Scene\Game\Component\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Scene\Game\Component\board_render_component.h">
+      <Filter>Code\Header\Scene\Game\Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

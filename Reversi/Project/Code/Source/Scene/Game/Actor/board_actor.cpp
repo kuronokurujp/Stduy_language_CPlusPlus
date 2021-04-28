@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include "Scene/Game/Component/board_render_component.h"
+
 #include "common.h"
 
 // 石を置く各方向
@@ -30,11 +31,12 @@ BoardActor::BoardActor(RenderingInterface* in_pRendering)
 	this->_Clear();
 
 	// 盤の描画コンポーネント設定
-	this->_pRenderComponent = new BoardRenderComponent(this, in_pRendering);
 
-	this->_whiteStonePlacementPositions.reserve(eBoardSquaresCount_Max);
-	this->_blackStonePlacementPositions.reserve(eBoardSquaresCount_Max);
-	this->_tempWorkflipStonePositions.reserve(eBoardSquaresCount_Max);
+	this->_p_render_component = new BoardRenderComponent(this, in_pRendering);
+
+	this->_white_stone_placement_positions.reserve(eBoardSquaresCount_Max);
+	this->_black_stone_placement_positions.reserve(eBoardSquaresCount_Max);
+	this->_tempwork_flip_stone_positions.reserve(eBoardSquaresCount_Max);
 
 	this->Reset();
 }
@@ -42,8 +44,8 @@ BoardActor::BoardActor(RenderingInterface* in_pRendering)
 void BoardActor::UpdateActor(float in_deltaTimeSecond)
 {
 	// 石数をレンダーに設定
-	this->_pRenderComponent->SetStoneCount(BoardData::eStone_ColorBlack, this->_blackStoneCount);
-	this->_pRenderComponent->SetStoneCount(BoardData::eStone_ColorWhite, this->_whiteStoneCount);
+	this->_p_render_component->SetStoneCount(BoardData::eStone_ColorBlack, this->_black_stone_count);
+	this->_p_render_component->SetStoneCount(BoardData::eStone_ColorWhite, this->_white_stone_count);
 }
 
 /// <summary>
@@ -51,15 +53,15 @@ void BoardActor::UpdateActor(float in_deltaTimeSecond)
 /// </summary>
 void BoardActor::Reset()
 {
-	memset(this->_aaSquares, BoardData::eStone_None, sizeof(this->_aaSquares));
+	memset(this->_aa_squares, BoardData::eStone_None, sizeof(this->_aa_squares));
 
-	this->_tempWorkflipStonePositions.clear();
-	this->_placementHistory.clear();
+	this->_tempwork_flip_stone_positions.clear();
+	this->_placement_history.clear();
 
-	this->_aaSquares[3][3] = BoardData::eStone_ColorWhite;
-	this->_aaSquares[4][3] = BoardData::eStone_ColorBlack;
-	this->_aaSquares[3][4] = BoardData::eStone_ColorBlack;
-	this->_aaSquares[4][4] = BoardData::eStone_ColorWhite;
+	this->_aa_squares[3][3] = BoardData::eStone_ColorWhite;
+	this->_aa_squares[4][3] = BoardData::eStone_ColorBlack;
+	this->_aa_squares[3][4] = BoardData::eStone_ColorBlack;
+	this->_aa_squares[4][4] = BoardData::eStone_ColorWhite;
 
 	this->_UpdateStoneInfo();
 }
@@ -76,7 +78,7 @@ BoardControllerInteface::eResultCommand BoardActor::CommandPlacementStone(const 
 	assert(point._y >= 0);
 
 	// 石がすでに置いてあるか
-	if (this->_aaSquares[point._y][point._x] != BoardData::eStone::eStone_None)
+	if (this->_aa_squares[point._y][point._x] != BoardData::eStone::eStone_None)
 	{
 		return eResultCommand_PlacementStoneMiss;
 	}
@@ -85,15 +87,15 @@ BoardControllerInteface::eResultCommand BoardActor::CommandPlacementStone(const 
 	std::vector<BoardData::sPoint> stonePositions;
 	stonePositions.reserve(eBoardSquaresCount_Side * eBoardSquaresCount_Side);
 	{
-		this->_tempWorkflipStonePositions.clear();
+		this->_tempwork_flip_stone_positions.clear();
 		for (unsigned int i = 0; i < StaticSingleArrayLength(s_aPlacementStoneDir); ++i)
 		{
-			this->_OutputFlipStonePositions(this->_tempWorkflipStonePositions, point, s_aPlacementStoneDir[i], in_stone);
-			if (this->_tempWorkflipStonePositions.size() > 0)
+			this->_OutputFlipStonePositions(this->_tempwork_flip_stone_positions, point, s_aPlacementStoneDir[i], in_stone);
+			if (this->_tempwork_flip_stone_positions.size() > 0)
 			{
 				std::copy(
-					this->_tempWorkflipStonePositions.begin(),
-					this->_tempWorkflipStonePositions.end(),
+					this->_tempwork_flip_stone_positions.begin(),
+					this->_tempwork_flip_stone_positions.end(),
 					std::back_inserter(stonePositions));
 			}
 		}
@@ -108,12 +110,12 @@ BoardControllerInteface::eResultCommand BoardActor::CommandPlacementStone(const 
 	// コマンドとして記録
 	sCommandDataPlaceStone commandData;
 	commandData._placeStone = in_stone;
-	memcpy(commandData._aaOldBoardSquares, this->_aaSquares, sizeof(this->_aaSquares));
-	memcpy(commandData._aaOldSquaresLibetry, this->_aaSquaresLibetry, sizeof(this->_aaSquaresLibetry));
-	this->_placementHistory.push_back(commandData);
+	memcpy(commandData._aaOldBoardSquares, this->_aa_squares, sizeof(this->_aa_squares));
+	memcpy(commandData._aaOldSquaresLibetry, this->_aa_squares_libetry, sizeof(this->_aa_squares_libetry));
+	this->_placement_history.push_back(commandData);
 
 	// 石を置く
-	this->_aaSquares[point._y][point._x] = in_stone;
+	this->_aa_squares[point._y][point._x] = in_stone;
 
 	// 石を置いたマスを中心に四方のマスの解放度を更新　
 	{
@@ -132,7 +134,7 @@ BoardControllerInteface::eResultCommand BoardActor::CommandPlacementStone(const 
 				if (x < 0) continue;
 				if (x >= boardWidth) break;
 
-				--this->_aaSquaresLibetry[y][x];
+				--this->_aa_squares_libetry[y][x];
 			}
 		}
 	}
@@ -140,7 +142,7 @@ BoardControllerInteface::eResultCommand BoardActor::CommandPlacementStone(const 
 	// 石をひっくり返す
 	for (auto flipStonePosition : stonePositions)
 	{
-		this->_aaSquares[flipStonePosition._y][flipStonePosition._x] = in_stone;
+		this->_aa_squares[flipStonePosition._y][flipStonePosition._x] = in_stone;
 	}
 
 	this->_UpdateStoneInfo();
@@ -170,13 +172,13 @@ BoardControllerInteface::eResultCommand BoardActor::CommandPlacementStone(const 
 // 石を置いたコマンドのundo
 bool BoardActor::CommandUndoPlacement(const BoardData::eStone in_stone)
 {
-	if (this->_placementHistory.empty())
+	if (this->_placement_history.empty())
 	{
 		return false;
 	}
 
 	// 履歴の末尾から指定した石までの位置に戻す
-	auto iter = this->_placementHistory.rbegin();
+	auto iter = this->_placement_history.rbegin();
 
 	bool undoHitIterFlag = false;
 	if (iter->_placeStone == in_stone)
@@ -185,12 +187,12 @@ bool BoardActor::CommandUndoPlacement(const BoardData::eStone in_stone)
 	}
 	else
 	{
-		while (iter != this->_placementHistory.rend())
+		while (iter != this->_placement_history.rend())
 		{
 			if (iter->_placeStone != in_stone)
 			{
-				this->_placementHistory.pop_back();
-				iter = this->_placementHistory.rbegin();
+				this->_placement_history.pop_back();
+				iter = this->_placement_history.rbegin();
 			}
 			else
 			{
@@ -203,12 +205,12 @@ bool BoardActor::CommandUndoPlacement(const BoardData::eStone in_stone)
 	// 履歴までの配置石にする
 	if (undoHitIterFlag == true)
 	{
-		memcpy(this->_aaSquares, iter->_aaOldBoardSquares, sizeof(this->_aaSquares));
-		memcpy(this->_aaSquaresLibetry, iter->_aaOldSquaresLibetry, sizeof(this->_aaSquaresLibetry));
+		memcpy(this->_aa_squares, iter->_aaOldBoardSquares, sizeof(this->_aa_squares));
+		memcpy(this->_aa_squares_libetry, iter->_aaOldSquaresLibetry, sizeof(this->_aa_squares_libetry));
 
 		this->_UpdateStoneInfo();
 
-		this->_placementHistory.pop_back();
+		this->_placement_history.pop_back();
 	}
 
 	return undoHitIterFlag;
@@ -221,8 +223,8 @@ const int BoardActor::GetPlaceStoneCount(const BoardData::eStone in_stone) const
 {
 	switch (in_stone)
 	{
-	case BoardData::eStone_ColorBlack: return this->_blackStoneCount;
-	case BoardData::eStone_ColorWhite: return this->_whiteStoneCount;
+	case BoardData::eStone_ColorBlack: return this->_black_stone_count;
+	case BoardData::eStone_ColorWhite: return this->_white_stone_count;
 	}
 
 	assert(0);
@@ -234,7 +236,7 @@ const int BoardActor::GetPlaceStoneCount(const BoardData::eStone in_stone) const
 /// </summary>
 const char BoardActor::GetStoneCharacterCode(const BoardData::eStone in_stone) const
 {
-	return this->_pRenderComponent->GetStoneCharacterCode(in_stone);
+	return this->_p_render_component->GetStoneCharacterCode(in_stone);
 }
 
 /// <summary>
@@ -247,7 +249,7 @@ inline const BoardData::eStone BoardActor::GetPlaceStoneType(int in_x, int in_y)
 	assert(in_x >= 0);
 	assert(in_y >= 0);
 
-	return this->_aaSquares[in_y][in_x];
+	return this->_aa_squares[in_y][in_x];
 }
 
 // 指定したマスの開放度取得
@@ -258,7 +260,7 @@ int BoardActor::GetLibertry(int in_x, int in_y)
 	assert(in_x >= 0);
 	assert(in_y >= 0);
 
-	return this->_aaSquaresLibetry[in_y][in_x];
+	return this->_aa_squares_libetry[in_y][in_x];
 }
 
 /// <summary>
@@ -281,7 +283,7 @@ bool BoardActor::IsCannotPlacementStone()
 		{
 			for (unsigned int x = 0; x < eBoardSquaresCount_Side; ++x)
 			{
-				if (this->_aaSquares[y][x] == BoardData::eStone_None)
+				if (this->_aa_squares[y][x] == BoardData::eStone_None)
 				{
 					fullPlacementStoneFlag = false;
 					break;
@@ -315,8 +317,8 @@ bool BoardActor::IsPlacementStone(const BoardData::eStone in_stone)
 {
 	switch (in_stone)
 	{
-	case BoardData::eStone_ColorBlack: return this->_blackStonePlacementPositions.size() > 0;
-	case BoardData::eStone_ColorWhite: return this->_whiteStonePlacementPositions.size() > 0;
+	case BoardData::eStone_ColorBlack: return this->_black_stone_placement_positions.size() > 0;
+	case BoardData::eStone_ColorWhite: return this->_white_stone_placement_positions.size() > 0;
 	}
 
 	assert(0);
@@ -328,26 +330,26 @@ const std::vector<BoardData::sPoint>& BoardActor::GetPlacementStonePointList(con
 {
 	switch (in_stone)
 	{
-	case BoardData::eStone_ColorBlack: return this->_blackStonePlacementPositions;
-	case BoardData::eStone_ColorWhite: return this->_whiteStonePlacementPositions;
+	case BoardData::eStone_ColorBlack: return this->_black_stone_placement_positions;
+	case BoardData::eStone_ColorWhite: return this->_white_stone_placement_positions;
 	}
 
 	assert(0);
-	return this->_blackStonePlacementPositions;
+	return this->_black_stone_placement_positions;
 }
 
 // 指定した石が盤に置ける座標リストを出力
 void BoardActor::_OutputPlacementStonePosList(
 	std::vector<BoardData::sPoint>& out_rPosList, const BoardData::eStone in_stone)
 {
-	this->_tempWorkflipStonePositions.clear();
+	this->_tempwork_flip_stone_positions.clear();
 	for (unsigned int y = 0; y < eBoardSquaresCount_Side; ++y)
 	{
 		for (unsigned int x = 0; x < eBoardSquaresCount_Side; ++x)
 		{
 			BoardData::sPoint point(x, y);
 			// 空いているかどうかチェック
-			if (this->_aaSquares[point._y][point._x] != BoardData::eStone_None)
+			if (this->_aa_squares[point._y][point._x] != BoardData::eStone_None)
 			{
 				continue;
 			}
@@ -355,9 +357,9 @@ void BoardActor::_OutputPlacementStonePosList(
 			// 石がひっくり返せるかチェック
 			for (unsigned int dirIndex = 0; dirIndex < StaticSingleArrayLength(s_aPlacementStoneDir); ++dirIndex)
 			{
-				this->_OutputFlipStonePositions(this->_tempWorkflipStonePositions, point, s_aPlacementStoneDir[dirIndex], in_stone);
+				this->_OutputFlipStonePositions(this->_tempwork_flip_stone_positions, point, s_aPlacementStoneDir[dirIndex], in_stone);
 				// ひっくり返せる石があれば、石が置ける！
-				if (this->_tempWorkflipStonePositions.size() > 0)
+				if (this->_tempwork_flip_stone_positions.size() > 0)
 				{
 					out_rPosList.push_back(point);
 					break;
@@ -404,7 +406,7 @@ void BoardActor::_OutputFlipStonePositions(
 		}
 
 		// 挟む石があるかチェック
-		auto stone = this->_aaSquares[searchPoint._y][searchPoint._x];
+		auto stone = this->_aa_squares[searchPoint._y][searchPoint._x];
 		if (checkStone == stone)
 		{
 			// ひっくり返す石がある
@@ -432,7 +434,7 @@ const int BoardActor::_GetPlacementStoneCount(BoardData::eStone in_stone)
 {
 	int stoneCount = 0;
 	// 二次元配列を一次元配列として扱う
-	BoardData::eStone* pSquares = this->_aaSquares[0];
+	BoardData::eStone* pSquares = this->_aa_squares[0];
 	for (unsigned int i = 0; i < eBoardSquaresCount_Max; ++i)
 	{
 		if (pSquares[i] == in_stone)
@@ -450,24 +452,24 @@ const int BoardActor::_GetPlacementStoneCount(BoardData::eStone in_stone)
 void BoardActor::_UpdateStoneInfo()
 {
 	// 石の数を計算
-	this->_blackStoneCount = this->_GetPlacementStoneCount(BoardData::eStone_ColorBlack);
-	this->_whiteStoneCount = this->_GetPlacementStoneCount(BoardData::eStone_ColorWhite);
+	this->_black_stone_count = this->_GetPlacementStoneCount(BoardData::eStone_ColorBlack);
+	this->_white_stone_count = this->_GetPlacementStoneCount(BoardData::eStone_ColorWhite);
 
 	// 置ける石のリスト更新
-	this->_blackStonePlacementPositions.clear();
-	this->_OutputPlacementStonePosList(this->_blackStonePlacementPositions, BoardData::eStone_ColorBlack);
+	this->_black_stone_placement_positions.clear();
+	this->_OutputPlacementStonePosList(this->_black_stone_placement_positions, BoardData::eStone_ColorBlack);
 
-	this->_whiteStonePlacementPositions.clear();
-	this->_OutputPlacementStonePosList(this->_whiteStonePlacementPositions, BoardData::eStone_ColorWhite);
+	this->_white_stone_placement_positions.clear();
+	this->_OutputPlacementStonePosList(this->_white_stone_placement_positions, BoardData::eStone_ColorWhite);
 }
 
 void BoardActor::_Clear()
 {
-	memset(this->_aaSquares, BoardData::eStone_None, sizeof(this->_aaSquares));
-	memset(this->_aaSquaresLibetry, BoardData::eStone_None, sizeof(this->_aaSquaresLibetry));
+	memset(this->_aa_squares, BoardData::eStone_None, sizeof(this->_aa_squares));
+	memset(this->_aa_squares_libetry, BoardData::eStone_None, sizeof(this->_aa_squares_libetry));
 
-	this->_placementHistory.clear();
-	this->_tempWorkflipStonePositions.clear();
-	this->_pRenderComponent = NULL;
-	this->_blackStoneCount = this->_whiteStoneCount = 0;
+	this->_placement_history.clear();
+	this->_tempwork_flip_stone_positions.clear();
+	this->_p_render_component = NULL;
+	this->_black_stone_count = this->_white_stone_count = 0;
 }

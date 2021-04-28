@@ -16,8 +16,13 @@ public:
 	{
 		for (int a = 0; a < 3; ++a) {
 			auto invD = 1.0f / in_r_ray._dir[a];
-			auto t0 = (this->Min()[a] - in_r_ray._orgin[a]) * invD;
-			auto t1 = (this->Max()[a] - in_r_ray._orgin[a]) * invD;
+			auto orgin_value = in_r_ray._orgin[a];
+
+			auto t0 = this->Min()[a] - orgin_value;
+			auto t1 = this->Max()[a] - orgin_value;
+
+			t0 *= invD;
+			t1 *= invD;
 
 			if (invD < 0.0)
 				std::swap(t0, t1);

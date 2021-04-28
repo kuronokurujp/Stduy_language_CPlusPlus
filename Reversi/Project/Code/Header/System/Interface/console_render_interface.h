@@ -14,6 +14,8 @@ class RenderViewInterface;
 class RenderingInterface
 {
 public:
+	RenderingInterface() {}
+
 	/// <summary>
 	/// 描画インターフェイスの登録.
 	/// </summary>
@@ -48,6 +50,15 @@ public:
 		const char* in_pRectCharcterHalfSize,
 		const int in_startPointX,
 		const int in_startPointY) = 0;
+
+	/// <summary>
+	/// 描画.
+	/// </summary>
+	virtual void Draw() = 0;
+
+private:
+	void operator =(const RenderingInterface(&src)) {}
+	RenderingInterface(const RenderingInterface(&src)) {}
 };
 
 /// <summary>

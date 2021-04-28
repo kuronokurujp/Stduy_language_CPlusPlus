@@ -7,7 +7,7 @@
 TerminalActor::TerminalActor(RenderingInterface* in_pRenderingInterface)
 {
 	// レンダーコンポーネント追加
-	this->_pRenderComponent = new TerminalRenderComponent(this, in_pRenderingInterface);
+	this->_p_render_component = new TerminalRenderComponent(this, in_pRenderingInterface);
 }
 
 void TerminalActor::UpdateActor(float in_deltaTimeSecond)
@@ -19,7 +19,7 @@ void TerminalActor::UpdateActor(float in_deltaTimeSecond)
 /// </summary>
 void TerminalActor::Cls()
 {
-	this->_pRenderComponent->Cls();
+	this->_p_render_component->Cls();
 }
 
 /// <summary>
@@ -28,8 +28,8 @@ void TerminalActor::Cls()
 void TerminalActor::PushText(const char* in_pText)
 {
 	// 一つ下にずらす
-	this->_pRenderComponent->ScrollLineText();
-	this->_pRenderComponent->WriteLineText(0, in_pText);
+	this->_p_render_component->ScrollLineText();
+	this->_p_render_component->WriteLineText(0, in_pText);
 }
 
 /// <summary>
@@ -37,7 +37,7 @@ void TerminalActor::PushText(const char* in_pText)
 /// </summary>
 void TerminalActor::WriteLineText(const unsigned int in_linePostion, const char* in_pText)
 {
-	this->_pRenderComponent->WriteLineText(in_linePostion, in_pText);
+	this->_p_render_component->WriteLineText(in_linePostion, in_pText);
 }
 
 /// <summary>
@@ -53,7 +53,7 @@ void TerminalActor::WriteFullAreaText(const char* in_pText)
 	// 文字列途中に改行コードがあれば、一行ずらして表示
 	while (std::getline(ss, s, '\n'))
 	{
-		if (this->_pRenderComponent->WriteLineText(linePosition, s.c_str()) == false)
+		if (this->_p_render_component->WriteLineText(linePosition, s.c_str()) == false)
 		{
 			break;
 		}
@@ -64,5 +64,5 @@ void TerminalActor::WriteFullAreaText(const char* in_pText)
 
 void TerminalActor::_Clear()
 {
-	this->_pRenderComponent = NULL;
+	this->_p_render_component = NULL;
 }

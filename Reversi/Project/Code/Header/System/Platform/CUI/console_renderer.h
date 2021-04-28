@@ -1,6 +1,6 @@
 ﻿// コンソール専用描画
-#ifndef __RENDERER_H__
-#define __RENDERER_H__
+#ifndef __CONSOLE_RENDERER_H__
+#define __CONSOLE_RENDERER_H__
 
 #include <vector>
 #include <Windows.h>
@@ -57,7 +57,7 @@ public:
 	/// <summary>
 	/// 描画.
 	/// </summary>
-	void Draw();
+	void Draw() override final;
 
 	/// <summary>
 	/// 矩形文字の転送.
@@ -104,4 +104,4 @@ private:
 	char _renderingHalfCharcterMap[eHalfCharacterMapSize_Height][(eHalfCharacterMapSize_Width + 1)];
 };
 
-#endif // __RENDERER_H__
+#endif // __CONSOLE_RENDERER_H__

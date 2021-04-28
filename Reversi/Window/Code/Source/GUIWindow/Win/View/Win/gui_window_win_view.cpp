@@ -73,8 +73,6 @@ void GUIWindowWinView::CreateObject(GUIWindowController* in_p_ctr)
 		TCHAR t[256] = { 0 };
 		do
 		{
-			Sleep(1);
-
 			if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 			{
 				::TranslateMessage(&msg);
@@ -85,6 +83,9 @@ void GUIWindowWinView::CreateObject(GUIWindowController* in_p_ctr)
 				// FPS値をウィンドウのタイトルバーに表示している
 				auto start = std::chrono::high_resolution_clock::now();
 				{
+					// 更新処理
+					this->_p_ctrl->Update();
+
 					// 描画実行
 					this->_p_ctrl->Render();
 				}

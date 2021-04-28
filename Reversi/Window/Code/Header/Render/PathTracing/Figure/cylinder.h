@@ -33,9 +33,25 @@ public:
 		return this->_handle;
 	}
 
+	inline void SetHitEnable(bool in_b_flag) {
+		this->_b_hit_enable = in_b_flag;
+	}
+
 	//in_minからin_maxまでにin_xが入ってるかどうか
 	static inline bool IsMinMax(double in_x, double in_min, double in_max) {
 		return (in_min < in_x && in_x < in_max);
+	}
+
+private:
+
+	void _Init()
+	{
+		// オブジェクトのユニークなIDを生成する
+		// オブジェクトの識別に利用
+		GUID guid;
+		CoCreateGuid(&guid);
+		this->_handle = guid.Data1;
+		this->_b_hit_enable = true;
 	}
 
 private:
@@ -48,20 +64,12 @@ private:
 
 	shared_ptr<Material> _map_ptr;
 
-private:
 	Math::Vec3 _ba;
 	double _baba;
 	double _inv_baba;
 	double _r2baba;
 
-	void _Init()
-	{
-		// オブジェクトのユニークなIDを生成する
-		// オブジェクトの識別に利用
-		GUID guid;
-		CoCreateGuid(&guid);
-		this->_handle = guid.Data1;
-	}
+	bool _b_hit_enable;
 };
 
 #endif // __CYLINDER_H__

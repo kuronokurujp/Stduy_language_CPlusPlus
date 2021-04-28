@@ -6,6 +6,7 @@
 
 // 前方宣言
 class BoardActor;
+class BoardRenderComponentImpl;
 
 class BoardRenderComponent final : public RenderComponent
 {
@@ -29,13 +30,10 @@ public:
 private:
 	void _Clear();
 
-	BoardActor* _pBoard;
+	BoardActor* _p_board;
+	BoardRenderComponentImpl* _p_board_impl;
 
-	unsigned int _textRectHeight, _textRectWidth;
-	unsigned int _blackStoneCount, _whiteStoneCount;
-
-	char* _pDstBufferDrawRectHalfCharacter;
-	char _renderClsCharacteCode;
+	unsigned int _black_stone_count, _white_stone_count;
 };
 
 #endif // __BOARD_RENDER_COMPONENT_H__

@@ -115,20 +115,22 @@ private:
 
 	void _Clear();
 
-	BoardRenderComponent* _pRenderComponent;
+private:
 
-	BoardData::eStone _aaSquares[eBoardSquaresCount_Side][eBoardSquaresCount_Side];
+	BoardRenderComponent* _p_render_component;
+
+	BoardData::eStone _aa_squares[eBoardSquaresCount_Side][eBoardSquaresCount_Side];
 	// 各マスの開放度値
-	int _aaSquaresLibetry[eBoardSquaresCount_Side][eBoardSquaresCount_Side];
+	int _aa_squares_libetry[eBoardSquaresCount_Side][eBoardSquaresCount_Side];
 
 	// 打った手の記録.
-	std::vector<sCommandDataPlaceStone> _placementHistory;
+	std::vector<sCommandDataPlaceStone> _placement_history;
 
 	// 石をひっくり返す処理をする時の作業バッファ
-	std::vector<BoardData::sPoint> _tempWorkflipStonePositions;
+	std::vector<BoardData::sPoint> _tempwork_flip_stone_positions;
 
-	unsigned int _blackStoneCount, _whiteStoneCount;
-	std::vector<BoardData::sPoint> _blackStonePlacementPositions, _whiteStonePlacementPositions;
+	unsigned int _black_stone_count, _white_stone_count;
+	std::vector<BoardData::sPoint> _black_stone_placement_positions, _white_stone_placement_positions;
 };
 
 #endif // __BOARD_ACTOR_H__

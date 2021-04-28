@@ -33,12 +33,12 @@ public:
 private:
 	void _Clear();
 
-	unsigned int _textRectHeight;
-	unsigned int _textRectWidth;
+	unsigned int _text_rect_height;
+	unsigned int _text_rect_width;
 	unsigned int _textRectHalfCharactersMemSize;
 
 	char _renderClsCharacterCode;
-	char* _pDstBufferDrawRectHalfCharacter;
+	char* _p_dst_buffer_draw_rect_half_character;
 };
 
 #endif // __TERMINAL_RENDER_COMPONENT_H__

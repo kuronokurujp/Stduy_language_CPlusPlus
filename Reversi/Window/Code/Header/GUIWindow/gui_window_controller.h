@@ -23,6 +23,9 @@ public:
 	// 制御終了
 	void End();
 
+	// 更新
+	virtual void Update() {}
+
 	// 描画
 	virtual void Render();
 

@@ -40,7 +40,7 @@ public:
 private:
 	void _Clear();
 
-	TerminalRenderComponent* _pRenderComponent;
+	TerminalRenderComponent* _p_render_component;
 };
 
 #endif // __TERMINAL_ACTOR_H__

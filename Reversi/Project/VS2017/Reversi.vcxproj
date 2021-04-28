@@ -73,6 +73,10 @@
     <ClCompile Include="..\Code\Source\System\fps.cpp" />
     <ClCompile Include="..\Code\Source\System\Platform\CUI\console_renderer.cpp" />
     <ClCompile Include="..\Code\Source\System\Platform\CUI\keyboard.cpp" />
+    <ClCompile Include="..\Code\Source\System\Platform\Win32\win32_frame_rendere.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Header\Actor\actor.h" />
@@ -95,11 +99,11 @@
     </ClInclude>
     <ClInclude Include="..\Code\Header\Scene\Game\Actor\board_actor.h" />
     <ClInclude Include="..\Code\Header\Scene\Game\Actor\user_actor.h" />
-    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\AI\ai_alphabeta_component.h" />
-    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\board_render_component.h" />
-    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\enemy_component.h" />
-    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\player_component.h" />
-    <ClInclude Include="..\Code\Header\Scene\Game\Commponent\stonehand_component.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\Component\AI\ai_alphabeta_component.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\Component\board_render_component.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\Component\enemy_component.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\Component\player_component.h" />
+    <ClInclude Include="..\Code\Header\Scene\Game\Component\stonehand_component.h" />
     <ClInclude Include="..\Code\Header\Scene\Game\Evaluator\learn_borad_placement_stone_evaluator.h" />
     <ClInclude Include="..\Code\Header\Scene\Game\Evaluator\stone_difference_placement_stone_evaluator.h" />
     <ClInclude Include="..\Code\Header\Scene\Game\game_scene_controller.h">
@@ -255,7 +259,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;___CUI_GAME__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>../Code/Header;$(SolutionDir)Window\Code\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

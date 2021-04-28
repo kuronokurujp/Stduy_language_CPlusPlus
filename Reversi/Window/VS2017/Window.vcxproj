@@ -294,6 +294,10 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="..\Code\Source\Render\PathTracing\Figure\sphere.cpp" />
+    <ClCompile Include="..\Code\Source\Render\PathTracing\raytrace_space.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Header\Common\color.h" />
@@ -323,6 +327,10 @@
     <ClInclude Include="..\Code\Header\Render\PathTracing\Material\lambertian.h" />
     <ClInclude Include="..\Code\Header\Render\PathTracing\Material\material.h" />
     <ClInclude Include="..\Code\Header\Render\PathTracing\Material\metal.h" />
+    <ClInclude Include="..\Code\Header\Render\PathTracing\raytrace_space.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="..\Code\Header\Render\PathTracing\Texture\checker_texture.h" />
     <ClInclude Include="..\Code\Header\Render\PathTracing\Texture\solid_color.h" />
     <ClInclude Include="..\Code\Header\Render\PathTracing\Texture\texture.h" />
