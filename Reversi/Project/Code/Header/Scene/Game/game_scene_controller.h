@@ -21,7 +21,7 @@ private:
 
 	GameSceneModel* _pModel;
 
-	KeyboardInterface* _pKeyboard;
+	KeyboardInterface* _p_keyboard;
 };
 
 #endif // __GAME_SCENE_CONTROLLER_H__

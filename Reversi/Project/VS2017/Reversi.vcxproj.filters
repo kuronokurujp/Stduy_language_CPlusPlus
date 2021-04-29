@@ -22,9 +22,6 @@
     <Filter Include="Code\Source\System\Platform\CUI">
       <UniqueIdentifier>{ad768d19-29ad-406d-b7bf-84ffc3a0f094}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Source\Model">
-      <UniqueIdentifier>{965fd54a-fa9b-4a21-9e54-fa7aa4cbd9d9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Code\Source\Scene">
       <UniqueIdentifier>{76ec0098-3497-407d-8f00-c795009a8c1d}</UniqueIdentifier>
     </Filter>
@@ -73,9 +70,6 @@
     <Filter Include="Code\Header\Scene\Game\Component\AI">
       <UniqueIdentifier>{32d31eea-6a3c-44e7-b95c-39f65f9dcf53}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Header\Model">
-      <UniqueIdentifier>{ab70664c-3d1d-47d6-ba68-33da12075a3c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Code\Header\System">
       <UniqueIdentifier>{da78a877-bc03-49c7-b21b-9532a4f257f9}</UniqueIdentifier>
     </Filter>
@@ -93,6 +87,9 @@
     </Filter>
     <Filter Include="Code\Source\System\Platform\Wn32">
       <UniqueIdentifier>{528d5491-f55f-4b36-ae0b-9ca1dd56ccc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Header\Component\GUI">
+      <UniqueIdentifier>{8433a2ad-69bf-4090-b1f1-1c05b43e0a11}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -259,6 +256,9 @@
     </ClInclude>
     <ClInclude Include="..\Code\Header\Scene\Game\Component\board_render_component.h">
       <Filter>Code\Header\Scene\Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Header\Component\GUI\render2d_component.h">
+      <Filter>Code\Header\Component\GUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -28,7 +28,7 @@ private:
 	void _Clear();
 
 	eState _state;
-	KeyboardInterface* _pKeyboard;
+	KeyboardInterface* _p_keyboard;
 	TextAnimationComponent* _pTextAnimationComponent;
 };
 

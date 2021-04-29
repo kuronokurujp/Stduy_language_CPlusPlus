@@ -10,6 +10,10 @@ class Lambertian : public Material
 {
 public:
 	Lambertian(shared_ptr<Texture> in_texture) {
+		this->SetAlbedo(in_texture);
+	}
+
+	inline void SetAlbedo(shared_ptr<Texture> in_texture) {
 		this->_albedo = in_texture;
 	}
 

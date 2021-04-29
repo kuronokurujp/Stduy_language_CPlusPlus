@@ -87,6 +87,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="..\Code\Header\Component\component.h" />
+    <ClInclude Include="..\Code\Header\Component\GUI\render2d_component.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="..\Code\Header\Component\render_component.h" />
     <ClInclude Include="..\Code\Header\Component\terminal_render_component.h">
       <SubType>

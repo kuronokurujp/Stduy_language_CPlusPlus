@@ -251,26 +251,32 @@ public:
 		assert(in_pBoard != nullptr);
 
 		// TODO: 配置した石に応じて色を変えたり、石を表示非表示にする
+		_struct_stone_data_* p_stone_data = nullptr;
 		for (int y = 0; y < this->_stone_count; ++y)
 		{
 			for (int x = 0; x < this->_stone_count; ++x)
 			{
 				auto stone_type = in_pBoard->GetPlaceStoneType(x, y);
+
+				p_stone_data = &this->_stones[y * this->_stone_count + x];
+				shared_ptr<Lambertian> p_lambertian = std::dynamic_pointer_cast<Lambertian>(p_stone_data->_cylinder->GetMaterial());
 				switch (stone_type)
 				{
 				case BoardData::eStone::eStone_ColorWhite:
 				{
-					this->_stones[y * this->_stone_count + x]._cylinder->SetHitEnable(true);
+					p_lambertian->SetAlbedo(this->_stone_white_color);
+					p_stone_data->_cylinder->SetHitEnable(true);
 					break;
 				}
 				case BoardData::eStone::eStone_None:
 				{
-					this->_stones[y * this->_stone_count + x]._cylinder->SetHitEnable(false);
+					p_stone_data->_cylinder->SetHitEnable(false);
 					break;
 				}
 				case BoardData::eStone::eStone_ColorBlack:
 				{
-					this->_stones[y * this->_stone_count + x]._cylinder->SetHitEnable(true);
+					p_lambertian->SetAlbedo(this->_stone_black_color);
+					p_stone_data->_cylinder->SetHitEnable(true);
 					break;
 				}
 
@@ -283,14 +289,14 @@ public:
 
 private:
 	// 石のデータ
-	struct _struct_stone_data
+	struct _struct_stone_data_
 	{
 		// 表示するオブジェクト
 		shared_ptr<Cylinder> _cylinder;
 	};
 
 	// 配置する石の数
-	_struct_stone_data _stones[64];
+	_struct_stone_data_ _stones[64];
 
 	// 石の色
 	shared_ptr<SolidColor> _stone_black_color;

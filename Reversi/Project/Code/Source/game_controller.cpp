@@ -18,26 +18,26 @@ GameController::GameController(RenderingInterface* in_pRendering, KeyboardInterf
 	this->_Clear();
 
 	this->_pRendering = in_pRendering;
-	this->_pKeyboard = in_pKeyboard;
+	this->_p_keyboard = in_pKeyboard;
 
-	this->_pActorManger = new ActorManager();
+	this->_p_actor_manger = new ActorManager();
 
 	// ゲームシーンへ遷移
 	auto pGameSceneController = new GameSceneController(in_pRendering, in_pKeyboard);
-	this->_pActorManger->AddActorMemData(pGameSceneController);
+	this->_p_actor_manger->AddActorMemData(pGameSceneController);
 }
 
 GameController::~GameController()
 {
-	this->_pActorManger->DeleteAllActorsAndMemFree();
-	SAFETY_MEM_RELEASE(this->_pActorManger);
+	this->_p_actor_manger->DeleteAllActorsAndMemFree();
+	SAFETY_MEM_RELEASE(this->_p_actor_manger);
 }
 
 void GameController::Update(const float in_deltaTimeSecond)
 {
 	// アクター更新
 	{
-		for (auto actor : this->_pActorManger->GetActors())
+		for (auto actor : this->_p_actor_manger->GetActors())
 		{
 			actor->Update(in_deltaTimeSecond);
 		}
@@ -51,7 +51,7 @@ void GameController::Render()
 
 void GameController::_Clear()
 {
-	this->_pActorManger = NULL;
+	this->_p_actor_manger = NULL;
 	this->_pRendering = NULL;
-	this->_pKeyboard = NULL;
+	this->_p_keyboard = NULL;
 }

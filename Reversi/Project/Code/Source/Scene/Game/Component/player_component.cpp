@@ -11,7 +11,7 @@ PlayerComponent::PlayerComponent(Actor* in_pOwner, KeyboardInterface* in_pKeyboa
 {
 	this->_Clear();
 
-	this->_pKeyboard = in_pKeyboard;
+	this->_p_keyboard = in_pKeyboard;
 
 	this->_pTextAnimationComponent = new TextAnimationComponent(in_pOwner);
 }
@@ -40,7 +40,7 @@ void PlayerComponent::Update(const float in_deltaTimeSecond)
 		case eState_InputText:
 		{
 			// キーボードからテキスト入力が確定したか
-			if (this->_pKeyboard->IsConfirmText() == false)
+			if (this->_p_keyboard->IsConfirmText() == false)
 			{
 				// 表示テキスト生成
 
@@ -53,7 +53,7 @@ void PlayerComponent::Update(const float in_deltaTimeSecond)
 					"-- u => Undo\n"
 					"- TextInput: %s\n",
 					pStoneName,
-					this->_pKeyboard->GetConfirmInputText());
+					this->_p_keyboard->GetConfirmInputText());
 			}
 			else
 			{
@@ -65,7 +65,7 @@ void PlayerComponent::Update(const float in_deltaTimeSecond)
 		case eState_TurnBegin:
 		{
 			// 入力したテキストから石を置く
-			const char* inputText = this->_pKeyboard->GetConfirmEnterText();
+			const char* inputText = this->_p_keyboard->GetConfirmEnterText();
 			if ((strlen(inputText) == 1) && (inputText[0] == 'u'))
 			{
 				// 一つ前の手に戻す
@@ -137,7 +137,7 @@ void PlayerComponent::Update(const float in_deltaTimeSecond)
 			}
 
 			// 確定入力したらステート終了
-			if (this->_pKeyboard->IsConfirmText() == true)
+			if (this->_p_keyboard->IsConfirmText() == true)
 			{
 				this->_state = eState_InputText;
 			}
@@ -154,6 +154,6 @@ void PlayerComponent::Update(const float in_deltaTimeSecond)
 void PlayerComponent::_Clear()
 {
 	this->_state = eState_InputText;
-	this->_pKeyboard = NULL;
+	this->_p_keyboard = NULL;
 	this->_pTextAnimationComponent = NULL;
 }

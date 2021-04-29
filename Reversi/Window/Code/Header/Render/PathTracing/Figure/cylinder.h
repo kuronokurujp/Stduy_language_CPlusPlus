@@ -21,6 +21,10 @@ public:
 		const double in_radius,
 		shared_ptr<Material> in_map_ptr);
 
+	inline shared_ptr<Material> GetMaterial() {
+		return this->_map_ptr;
+	}
+
 	bool Hit(
 		const Ray& in_r_ray,
 		double in_tmin, double in_tmax,

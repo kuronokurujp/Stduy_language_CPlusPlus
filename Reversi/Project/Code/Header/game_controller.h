@@ -28,10 +28,10 @@ public:
 private:
 	void _Clear();
 
-	ActorManager* _pActorManger;
+	ActorManager* _p_actor_manger;
 
 	RenderingInterface* _pRendering;
-	KeyboardInterface* _pKeyboard;
+	KeyboardInterface* _p_keyboard;
 };
 
 #endif // __GAME_WORLD_H__

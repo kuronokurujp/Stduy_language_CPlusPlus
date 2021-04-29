@@ -17,24 +17,24 @@
 
 GameSceneModel::GameSceneModel()
 {
-	this->_pActorManger = new ActorManager();
+	this->_p_actor_manger = new ActorManager();
 }
 
 GameSceneModel::~GameSceneModel()
 {
-	SAFETY_MEM_RELEASE(this->_pTerminal);
+	SAFETY_MEM_RELEASE(this->_p_terminal);
 	SAFETY_MEM_RELEASE(this->_p_board);
 
 	// ゲームプレイヤーのユーザーを破棄
 	{
-		for (unsigned int i = 0; i < StaticSingleArrayLength(this->_userInfoGroup.aUsers); ++i)
+		for (unsigned int i = 0; i < StaticSingleArrayLength(this->_user_info_group.aUsers); ++i)
 		{
-			SAFETY_MEM_RELEASE(this->_userInfoGroup.aUsers[i].pUserActor);
+			SAFETY_MEM_RELEASE(this->_user_info_group.aUsers[i].pUserActor);
 		}
 	}
 
-	this->_pActorManger->DeleteAllActorsAndMemFree();
-	SAFETY_MEM_RELEASE(this->_pActorManger);
+	this->_p_actor_manger->DeleteAllActorsAndMemFree();
+	SAFETY_MEM_RELEASE(this->_p_actor_manger);
 }
 
 void GameSceneModel::Initlize(RenderingInterface* in_pRendering, KeyboardInterface* in_pKeyboard)
@@ -42,17 +42,17 @@ void GameSceneModel::Initlize(RenderingInterface* in_pRendering, KeyboardInterfa
 	assert(in_pKeyboard != NULL);
 	assert(in_pRendering != NULL);
 
-	this->_pKeyboard = in_pKeyboard;
+	this->_p_keyboard = in_pKeyboard;
 	// ターミナルアクター作成
 	{
-		this->_pTerminal = new TerminalActor(in_pRendering);
-		this->_pActorManger->AddActorMemData(this->_pTerminal);
+		this->_p_terminal = new TerminalActor(in_pRendering);
+		this->_p_actor_manger->AddActorMemData(this->_p_terminal);
 	}
 
 	// 盤のアクター作成
 	{
 		this->_p_board = new BoardActor(in_pRendering);
-		this->_pActorManger->AddActorMemData(this->_p_board);
+		this->_p_actor_manger->AddActorMemData(this->_p_board);
 	}
 
 	// 白と黒の指し手を生成
@@ -68,13 +68,13 @@ void GameSceneModel::Initlize(RenderingInterface* in_pRendering, KeyboardInterfa
 			{BoardData::eStone_ColorBlack},
 			{BoardData::eStone_ColorWhite},
 		};
-		assert(StaticSingleArrayLength(aSetupDatas) == StaticSingleArrayLength(this->_userInfoGroup.aUsers));
+		assert(StaticSingleArrayLength(aSetupDatas) == StaticSingleArrayLength(this->_user_info_group.aUsers));
 
 		// 指し手の生成
-		for (unsigned int i = 0; i < StaticSingleArrayLength(this->_userInfoGroup.aUsers); ++i)
+		for (unsigned int i = 0; i < StaticSingleArrayLength(this->_user_info_group.aUsers); ++i)
 		{
 			auto setupData = aSetupDatas[i];
-			auto pSetupUserInfo = &this->_userInfoGroup.aUsers[i];
+			auto pSetupUserInfo = &this->_user_info_group.aUsers[i];
 
 			pSetupUserInfo->stone = aSetupDatas[i].stone;
 			pSetupUserInfo->pUserActor = new UserActor(setupData.stone, in_pRendering);
@@ -84,28 +84,28 @@ void GameSceneModel::Initlize(RenderingInterface* in_pRendering, KeyboardInterfa
 
 void GameSceneModel::GameStart()
 {
-	assert(this->_gameState == eGameState_Boot);
+	assert(this->_game_state == eGameState_Boot);
 
 	// ユーザー設定
 	{
-		unsigned int userMax = StaticSingleArrayLength(this->_userInfoGroup.aUsers);
+		unsigned int userMax = StaticSingleArrayLength(this->_user_info_group.aUsers);
 		for (int unsigned i = 0; i < userMax; ++i)
 		{
-			auto pUserInfo = &this->_userInfoGroup.aUsers[i];
-			auto pUser = this->_userInfoGroup.aUsers[i].pUserActor;
+			auto pUserInfo = &this->_user_info_group.aUsers[i];
+			auto pUser = this->_user_info_group.aUsers[i].pUserActor;
 
-			this->_pActorManger->RemoveActor(pUser);
+			this->_p_actor_manger->RemoveActor(pUser);
 
 			{
 				pUser->RemoveComponentClassNameAndMemFree<EnemyComponent>();
 				pUser->RemoveComponentClassNameAndMemFree<PlayerComponent>();
 			}
 
-			this->_pActorManger->AddActorMemData(pUser);
+			this->_p_actor_manger->AddActorMemData(pUser);
 			pUser->SetState(Actor::eState_Pause);
 
 			unsigned int otherUserIndex = (i + 1) % userMax;
-			auto pOtherActor = this->_userInfoGroup.aUsers[otherUserIndex].pUserActor;
+			auto pOtherActor = this->_user_info_group.aUsers[otherUserIndex].pUserActor;
 
 			// 黒か白の打ち手の種類で応じ設定を変更
 			switch (pUserInfo->stone)
@@ -113,7 +113,7 @@ void GameSceneModel::GameStart()
 			case BoardData::eStone_ColorBlack:
 			{
 				// 黒石の打ち手にプレイヤーのコンポーネント設定
-				new PlayerComponent(pUser, this->_pKeyboard);
+				new PlayerComponent(pUser, this->_p_keyboard);
 
 				break;
 			}
@@ -133,36 +133,36 @@ void GameSceneModel::GameStart()
 	// ゲーム開始
 	this->_turn = 0;
 
-	this->_pTerminal->Cls();
+	this->_p_terminal->Cls();
 	this->_p_board->Reset();
 
-	this->_pNowTurnPlayUser = &this->_userInfoGroup.aUsers[this->_turn];
-	this->_pNowTurnPlayUser->pUserActor->StartTurn(this->_p_board, this->_p_board);
+	this->_p_now_turn_playuser = &this->_user_info_group.aUsers[this->_turn];
+	this->_p_now_turn_playuser->pUserActor->StartTurn(this->_p_board, this->_p_board);
 
-	this->_gameState = eGameState_BeginGame;
+	this->_game_state = eGameState_BeginGame;
 }
 
 void GameSceneModel::GameReset()
 {
-	this->_gameState = eGameState_Boot;
+	this->_game_state = eGameState_Boot;
 }
 
 void GameSceneModel::BeginTurn()
 {
-	assert(this->_gameState == eGameState_BeginGame);
+	assert(this->_game_state == eGameState_BeginGame);
 
-	this->_gameState = eGameState_UpdateGame;
+	this->_game_state = eGameState_UpdateGame;
 }
 
 bool GameSceneModel::UpdateGame()
 {
-	assert(this->_gameState == eGameState_UpdateGame);
+	assert(this->_game_state == eGameState_UpdateGame);
 
 	// 指し手の状態をターミナルに表示
-	this->_pTerminal->WriteFullAreaText(this->_pNowTurnPlayUser->pUserActor->ToText());
+	this->_p_terminal->WriteFullAreaText(this->_p_now_turn_playuser->pUserActor->ToText());
 
 	// 指し手がゲーム中
-	if (this->_pNowTurnPlayUser->pUserActor->IsPlaying() == false)
+	if (this->_p_now_turn_playuser->pUserActor->IsPlaying() == false)
 	{
 		// すでにボードのマス目に石が埋まっている
 		// ゲーム終了かチェック
@@ -172,16 +172,16 @@ bool GameSceneModel::UpdateGame()
 		}
 		else
 		{
-			this->_pTerminal->Cls();
+			this->_p_terminal->Cls();
 
 			// ターン切り替え
 			++this->_turn;
 
 			// ターン毎にユーザーを切り替え
-			unsigned int nowUserIndex = this->_turn % StaticSingleArrayLength(this->_userInfoGroup.aUsers);
+			unsigned int nowUserIndex = this->_turn % StaticSingleArrayLength(this->_user_info_group.aUsers);
 
-			this->_pNowTurnPlayUser = &this->_userInfoGroup.aUsers[nowUserIndex];
-			this->_pNowTurnPlayUser->pUserActor->StartTurn(this->_p_board, this->_p_board);
+			this->_p_now_turn_playuser = &this->_user_info_group.aUsers[nowUserIndex];
+			this->_p_now_turn_playuser->pUserActor->StartTurn(this->_p_board, this->_p_board);
 		}
 	}
 
@@ -190,7 +190,7 @@ bool GameSceneModel::UpdateGame()
 
 void GameSceneModel::EndTurn()
 {
-	assert(this->_gameState == eGameState_UpdateGame);
+	assert(this->_game_state == eGameState_UpdateGame);
 
 	// すでにボードのマス目に石が埋まっている
 	// ゲーム終了かチェック
@@ -224,28 +224,28 @@ void GameSceneModel::EndTurn()
 			// 勝者の表記
 			winnerText,
 			"-- Retry InputKey => r",
-			std::string("- InputText: ") + this->_pKeyboard->GetConfirmInputText(),
+			std::string("- InputText: ") + this->_p_keyboard->GetConfirmInputText(),
 		};
 
 		for (unsigned int i = 0; i < StaticSingleArrayLength(aResultTerminalText); ++i)
 		{
-			this->_pTerminal->WriteLineText(i, aResultTerminalText[i].c_str());
+			this->_p_terminal->WriteLineText(i, aResultTerminalText[i].c_str());
 		}
 
-		this->_gameState = eGameStaet_EndGame;
+		this->_game_state = eGameStaet_EndGame;
 	}
 	else
 	{
-		this->_pTerminal->Cls();
+		this->_p_terminal->Cls();
 
 		// ターン切り替え
 		++this->_turn;
 
 		// ターン毎にユーザーを切り替え
-		unsigned int nowUserIndex = this->_turn % StaticSingleArrayLength(this->_userInfoGroup.aUsers);
+		unsigned int nowUserIndex = this->_turn % StaticSingleArrayLength(this->_user_info_group.aUsers);
 
-		this->_pNowTurnPlayUser = &this->_userInfoGroup.aUsers[nowUserIndex];
-		this->_pNowTurnPlayUser->pUserActor->StartTurn(this->_p_board, this->_p_board);
+		this->_p_now_turn_playuser = &this->_user_info_group.aUsers[nowUserIndex];
+		this->_p_now_turn_playuser->pUserActor->StartTurn(this->_p_board, this->_p_board);
 	}
 }
 
@@ -253,7 +253,7 @@ void GameSceneModel::UpdateActor(const float in_deltaTimeSecond)
 {
 	// アクター更新
 	{
-		for (auto actor : this->_pActorManger->GetActors())
+		for (auto actor : this->_p_actor_manger->GetActors())
 		{
 			actor->Update(in_deltaTimeSecond);
 		}
@@ -262,12 +262,12 @@ void GameSceneModel::UpdateActor(const float in_deltaTimeSecond)
 
 void GameSceneModel::_Clear()
 {
-	this->_pActorManger = NULL;
-	this->_pKeyboard = NULL;
-	this->_pNowTurnPlayUser = NULL;
+	this->_p_actor_manger = NULL;
+	this->_p_keyboard = NULL;
+	this->_p_now_turn_playuser = NULL;
 	this->_p_board = NULL;
 
-	this->_pTerminal = NULL;
-	this->_gameState = eGameState_Boot;
+	this->_p_terminal = NULL;
+	this->_game_state = eGameState_Boot;
 	this->_turn = 0;
 }

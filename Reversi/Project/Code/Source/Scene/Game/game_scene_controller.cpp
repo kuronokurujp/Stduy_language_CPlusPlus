@@ -11,7 +11,7 @@ GameSceneController::GameSceneController(RenderingInterface* in_pRendering, Keyb
 {
 	this->_Clear();
 
-	this->_pKeyboard = in_pKeyboard;
+	this->_p_keyboard = in_pKeyboard;
 
 	// モデル作成
 	this->_pModel = new GameSceneModel();
@@ -47,7 +47,7 @@ void GameSceneController::UpdateActor(float in_deltaTimeSecond)
 	case GameSceneModel::eGameStaet_EndGame:
 	{
 		// リトライのキーボード入力があれば再度プレイ
-		if (this->_pKeyboard->IsConfirmText() == true)
+		if (this->_p_keyboard->IsConfirmText() == true)
 		{
 			this->_pModel->GameReset();
 		}
@@ -63,5 +63,5 @@ void GameSceneController::UpdateActor(float in_deltaTimeSecond)
 void GameSceneController::_Clear()
 {
 	this->_pModel = NULL;
-	this->_pKeyboard = NULL;
+	this->_p_keyboard = NULL;
 }

@@ -16,7 +16,7 @@ class GameSceneModel
 {
 public:
 	// ゲーム状態
-	enum eGameState
+	enum enum_game_state
 	{
 		eGameState_Boot = 0,
 		eGameState_BeginGame,
@@ -25,16 +25,16 @@ public:
 	};
 
 	// ユーザー情報
-	struct sUserInfo
+	struct _struct_user_info_
 	{
 		BoardData::eStone stone;
 		UserActor* pUserActor;
 	};
 
-	union uUserInfoGroup
+	union _union_user_info_group_
 	{
-		sUserInfo aUsers[2];
-		sUserInfo player, enemy;
+		_struct_user_info_ aUsers[2];
+		_struct_user_info_ player, enemy;
 	};
 
 	GameSceneModel();
@@ -42,7 +42,7 @@ public:
 
 	void Initlize(RenderingInterface* in_pRendering, KeyboardInterface* in_pKeyboard);
 
-	eGameState GetState() const { return this->_gameState; }
+	enum_game_state GetState() const { return this->_game_state; }
 	// TODO: 中身を作る
 	void GameStart();
 	void GameReset();
@@ -55,21 +55,21 @@ public:
 private:
 	void _Clear();
 
-	ActorManager* _pActorManger;
-	KeyboardInterface* _pKeyboard;
+	ActorManager* _p_actor_manger;
+	KeyboardInterface* _p_keyboard;
 
 	// 指し手のユーザー達の情報
-	uUserInfoGroup _userInfoGroup;
+	_union_user_info_group_ _user_info_group;
 
 	// 現在のターンで指し手している最中のユーザー
-	sUserInfo* _pNowTurnPlayUser;
+	_struct_user_info_* _p_now_turn_playuser;
 
 	BoardActor* _p_board;
 
 	// ターミナル
-	TerminalActor* _pTerminal;
+	TerminalActor* _p_terminal;
 
-	eGameState _gameState;
+	enum_game_state _game_state;
 
 	unsigned int _turn;
 };
