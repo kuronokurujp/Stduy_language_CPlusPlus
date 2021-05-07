@@ -191,5 +191,8 @@
     <ClInclude Include="..\Code\Header\Render\PathTracing\raytrace_space.h">
       <Filter>Code\Header\Render\PathTracing</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Header\GUIWindow\Model\bmp_format_frame_buffer.h">
+      <Filter>Code\Header\GUIWindow\Model</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -10,15 +10,15 @@
 #include "System/Platform/Win32/win32_frame_renderer.h"
 
 // オブジェクト
-#include "Render/PathTracing/Figure/plane.h"
-#include "Render/PathTracing/Figure/cylinder.h"
+#include "Window/Code/Header/Render/PathTracing/Figure/plane.h"
+#include "Window/Code/Header/Render/PathTracing/Figure/cylinder.h"
 
 // テクスチャー
-#include "Render/PathTracing/Texture/solid_color.h"
-#include "Render/PathTracing/Texture/checker_texture.h"
+#include "Window/Code/Header/Render/PathTracing/Texture/solid_color.h"
+#include "Window/Code/Header/Render/PathTracing/Texture/checker_texture.h"
 
 // マテリアル
-#include "Render/PathTracing/Material/lambertian.h"
+#include "Window/Code/Header/Render/PathTracing/Material/lambertian.h"
 
 #endif
 
@@ -287,6 +287,44 @@ public:
 		}
 	}
 
+	void FlashText(
+		RenderingInterface* in_pRendering,
+		const int in_black_stone_count, const int in_white_stone_count)
+	{
+		// 盤の状態を表示
+		{
+			// ステータス描画のアスキーアート
+			// 文字列の変更を柔軟にするためstringクラスを利用
+			const std::string s_paStatus[] =
+			{
+				"--------------------------------",
+				"          BoardActor Status",
+				"--------------------------------",
+				std::string("BlackStone(") + this->GetStoneCharacterCode(BoardData::eStone_ColorBlack) + std::string(")"),
+				std::string(" Placement Count :") + std::to_string(in_black_stone_count),
+				"--------------------------------",
+				std::string("WhiteStone(") + this->GetStoneCharacterCode(BoardData::eStone_ColorWhite) + std::string(")"),
+				std::string(" Placement Count :") + std::to_string(in_white_stone_count),
+				"---------------------------------",
+				"  / ^---^/",
+				" /------/ |",
+				" | 8457 | |",
+				"  ------",
+			};
+
+			// テキスト描画バッファに文字を転送
+			for (unsigned int i = 0; i < StaticSingleArrayLength(s_paStatus); ++i)
+			{
+				// 描画バッファに転送
+				in_pRendering->FlashLineHalfCharacter(
+					s_paStatus[i].c_str(),
+					//this->_text_rect_width + 1,
+					0,
+					1 + i);
+			}
+		}
+	}
+
 private:
 	// 石のデータ
 	struct _struct_stone_data_
@@ -328,6 +366,9 @@ BoardRenderComponent::~BoardRenderComponent()
 void BoardRenderComponent::Draw(RenderingInterface* in_pRendering)
 {
 	this->_p_board_impl->Draw(in_pRendering, this->_p_board);
+
+	this->_p_board_impl->FlashText(
+		in_pRendering, this->_black_stone_count, this->_white_stone_count);
 }
 
 /// <summary>

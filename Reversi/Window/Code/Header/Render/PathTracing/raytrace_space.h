@@ -3,13 +3,13 @@
 
 #include <memory>
 
-#include "Math/ray.h"
+#include "Window/Code/Header/Math/ray.h"
 
-#include "Render/PathTracing/Light/light.h"
-#include "Render/PathTracing/Camera/camera.h"
-#include "Render/PathTracing/Collision/hit_table_list.h"
+#include "Window/Code/Header/Render/PathTracing/Light/light.h"
+#include "Window/Code/Header/Render/PathTracing/Camera/camera.h"
+#include "Window/Code/Header/Render/PathTracing/Collision/hit_table_list.h"
 
-#include "Render/PathTracing/Collision/bvh_node.h"
+#include "Window/Code/Header/Render/PathTracing/Collision/bvh_node.h"
 
 // レイトレースを行う空間
 class RayTraceSpace

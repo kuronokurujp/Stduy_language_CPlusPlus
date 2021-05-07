@@ -1,7 +1,7 @@
 ﻿#ifndef __CAMERA_H__
 #define __CAMERA_H__
 
-#include "Common/utility.h"
+#include "Window/Code/Header/Common/utility.h"
 
 class Camera
 {
@@ -38,21 +38,23 @@ public:
 		this->_origin.Set(in_lookfrom);
 
 		// viewport画面の左下の座標位置
-		// (-w / 2, -1.0)となる
-		this->_lower_left_cornner.Set(
-			this->_origin - (half_vertical)-(half_horizontal)-w);
+		// (-w / 2, 1.0)となる
+		// 画面のスクリーン座標系が左上を原点にしているので
+		// それに合わせるため
+		this->_upper_left_cornner.Set(
+			this->_origin + (half_vertical)-(half_horizontal)-w);
 	}
 
 	void OutputRay(Ray* out_p_ray, double in_u, double in_v) const
 	{
 		out_p_ray->Set(
 			this->_origin,
-			this->_lower_left_cornner + this->_horizontal * in_u + this->_vertical * in_v - this->_origin);
+			this->_upper_left_cornner + this->_horizontal * in_u - this->_vertical * in_v - this->_origin);
 	}
 
 public:
 	Point3 _origin;
-	Point3 _lower_left_cornner;
+	Point3 _upper_left_cornner;
 	Math::Vec3 _horizontal;
 	Math::Vec3 _vertical;
 	double _aspect_ratio;

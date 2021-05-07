@@ -49,6 +49,12 @@ void GameController::Render()
 	this->_pRendering->Draw();
 }
 
+// レンダー遅延
+void GameController::EndRender()
+{
+	this->_pRendering->DrawAfter();
+}
+
 void GameController::_Clear()
 {
 	this->_p_actor_manger = NULL;

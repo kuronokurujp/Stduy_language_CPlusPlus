@@ -1,11 +1,11 @@
 ﻿#ifndef __HIT_TABELE_H__
 #define __HIT_TABELE_H__
 
-#include "Math/ray.h"
+#include "Window/Code/Header/Math/ray.h"
 // shader_ptrなどで使う
 #include <memory>
 
-#include "Render/PathTracing/Figure/aabb.h"
+#include "Window/Code/Header/Render/PathTracing/Figure/aabb.h"
 
 class Material;
 

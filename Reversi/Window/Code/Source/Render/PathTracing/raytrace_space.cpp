@@ -1,7 +1,7 @@
-﻿#include "Render/PathTracing/raytrace_space.h"
+﻿#include "Window/Code/Header/Render/PathTracing/raytrace_space.h"
 
-#include "Render/PathTracing/Material/material.h"
-#include "Render/PathTracing/Collision/hit_table.h"
+#include "Window/Code/Header/Render/PathTracing/Material/material.h"
+#include "Window/Code/Header/Render/PathTracing/Collision/hit_table.h"
 
 RayTraceSpace::RayTraceSpace(const int in_screen_size, const double in_w_size, const double in_h_size) :
 	// ライトスペース情報を設定

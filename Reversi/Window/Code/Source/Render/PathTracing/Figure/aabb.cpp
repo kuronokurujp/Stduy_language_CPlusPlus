@@ -1,4 +1,4 @@
-﻿#include "Render/PathTracing/Figure/aabb.h"
+﻿#include "Window/Code/Header/Render/PathTracing/Figure/aabb.h"
 
 AABB::AABB(const Point3& in_a, const Point3& in_b)
 {

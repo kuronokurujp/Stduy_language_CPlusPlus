@@ -1,8 +1,8 @@
 ﻿#ifndef __PLANE_H__
 #define __PLANE_H__
 
-#include "Render/PathTracing/Collision/hit_table.h"
-#include "Math/vec3.h"
+#include "Window/Code/Header/Render/PathTracing/Collision/hit_table.h"
+#include "Window/Code/Header/Math/vec3.h"
 
 // shader_ptrなどで使う
 #include <memory>

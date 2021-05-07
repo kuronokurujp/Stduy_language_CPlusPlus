@@ -1,10 +1,10 @@
 ﻿#ifndef __BVH_NODE_H__
 #define __BVH_NODE_H__
 
-#include "Common/utility.h"
-#include "hit_table.h"
-#include "hit_table_list.h"
-#include "Render/PathTracing/Figure/aabb.h"
+#include "Window/Code/Header/Common/utility.h"
+#include "Window/Code/Header/Render/PathTracing/Collision/hit_table.h"
+#include "Window/Code/Header/Render/PathTracing/Collision/hit_table_list.h"
+#include "Window/Code/Header/Render/PathTracing/Figure/aabb.h"
 
 #include <memory>
 

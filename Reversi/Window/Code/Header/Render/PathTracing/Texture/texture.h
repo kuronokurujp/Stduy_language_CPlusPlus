@@ -1,9 +1,9 @@
 ﻿#ifndef __TEXTURE_H__
 #define __TEXTURE_H__
 
-#include "Common/color.h"
+#include "Window/Code/Header/Common/color.h"
 
-#include "Math/vec3.h"
+#include "Window/Code/Header/Math/vec3.h"
 
 // テクスチャのインターフェイス
 class Texture

@@ -1,7 +1,7 @@
-﻿#include "GUIWindow/View/Win/gui_window_win_view.h"
+﻿#include "Window/Code/Header/GUIWindow/View/Win/gui_window_win_view.h"
 
-#include "GUIWindow/gui_window_controller.h"
-#include "GUIWindow/Model/gui_window_model.h"
+#include "Window/Code/Header/GUIWindow/gui_window_controller.h"
+#include "Window/Code/Header/GUIWindow/Model/gui_window_model.h"
 
 #include <assert.h>
 
@@ -86,8 +86,14 @@ void GUIWindowWinView::CreateObject(GUIWindowController* in_p_ctr)
 					// 更新処理
 					this->_p_ctrl->Update();
 
-					// 描画実行
-					this->_p_ctrl->Render();
+					// 描画開始
+					this->_p_ctrl->BeginRender();
+					{
+						// 描画実行
+						this->_p_ctrl->Render();
+					}
+					// 描画終了
+					this->_p_ctrl->EndRender();
 				}
 				auto end = std::chrono::high_resolution_clock::now();
 				auto dur = end - start;

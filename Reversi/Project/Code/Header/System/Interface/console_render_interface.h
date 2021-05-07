@@ -56,6 +56,11 @@ public:
 	/// </summary>
 	virtual void Draw() = 0;
 
+	/// <summary>
+	/// 描画遅延.
+	/// </summary>
+	virtual void DrawAfter() = 0;
+
 private:
 	void operator =(const RenderingInterface(&src)) {}
 	RenderingInterface(const RenderingInterface(&src)) {}

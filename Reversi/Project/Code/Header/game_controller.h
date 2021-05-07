@@ -16,6 +16,8 @@ public:
 	void Update(const float in_deltaTimeSecond);
 
 	void Render();
+	// レンダー遅延
+	void EndRender();
 
 	/// <summary>
 	/// ゲーム終了しているか検知.

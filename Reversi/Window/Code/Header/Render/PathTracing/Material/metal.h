@@ -3,8 +3,8 @@
 
 #include "material.h"
 
-#include "Render/PathTracing/Light/light.h"
-#include "Math/vec3.h"
+#include "Window/Code/Header/Render/PathTracing/Light/light.h"
+#include "Window/Code/Header/Math/vec3.h"
 
 // 金属マテリアル
 class Metal : public Material {

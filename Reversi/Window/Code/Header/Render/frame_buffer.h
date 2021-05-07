@@ -32,11 +32,11 @@ public:
 	/// <param name="in_x">The in x.</param>
 	/// <param name="in_y">The in y.</param>
 	/// <returns></returns>
-	inline unsigned long* GetAddressPixel(const int in_x, const int in_y) {
+	virtual inline unsigned long* GetAddressPixel(const int in_x, const int in_y) {
 		return (this->_width * in_y + in_x) + this->_p_buffer;
 	}
 
-	inline const unsigned long* GetAddressPixel(const int in_x, const int in_y) const {
+	virtual inline const unsigned long* GetAddressPixel(const int in_x, const int in_y) const {
 		return (this->_width * in_y + in_x) + this->_p_buffer;
 	}
 
@@ -76,7 +76,7 @@ public:
 	inline void SetPixel(const int in_x, const int in_y,
 		const unsigned char in_r, const unsigned char in_g, const unsigned char in_b)
 	{
-		// ARGBをフォーマットとなっている
+		// ARGBをフォーマットとしている
 		const unsigned long color = (in_r << 16) + (in_g << 8) + in_b;
 
 		unsigned long* p_address = (unsigned long*)this->GetAddressPixel(in_x, in_y);

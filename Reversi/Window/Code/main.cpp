@@ -1,4 +1,6 @@
-﻿#include <stdio.h>
+﻿#ifdef WINDOW_TEST_APP
+
+#include <stdio.h>
 #include <locale.h>
 #include <tchar.h>
 #include <windows.h>
@@ -9,38 +11,38 @@
 #include <mutex>
 #include <vector>
 
-#include "GUIWindow/Model/gui_window_model.h"
-#include "GUIWindow/View/Win/gui_window_win_view.h"
-#include "GUIWindow/gui_window_controller.h"
+#include "Window/Code/Header/GUIWindow/Model/gui_window_model.h"
+#include "Window/Code/Header/GUIWindow/View/Win/gui_window_win_view.h"
+#include "Window/Code/Header/GUIWindow/gui_window_controller.h"
 
-#include "Common/utility.h"
-#include "Common/color.h"
+#include "Window/Code/Header/Common/utility.h"
+#include "Window/Code/Header/Common/color.h"
 
-#include "Math/vec3.h"
-#include "Math/ray.h"
+#include "Window/Code/Header/Math/vec3.h"
+#include "Window/Code/Header/Math/ray.h"
 
-#include "Render/PathTracing/Collision/hit_table_list.h"
+#include "Window/Code/Header/Render/PathTracing/Collision/hit_table_list.h"
 
-#include "Render/PathTracing/Figure/sphere.h"
-#include "Render/PathTracing/Figure/plane.h"
-#include "Render/PathTracing/Figure/cylinder.h"
-#include "Render/PathTracing/Figure/aabb.h"
+#include "Window/Code/Header/Render/PathTracing/Figure/sphere.h"
+#include "Window/Code/Header/Render/PathTracing/Figure/plane.h"
+#include "Window/Code/Header/Render/PathTracing/Figure/cylinder.h"
+#include "Window/Code/Header/Render/PathTracing/Figure/aabb.h"
 
-#include "Render/PathTracing/Camera/camera.h"
+#include "Window/Code/Header/Render/PathTracing/Camera/camera.h"
 
-#include "Render/PathTracing/Material/material.h"
-#include "Render/PathTracing/Material/lambertian.h"
-#include "Render/PathTracing/Material/metal.h"
+#include "Window/Code/Header/Render/PathTracing/Material/material.h"
+#include "Window/Code/Header/Render/PathTracing/Material/lambertian.h"
+#include "Window/Code/Header/Render/PathTracing/Material/metal.h"
 
-#include "Render/PathTracing/Light/light.h"
+#include "Window/Code/Header/Render/PathTracing/Light/light.h"
 
-#include "Render/PathTracing/Collision/bvh_node.h"
+#include "Window/Code/Header/Render/PathTracing/Collision/bvh_node.h"
 
 // テクスチャー
-#include "Render/PathTracing/Texture/solid_color.h"
-#include "Render/PathTracing/Texture/checker_texture.h"
+#include "Window/Code/Header/Render/PathTracing/Texture/solid_color.h"
+#include "Window/Code/Header/Render/PathTracing/Texture/checker_texture.h"
 
-#include "Render/PathTracing/raytrace_space.h"
+#include "Window/Code/Header/Render/PathTracing/raytrace_space.h"
 
 // パストレースの幾何学計算は以下のサイトにまとまっている
 // 神様のページ
@@ -121,7 +123,7 @@ private:
 		const int max_depth = 1;
 
 		// 横ラインを先に書き込む
-		for (int y = in_h1; y >= in_h0; --y)
+		for (int y = in_h0; y <= in_h1; ++y)
 		{
 			v = double(y) * this->_inv_d_heigth;
 
@@ -204,3 +206,4 @@ int main(int argc, const char * argv[])
 
 	return 0;
 }
+#endif

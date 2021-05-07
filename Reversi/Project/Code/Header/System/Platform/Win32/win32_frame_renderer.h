@@ -3,7 +3,7 @@
 
 #include "System/Interface/console_render_interface.h"
 
-#include "Render/PathTracing/raytrace_space.h"
+#include "Window/Code/Header/Render/PathTracing/raytrace_space.h"
 
 // レイトレースを利用した描画にする
 class Win32FrameRenderer : public RenderingInterface
@@ -54,11 +54,25 @@ public:
 	/// </summary>
 	void Draw() override final;
 
+	/// <summary>
+	/// 描画遅延.
+	/// </summary>
+	void DrawAfter() override final;
+
 private:
+	enum eHalfCharacterMapSize
+	{
+		eHalfCharacterMapSize_Width = 100,
+		eHalfCharacterMapSize_Height = 34,
+	};
+
 	RayTraceSpace* _p_raytrace_space;
 	int _width, _height;
 
 	std::vector<RenderViewInterface*> _draws;
+
+	// 画面に表示するテキスト文字列
+	char _renderingHalfCharcterMap[eHalfCharacterMapSize_Height][(eHalfCharacterMapSize_Width + 1)];
 };
 
 #endif __WIN32_FRAME_RENDERER_H__

@@ -26,8 +26,14 @@ public:
 	// 更新
 	virtual void Update() {}
 
+	// 描画開始(描画に必要な前処理をする)
+	virtual void BeginRender() {}
+
 	// 描画
 	virtual void Render();
+
+	// 描画終了(描画内容を画面へ反映)
+	virtual void EndRender();
 
 private:
 	std::shared_ptr<GUIWindowModel> _model_ptr;

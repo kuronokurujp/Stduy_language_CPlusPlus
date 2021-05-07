@@ -1,4 +1,4 @@
-﻿#include "Render/PathTracing/Figure/cylinder.h"
+﻿#include "Window/Code/Header/Render/PathTracing/Figure/cylinder.h"
 
 Cylinder::Cylinder(Point3 in_center, const Math::Vec3& in_r_axis, const double in_radius, shared_ptr<Material> in_map_ptr)
 {

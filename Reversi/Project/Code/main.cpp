@@ -1,6 +1,8 @@
 ﻿#ifdef __CUI_GAME__
+
 #include "System/Platform/CUI/console_renderer.h"
 #include "System/Platform/CUI/keyboard.h"
+
 #else
 
 #include <thread>
@@ -9,15 +11,21 @@
 #include "System/Platform/Win32/win32_frame_renderer.h"
 #include "System/Platform/CUI/keyboard.h"
 
-#include "GUIWindow/Model/gui_window_model.h"
-#include "GUIWindow/View/Win/gui_window_win_view.h"
-#include "GUIWindow/gui_window_controller.h"
+// GUIウィンドウ
+#include "Window/Code/Header/GUIWindow/Model/gui_window_model.h"
+#include "Window/Code/Header/GUIWindow/View/Win/gui_window_win_view.h"
+#include "Window/Code/Header/GUIWindow/gui_window_controller.h"
 
-#include "Common/utility.h"
-#include "Common/color.h"
+#include "Window/Code/Header/Common/utility.h"
+#include "Window/Code/Header/Common/color.h"
 
-#include "Math/vec3.h"
-#include "Math/ray.h"
+#include "Window/Code/Header/Math/vec3.h"
+#include "Window/Code/Header/Math/ray.h"
+
+// フォント描画
+#include "Font/Code/Header/simple_font_core_data.h"
+#include "Font/Code/Header/simple_font_text_data.h"
+#include "Font/Code/Header/simple_text_image_rect.h"
 
 #endif
 
@@ -45,16 +53,39 @@ public:
 
 		this->_inv_d_width = 1.0 / d_width;
 		this->_inv_d_heigth = 1.0 / d_height;
+
+		// フォントテキストデータを作成
+		{
+			const char* p_font_file_name = "Font/Roboto/Roboto-Black.ttf";
+
+			this->_font_core_data = std::make_shared<SimpleFontCoreData>();
+			this->_p_font_text_data = new SimpleFontTextData(
+				this->_font_core_data, p_font_file_name
+			);
+
+			this->_p_text_image_rect = this->_p_font_text_data->NewFontImageRect(320);
+		}
+	}
+
+	~GUIWindowModelForGame()
+	{
+		{
+			this->_p_text_image_rect = nullptr;
+
+			if (this->_p_font_text_data != nullptr)
+				delete this->_p_font_text_data;
+			this->_p_font_text_data = nullptr;
+		}
 	}
 
 	// 描画バッファを更新
 	void UpdateRender() override
 	{
+		auto p_frame_buffer = this->_p_frame_buffer[this->_frame_buffer_count];
+		p_frame_buffer->Cls(128);
+
 		// レイトレース空間の情報から画面に表示するピクセルを取得してフレームバッファに書き込む
 		{
-			auto p_frame_buffer = this->_p_frame_buffer[this->_frame_buffer_count];
-			p_frame_buffer->Cls(128);
-
 			int w0 = 0;
 			int w1 = 0;
 			int h0 = 0;
@@ -80,6 +111,33 @@ public:
 
 			for (auto& t : threads) {
 				t.join();
+			}
+		}
+
+		// テキストフォントを表示
+		{
+			{
+				std::string text = u8"Count";
+				this->_p_font_text_data->WriteFontImageTextRect(
+					this->_p_text_image_rect,
+					text.c_str(),
+					24
+				);
+			}
+
+			{
+				for (unsigned int y = 0; y < this->_p_text_image_rect->Height(); ++y)
+				{
+					for (unsigned int x = 0; x < this->_p_text_image_rect->Width(); ++x)
+					{
+						// 転送しないクリップする色ならスキップ
+						auto c = this->_p_text_image_rect->GetBuffer(x, y).gray_scale;
+						if (c == 0)
+							continue;
+
+						p_frame_buffer->SetPixel(x, y, c);
+					}
+				}
 			}
 		}
 
@@ -138,6 +196,10 @@ private:
 	Win32FrameRenderer* _p_renderer;
 	double _inv_d_width;
 	double _inv_d_heigth;
+
+	std::shared_ptr<SimpleFontCoreData> _font_core_data;
+	SimpleFontTextData* _p_font_text_data;
+	std::shared_ptr<SimpleTextImageRect> _p_text_image_rect;
 };
 
 // ゲーム用のGUIウィンドウコントローラー
@@ -166,6 +228,7 @@ public:
 	void Render() override final
 	{
 		this->_p_game_ctrl->Render();
+		// ここでレイトレースを描画反映している
 		GUIWindowController::Render();
 	}
 
@@ -207,7 +270,7 @@ int main(int argc, const char * argv[])
 	}
 #else
 
-		// ゲーム用にレンダリングするモデルを作成
+	// ゲーム用にレンダリングするモデルを作成
 	const short rendererScreenWidth = 600;
 	const short rendererScreenHeight = 400;
 	auto p_renderer = new Win32FrameRenderer(rendererScreenWidth, rendererScreenHeight);

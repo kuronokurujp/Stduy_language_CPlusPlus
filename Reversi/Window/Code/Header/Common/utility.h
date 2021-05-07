@@ -69,7 +69,7 @@ inline double Max(double in_x, double in_max)
 }
 
 // 共通ヘッダー
-#include "Math/ray.h"
-#include "Math/vec3.h"
+#include "Window/Code/Header/Math/ray.h"
+#include "Window/Code/Header/Math/vec3.h"
 
 #endif // __COMMON__UITLITY_H__

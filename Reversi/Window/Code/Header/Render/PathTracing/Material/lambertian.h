@@ -1,9 +1,9 @@
 ﻿#ifndef __MATERIAL_LAMBERTIAN_H__
 #define __MATERIAL_LAMBERTIAN_H__
 
-#include "Render/PathTracing/Material/material.h"
-#include "Render/PathTracing/Light/light.h"
-#include "Render/PathTracing/Texture/texture.h"
+#include "Window/Code/Header/Render/PathTracing/Material/material.h"
+#include "Window/Code/Header/Render/PathTracing/Light/light.h"
+#include "Window/Code/Header/Render/PathTracing/Texture/texture.h"
 
 // ランバート拡散モデルのマテリアル
 class Lambertian : public Material

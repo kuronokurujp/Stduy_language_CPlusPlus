@@ -1,7 +1,7 @@
-﻿#include "GUIWindow/gui_window_controller.h"
+﻿#include "Window/Code/Header/GUIWindow/gui_window_controller.h"
 
-#include "GUIWindow/Model/gui_window_model.h"
-#include "GUIWindow/View/Win/gui_window_win_view.h"
+#include "Window/Code/Header/GUIWindow/Model/gui_window_model.h"
+#include "Window/Code/Header/GUIWindow/View/Win/gui_window_win_view.h"
 
 // 制御モデルは外部から受け取る
 GUIWindowController::GUIWindowController(
@@ -28,6 +28,10 @@ void GUIWindowController::Render()
 {
 	// モデル側で描画データを更新
 	this->_model_ptr->UpdateRender();
+}
+
+void GUIWindowController::EndRender()
+{
 	// モデルデータでView内容を書き換える
 	this->_view_ptr->WriteRender(this->_model_ptr);
 }

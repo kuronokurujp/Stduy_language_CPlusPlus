@@ -1,4 +1,4 @@
-﻿#include "Render/PathTracing/Figure/sphere.h"
+﻿#include "Window/Code/Header/Render/PathTracing/Figure/sphere.h"
 #include "combaseapi.h"
 
 bool Sphere::Hit(

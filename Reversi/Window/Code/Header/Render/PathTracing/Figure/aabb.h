@@ -1,7 +1,7 @@
 ﻿#ifndef __AABB_H__
 #define __AABB_H__
 
-#include "Math/ray.h"
+#include "Window/Code/Header/Math/ray.h"
 
 class AABB
 {

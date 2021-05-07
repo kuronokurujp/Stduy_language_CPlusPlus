@@ -1,4 +1,4 @@
-﻿#include "GUIWindow/Model/gui_window_model.h"
+﻿#include "Window/Code/Header/GUIWindow/Model/gui_window_model.h"
 
 // GUIWindowのデータモデル
 GUIWindowModel::GUIWindowModel(const int in_w, const int in_h)
@@ -11,9 +11,9 @@ GUIWindowModel::GUIWindowModel(const int in_w, const int in_h)
 	// アプリ側が書き込む画像情報
 	// ダブルバッファを用意
 	this->_p_frame_buffer[0] =
-		new FrameBuffer(this->_width, this->_height);
+		new BMPFormatFrameBuffer(this->_width, this->_height);
 	this->_p_frame_buffer[1] =
-		new FrameBuffer(this->_width, this->_height);
+		new BMPFormatFrameBuffer(this->_width, this->_height);
 
 	// ウィンドウに転送する画像情報を転送するバッファ
 	this->_window_frame_buffer = std::make_shared<WindowFrameBuffer>(this->_width, this->_height);

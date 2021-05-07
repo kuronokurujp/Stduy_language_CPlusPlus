@@ -1,4 +1,4 @@
-﻿#include "Render/PathTracing/Figure/plane.h"
+﻿#include "Window/Code/Header/Render/PathTracing/Figure/plane.h"
 
 Plane::Plane(
 	// 左下の座標

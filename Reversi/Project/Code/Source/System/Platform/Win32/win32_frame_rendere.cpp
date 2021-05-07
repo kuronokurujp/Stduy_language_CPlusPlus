@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-#include "Render/PathTracing/raytrace_space.h"
+#include "Window/Code/Header/Render/PathTracing/raytrace_space.h"
 
 Win32FrameRenderer::Win32FrameRenderer(const int in_w, const int in_h)
 	: RenderingInterface()
@@ -68,6 +68,7 @@ void Win32FrameRenderer::FlashRectHalfCharacter(
 	const unsigned int in_width,
 	const unsigned int in_height)
 {
+	// TODO: テキスト描画する文字をテキストバッファを追加
 }
 
 /// <summary>
@@ -78,6 +79,7 @@ void Win32FrameRenderer::FlashLineHalfCharacter(
 	const int in_startPointX,
 	const int in_startPointY)
 {
+	// TODO: テキスト描画する文字をテキストバッファを追加
 }
 
 /// <summary>
@@ -86,7 +88,12 @@ void Win32FrameRenderer::FlashLineHalfCharacter(
 void Win32FrameRenderer::Draw()
 {
 	for (auto render : this->_draws)
-	{
 		render->Draw(this);
-	}
+}
+
+/// <summary>
+/// 描画遅延.
+/// </summary>
+void Win32FrameRenderer::DrawAfter()
+{
 }
