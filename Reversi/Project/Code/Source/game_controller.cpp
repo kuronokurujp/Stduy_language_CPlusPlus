@@ -52,7 +52,6 @@ void GameController::Render()
 // レンダー遅延
 void GameController::EndRender()
 {
-	this->_pRendering->DrawAfter();
 }
 
 void GameController::_Clear()

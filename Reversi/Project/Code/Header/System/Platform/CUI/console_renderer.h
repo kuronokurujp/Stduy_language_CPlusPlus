@@ -1,4 +1,6 @@
 ﻿// コンソール専用描画
+#ifdef __CUI_GAME__
+
 #ifndef __CONSOLE_RENDERER_H__
 #define __CONSOLE_RENDERER_H__
 
@@ -105,3 +107,4 @@ private:
 };
 
 #endif // __CONSOLE_RENDERER_H__
+#endif

@@ -117,12 +117,11 @@ public:
 		// テキストフォントを表示
 		{
 			{
-				std::string text = u8"Count";
+				const std::string& text = this->_p_renderer->GetRenderTextString();
 				this->_p_font_text_data->WriteFontImageTextRect(
 					this->_p_text_image_rect,
 					text.c_str(),
-					24
-				);
+					16, 2);
 			}
 
 			{
@@ -131,6 +130,7 @@ public:
 					for (unsigned int x = 0; x < this->_p_text_image_rect->Width(); ++x)
 					{
 						// 転送しないクリップする色ならスキップ
+						// TODO: ふちが削れて見た目の質が悪い
 						auto c = this->_p_text_image_rect->GetBuffer(x, y).gray_scale;
 						if (c == 0)
 							continue;

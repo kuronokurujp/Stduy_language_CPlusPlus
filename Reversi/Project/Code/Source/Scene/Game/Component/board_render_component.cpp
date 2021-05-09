@@ -298,18 +298,12 @@ public:
 			const std::string s_paStatus[] =
 			{
 				"--------------------------------",
-				"          BoardActor Status",
-				"--------------------------------",
 				std::string("BlackStone(") + this->GetStoneCharacterCode(BoardData::eStone_ColorBlack) + std::string(")"),
 				std::string(" Placement Count :") + std::to_string(in_black_stone_count),
 				"--------------------------------",
 				std::string("WhiteStone(") + this->GetStoneCharacterCode(BoardData::eStone_ColorWhite) + std::string(")"),
 				std::string(" Placement Count :") + std::to_string(in_white_stone_count),
 				"---------------------------------",
-				"  / ^---^/",
-				" /------/ |",
-				" | 8457 | |",
-				"  ------",
 			};
 
 			// テキスト描画バッファに文字を転送
@@ -318,9 +312,7 @@ public:
 				// 描画バッファに転送
 				in_pRendering->FlashLineHalfCharacter(
 					s_paStatus[i].c_str(),
-					//this->_text_rect_width + 1,
-					0,
-					1 + i);
+					0, i);
 			}
 		}
 	}

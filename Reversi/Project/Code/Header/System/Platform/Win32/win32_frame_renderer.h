@@ -26,16 +26,20 @@ public:
 	const unsigned GetTextRenderWidth() override final;
 	const unsigned GetTextRenderHeight() override final;
 
-	RayTraceSpace* GetRayTraceSpacePtr() const { return this->_p_raytrace_space; }
+	// レイトレース空間を扱うインスタンスポイントを取得
+	inline RayTraceSpace* GetRayTraceSpacePtr() const { return this->_p_raytrace_space; }
+	// 描画するテキスト文字列取得
+	inline const std::string& GetRenderTextString() const { return this->_render_text_string; }
 
 	// 画面クリア文字コード
-	const char GetClsCharacteCode() override final;
+	// TODO: 内部で利用する機会が今はない
+	const char GetClsCharacteCode() override final { return 0; }
 
 	/// <summary>
 	/// 描画する半角文字を反映.
 	/// </summary>
 	void FlashRectHalfCharacter(
-		const char* in_pRectCharcterHalfSize,
+		const char* in_ppRectHalfCharcter,
 		const int in_startPointX,
 		const int in_startPointY,
 		const unsigned int in_width,
@@ -45,7 +49,7 @@ public:
 	/// 描画する半角文字を1行単位で反映.
 	/// </summary>
 	void FlashLineHalfCharacter(
-		const char* in_pRectCharcterHalfSize,
+		const char* in_pRectHalfCharcter,
 		const int in_startPointX,
 		const int in_startPointY) override final;
 
@@ -54,12 +58,12 @@ public:
 	/// </summary>
 	void Draw() override final;
 
-	/// <summary>
-	/// 描画遅延.
-	/// </summary>
-	void DrawAfter() override final;
-
 private:
+	// 書き込まれた文字列をstringで出力
+	bool _CreateScreenTextString();
+	// 画面描画テキスト文字列の中身をクリア
+	void _CleanCharacterMap();
+
 	enum eHalfCharacterMapSize
 	{
 		eHalfCharacterMapSize_Width = 100,
@@ -70,6 +74,7 @@ private:
 	int _width, _height;
 
 	std::vector<RenderViewInterface*> _draws;
+	std::string _render_text_string;
 
 	// 画面に表示するテキスト文字列
 	char _renderingHalfCharcterMap[eHalfCharacterMapSize_Height][(eHalfCharacterMapSize_Width + 1)];

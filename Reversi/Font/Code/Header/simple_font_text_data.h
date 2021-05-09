@@ -68,13 +68,15 @@ public:
 	bool WriteFontImageTextRect(
 		std::shared_ptr<SimpleTextImageRect> in_write_buffer,
 		const char in_a_texts[],
-		const unsigned int in_font_size)
+		const unsigned int in_font_size,
+		// 空白文字サイズ
+		const unsigned int in_blank_char_size)
 	{
 		// 縦の最大サイズは必須
 		// しかし横のサイズは0でも問題ない
 		FT_Set_Pixel_Sizes(this->_face, 0, in_font_size);
 
-		in_write_buffer->NewTextImage(*this, in_a_texts, in_font_size);
+		in_write_buffer->NewTextImage(*this, in_a_texts, in_font_size, in_blank_char_size);
 
 		return true;
 	}

@@ -75,6 +75,8 @@ bool TerminalRenderComponent::WriteLineText(const unsigned int in_linePosition, 
 void TerminalRenderComponent::Draw(RenderingInterface* in_pRendering)
 {
 	// 描画バッファに転送
+	// TODO: GUI用のテキスト設定が必要
+#ifdef __CUI_GAME__
 	in_pRendering->FlashRectHalfCharacter(
 		this->_p_dst_buffer_draw_rect_half_character,
 		0,
@@ -82,6 +84,7 @@ void TerminalRenderComponent::Draw(RenderingInterface* in_pRendering)
 		this->_text_rect_width,
 		this->_text_rect_height
 	);
+#endif
 }
 
 void TerminalRenderComponent::_Clear()

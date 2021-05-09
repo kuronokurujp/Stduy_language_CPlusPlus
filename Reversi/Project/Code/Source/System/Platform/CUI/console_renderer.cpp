@@ -1,4 +1,5 @@
-﻿#include "System//Platform/CUI/console_renderer.h"
+﻿#ifdef __CUI_GAME__
+#include "System/Platform/CUI/console_renderer.h"
 
 #include <string>
 #include <iostream>
@@ -177,3 +178,4 @@ void ConsoleRenderer::_Clear()
 	memset(&this->_consoleWindowRect, 0, sizeof(this->_consoleWindowRect));
 	memset(&this->_defaultConsoleCursorInfo, 0, sizeof(this->_defaultConsoleCursorInfo));
 }
+#endif

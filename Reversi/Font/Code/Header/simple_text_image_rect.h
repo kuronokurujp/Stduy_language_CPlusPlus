@@ -38,8 +38,11 @@ public:
 	bool NewTextImage(
 		FontTextData_Interface& in_r_font_text_data,
 		const char in_a_texts[],
-		const int in_font_size)
+		const unsigned int in_font_size,
+		// 文字と文字のスペースサイズ
+		const unsigned int in_char_space_size)
 	{
+		// 文字列の中に0があればそこを終端とする
 		std::wstring_convert<std::codecvt_utf8<uint32_t>, uint32_t> utf8Str;
 		auto u32str = utf8Str.from_bytes(in_a_texts);
 
@@ -62,7 +65,7 @@ public:
 				}
 				else {
 					p_bitmap = in_r_font_text_data.LoadFontChar(u32str[n]);
-					temp_width += p_bitmap->width;
+					temp_width += this->_CalcCharWidth(p_bitmap, in_font_size, in_char_space_size);
 				}
 			}
 
@@ -103,7 +106,7 @@ public:
 							c, c, c, c);
 					}
 
-					cpos_w += p_bitmap->width;
+					cpos_w += this->_CalcCharWidth(p_bitmap, in_font_size, in_char_space_size);
 				}
 			}
 		}
@@ -128,6 +131,17 @@ private:
 
 	inline bool _IsNextLineCode(const uint32_t in_char_code) {
 		return (in_char_code == '\n');
+	}
+
+	inline unsigned int _CalcCharWidth(
+		FT_Bitmap* in_p_bitmap,
+		const unsigned int in_font_size,
+		const unsigned int in_space_size)
+	{
+		if (in_p_bitmap->width <= 0)
+			return in_space_size + in_font_size;
+
+		return in_p_bitmap->width + in_space_size;
 	}
 
 	void _CreateBuffer(const unsigned int in_w, const unsigned int in_h)
