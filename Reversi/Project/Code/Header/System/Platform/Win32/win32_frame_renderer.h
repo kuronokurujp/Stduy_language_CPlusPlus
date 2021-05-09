@@ -30,6 +30,10 @@ public:
 	inline RayTraceSpace* GetRayTraceSpacePtr() const { return this->_p_raytrace_space; }
 	// 描画するテキスト文字列取得
 	inline const std::string& GetRenderTextString() const { return this->_render_text_string; }
+	// 描画するテキスト文字列が変わっているか
+	inline const bool IsUpdateRenderTextString() const {
+		return (this->_old_render_text_string != this->_render_text_string);
+	}
 
 	// 画面クリア文字コード
 	// TODO: 内部で利用する機会が今はない
@@ -75,6 +79,7 @@ private:
 
 	std::vector<RenderViewInterface*> _draws;
 	std::string _render_text_string;
+	std::string _old_render_text_string;
 
 	// 画面に表示するテキスト文字列
 	char _renderingHalfCharcterMap[eHalfCharacterMapSize_Height][(eHalfCharacterMapSize_Width + 1)];

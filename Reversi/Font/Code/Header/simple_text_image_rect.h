@@ -51,21 +51,26 @@ public:
 		int cpos_w = 0;
 		FT_Bitmap* p_bitmap = nullptr;
 		// まずは使用するバッファサイズを計算して取得
+		// 引数で指定したフォントサイズを基準にしている
+		// ※ ビットマップロードした時にビットマップサイズがフォントサイズを超えるとバグる
+		//    FreeType2について知見が少ないので上記のケースが起きるのか起きないのか分からない
 		{
 			int temp_width = 0;
+			// メモリバッファのサイズ基準をフォントサイズの2倍にする
+			// 1文字の文字の縦横サイズがフォントサイズを超えるから
+			int buffer_base_size = in_font_size * 2;
 			for (int n = 0; n < num_chars; ++n)
 			{
 				if (this->_IsNextLineCode(u32str[n])) {
 					// 縦のサイズを増やす
-					cpos_h += in_font_size;
+					cpos_h += buffer_base_size;
 
 					// 改行の場合一度横のサイズを暫定だが決定する
 					cpos_w = cpos_w < temp_width ? temp_width : cpos_w;
 					temp_width = 0;
 				}
 				else {
-					p_bitmap = in_r_font_text_data.LoadFontChar(u32str[n]);
-					temp_width += this->_CalcCharWidth(p_bitmap, in_font_size, in_char_space_size);
+					temp_width += buffer_base_size;
 				}
 			}
 
@@ -84,6 +89,8 @@ public:
 			cpos_w = 0;
 			cpos_h = in_font_size;
 
+			int offset_y = 0;
+			unsigned int pixel_data_count = 0;
 			for (int n = 0; n < num_chars; ++n)
 			{
 				if (this->_IsNextLineCode(u32str[n])) {
@@ -94,8 +101,9 @@ public:
 				else {
 					p_bitmap = in_r_font_text_data.LoadFontChar(u32str[n]);
 
-					int offset_y = cpos_h - p_bitmap->rows;
-					for (unsigned int i = 0; i < p_bitmap->rows * p_bitmap->width; ++i) {
+					offset_y = cpos_h - p_bitmap->rows;
+					pixel_data_count = p_bitmap->rows * p_bitmap->width;
+					for (unsigned int i = 0; i < pixel_data_count; ++i) {
 						// 8bitのグレースケール値のみ取得できる
 
 						// TODO: 色付け対応が別途必要だが未対応

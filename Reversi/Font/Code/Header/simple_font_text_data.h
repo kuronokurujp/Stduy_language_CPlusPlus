@@ -87,6 +87,12 @@ public:
 		return &this->_slot->bitmap;
 	}
 
+	inline FT_Bitmap* GetFontCharData(unsigned long in_char_utf32) override final
+	{
+		FT_Load_Glyph(this->_face, in_char_utf32, FT_LOAD_NO_BITMAP);
+		return &this->_slot->bitmap;
+	}
+
 private:
 	void _Clear()
 	{

@@ -359,8 +359,11 @@ void BoardRenderComponent::Draw(RenderingInterface* in_pRendering)
 {
 	this->_p_board_impl->Draw(in_pRendering, this->_p_board);
 
+#ifdef __CUI_GAME__
+#else
 	this->_p_board_impl->FlashText(
 		in_pRendering, this->_black_stone_count, this->_white_stone_count);
+#endif
 }
 
 /// <summary>

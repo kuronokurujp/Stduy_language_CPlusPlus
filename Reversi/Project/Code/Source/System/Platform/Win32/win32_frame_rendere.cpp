@@ -11,7 +11,10 @@ Win32FrameRenderer::Win32FrameRenderer(const int in_w, const int in_h)
 {
 	this->_CleanCharacterMap();
 	// あらかじめ文字列のメモリ確保
-	this->_render_text_string.reserve(eHalfCharacterMapSize_Height * eHalfCharacterMapSize_Width);
+	{
+		this->_render_text_string.reserve(eHalfCharacterMapSize_Height * eHalfCharacterMapSize_Width);
+		this->_old_render_text_string.reserve(eHalfCharacterMapSize_Height * eHalfCharacterMapSize_Width);
+	}
 
 	this->_draws.clear();
 
@@ -139,6 +142,9 @@ void Win32FrameRenderer::Draw()
 // 書き込まれた文字列をstringで出力
 bool Win32FrameRenderer::_CreateScreenTextString()
 {
+	// 変更前の文字列をコピー
+	this->_old_render_text_string = this->_render_text_string;
+
 	// 書き込んだ文字列を整理して文字列型でまとめる
 	// 文字はアスキーコード前提
 	this->_render_text_string.clear();
@@ -148,7 +154,7 @@ bool Win32FrameRenderer::_CreateScreenTextString()
 			for (unsigned int x = 0; x < eHalfCharacterMapSize_Width; ++x)
 				this->_render_text_string += this->_renderingHalfCharcterMap[y][x];
 
-			// TODO: 改行コードを入れる
+			// 改行コードを入れる
 			if (y < (eHalfCharacterMapSize_Height - 1))
 				this->_render_text_string += '\n';
 		}

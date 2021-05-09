@@ -116,6 +116,9 @@ public:
 
 		// テキストフォントを表示
 		{
+			// 表示するテキストが変わったらテキストフォント画像バッファを更新する
+			// 画像バッファ更新に処理時間がかかるのでテキスト更新した時のみにする
+			if (this->_p_renderer->IsUpdateRenderTextString())
 			{
 				const std::string& text = this->_p_renderer->GetRenderTextString();
 				this->_p_font_text_data->WriteFontImageTextRect(
@@ -124,10 +127,13 @@ public:
 					16, 2);
 			}
 
+			// テキストフォント画像バッファを描画バッファに転送
 			{
-				for (unsigned int y = 0; y < this->_p_text_image_rect->Height(); ++y)
+				unsigned int w = __min(this->_p_renderer->GetTextRenderWidth(), this->_p_text_image_rect->Width());
+				unsigned int h = __min(this->_p_renderer->GetTextRenderHeight(), this->_p_text_image_rect->Height());
+				for (unsigned int y = 0; y < h; ++y)
 				{
-					for (unsigned int x = 0; x < this->_p_text_image_rect->Width(); ++x)
+					for (unsigned int x = 0; x < w; ++x)
 					{
 						// 転送しないクリップする色ならスキップ
 						// TODO: ふちが削れて見た目の質が悪い

@@ -10,6 +10,8 @@ class FontTextData_Interface
 public:
 	// FreeType2の構造体を返す作りになっているので蜜結合になってしまっている
 	virtual inline FT_Bitmap* LoadFontChar(unsigned long in_char_utf32) = 0;
+	// 文字１つのフォント情報を取得
+	virtual inline FT_Bitmap* GetFontCharData(unsigned long in_char_utf32) = 0;
 };
 
 #endif // __FONT_LIB_FONT_TEXT_DATA_INTERFACE_H__

@@ -126,8 +126,7 @@ public:
 			this->_p_font_text_data->WriteFontImageTextRect(
 				this->_p_text_image_rect,
 				text.c_str(),
-				32
-			);
+				32, 10);
 
 			this->_count += 1;
 			this->_count %= 256;
