@@ -150,6 +150,28 @@ public:
 		GUIWindowModel::UpdateRender();
 	}
 
+	// タッチした3Dモデルをリスト出力
+	bool OutputTouch3DModels(std::vector<hit_record>& out_r_list, const int in_x, const int in_y)
+	{
+		// TODO: レイを使って３Dモデルとヒットしているかの実装
+		auto p_space = this->_p_renderer->GetRayTraceSpacePtr();
+
+		Ray ray;
+		// スクリーン情報から正規化デバイス座標系に変換
+		auto v = double(in_y) * this->_inv_d_heigth;
+		auto u = double(in_x) * this->_inv_d_width;
+
+		p_space->_camera.OutputRay(&ray, u, v);
+
+		hit_record rec;
+		if (p_space->OutputRayHitRecord(&rec, ray)) {
+			out_r_list.push_back(rec);
+			return true;
+		}
+
+		return false;
+	}
+
 private:
 	void _Update(const int in_w0, const int in_w1, const int in_h0, const int in_h1)
 	{
@@ -238,6 +260,32 @@ public:
 		GUIWindowController::Render();
 	}
 
+	// タッチイベント
+	void OnTouchEvent(int in_type, const int in_x, const int in_y) override final
+	{
+		// マウスクリックを受け取り、レイトレースで描画しているモデルをタッチしているかチェック
+		if (in_type == GUIWindowController::eTouchEvent::TOUCH_EVENT_L_CLICK)
+		{
+			auto model = std::dynamic_pointer_cast<GUIWindowModelForGame>(this->GetModel());
+
+			// クリックしたモデル情報を出力
+			std::vector<hit_record> hit_list;
+			if (model->OutputTouch3DModels(hit_list, in_x, in_y)) {
+#if _DEBUG
+				printf("s ------------------------------------------- \n");
+				printf("hit! \n");
+				for (auto it = hit_list.begin(); it != hit_list.end(); ++it)
+				{
+					printf("handle = %ul\n", it->object_handle);
+					printf("u = %lf\n", it->u);
+					printf("v = %lf\n", it->v);
+				}
+				printf("e ------------------------------------------- \n");
+#endif
+			}
+		}
+	}
+
 private:
 	Fps _fps;
 	GameController* _p_game_ctrl;
@@ -273,7 +321,7 @@ int main(int argc, const char * argv[])
 
 		gameController.Update(deltaTimeSecond);
 		gameController.Render();
-	}
+}
 #else
 
 	// ゲーム用にレンダリングするモデルを作成

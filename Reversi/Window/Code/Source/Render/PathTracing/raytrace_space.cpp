@@ -39,6 +39,10 @@ void RayTraceSpace::OutputRayColor(Color* in_p_out, const Ray& in_r_ray, const i
 			return;
 		}
 	}
+	// BVHを使わないのを想定していないのでこの場合はエラーとする
+	else {
+		assert(false);
+	}
 
 	// yは-1 < y < 1となる
 	// y + 1.0 => 0 < y < 2
@@ -48,4 +52,19 @@ void RayTraceSpace::OutputRayColor(Color* in_p_out, const Ray& in_r_ray, const i
 	// 線形補間で色を決めている
 	// 画面上がt=1で下がt=0
 	*in_p_out = (1.0 - t) * this->_screen_upper_corrner_color + t * this->_screen_under_corrner_color;
+}
+
+const bool RayTraceSpace::OutputRayHitRecord(hit_record* in_p_out, const Ray& in_r_ray)
+{
+	if (this->bvh_node)
+	{
+		if (this->bvh_node->Hit(in_r_ray, 0.001, c_infinity, *in_p_out, -1))
+			return true;
+	}
+	// BVHを使わないのを想定していないのでこの場合はエラーとする
+	else {
+		assert(false);
+	}
+
+	return false;
 }

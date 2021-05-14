@@ -23,6 +23,7 @@ public:
 		eResultPlacementStone_InputTextMiss,
 		eResultPlacementStone_FlipMiss,
 		eResultPlacementStone_Miss,
+		eResultPlacementStone_Idle,
 	};
 
 	StoneHandComponent(Actor* in_pActor, const BoardData::eStone in_useStone, const char in_renderClsCharcterCode);

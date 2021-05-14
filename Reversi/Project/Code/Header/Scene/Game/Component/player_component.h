@@ -7,6 +7,7 @@
 // 前方宣言
 class KeyboardInterface;
 class TextAnimationComponent;
+class PlayerInputComponent;
 
 class PlayerComponent final : public Component
 {
@@ -29,7 +30,8 @@ private:
 
 	eState _state;
 	KeyboardInterface* _p_keyboard;
-	TextAnimationComponent* _pTextAnimationComponent;
+	TextAnimationComponent* _p_textAnimationComponent;
+	PlayerInputComponent* _p_inputComponent;
 };
 
 #endif // __PLAYER_COMPONENT_H__

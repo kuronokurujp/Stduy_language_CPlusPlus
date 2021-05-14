@@ -64,7 +64,7 @@ private:
 	Point3 _pb;
 	double _radius;
 
-	long _handle;
+	unsigned long _handle;
 
 	shared_ptr<Material> _map_ptr;
 

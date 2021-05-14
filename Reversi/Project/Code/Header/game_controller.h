@@ -19,14 +19,6 @@ public:
 	// レンダー遅延
 	void EndRender();
 
-	/// <summary>
-	/// ゲーム終了しているか検知.
-	/// </summary>
-	/// <returns>
-	///   <c>true</c> if this instance is playing; otherwise, <c>false</c>.
-	/// </returns>
-	bool IsPlaying() { return true; }
-
 private:
 	void _Clear();
 

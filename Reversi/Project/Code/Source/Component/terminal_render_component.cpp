@@ -52,6 +52,7 @@ void TerminalRenderComponent::ScrollLineText()
 /// </summary>
 bool TerminalRenderComponent::WriteLineText(const unsigned int in_linePosition, const char* in_pWriteText)
 {
+	// TODO: GUIでは一行を書き込む事に改行コードを入れる必要がある
 	if (this->_text_rect_height <= in_linePosition)
 	{
 		return false;
@@ -75,7 +76,7 @@ bool TerminalRenderComponent::WriteLineText(const unsigned int in_linePosition, 
 void TerminalRenderComponent::Draw(RenderingInterface* in_pRendering)
 {
 	// 描画バッファに転送
-	// TODO: GUI用のテキスト設定が必要
+	// GUI用のテキスト設定が必要
 #ifdef __CUI_GAME__
 	in_pRendering->FlashRectHalfCharacter(
 		this->_p_dst_buffer_draw_rect_half_character,
@@ -84,6 +85,17 @@ void TerminalRenderComponent::Draw(RenderingInterface* in_pRendering)
 		this->_text_rect_width,
 		this->_text_rect_height
 	);
+#else
+	// 表示位置座標は固定にする
+	// 画面サイズが変わらず固定なので固定設定でいい
+	in_pRendering->FlashRectHalfCharacter(
+		this->_p_dst_buffer_draw_rect_half_character,
+		0,
+		8,
+		this->_text_rect_width,
+		this->_text_rect_height
+	);
+
 #endif
 }
 

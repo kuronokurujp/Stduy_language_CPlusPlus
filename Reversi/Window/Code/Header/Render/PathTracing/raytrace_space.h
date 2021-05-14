@@ -19,6 +19,9 @@ public:
 	// レイ照射して取得した色を取得
 	void OutputRayColor(Color* in_p_out, const Ray& in_r_ray, const int in_depth, const int in_max_depth);
 
+	// レイ照射してヒットしたオブジェクトのレコード情報を出力
+	const bool OutputRayHitRecord(hit_record* in_p_out, const Ray& in_r_ray);
+
 public:
 
 	// ウィンドウを作る

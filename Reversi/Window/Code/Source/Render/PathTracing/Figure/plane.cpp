@@ -69,3 +69,12 @@ bool Plane::BoundingBox(double in_t0, double in_t1, AABB& out_box) const
 
 	return true;
 }
+
+void Plane::_Init()
+{
+	// オブジェクトのユニークなIDを生成する
+	// オブジェクトの識別に利用
+	GUID guid;
+	CoCreateGuid(&guid);
+	this->_handle = guid.Data1;
+}

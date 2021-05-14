@@ -187,7 +187,7 @@ class BoardRenderComponentImpl
 public:
 	BoardRenderComponentImpl(RenderingInterface* in_pRendering)
 	{
-		// TODO: 版、石を配置
+		// 版、石を配置
 		Win32FrameRenderer* p_win32_renderer = dynamic_cast<Win32FrameRenderer*>(in_pRendering);
 		assert(p_win32_renderer != nullptr);
 
@@ -195,6 +195,7 @@ public:
 
 		this->_stone_black_color = make_shared<SolidColor>(Color(0.0, 0.0, 0.0));
 		this->_stone_white_color = make_shared<SolidColor>(Color(1.0, 1.0, 1.0));
+		this->_stone_gray_color = make_shared<SolidColor>(Color(0.6, 0.6, 0.6));
 
 		// 版を作成
 		{
@@ -207,7 +208,7 @@ public:
 		}
 
 		// 版に石を載せた
-		this->_stone_count = 8;
+		this->_stone_count = BoardActor::eBoardSquareCount::eBoardSquaresCount_Side;
 		for (int y = 0; y < this->_stone_count; ++y)
 		{
 			for (int x = 0; x < this->_stone_count; ++x)
@@ -219,6 +220,7 @@ public:
 						make_shared<Lambertian>(this->_stone_black_color));
 
 				this->_stones[y * this->_stone_count + x]._cylinder->SetHitEnable(true);
+				// レイトレース空間にモデルを追加
 				p_raytrace_space->world.Add(this->_stones[y * this->_stone_count + x]._cylinder);
 			}
 		}
@@ -248,9 +250,11 @@ public:
 	/// <param name="in_pBoard">The in p board.</param>
 	void Draw(RenderingInterface* in_pRendering, BoardActor* in_pBoard)
 	{
+		// BoardActorとの蜜結合状態であるが、
+		// このコンポーネントはBoardActorの利用という前提で作成しているので一旦このままで良い
 		assert(in_pBoard != nullptr);
 
-		// TODO: 配置した石に応じて色を変えたり、石を表示非表示にする
+		// 配置した石に応じて色を変えたり、石を表示非表示にする
 		_struct_stone_data_* p_stone_data = nullptr;
 		for (int y = 0; y < this->_stone_count; ++y)
 		{
@@ -258,7 +262,8 @@ public:
 			{
 				auto stone_type = in_pBoard->GetPlaceStoneType(x, y);
 
-				p_stone_data = &this->_stones[y * this->_stone_count + x];
+				auto stone_single_index = y * this->_stone_count + x;
+				p_stone_data = &this->_stones[stone_single_index];
 				shared_ptr<Lambertian> p_lambertian = std::dynamic_pointer_cast<Lambertian>(p_stone_data->_cylinder->GetMaterial());
 				switch (stone_type)
 				{
@@ -282,6 +287,15 @@ public:
 
 				default:
 					break;
+				}
+
+				// ユーザーが置ける石がどこかを視覚化するため描画
+				{
+					// マスに置ける石があれば表示
+					if (in_pBoard->IsUserPlaceSquares(x, y)) {
+						p_lambertian->SetAlbedo(this->_stone_gray_color);
+						p_stone_data->_cylinder->SetHitEnable(true);
+					}
 				}
 			}
 		}
@@ -325,12 +339,13 @@ private:
 		shared_ptr<Cylinder> _cylinder;
 	};
 
-	// 配置する石の数
+	// 盤マス目に配置する石
 	_struct_stone_data_ _stones[64];
 
 	// 石の色
 	shared_ptr<SolidColor> _stone_black_color;
 	shared_ptr<SolidColor> _stone_white_color;
+	shared_ptr<SolidColor> _stone_gray_color;
 
 	int _stone_count;
 };

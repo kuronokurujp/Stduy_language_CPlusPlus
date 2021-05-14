@@ -70,7 +70,16 @@ public:
 	virtual const char GetStoneCharacterCode(const BoardData::eStone in_stone) const = 0;
 
 	// 指定位置の石種類を取得
-	virtual const BoardData::eStone GetPlaceStoneType(int in_x, int in_y) = 0;
+	virtual inline const BoardData::eStone GetPlaceStoneType(int in_x, int in_y) = 0;
+
+	// 指定位置のマスにユーザー(自身と敵)の手で置けるかどうか
+	virtual inline const bool IsUserPlaceSquares(const int in_x, const int in_y) = 0;
+
+	// 打ち手が打てる箇所にマークを付ける
+	virtual void InputPlaceStoneMark(const BoardData::eStone in_stone) = 0;
+
+	// マスに付けたマークをクリア
+	virtual void ClearPlaceStoneMark() = 0;
 
 	// 指定したマスの開放度取得
 	virtual int GetLibertry(int in_x, int in_y) = 0;

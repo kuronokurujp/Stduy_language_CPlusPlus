@@ -19,7 +19,7 @@ struct hit_record
 	double u, v;
 
 	bool front_face;
-	long object_handle;
+	unsigned long object_handle;
 
 	inline void SetFaceNormal(const Ray& in_r_ray, const Math::Vec3& in_outward_normal)
 	{

@@ -73,6 +73,15 @@ public:
 	/// </summary>
 	inline const BoardData::eStone GetPlaceStoneType(int in_x, int in_y) override final;
 
+	// 指定位置のマスにユーザー(自身と敵)の手で置けるかどうか
+	inline const bool IsUserPlaceSquares(const int in_x, const int in_y) override final;
+
+	// 打ち手が打てる箇所にマークを付ける
+	void InputPlaceStoneMark(const BoardData::eStone in_stone) override final;
+
+	// マスに付けたマークをクリア
+	void ClearPlaceStoneMark() override final;
+
 	// 指定したマスの開放度取得
 	int GetLibertry(int in_x, int in_y) override final;
 
@@ -90,6 +99,10 @@ public:
 	const std::vector<BoardData::sPoint>& GetPlacementStonePointList(const BoardData::eStone in_stone) override final;
 
 private:
+
+	// 打ち手が置ける石のマス情報を出力
+	void _OutputPlaceonStonePosList(std::vector<BoardData::sPoint>& out_r_list, const BoardData::eStone in_stone);
+
 	// 指定した石が盤に置ける座標リストを出力
 	void _OutputPlacementStonePosList(
 		std::vector<BoardData::sPoint>& out_rPosList, const BoardData::eStone in_stone);
@@ -120,6 +133,9 @@ private:
 	BoardRenderComponent* _p_render_component;
 
 	BoardData::eStone _aa_squares[eBoardSquaresCount_Side][eBoardSquaresCount_Side];
+	// マスにユーザーが石が置けるかどうか
+	BoardData::eStone _aa_placeon_squares[eBoardSquaresCount_Side][eBoardSquaresCount_Side];
+
 	// 各マスの開放度値
 	int _aa_squares_libetry[eBoardSquaresCount_Side][eBoardSquaresCount_Side];
 

@@ -43,17 +43,10 @@ public:
 	double _inv_x10, _inv_z10;
 	shared_ptr<Material> _map_ptr;
 
-	long _handle;
+	unsigned long _handle;
 
 private:
-	void _Init()
-	{
-		// オブジェクトのユニークなIDを生成する
-		// オブジェクトの識別に利用
-		GUID guid;
-		CoCreateGuid(&guid);
-		this->_handle = guid.Data1;
-	}
+	void _Init();
 };
 
 #endif // __PLANE_H__

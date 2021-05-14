@@ -35,11 +35,16 @@ void StoneHandComponent::Start()
 		// 石が置けないので終了
 		this->End();
 	}
+
+	// 打ち手が打てる箇所にマークを付ける
+	this->_pBoardStatus->InputPlaceStoneMark(this->_stone);
 }
 
 void StoneHandComponent::End()
 {
 	this->_state = eState_End;
+	// TODO: マスにつけたマークをクリア
+	this->_pBoardStatus->ClearPlaceStoneMark();
 }
 
 /// <summary>

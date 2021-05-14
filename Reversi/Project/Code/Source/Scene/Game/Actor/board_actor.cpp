@@ -79,11 +79,10 @@ BoardControllerInteface::eResultCommand BoardActor::CommandPlacementStone(const 
 
 	// 石がすでに置いてあるか
 	if (this->_aa_squares[point._y][point._x] != BoardData::eStone::eStone_None)
-	{
 		return eResultCommand_PlacementStoneMiss;
-	}
 
 	// 置いた石がひっくり返せるか
+	// TODO: プレイヤーが置ける石の情報を取得して書き込みが必要
 	std::vector<BoardData::sPoint> stonePositions;
 	stonePositions.reserve(eBoardSquaresCount_Side * eBoardSquaresCount_Side);
 	{
@@ -141,9 +140,7 @@ BoardControllerInteface::eResultCommand BoardActor::CommandPlacementStone(const 
 
 	// 石をひっくり返す
 	for (auto flipStonePosition : stonePositions)
-	{
 		this->_aa_squares[flipStonePosition._y][flipStonePosition._x] = in_stone;
-	}
 
 	this->_UpdateStoneInfo();
 
@@ -252,6 +249,40 @@ inline const BoardData::eStone BoardActor::GetPlaceStoneType(int in_x, int in_y)
 	return this->_aa_squares[in_y][in_x];
 }
 
+/// <summary>
+/// 指定位置のマスにユーザー(自身と敵)の手で置けるかどうか.
+/// </summary>
+/// <param name="in_x">The in x.</param>
+/// <param name="in_y">The in y.</param>
+/// <returns></returns>
+inline const bool BoardActor::IsUserPlaceSquares(const int in_x, const int in_y)
+{
+	assert(in_x < eBoardSquaresCount_Side);
+	assert(in_y < eBoardSquaresCount_Side);
+	assert(in_x >= 0);
+	assert(in_y >= 0);
+
+	return (this->_aa_placeon_squares[in_y][in_x] != BoardData::eStone::eStone_None);
+}
+
+// 打ち手が打てる箇所にマークを付ける
+void BoardActor::InputPlaceStoneMark(const BoardData::eStone in_stone)
+{
+	std::vector<BoardData::sPoint> list;
+	list.reserve(eBoardSquaresCount_Side * eBoardSquaresCount_Side);
+
+	this->_OutputPlaceonStonePosList(list, in_stone);
+	for (auto it = list.begin(); it != list.end(); ++it) {
+		this->_aa_placeon_squares[it->_y][it->_x] = in_stone;
+	}
+}
+
+// マスに付けたマークをクリア
+void BoardActor::ClearPlaceStoneMark()
+{
+	::memset(this->_aa_placeon_squares, BoardData::eStone::eStone_None, sizeof(this->_aa_placeon_squares));
+}
+
 // 指定したマスの開放度取得
 int BoardActor::GetLibertry(int in_x, int in_y)
 {
@@ -291,23 +322,17 @@ bool BoardActor::IsCannotPlacementStone()
 			}
 
 			if (fullPlacementStoneFlag == false)
-			{
 				break;
-			}
 		}
 	}
 
 	// 全て石が埋まっているのでこれ以上石が置けない
 	if (fullPlacementStoneFlag == true)
-	{
 		return true;
-	}
 
 	// 白黒と両方が石が置けないならもう終わる
 	if (whiteStonePassFlag && blackStonePassFlag)
-	{
 		return true;
-	}
 
 	return false;
 }
@@ -350,9 +375,7 @@ void BoardActor::_OutputPlacementStonePosList(
 			BoardData::sPoint point(x, y);
 			// 空いているかどうかチェック
 			if (this->_aa_squares[point._y][point._x] != BoardData::eStone_None)
-			{
 				continue;
-			}
 
 			// 石がひっくり返せるかチェック
 			for (unsigned int dirIndex = 0; dirIndex < StaticSingleArrayLength(s_aPlacementStoneDir); ++dirIndex)
@@ -438,9 +461,7 @@ const int BoardActor::_GetPlacementStoneCount(BoardData::eStone in_stone)
 	for (unsigned int i = 0; i < eBoardSquaresCount_Max; ++i)
 	{
 		if (pSquares[i] == in_stone)
-		{
 			++stoneCount;
-		}
 	}
 
 	return stoneCount;
@@ -463,9 +484,47 @@ void BoardActor::_UpdateStoneInfo()
 	this->_OutputPlacementStonePosList(this->_white_stone_placement_positions, BoardData::eStone_ColorWhite);
 }
 
+/// <summary>
+/// マスを検査して石が置ける場所情報を取得.
+/// </summary>
+/// <param name="out_r_list">The out r list.</param>
+/// <param name="in_stone">The in stone.</param>
+void BoardActor::_OutputPlaceonStonePosList(std::vector<BoardData::sPoint>& out_r_list, const BoardData::eStone in_stone)
+{
+	this->_tempwork_flip_stone_positions.clear();
+	// TODO: 全マス検査なんて処理コストがかかるので後で修正するかも
+	auto dir_max = StaticSingleArrayLength(s_aPlacementStoneDir);
+
+	BoardData::sPoint point;
+	for (unsigned int y = 0; y < eBoardSquaresCount_Side; ++y)
+	{
+		for (unsigned int x = 0; x < eBoardSquaresCount_Side; ++x)
+		{
+			point._x = x;
+			point._y = y;
+
+			// 石がすでに置いてあるか
+			if (this->_aa_squares[point._y][point._x] != BoardData::eStone::eStone_None)
+				continue;
+
+			for (unsigned int i = 0; i < dir_max; ++i)
+			{
+				this->_tempwork_flip_stone_positions.clear();
+				this->_OutputFlipStonePositions(this->_tempwork_flip_stone_positions, point, s_aPlacementStoneDir[i], in_stone);
+				if (this->_tempwork_flip_stone_positions.size() > 0) {
+					// チェックしたマスに石をおくとひっくり返す石がある
+					// なのでチェックしたマスは石が置ける
+					out_r_list.push_back(BoardData::sPoint(x, y));
+				}
+			}
+		}
+	}
+}
+
 void BoardActor::_Clear()
 {
 	memset(this->_aa_squares, BoardData::eStone_None, sizeof(this->_aa_squares));
+	memset(this->_aa_placeon_squares, 0, sizeof(this->_aa_placeon_squares));
 	memset(this->_aa_squares_libetry, BoardData::eStone_None, sizeof(this->_aa_squares_libetry));
 
 	this->_placement_history.clear();

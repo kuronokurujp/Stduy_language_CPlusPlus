@@ -10,6 +10,10 @@ class GUIWindowWinView;
 class GUIWindowController
 {
 public:
+	enum eTouchEvent {
+		TOUCH_EVENT_L_CLICK = 1,
+	};
+
 	// 制御モデルは外部から受け取る
 	GUIWindowController(
 		std::shared_ptr<GUIWindowModel> in_model,
@@ -34,6 +38,9 @@ public:
 
 	// 描画終了(描画内容を画面へ反映)
 	virtual void EndRender();
+
+	// タッチイベント
+	virtual void OnTouchEvent(int in_type, const int in_x, const int in_y) {}
 
 private:
 	std::shared_ptr<GUIWindowModel> _model_ptr;

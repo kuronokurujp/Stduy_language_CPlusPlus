@@ -128,16 +128,16 @@
     <IntDir>$(MSBuildProjectDirectory)\..\Bin\$(Platform)\$(Configuration)\Obj\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='APP_Debug|Win32'">
-    <OutDir>$(MSBuildProjectDirectory)\..\Bin\$(Configuration)</OutDir>
-    <IntDir>$(MSBuildProjectDirectory)\..\Bin\$(Configuration)\Obj</IntDir>
+    <OutDir>$(MSBuildProjectDirectory)\..\Bin\$(Configuration)\</OutDir>
+    <IntDir>$(MSBuildProjectDirectory)\..\Bin\$(Configuration)\Obj\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(MSBuildProjectDirectory)\..\Bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(MSBuildProjectDirectory)\..\Bin\$(Platform)\$(Configuration)\Obj\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='APP_Release|Win32'">
-    <OutDir>$(MSBuildProjectDirectory)\..\Bin\$(Configuration)</OutDir>
-    <IntDir>$(MSBuildProjectDirectory)\..\Bin\$(Configuration)\Obj</IntDir>
+    <OutDir>$(MSBuildProjectDirectory)\..\Bin\$(Configuration)\</OutDir>
+    <IntDir>$(MSBuildProjectDirectory)\..\Bin\$(Configuration)\Obj\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(MSBuildProjectDirectory)\..\Bin\$(Platform)\$(Configuration)\</OutDir>
@@ -162,7 +162,7 @@
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <AssemblerListingLocation>$(MSBuildProjectDirectory)\..\Bin\$(Configuration)\Asm\</AssemblerListingLocation>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='APP_Debug|Win32'">

@@ -27,6 +27,11 @@ public:
 	static LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 private:
+	static void PushViewFromCallbackList(GUIWindowWinView* in_p_view);
+	static void PopViewFromList(GUIWindowWinView* in_p_view);
+	// ウィンドウハンドルと対応したViewを取得
+	static GUIWindowWinView* SearchViewFromList(HWND in_h_wnd);
+
 	void _Clear()
 	{
 		this->_p_ctrl = NULL;

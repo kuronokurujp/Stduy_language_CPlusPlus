@@ -5,6 +5,10 @@
 
 #include <assert.h>
 
+#include <vector>
+
+static std::vector<GUIWindowWinView*> s_window_view_list;
+
 void GUIWindowWinView::CreateObject(GUIWindowController* in_p_ctr)
 {
 	assert(in_p_ctr != NULL);
@@ -68,6 +72,11 @@ void GUIWindowWinView::CreateObject(GUIWindowController* in_p_ctr)
 		);
 	}
 
+	// Windowのコールバックリストに追加
+	{
+		PushViewFromCallbackList(this);
+	}
+
 	// メッセージループ
 	{
 		TCHAR t[256] = { 0 };
@@ -110,6 +119,8 @@ void GUIWindowWinView::CreateObject(GUIWindowController* in_p_ctr)
 
 GUIWindowWinView::~GUIWindowWinView()
 {
+	PopViewFromList(this);
+
 	this->_p_ctrl = NULL;
 }
 
@@ -130,6 +141,22 @@ LRESULT CALLBACK GUIWindowWinView::MainWindowProc(HWND hWnd, UINT uMsg, WPARAM w
 		::ShowWindow(hWnd, SW_SHOW);
 		break;
 	}
+	// マウスの左ボタンクリック
+	case WM_LBUTTONDOWN:
+	{
+		int x = LOWORD(lParam);
+		int y = HIWORD(lParam);
+
+		auto view = GUIWindowWinView::SearchViewFromList(hWnd);
+		// タッチイベントを呼ぶ
+#if _DEBUG
+		printf("left button by mouse: x %d / y %d\n", x, y);
+#endif
+		if (view != NULL)
+			view->_p_ctrl->OnTouchEvent(GUIWindowController::eTouchEvent::TOUCH_EVENT_L_CLICK, x, y);
+
+		break;
+	}
 	case WM_CLOSE:
 	{
 		::PostMessage(hWnd, WM_QUIT, 0, 0);
@@ -140,4 +167,34 @@ LRESULT CALLBACK GUIWindowWinView::MainWindowProc(HWND hWnd, UINT uMsg, WPARAM w
 	}
 
 	return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+void GUIWindowWinView::PushViewFromCallbackList(GUIWindowWinView* in_p_view)
+{
+	assert(in_p_view != NULL);
+	s_window_view_list.push_back(in_p_view);
+}
+
+void GUIWindowWinView::PopViewFromList(GUIWindowWinView* in_p_view)
+{
+	assert(in_p_view != NULL);
+	for (auto it = s_window_view_list.begin(); it != s_window_view_list.end(); ++it)
+	{
+		if (*it == in_p_view)
+		{
+			s_window_view_list.erase(it);
+			break;
+		}
+	}
+}
+
+GUIWindowWinView* GUIWindowWinView::SearchViewFromList(HWND in_h_wnd)
+{
+	for (auto it = s_window_view_list.begin(); it != s_window_view_list.end(); ++it)
+	{
+		if ((*it)->_h_wnd == in_h_wnd)
+			return *it;
+	}
+
+	return NULL;
 }
