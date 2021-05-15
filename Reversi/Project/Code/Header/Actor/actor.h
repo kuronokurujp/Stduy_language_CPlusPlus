@@ -63,6 +63,8 @@ public:
 	void SetState(const eState in_state) { this->_state = in_state; }
 
 	// テンプレートで指定したコンポーネント取得.
+	// ポインター型限定.
+	// TODO: できればポインター型限定のみしか受け付けない制約がつけれないかな
 	template <class T> T GetComponent()
 	{
 		for (unsigned int i = 0; i < this->_components.size(); ++i)

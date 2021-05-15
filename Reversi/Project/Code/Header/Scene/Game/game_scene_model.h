@@ -2,6 +2,8 @@
 #ifndef __GAME_SCENE_MODEL_H__
 #define __GAME_SCENE_MODEL_H__
 
+#include "Component/input_component.h"
+
 #include "Scene/Game/Interface/board_interface.h"
 
 // 前方宣言
@@ -52,6 +54,7 @@ public:
 
 	void UpdateActor(const float in_deltaTimeSecond);
 
+	void NoticeTouchEvent(const InputComponent::eTouchEvent in_type, std::vector<InputComponent::_touch_event_data_>& in_datas);
 private:
 	void _Clear();
 

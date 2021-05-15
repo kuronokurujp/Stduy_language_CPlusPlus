@@ -260,6 +260,17 @@ void GameSceneModel::UpdateActor(const float in_deltaTimeSecond)
 	}
 }
 
+void GameSceneModel::NoticeTouchEvent(const InputComponent::eTouchEvent t, std::vector<InputComponent::_touch_event_data_>& d)
+{
+	// イベント通知コンポーネントがあれば通知
+	for (auto actor : this->_p_actor_manger->GetActors())
+	{
+		auto p_input_component = actor->GetComponent<InputComponent*>();
+		if (p_input_component != NULL)
+			p_input_component->OnTouchEvent(t, d);
+	}
+}
+
 void GameSceneModel::_Clear()
 {
 	this->_p_actor_manger = NULL;

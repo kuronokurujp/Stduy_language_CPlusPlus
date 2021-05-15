@@ -271,17 +271,25 @@ public:
 			// クリックしたモデル情報を出力
 			std::vector<hit_record> hit_list;
 			if (model->OutputTouch3DModels(hit_list, in_x, in_y)) {
-#if _DEBUG
-				printf("s ------------------------------------------- \n");
-				printf("hit! \n");
+				std::vector<InputComponent::_touch_event_data_> touch_list;
+
+				InputComponent::_touch_event_data_ touch_event;
 				for (auto it = hit_list.begin(); it != hit_list.end(); ++it)
 				{
+#if _DEBUG
+					printf("s ------------------------------------------- \n");
+					printf("hit! \n");
 					printf("handle = %ul\n", it->object_handle);
 					printf("u = %lf\n", it->u);
 					printf("v = %lf\n", it->v);
-				}
-				printf("e ------------------------------------------- \n");
+					printf("e ------------------------------------------- \n");
 #endif
+					touch_event._touch_model.handle = it->object_handle;
+					touch_list.push_back(touch_event);
+				}
+
+				this->_p_game_ctrl->OnTouchEvent(
+					InputComponent::eTouchEvent::TOUCH_EVENT_MODEL, touch_list);
 			}
 		}
 	}
@@ -321,7 +329,7 @@ int main(int argc, const char * argv[])
 
 		gameController.Update(deltaTimeSecond);
 		gameController.Render();
-}
+	}
 #else
 
 	// ゲーム用にレンダリングするモデルを作成

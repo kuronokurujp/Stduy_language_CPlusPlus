@@ -16,6 +16,8 @@ public:
 
 	void UpdateActor(float in_deltaTimeSecond) override;
 
+	GameSceneModel* GetModel() { return this->_pModel; }
+
 private:
 	void _Clear();
 

@@ -54,6 +54,19 @@ void GameController::EndRender()
 {
 }
 
+// タッチイベント
+void GameController::OnTouchEvent(
+	const InputComponent::eTouchEvent in_type, std::vector<InputComponent::_touch_event_data_>& in_datas)
+{
+	// イベント通知コンポーネントがあれば通知
+	for (auto actor : this->_p_actor_manger->GetActors())
+	{
+		auto p_input_component = actor->GetComponent<InputComponent*>();
+		if (p_input_component != NULL)
+			p_input_component->OnTouchEvent(in_type, in_datas);
+	}
+}
+
 void GameController::_Clear()
 {
 	this->_p_actor_manger = NULL;

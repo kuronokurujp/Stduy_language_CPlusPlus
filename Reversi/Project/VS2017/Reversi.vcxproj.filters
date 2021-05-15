@@ -260,5 +260,8 @@
     <ClInclude Include="..\Code\Header\Component\GUI\render2d_component.h">
       <Filter>Code\Header\Component\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Header\Component\input_component.h">
+      <Filter>Code\Header\Component</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
