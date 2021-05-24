@@ -197,6 +197,9 @@ public:
 		this->_stone_white_color = make_shared<SolidColor>(Color(1.0, 1.0, 1.0));
 		this->_stone_gray_color = make_shared<SolidColor>(Color(0.6, 0.6, 0.6));
 
+		// 配置している全オブジェクトのZ値を調整
+		double offset_pos_z = -0.2f;
+
 		// 版を作成
 		{
 			shared_ptr<CheckerTexture> checkerTexture = make_shared<CheckerTexture>(
@@ -204,7 +207,11 @@ public:
 				make_shared<SolidColor>(Color(0.0, 1.0, 0.0)),
 				8);
 
-			p_raytrace_space->world.Add(make_shared<Plane>(-0.85, 0.85, -0.7, 1.0, 0.0, make_shared<Lambertian>(checkerTexture)));
+			p_raytrace_space->world.Add(make_shared<Plane>(
+				-0.85, 0.85,
+				-0.7 + offset_pos_z,
+				1.0 + offset_pos_z,
+				0.0, make_shared<Lambertian>(checkerTexture)));
 		}
 
 		// 版に石を載せた
@@ -213,9 +220,14 @@ public:
 		{
 			for (int x = 0; x < this->_stone_count; ++x)
 			{
+				auto pos = Point3(
+					-1.0 + 0.25 + (static_cast<double>(x) * 0.215),
+					0.0,
+					-1.0 + 0.4 + (static_cast<double>(y) * 0.21) + offset_pos_z);
+
 				this->_stones[y * this->_stone_count + x]._cylinder =
 					make_shared<Cylinder>(
-						Point3(-1.0 + 0.25 + (static_cast<double>(x) * 0.215), 0.0, -1.0 + 0.4 + (static_cast<double>(y) * 0.21)),
+						pos,
 						Math::Vec3(0.0, 0.01, 0.0), 0.1,
 						make_shared<Lambertian>(this->_stone_black_color));
 
@@ -250,6 +262,8 @@ public:
 	/// <param name="in_pBoard">The in p board.</param>
 	void Draw(RenderingInterface* in_pRendering, BoardActor* in_pBoard)
 	{
+		// 石のモデルは毎回描画更新している
+
 		// BoardActorとの蜜結合状態であるが、
 		// このコンポーネントはBoardActorの利用という前提で作成しているので一旦このままで良い
 		assert(in_pBoard != nullptr);
@@ -305,6 +319,9 @@ public:
 		RenderingInterface* in_pRendering,
 		const int in_black_stone_count, const int in_white_stone_count)
 	{
+		// GUI上でボードの状態が分かるのでテキストであえて表示させる必要はないと判断
+		return;
+
 		// 盤の状態を表示
 		{
 			// ステータス描画のアスキーアート
@@ -321,14 +338,43 @@ public:
 			};
 
 			// テキスト描画バッファに文字を転送
-			for (unsigned int i = 0; i < StaticSingleArrayLength(s_paStatus); ++i)
+			const unsigned int max = StaticSingleArrayLength(s_paStatus);
+			float pos_y = 0.f;
+			for (unsigned int i = 0; i < max; ++i)
 			{
 				// 描画バッファに転送
 				in_pRendering->FlashLineHalfCharacter(
-					s_paStatus[i].c_str(),
-					0, i);
+					s_paStatus[i].c_str(), 0.f, pos_y);
+
+				pos_y += 0.05f;
 			}
 		}
+	}
+
+	/// <summary>
+	/// 指定したモデルハンドルから配置した石のモデルを見つける.
+	/// </summary>
+	const bool FindStoneModelType(BoardData::sPoint* out_p_point, const unsigned long in_handle)
+	{
+		assert(out_p_point != NULL);
+
+		_struct_stone_data_* p_stone_data = nullptr;
+		for (int y = 0; y < this->_stone_count; ++y)
+		{
+			int y_index_base = y * this->_stone_count;
+			for (int x = 0; x < this->_stone_count; ++x)
+			{
+				p_stone_data = &this->_stones[y_index_base + x];
+				if (p_stone_data->_cylinder->Handle() == in_handle)
+				{
+					out_p_point->_x = x;
+					out_p_point->_y = y;
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 private:
@@ -388,6 +434,15 @@ const char BoardRenderComponent::GetStoneCharacterCode(const BoardData::eStone i
 {
 	return this->_p_board_impl->GetStoneCharacterCode(in_stone);
 }
+#ifdef __CUI_GAME__
+#else
+
+const bool BoardRenderComponent::FindStoneModelType(
+	BoardData::sPoint* out_p_point, const unsigned long in_handle)
+{
+	return this->_p_board_impl->FindStoneModelType(out_p_point, in_handle);
+}
+#endif
 
 void BoardRenderComponent::SetStoneCount(const BoardData::eStone in_stone, const unsigned int in_count)
 {

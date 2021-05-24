@@ -50,8 +50,19 @@ public:
 	virtual eResultCommand CommandPlacementStone(const BoardData::sPoint& in_rPoint, const BoardData::eStone in_stone) = 0;
 	virtual eResultCommand CommandPlacementStone(const char in_alphabet, const unsigned int in_lineNumber, const BoardData::eStone in_stone) = 0;
 
+#ifdef __CUI_GAME__
+#else
+	virtual eResultCommand CommandPlacementStone(const unsigned long in_rModelHandle, const BoardData::eStone in_stone) = 0;
+#endif
+
 	// 石を置いたコマンドのundo
 	virtual bool CommandUndoPlacement(const BoardData::eStone in_stone) = 0;
+
+	// 打ち手が打てる箇所にマークを付ける
+	virtual void InputPlaceStoneMark(const BoardData::eStone in_stone) = 0;
+
+	// マスに付けたマークをクリア
+	virtual void ClearPlaceStoneMark() = 0;
 };
 
 /// <summary>
@@ -74,12 +85,6 @@ public:
 
 	// 指定位置のマスにユーザー(自身と敵)の手で置けるかどうか
 	virtual inline const bool IsUserPlaceSquares(const int in_x, const int in_y) = 0;
-
-	// 打ち手が打てる箇所にマークを付ける
-	virtual void InputPlaceStoneMark(const BoardData::eStone in_stone) = 0;
-
-	// マスに付けたマークをクリア
-	virtual void ClearPlaceStoneMark() = 0;
 
 	// 指定したマスの開放度取得
 	virtual int GetLibertry(int in_x, int in_y) = 0;

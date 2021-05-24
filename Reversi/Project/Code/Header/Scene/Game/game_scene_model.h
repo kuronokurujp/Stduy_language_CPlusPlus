@@ -45,7 +45,6 @@ public:
 	void Initlize(RenderingInterface* in_pRendering, KeyboardInterface* in_pKeyboard);
 
 	enum_game_state GetState() const { return this->_game_state; }
-	// TODO: 中身を作る
 	void GameStart();
 	void GameReset();
 	void BeginTurn();

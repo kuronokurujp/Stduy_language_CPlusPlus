@@ -22,7 +22,7 @@ public:
 	// タッチイベントデータ
 	union _touch_event_data_
 	{
-		struct _touch_event_model_
+		struct _model_
 		{
 			unsigned long handle;
 		} _touch_model;
@@ -43,7 +43,7 @@ public:
 	virtual void OnTouchEvent(
 		const eTouchEvent in_type, std::vector<_touch_event_data_>& in_datas)
 	{
-		// TODO: ラムダ式のイベント変数があれば呼び出す
+		// ラムダ式のイベント変数があれば呼び出す
 		this->_touch_event_to_actor(this->_pOwner, in_type, in_datas);
 	}
 

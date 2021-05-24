@@ -25,13 +25,20 @@ public:
 
 	SimpleTextImageRect(const unsigned int in_buffer_mem_size = 0) {
 		this->_Clear();
-		// あらかじめメモリバッファを確保
-		this->_CreateBuffer(in_buffer_mem_size / 2, in_buffer_mem_size / 2);
+
+		this->CreateTempBufferSize(in_buffer_mem_size);
 	}
 
-	~SimpleTextImageRect()
-	{
+	~SimpleTextImageRect() {
 		this->_FreeBuffer();
+	}
+
+	// 作業用バッファを確保
+	void CreateTempBufferSize(const unsigned int in_buffer_mem_size)
+	{
+		// 作業用バッファサイズ値があればあらかじめバッファを確保
+		if (0 < in_buffer_mem_size)
+			this->_CreateBuffer(in_buffer_mem_size / 2, in_buffer_mem_size / 2);
 	}
 
 	// テキスト画像作成
@@ -117,13 +124,23 @@ public:
 					cpos_w += this->_CalcCharWidth(p_bitmap, in_font_size, in_char_space_size);
 				}
 			}
+
+			this->_font_w = cpos_w;
+			this->_font_h = cpos_h;
 		}
+
+		this->_write_char_num = num_chars;
 
 		return true;
 	}
 
 	inline unsigned int Width() const { return this->_w; }
 	inline unsigned int Height() const { return this->_h; }
+
+	inline unsigned int FontWidth() const { return this->_font_w; }
+	inline unsigned int FontHeight() const { return this->_font_h; }
+
+	inline unsigned int GetWriteCharNum() const { return this->_write_char_num; }
 
 	inline _tag_color_union_ GetBuffer(unsigned int x, unsigned int y) {
 		return this->_colors[(this->_w * y) + x];
@@ -135,6 +152,7 @@ private:
 		this->_colors = NULL;
 		this->_w = this->_h = 0;
 		this->_mem_size = 0;
+		this->_write_char_num = 0;
 	}
 
 	inline bool _IsNextLineCode(const uint32_t in_char_code) {
@@ -190,8 +208,10 @@ private:
 
 		this->_colors = NULL;
 
-		this->_w = this->_h = 0;
+		this->_w = this->_h = this->_font_w = this->_font_h = 0;
 		this->_mem_size = 0;
+
+		this->_write_char_num = 0;
 	}
 
 	inline void _TranslateBuffer(
@@ -208,7 +228,8 @@ private:
 	}
 
 	_tag_color_union_* _colors;
-	unsigned int _w, _h;
+	unsigned int _w, _h, _font_w, _font_h;
 	unsigned int _mem_size;
+	unsigned int _write_char_num;
 };
 #endif // __FONT_LIB_SIMPLE_TEXT_IMAGE_RECT_H__

@@ -23,16 +23,14 @@ TerminalRenderComponent::TerminalRenderComponent(Actor* in_pActor, RenderingInte
 	}
 }
 
-TerminalRenderComponent::~TerminalRenderComponent()
-{
+TerminalRenderComponent::~TerminalRenderComponent() {
 	SAFETY_MEM_RELEASE(this->_p_dst_buffer_draw_rect_half_character);
 }
 
 /// <summary>
 /// 画面クリア.
 /// </summary>
-void TerminalRenderComponent::Cls()
-{
+void TerminalRenderComponent::Cls() {
 	memset(this->_p_dst_buffer_draw_rect_half_character, this->_renderClsCharacterCode, this->_textRectHalfCharactersMemSize);
 }
 
@@ -52,11 +50,8 @@ void TerminalRenderComponent::ScrollLineText()
 /// </summary>
 bool TerminalRenderComponent::WriteLineText(const unsigned int in_linePosition, const char* in_pWriteText)
 {
-	// TODO: GUIでは一行を書き込む事に改行コードを入れる必要がある
 	if (this->_text_rect_height <= in_linePosition)
-	{
 		return false;
-	}
 
 	char* pWriteTextPointer = &this->_p_dst_buffer_draw_rect_half_character[this->_text_rect_width * in_linePosition];
 	unsigned lineMemSize = this->_textRectHalfCharactersMemSize / this->_text_rect_height;
@@ -90,8 +85,8 @@ void TerminalRenderComponent::Draw(RenderingInterface* in_pRendering)
 	// 画面サイズが変わらず固定なので固定設定でいい
 	in_pRendering->FlashRectHalfCharacter(
 		this->_p_dst_buffer_draw_rect_half_character,
-		0,
-		8,
+		0.0f,
+		0.7f,
 		this->_text_rect_width,
 		this->_text_rect_height
 	);

@@ -19,11 +19,15 @@ public:
 	GameSceneModel* GetModel() { return this->_pModel; }
 
 private:
+	bool _IsGameReset();
+
 	void _Clear();
 
 	GameSceneModel* _pModel;
 
 	KeyboardInterface* _p_keyboard;
+
+	bool _b_game_reset;
 };
 
 #endif // __GAME_SCENE_CONTROLLER_H__

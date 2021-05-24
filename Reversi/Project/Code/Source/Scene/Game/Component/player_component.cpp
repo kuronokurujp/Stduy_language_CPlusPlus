@@ -11,7 +11,7 @@
 
 // TODO: プレイヤー用の入力コンポーネント追加
 #ifdef __CUI_GAME__
-class PlayerInputComponent final : public Component
+class PlayerInputComponent final : public InputComponent
 {
 public:
 	PlayerInputComponent(Actor* in_pOwner, KeyboardInterface* in_pKeyboard)
@@ -21,7 +21,27 @@ public:
 		this->_p_keyboard = in_pKeyboard;
 	}
 
-	void Update(const float in_deltaTimeSecond) override final {}
+	bool Input() {
+		// キーボードからテキスト入力が確定したか
+		if (this->_p_keyboard->IsConfirmText() == false)
+		{
+			// 表示テキスト生成
+			const char* pStoneName = pStoneHandComponent->GetUseStone() == BoardData::eStone_ColorWhite ? "White" : "Black";
+			// テキスト入力コンポーネントでもっと分かりやすくする
+			// TODO: 全文が表示されない
+			pStoneHandComponent->SetObjectText(
+				"Player Turn %sStone\n"
+				"- InputText description\n"
+				"-- [1-8][a-h] => [BoardLineNumber][BoardAlphabet]\n"
+				"-- u => Undo\n"
+				"- TextInput: %s\n",
+				pStoneName,
+				this->_p_keyboard->GetConfirmInputText());
+		}
+		else {
+			return true;
+		}
+	}
 
 	// アンドゥ入力しているか
 	const bool IsUndo()
@@ -72,12 +92,23 @@ public:
 			for (auto it = in_datas.begin(); it != in_datas.end(); ++it)
 				printf("input player: model handle = %ul\n", it->_touch_model.handle);
 #endif
+			// クリックしたのが配置できる石の場合、石が置ける座標を取得
+			// クリックできるのが一つだけという前提だから
+			// 0番目のクリックデータを取得すれば良い
+			if (in_datas.size() > 0)
+				memcpy(&this->_touch_data, &in_datas.at(0), sizeof(this->_touch_data));
 
 			break;
 		}
 		default:
 			break;
 		}
+	}
+
+	// 入力中
+	bool Input()
+	{
+		return true;
 	}
 
 	// アンドゥ入力しているか
@@ -95,9 +126,20 @@ public:
 	const StoneHandComponent::eResultPlacementStone ExecutePlacementStone()
 	{
 		if (!this->_enable)
-			return StoneHandComponent::eResultPlacementStone_Idle;
+			return StoneHandComponent::eResultPlacementStone_FlipMiss;
 
-		return StoneHandComponent::eResultPlacementStone_Idle;
+		StoneHandComponent* pStoneHandComponent = this->_pOwner->GetComponent<StoneHandComponent*>();
+		if (pStoneHandComponent == NULL)
+			return StoneHandComponent::eResultPlacementStone_FlipMiss;
+
+		if (this->_touch_data.handle == 0)
+			return StoneHandComponent::eResultPlacementStone_FlipMiss;
+
+		// 石を置く
+		auto result = pStoneHandComponent->SetPlacementStone(this->_touch_data);
+		this->_touch_data.handle = 0;
+
+		return result;
 	}
 
 	void Enable(const bool in_flag) { this->_enable = in_flag; }
@@ -111,6 +153,8 @@ private:
 
 	KeyboardInterface* _p_keyboard;
 	bool _enable;
+	// タッチしたモデル情報
+	InputComponent::_touch_event_data_::_model_ _touch_data;
 };
 #endif
 
@@ -123,7 +167,7 @@ PlayerComponent::PlayerComponent(Actor* in_pOwner, KeyboardInterface* in_pKeyboa
 
 	this->_p_textAnimationComponent = new TextAnimationComponent(in_pOwner);
 
-	// TODO: モデルをクリック検知するコンポーネント追加
+	// モデルをクリック検知するコンポーネント追加
 	this->_p_inputComponent = new PlayerInputComponent(in_pOwner, in_pKeyboard);
 	this->_p_inputComponent->Enable(false);
 }
@@ -141,69 +185,64 @@ void PlayerComponent::Update(const float in_deltaTimeSecond)
 	{
 	case StoneHandComponent::eState_Start:
 	{
+		// 配置できる石を表示
 		pStoneHandComponent->Start();
 
-		this->_p_inputComponent->Enable(true);
-
-		this->_state = eState_InputText;
+		this->_state = eState_TurnMessageStartAnimation;
 		break;
 	}
 	case StoneHandComponent::eState_Update:
 	{
 		switch (this->_state)
 		{
-		case eState_InputText:
-		{
-#ifdef __CUI_GAME__
-			// キーボードからテキスト入力が確定したか
-			if (this->_p_keyboard->IsConfirmText() == false)
-			{
-				// 表示テキスト生成
-				const char* pStoneName = pStoneHandComponent->GetUseStone() == BoardData::eStone_ColorWhite ? "White" : "Black";
-				// テキスト入力コンポーネントでもっと分かりやすくする
-				// TODO: 全文が表示されない
-				pStoneHandComponent->SetObjectText(
-					"Player Turn %sStone\n"
-					"- InputText description\n"
-					"-- [1-8][a-h] => [BoardLineNumber][BoardAlphabet]\n"
-					"-- u => Undo\n"
-					"- TextInput: %s\n",
-					pStoneName,
-					this->_p_keyboard->GetConfirmInputText());
-			}
-			else
-			{
-				this->_state = eState_TurnBegin;
-			}
-#else
-			this->_state = eState_TurnBegin;
-#endif
-
-			break;
-		}
-		case eState_TurnBegin:
+		case eState_TurnMessageStartAnimation:
 		{
 #ifdef __CUI_GAME__
 #else
 			// 表示テキスト生成
 			const char* pStoneName = pStoneHandComponent->GetUseStone() == BoardData::eStone_ColorWhite ? "White" : "Black";
-			// テキスト入力コンポーネントでもっと分かりやすくする
-			pStoneHandComponent->SetObjectText(
-				"Player Turn %sStone\n", pStoneName);
+
+			std::string str = "PlayerTurn ";
+			str += pStoneName;
+			str += "\n";
+			str += " Mouse Click Stone!";
+			str += "\n";
+
+			// TODO: ターンテキストアニメ開始
+			// 座標指定と文字列が中央そろえにするように設定できるようにする
+			this->_p_textAnimationComponent->StartAnimation(str.c_str(), false);
 #endif
+			this->_state = eState_TurnMessageWaitAnimation;
+
+			break;
+		}
+		case eState_TurnMessageWaitAnimation:
+		{
+			pStoneHandComponent->SetObjectText(this->_p_textAnimationComponent->GetText());
+
+			// テキストアニメが終わったら次のステートに遷移
+			if (!this->_p_textAnimationComponent->IsAnimation()) {
+				this->_p_inputComponent->Enable(true);
+				pStoneHandComponent->EnablePlacementMark(true);
+
+				this->_state = eState_StonePlacementBegin;
+			}
+
+			break;
+		}
+		case eState_StonePlacementBegin:
+		{
+			if (!this->_p_inputComponent->Input()) {
+				break;
+			}
 
 			// 入力したテキストから石を置く
-			/*
-			const char* inputText = this->_p_keyboard->GetConfirmEnterText();
-			if ((strlen(inputText) == 1) && (inputText[0] == 'u'))
-			*/
 			if (this->_p_inputComponent->IsUndo())
 			{
 				// 一つ前の手に戻す
 				BoardData::sPoint undoPlacementStonePoint;
 				if (pStoneHandComponent->UndoPlacement(undoPlacementStonePoint) == true)
 				{
-					this->_state = eState_InputText;
 				}
 				else
 				{
@@ -214,15 +253,13 @@ void PlayerComponent::Update(const float in_deltaTimeSecond)
 			}
 			else
 			{
-				// TODO: 石をクリックしているかどうかチェック
-				//auto result = pStoneHandComponent->SetPlacementStone(inputText);
+				// 石をクリックしているかどうかチェック
 				auto result = this->_p_inputComponent->ExecutePlacementStone();
 				if (result != StoneHandComponent::eResultPlacementStone_Sucess)
 				{
+#ifdef __CUI_GAME__
 					switch (result)
 					{
-					case StoneHandComponent::eResultPlacementStone_Idle:
-						break;
 					case StoneHandComponent::eResultPlacementStone_InputCountMiss:
 						this->_p_textAnimationComponent->StartAnimation(
 							"There is a mistake in the number of input characters / input enter", false);
@@ -248,16 +285,17 @@ void PlayerComponent::Update(const float in_deltaTimeSecond)
 					}
 
 					this->_state = eState_ErrorMessage;
-				}
-				else
-				{
-					this->_state = eState_TurnEnd;
-				}
+#else
+#endif
 			}
+				else {
+					this->_state = eState_StonePlacmentEnd;
+				}
+		}
 
 			break;
 		}
-		case eState_TurnEnd:
+		case eState_StonePlacmentEnd:
 		{
 			// ターン終了
 			this->_p_inputComponent->Enable(false);
@@ -267,30 +305,28 @@ void PlayerComponent::Update(const float in_deltaTimeSecond)
 		}
 		case eState_ErrorMessage:
 		{
-			if (this->_p_textAnimationComponent->IsAnimation() == true)
-			{
+			if (this->_p_textAnimationComponent->IsAnimation()) {
 				pStoneHandComponent->SetObjectText(this->_p_textAnimationComponent->GetText());
 				break;
 			}
 
 			// 確定入力したらステート終了
-			if (this->_p_keyboard->IsConfirmText() == true)
-			{
-				this->_state = eState_InputText;
+			if (this->_p_keyboard->IsConfirmText() == true) {
+				this->_state = eState_StonePlacementBegin;
 			}
 
 			break;
 		}
-		}
+	}
 
 		break;
 	}
-	}
+}
 }
 
 void PlayerComponent::_Clear()
 {
-	this->_state = eState_InputText;
+	this->_state = eState_TurnMessageStartAnimation;
 	this->_p_keyboard = NULL;
 	this->_p_textAnimationComponent = NULL;
 	this->_p_inputComponent = NULL;

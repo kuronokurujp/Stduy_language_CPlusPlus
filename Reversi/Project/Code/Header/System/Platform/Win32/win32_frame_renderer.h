@@ -1,7 +1,9 @@
 ﻿#ifndef __WIN32_FRAME_RENDERER_H__
 #define __WIN32_FRAME_RENDERER_H__
 
+#include "common.h"
 #include "System/Interface/console_render_interface.h"
+#include "System/text_font.h"
 
 #include "Window/Code/Header/Render/PathTracing/raytrace_space.h"
 
@@ -28,11 +30,13 @@ public:
 
 	// レイトレース空間を扱うインスタンスポイントを取得
 	inline RayTraceSpace* GetRayTraceSpacePtr() const { return this->_p_raytrace_space; }
-	// 描画するテキスト文字列取得
-	inline const std::string& GetRenderTextString() const { return this->_render_text_string; }
-	// 描画するテキスト文字列が変わっているか
-	inline const bool IsUpdateRenderTextString() const {
-		return (this->_old_render_text_string != this->_render_text_string);
+
+	// 表示するテキストフォントリスト
+	inline const TextFont* GetTextFontPtr(const unsigned in_index) const {
+		if (StaticSingleArrayLength(this->_text_font_array) <= in_index)
+			return NULL;
+
+		return &this->_text_font_array[in_index];
 	}
 
 	// 画面クリア文字コード
@@ -44,8 +48,8 @@ public:
 	/// </summary>
 	void FlashRectHalfCharacter(
 		const char* in_ppRectHalfCharcter,
-		const int in_startPointX,
-		const int in_startPointY,
+		const float in_startPointX,
+		const float in_startPointY,
 		const unsigned int in_width,
 		const unsigned int in_height) override final;
 
@@ -54,25 +58,28 @@ public:
 	/// </summary>
 	void FlashLineHalfCharacter(
 		const char* in_pRectHalfCharcter,
-		const int in_startPointX,
-		const int in_startPointY) override final;
+		const float in_startPointX,
+		const float in_startPointY) override final;
 
 	/// <summary>
 	/// 描画.
 	/// </summary>
 	void Draw() override final;
 
+	void EndDraw() override final;
+
 private:
+	void _Clear()
+	{
+		this->_text_font_work_index = 0;
+		this->_p_raytrace_space = nullptr;
+		this->_width = this->_height = 0;
+	}
+
 	// 書き込まれた文字列をstringで出力
-	bool _CreateScreenTextString();
+	//bool _CreateScreenTextString();
 	// 画面描画テキスト文字列の中身をクリア
 	void _CleanCharacterMap();
-
-	enum eHalfCharacterMapSize
-	{
-		eHalfCharacterMapSize_Width = 100,
-		eHalfCharacterMapSize_Height = 34,
-	};
 
 	RayTraceSpace* _p_raytrace_space;
 	int _width, _height;
@@ -82,7 +89,8 @@ private:
 	std::string _old_render_text_string;
 
 	// 画面に表示するテキスト文字列
-	char _renderingHalfCharcterMap[eHalfCharacterMapSize_Height][(eHalfCharacterMapSize_Width + 1)];
+	TextFont _text_font_array[32];
+	unsigned int _text_font_work_index;
 };
 
 #endif __WIN32_FRAME_RENDERER_H__

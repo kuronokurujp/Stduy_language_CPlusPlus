@@ -27,7 +27,12 @@ GameSceneController::GameSceneController(
 		if (this != in_p_actor)
 			return;
 
-		this->GetModel()->NoticeTouchEvent(t, d);
+		auto p_model = this->GetModel();
+		p_model->NoticeTouchEvent(t, d);
+
+		if (p_model->GetState() == GameSceneModel::eGameStaet_EndGame) {
+			this->_b_game_reset = true;
+		}
 	};
 
 	auto p_input_component = new InputComponent(
@@ -64,8 +69,9 @@ void GameSceneController::UpdateActor(float in_deltaTimeSecond)
 	case GameSceneModel::eGameStaet_EndGame:
 	{
 		// リトライのキーボード入力があれば再度プレイ
-		if (this->_p_keyboard->IsConfirmText() == true)
-		{
+		if (this->_IsGameReset()) {
+			this->_b_game_reset = false;
+
 			this->_pModel->GameReset();
 		}
 
@@ -77,8 +83,18 @@ void GameSceneController::UpdateActor(float in_deltaTimeSecond)
 	this->_pModel->UpdateActor(in_deltaTimeSecond);
 }
 
+bool GameSceneController::_IsGameReset()
+{
+#if _CUI_GAME
+	this->_b_game_reset = this->_p_keyboard->IsConfirmText();
+#else
+#endif
+	return this->_b_game_reset;
+}
+
 void GameSceneController::_Clear()
 {
 	this->_pModel = NULL;
 	this->_p_keyboard = NULL;
+	this->_b_game_reset = false;
 }

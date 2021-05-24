@@ -223,8 +223,12 @@ void GameSceneModel::EndTurn()
 			"Game Result!!",
 			// 勝者の表記
 			winnerText,
+#if _CUI_GAME
 			"-- Retry InputKey => r",
 			std::string("- InputText: ") + this->_p_keyboard->GetConfirmInputText(),
+#else
+			"Mouse Left Click"
+#endif
 		};
 
 		for (unsigned int i = 0; i < StaticSingleArrayLength(aResultTerminalText); ++i)

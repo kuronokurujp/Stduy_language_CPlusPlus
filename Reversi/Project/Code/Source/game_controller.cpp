@@ -52,6 +52,7 @@ void GameController::Render()
 // レンダー遅延
 void GameController::EndRender()
 {
+	this->_pRendering->EndDraw();
 }
 
 // タッチイベント

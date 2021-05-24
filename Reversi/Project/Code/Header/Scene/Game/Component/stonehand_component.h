@@ -2,6 +2,8 @@
 #define __STONE_HAND_COMPONENT_H__
 
 #include "Component/component.h"
+#include "Component/input_component.h"
+
 #include "Scene/Game/Interface/board_Interface.h"
 
 #include <string>
@@ -23,7 +25,6 @@ public:
 		eResultPlacementStone_InputTextMiss,
 		eResultPlacementStone_FlipMiss,
 		eResultPlacementStone_Miss,
-		eResultPlacementStone_Idle,
 	};
 
 	StoneHandComponent(Actor* in_pActor, const BoardData::eStone in_useStone, const char in_renderClsCharcterCode);
@@ -31,6 +32,8 @@ public:
 	void Reset(BoardControllerInteface* in_pBoardController, BoardStatusInteface* in_pBoardStatus);
 	void Start();
 	void End();
+
+	void EnablePlacementMark(const bool in_b_placement_mark);
 
 	// 未使用
 	void Update(const float in_deltaTimeSecond) override final {}
@@ -46,6 +49,11 @@ public:
 	/// 盤の位置から石を設定.
 	/// </summary>
 	const eResultPlacementStone SetPlacementStone(const BoardData::sPoint& in_rBoardPoint);
+#ifdef __CUI_GAME__
+#else
+	const eResultPlacementStone SetPlacementStone(
+		const InputComponent::_touch_event_data_::_model_& in_rTouchData);
+#endif
 
 	// 石を置いたコマンドのundo
 	bool UndoPlacement(BoardData::sPoint& out_rUndoPoint);
@@ -74,6 +82,9 @@ public:
 
 private:
 	void _Clear();
+
+	// オブジェクトの文字列をクリア
+	void _ClearObjectText();
 
 	eState _state;
 	std::string _objectText;

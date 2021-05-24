@@ -24,6 +24,14 @@ public:
 	/// 指定した石から文字コード取得.
 	/// </summary>
 	const char GetStoneCharacterCode(const BoardData::eStone in_stone);
+#ifdef __CUI_GAME__
+#else
+	/// <summary>
+	/// モデルハンドルを指定して石のモデルを見つける.
+	/// 見つけたら石の座標を返す
+	/// </summary>
+	const bool FindStoneModelType(BoardData::sPoint* out_p_point, const unsigned long in_handle);
+#endif
 
 	void SetStoneCount(const BoardData::eStone in_stone, const unsigned int in_count);
 

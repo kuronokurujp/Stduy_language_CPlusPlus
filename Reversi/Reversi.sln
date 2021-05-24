@@ -19,6 +19,8 @@ Global
 		Debug|x86 = Debug|x86
 		Font_Test_Debug|x64 = Font_Test_Debug|x64
 		Font_Test_Debug|x86 = Font_Test_Debug|x86
+		Production|x64 = Production|x64
+		Production|x86 = Production|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 		Window_Test_Debug|x64 = Window_Test_Debug|x64
@@ -33,6 +35,10 @@ Global
 		{2A8E168D-7F7C-4B65-8549-B4DED50C8445}.Debug|x86.Build.0 = Debug|Win32
 		{2A8E168D-7F7C-4B65-8549-B4DED50C8445}.Font_Test_Debug|x64.ActiveCfg = Debug|x64
 		{2A8E168D-7F7C-4B65-8549-B4DED50C8445}.Font_Test_Debug|x86.ActiveCfg = Debug|Win32
+		{2A8E168D-7F7C-4B65-8549-B4DED50C8445}.Production|x64.ActiveCfg = Production|x64
+		{2A8E168D-7F7C-4B65-8549-B4DED50C8445}.Production|x64.Build.0 = Production|x64
+		{2A8E168D-7F7C-4B65-8549-B4DED50C8445}.Production|x86.ActiveCfg = Production|Win32
+		{2A8E168D-7F7C-4B65-8549-B4DED50C8445}.Production|x86.Build.0 = Production|Win32
 		{2A8E168D-7F7C-4B65-8549-B4DED50C8445}.Release|x64.ActiveCfg = Release|x64
 		{2A8E168D-7F7C-4B65-8549-B4DED50C8445}.Release|x64.Build.0 = Release|x64
 		{2A8E168D-7F7C-4B65-8549-B4DED50C8445}.Release|x86.ActiveCfg = Release|Win32
@@ -49,6 +55,10 @@ Global
 		{24DC78B6-EADA-4398-AE40-E16999CC35A0}.Font_Test_Debug|x64.Build.0 = Debug|x64
 		{24DC78B6-EADA-4398-AE40-E16999CC35A0}.Font_Test_Debug|x86.ActiveCfg = Debug|Win32
 		{24DC78B6-EADA-4398-AE40-E16999CC35A0}.Font_Test_Debug|x86.Build.0 = Debug|Win32
+		{24DC78B6-EADA-4398-AE40-E16999CC35A0}.Production|x64.ActiveCfg = Production|x64
+		{24DC78B6-EADA-4398-AE40-E16999CC35A0}.Production|x64.Build.0 = Production|x64
+		{24DC78B6-EADA-4398-AE40-E16999CC35A0}.Production|x86.ActiveCfg = Production|Win32
+		{24DC78B6-EADA-4398-AE40-E16999CC35A0}.Production|x86.Build.0 = Production|Win32
 		{24DC78B6-EADA-4398-AE40-E16999CC35A0}.Release|x64.ActiveCfg = Release|x64
 		{24DC78B6-EADA-4398-AE40-E16999CC35A0}.Release|x64.Build.0 = Release|x64
 		{24DC78B6-EADA-4398-AE40-E16999CC35A0}.Release|x86.ActiveCfg = Release|Win32
@@ -69,6 +79,10 @@ Global
 		{63ADAC9A-C73C-4FD4-A8B7-5B8A1A4DB88C}.Font_Test_Debug|x64.Build.0 = Font_Test_Debug|x64
 		{63ADAC9A-C73C-4FD4-A8B7-5B8A1A4DB88C}.Font_Test_Debug|x86.ActiveCfg = Font_Test_Debug|Win32
 		{63ADAC9A-C73C-4FD4-A8B7-5B8A1A4DB88C}.Font_Test_Debug|x86.Build.0 = Font_Test_Debug|Win32
+		{63ADAC9A-C73C-4FD4-A8B7-5B8A1A4DB88C}.Production|x64.ActiveCfg = Production|x64
+		{63ADAC9A-C73C-4FD4-A8B7-5B8A1A4DB88C}.Production|x64.Build.0 = Production|x64
+		{63ADAC9A-C73C-4FD4-A8B7-5B8A1A4DB88C}.Production|x86.ActiveCfg = Production|Win32
+		{63ADAC9A-C73C-4FD4-A8B7-5B8A1A4DB88C}.Production|x86.Build.0 = Production|Win32
 		{63ADAC9A-C73C-4FD4-A8B7-5B8A1A4DB88C}.Release|x64.ActiveCfg = Release|x64
 		{63ADAC9A-C73C-4FD4-A8B7-5B8A1A4DB88C}.Release|x64.Build.0 = Release|x64
 		{63ADAC9A-C73C-4FD4-A8B7-5B8A1A4DB88C}.Release|x86.ActiveCfg = Release|Win32

@@ -263,5 +263,8 @@
     <ClInclude Include="..\Code\Header\Component\input_component.h">
       <Filter>Code\Header\Component</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Header\System\text_font.h">
+      <Filter>Code\Header\System</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

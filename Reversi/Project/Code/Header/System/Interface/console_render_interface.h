@@ -38,8 +38,8 @@ public:
 	/// </summary>
 	virtual void FlashRectHalfCharacter(
 		const char* in_pRectCharcterHalfSize,
-		const int in_startPointX,
-		const int in_startPointY,
+		const float in_startPointX,
+		const float in_startPointY,
 		const unsigned int in_width,
 		const unsigned int in_height) = 0;
 
@@ -48,13 +48,15 @@ public:
 	/// </summary>
 	virtual void FlashLineHalfCharacter(
 		const char* in_pRectCharcterHalfSize,
-		const int in_startPointX,
-		const int in_startPointY) = 0;
+		const float in_startPointX,
+		const float in_startPointY) = 0;
 
 	/// <summary>
 	/// 描画.
 	/// </summary>
 	virtual void Draw() = 0;
+
+	virtual void EndDraw() = 0;
 
 private:
 	void operator =(const RenderingInterface(&src)) {}

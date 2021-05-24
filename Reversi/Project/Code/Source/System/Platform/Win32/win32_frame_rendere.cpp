@@ -9,12 +9,9 @@
 Win32FrameRenderer::Win32FrameRenderer(const int in_w, const int in_h)
 	: RenderingInterface()
 {
+	this->_Clear();
+
 	this->_CleanCharacterMap();
-	// あらかじめ文字列のメモリ確保
-	{
-		this->_render_text_string.reserve(eHalfCharacterMapSize_Height * eHalfCharacterMapSize_Width);
-		this->_old_render_text_string.reserve(eHalfCharacterMapSize_Height * eHalfCharacterMapSize_Width);
-	}
 
 	this->_draws.clear();
 
@@ -24,16 +21,14 @@ Win32FrameRenderer::Win32FrameRenderer(const int in_w, const int in_h)
 	this->_height = in_h;
 }
 
-Win32FrameRenderer::~Win32FrameRenderer()
-{
+Win32FrameRenderer::~Win32FrameRenderer() {
 	SAFETY_MEM_RELEASE(this->_p_raytrace_space);
 }
 
 /// <summary>
 /// 描画インターフェイスの登録.
 /// </summary>
-void Win32FrameRenderer::AddViewInterface(RenderViewInterface* in_pAddRender)
-{
+void Win32FrameRenderer::AddViewInterface(RenderViewInterface* in_pAddRender) {
 	this->_draws.push_back(in_pAddRender);
 }
 
@@ -66,33 +61,26 @@ const unsigned Win32FrameRenderer::GetTextRenderHeight() {
 /// </summary>
 void Win32FrameRenderer::FlashRectHalfCharacter(
 	const char* in_ppRectHalfCharcter,
-	const int in_startPointX,
-	const int in_startPointY,
+	const float in_startPointX,
+	const float in_startPointY,
 	const unsigned int in_width,
 	const unsigned int in_height)
 {
-	// 一行ずつ書き込む
-	int mapY = 0;
-	int mapX = 0;
-
+	std::string text;
 	for (unsigned int y = 0; y < in_height; ++y)
 	{
-		mapY = y + in_startPointY;
-		// 画面範囲外かチェック
-		if ((mapY < 0) || (mapY >= eHalfCharacterMapSize_Height))
-			continue;
-
+		// 一文字をつなげて一行の文字列にする
+		text.clear();
 		for (unsigned int x = 0; x < in_width; ++x)
-		{
-			mapX = x + in_startPointX;
-
-			// 画面範囲外かチェック
-			if ((mapX < 0) || (mapX >= eHalfCharacterMapSize_Width))
-				continue;
-
 			// 一文字ずつ書き込む
-			this->_renderingHalfCharcterMap[mapY][mapX] = in_ppRectHalfCharcter[y * in_width + x];
-		}
+			text += in_ppRectHalfCharcter[y * in_width + x];
+
+		// 一文字なので末尾に改行
+		text += "\n";
+		// 文字列を一行書き込む
+		auto offset_y = static_cast<float>(y) / static_cast<float>(in_height);
+		offset_y *= 0.7f;
+		this->FlashLineHalfCharacter(text.c_str(), in_startPointX, in_startPointY + offset_y);
 	}
 }
 
@@ -101,29 +89,18 @@ void Win32FrameRenderer::FlashRectHalfCharacter(
 /// </summary>
 void Win32FrameRenderer::FlashLineHalfCharacter(
 	const char* in_pRectHalfCharcter,
-	const int in_startPointX,
-	const int in_startPointY)
+	const float in_startPointX,
+	const float in_startPointY)
 {
-	// TODO: テキスト描画する文字をテキストバッファを追加
-	int mapY = in_startPointY;
+	assert(this->_text_font_work_index < StaticSingleArrayLength(this->_text_font_array));
 
-	// 文字書き込み範囲外かチェック
-	if ((mapY < 0) || (mapY >= eHalfCharacterMapSize_Height))
-		return;
+	auto p_work_text_font = &this->_text_font_array[this->_text_font_work_index];
 
-	unsigned int width = static_cast<unsigned int>(strlen(in_pRectHalfCharcter));
-	int mapX = 0;
-	for (unsigned int x = 0; x < width; ++x)
-	{
-		mapX = x + in_startPointX;
+	strcpy_s(p_work_text_font->_text, StaticSingleArrayLength(p_work_text_font->_text), in_pRectHalfCharcter);
+	p_work_text_font->_x = in_startPointX;
+	p_work_text_font->_y = in_startPointY;
 
-		// 文字書き込み範囲外かチェック
-		if ((mapX < 0) || (mapX >= eHalfCharacterMapSize_Width))
-			continue;
-
-		// 一文字ずつ書き込む
-		this->_renderingHalfCharcterMap[mapY][mapX] = in_pRectHalfCharcter[x];
-	}
+	++this->_text_font_work_index;
 }
 
 /// <summary>
@@ -133,40 +110,16 @@ void Win32FrameRenderer::Draw()
 {
 	for (auto render : this->_draws)
 		render->Draw(this);
-
-	// スクリーンに描画するテキスト文字列を作成
-	this->_CreateScreenTextString();
-	this->_CleanCharacterMap();
 }
 
-// 書き込まれた文字列をstringで出力
-bool Win32FrameRenderer::_CreateScreenTextString()
+void Win32FrameRenderer::EndDraw()
 {
-	// 変更前の文字列をコピー
-	this->_old_render_text_string = this->_render_text_string;
-
-	// 書き込んだ文字列を整理して文字列型でまとめる
-	// 文字はアスキーコード前提
-	this->_render_text_string.clear();
-	{
-		for (unsigned int y = 0; y < eHalfCharacterMapSize_Height; ++y)
-		{
-			for (unsigned int x = 0; x < eHalfCharacterMapSize_Width; ++x)
-				this->_render_text_string += this->_renderingHalfCharcterMap[y][x];
-
-			// 改行コードを入れる
-			if (y < (eHalfCharacterMapSize_Height - 1))
-				this->_render_text_string += '\n';
-		}
-	}
-
-	// 文字列があれば出力成功
-	return (0 < this->_render_text_string.length());
+	this->_CleanCharacterMap();
 }
 
 // 画面描画テキスト文字列の中身をクリア
 void Win32FrameRenderer::_CleanCharacterMap()
 {
-	// 0でうめると文字が続いているの途中で切られる
-	::memset(this->_renderingHalfCharcterMap, ' ', sizeof(this->_renderingHalfCharcterMap));
+	::memset(this->_text_font_array, 0, sizeof(this->_text_font_array));
+	this->_text_font_work_index = 0;
 }

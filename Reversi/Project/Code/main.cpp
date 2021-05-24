@@ -44,6 +44,8 @@ public:
 	GUIWindowModelForGame(Win32FrameRenderer* in_p_renderer)
 		: GUIWindowModel(in_p_renderer->GetTextRenderWidth(), in_p_renderer->GetTextRenderHeight())
 	{
+		this->_Clear();
+
 		this->_p_renderer = in_p_renderer;
 		int width = this->_p_renderer->GetTextRenderWidth();
 		int height = this->_p_renderer->GetTextRenderHeight();
@@ -63,14 +65,43 @@ public:
 				this->_font_core_data, p_font_file_name
 			);
 
-			this->_p_text_image_rect = this->_p_font_text_data->NewFontImageRect(320);
+			// あらかじめフォント画像を作成する
+			{
+				// 使用するフォント文字を文字列で記述
+				// 英数字と記号限定
+				const char* font_char_array = " 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ`~!@#$%^&*()_+|}{""':=-\\][';/.,<>";
+				this->_image_rect_buffer_max = strlen(font_char_array);
+
+				// 一文字ずつ取得して画像を作成
+				// 画像を1文字ずつ生成している
+				this->_p_font_image_buffers = new _struct_text_font_image[this->_image_rect_buffer_max];
+				char temp_char_array[2];
+				::memset(temp_char_array, 0, sizeof(temp_char_array));
+
+				for (unsigned int i = 0; i < this->_image_rect_buffer_max; ++i)
+				{
+					auto font_image = &this->_p_font_image_buffers[i];
+
+					font_image->ascll_code = font_char_array[i];
+					temp_char_array[0] = font_image->ascll_code;
+
+					// テキスト画像を出力してバッファに保存
+					this->_p_font_text_data->WriteFontImageTextRect(
+						&font_image->text_image_rect,
+						temp_char_array,
+						16, 2);
+				}
+			}
 		}
 	}
 
 	~GUIWindowModelForGame()
 	{
+		// フォントデータを破棄
 		{
-			this->_p_text_image_rect = nullptr;
+			// 生成したフォント画像を破棄
+			// デストラクタでバッファを解放している
+			SAFETY_MEM_ARRAY_RELEASE(this->_p_font_image_buffers);
 
 			if (this->_p_font_text_data != nullptr)
 				delete this->_p_font_text_data;
@@ -114,37 +145,77 @@ public:
 			}
 		}
 
-		// テキストフォントを表示
+		// テキストフォント描画
 		{
-			// 表示するテキストが変わったらテキストフォント画像バッファを更新する
-			// 画像バッファ更新に処理時間がかかるのでテキスト更新した時のみにする
-			if (this->_p_renderer->IsUpdateRenderTextString())
-			{
-				const std::string& text = this->_p_renderer->GetRenderTextString();
-				this->_p_font_text_data->WriteFontImageTextRect(
-					this->_p_text_image_rect,
-					text.c_str(),
-					16, 2);
-			}
+			unsigned int text_font_index = 0;
+			const TextFont* p_text_font = this->_p_renderer->GetTextFontPtr(text_font_index);
 
-			// テキストフォント画像バッファを描画バッファに転送
+			// TextFontのデータが見つからなくなるまで続ける
+			while (p_text_font != NULL)
 			{
-				unsigned int w = __min(this->_p_renderer->GetTextRenderWidth(), this->_p_text_image_rect->Width());
-				unsigned int h = __min(this->_p_renderer->GetTextRenderHeight(), this->_p_text_image_rect->Height());
-				for (unsigned int y = 0; y < h; ++y)
+				// ゲーム側で設定したテキストデータを取得
+				p_text_font = this->_p_renderer->GetTextFontPtr(text_font_index);
+				// テキストがある場合は描画対応
+				if (0 < strlen(p_text_font->_text))
 				{
-					for (unsigned int x = 0; x < w; ++x)
-					{
-						// 転送しないクリップする色ならスキップ
-						// TODO: ふちが削れて見た目の質が悪い
-						auto c = this->_p_text_image_rect->GetBuffer(x, y).gray_scale;
-						if (c == 0)
-							continue;
+					// 正規化デバイス座標系(-1 - 1)からスクリーン座標系に直す
+					auto pixel_begin_x = static_cast<unsigned int>(static_cast<float>(p_frame_buffer->Width()) * p_text_font->_x);
+					auto pixel_begin_y = static_cast<unsigned int>(static_cast<float>(p_frame_buffer->Height()) * p_text_font->_y);
 
-						p_frame_buffer->SetPixel(x, y, c);
+					for (unsigned int char_idx = 0; char_idx < strlen(p_text_font->_text); ++char_idx)
+					{
+						auto c = p_text_font->_text[char_idx];
+						_struct_text_font_image* p_find_image = NULL;
+						// 文字がフォント画像にあるか
+						{
+							for (unsigned int find_idx = 0; find_idx < this->_image_rect_buffer_max; ++find_idx)
+							{
+								auto image = &this->_p_font_image_buffers[find_idx];
+								if (image->ascll_code == c)
+								{
+									p_find_image = image;
+									break;
+								}
+							}
+						}
+
+						if (p_find_image != NULL)
+						{
+							// 画面に転送
+							unsigned int p_w = p_find_image->text_image_rect.FontWidth();
+							unsigned int w = __min(
+								this->_p_renderer->GetTextRenderWidth(), p_w + pixel_begin_x);
+
+							unsigned int p_h = p_find_image->text_image_rect.FontHeight();
+							unsigned int h = __min(
+								this->_p_renderer->GetTextRenderHeight(), p_h + pixel_begin_y);
+							for (unsigned int y = pixel_begin_y, p_y = 0; (y < h) && (p_y < p_h); ++y, ++p_y)
+							{
+								for (unsigned int x = pixel_begin_x, p_x = 0; (x < w) && (p_x < p_w); ++x, ++p_x)
+								{
+									// 転送しないクリップする色ならスキップ
+									// TODO: ふちが削れて見た目の質が悪い
+									auto c = p_find_image->text_image_rect.GetBuffer(p_x, p_y).gray_scale;
+									if (c == 0)
+										continue;
+
+									p_frame_buffer->SetPixel(x, y, c);
+								}
+							}
+
+							// 表示位置を横にずらす
+							pixel_begin_x += p_w;
+						}
+						// 表示した文字が画像フォントにない
+						// エラー扱いにする
+						else
+							assert(0);
 					}
 				}
-			}
+
+				++text_font_index;
+				p_text_font = this->_p_renderer->GetTextFontPtr(text_font_index);
+			};
 		}
 
 		GUIWindowModel::UpdateRender();
@@ -221,13 +292,31 @@ private:
 	}
 
 private:
+	struct _struct_text_font_image
+	{
+		char ascll_code;
+		SimpleTextImageRect text_image_rect;
+	};
+
+	void _Clear()
+	{
+		this->_p_renderer = nullptr;
+		this->_inv_d_width = 0.0;
+		this->_inv_d_heigth = 0.0;
+
+		this->_p_font_text_data = nullptr;
+		this->_p_font_image_buffers = NULL;
+		this->_image_rect_buffer_max = 0;
+	}
+
 	Win32FrameRenderer* _p_renderer;
 	double _inv_d_width;
 	double _inv_d_heigth;
 
 	std::shared_ptr<SimpleFontCoreData> _font_core_data;
 	SimpleFontTextData* _p_font_text_data;
-	std::shared_ptr<SimpleTextImageRect> _p_text_image_rect;
+	_struct_text_font_image* _p_font_image_buffers;
+	unsigned int _image_rect_buffer_max;
 };
 
 // ゲーム用のGUIウィンドウコントローラー
@@ -258,6 +347,12 @@ public:
 		this->_p_game_ctrl->Render();
 		// ここでレイトレースを描画反映している
 		GUIWindowController::Render();
+	}
+
+	void EndRender() override final
+	{
+		this->_p_game_ctrl->EndRender();
+		GUIWindowController::EndRender();
 	}
 
 	// タッチイベント
@@ -344,6 +439,7 @@ int main(int argc, const char * argv[])
 	GameController gameController(p_renderer, &keyboard);
 
 	GUIWindowControllerForGame ctrl(model, view, &gameController);
+
 	if (ctrl.Start() == false)
 		return -1;
 

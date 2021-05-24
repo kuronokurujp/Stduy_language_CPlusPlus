@@ -69,7 +69,9 @@ void BoardActor::Reset()
 /// <summary>
 /// 石を置くコマンド(座標指定).
 /// </summary>
-BoardControllerInteface::eResultCommand BoardActor::CommandPlacementStone(const BoardData::sPoint& in_rBoardPoint, const BoardData::eStone in_stone)
+BoardControllerInteface::eResultCommand BoardActor::CommandPlacementStone(
+	const BoardData::sPoint& in_rBoardPoint,
+	const BoardData::eStone in_stone)
 {
 	BoardData::sPoint point(in_rBoardPoint._x, in_rBoardPoint._y);
 	assert(point._x < eBoardSquaresCount_Side);
@@ -150,7 +152,10 @@ BoardControllerInteface::eResultCommand BoardActor::CommandPlacementStone(const 
 /// <summary>
 /// 石を置くコマンド(アルファベットとライン番号指定).
 /// </summary>
-BoardControllerInteface::eResultCommand BoardActor::CommandPlacementStone(const char in_alphabet, const unsigned int in_lineNumber, const BoardData::eStone in_stone)
+BoardControllerInteface::eResultCommand BoardActor::CommandPlacementStone(
+	const char in_alphabet,
+	const unsigned int in_lineNumber,
+	const BoardData::eStone in_stone)
 {
 	assert(0 < in_lineNumber);
 	assert(in_lineNumber <= eBoardSquaresCount_Side);
@@ -165,6 +170,28 @@ BoardControllerInteface::eResultCommand BoardActor::CommandPlacementStone(const 
 	BoardData::sPoint point(x, y);
 	return this->CommandPlacementStone(point, in_stone);
 }
+
+#ifdef __CUI_GAME__
+#else
+
+/// <summary>
+/// 石のモデルハンドルで石を置くコマンド.
+/// </summary>
+/// <returns></returns>
+BoardControllerInteface::eResultCommand
+BoardActor::CommandPlacementStone(const unsigned long in_modelHandle, const BoardData::eStone in_stone)
+{
+	// ハンドルと対応している石を見つける
+	BoardData::sPoint point(0, 0);
+	if (!this->_p_render_component->FindStoneModelType(&point, in_modelHandle))
+		// 石が見つからないならミスで返す
+		return BoardControllerInteface::eResultCommand::eResultCommand_FlipStoneMiss;
+
+	// 石が見つかったら石の種類を見て引数の石の種類と合っているとチェック
+	return this->CommandPlacementStone(point, in_stone);
+}
+
+#endif
 
 // 石を置いたコマンドのundo
 bool BoardActor::CommandUndoPlacement(const BoardData::eStone in_stone)

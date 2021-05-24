@@ -51,6 +51,14 @@ public:
 	/// 石を置くコマンド(アルファベットとライン番号指定).
 	/// </summary>
 	eResultCommand CommandPlacementStone(const char in_alphabet, const unsigned int in_lineNumber, const BoardData::eStone in_stone) override final;
+#ifdef __CUI_GAME__
+#else
+	/// <summary>
+	/// 石のモデルハンドルで石を置くコマンド.
+	/// </summary>
+	/// <returns></returns>
+	eResultCommand CommandPlacementStone(const unsigned long in_rModelHandle, const BoardData::eStone in_stone) override final;
+#endif
 
 	// 石を置いたコマンドのundo
 	bool CommandUndoPlacement(const BoardData::eStone in_stone);

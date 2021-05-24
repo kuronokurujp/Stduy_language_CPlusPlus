@@ -20,9 +20,10 @@ public:
 private:
 	enum eState
 	{
-		eState_InputText = 0,
-		eState_TurnBegin,
-		eState_TurnEnd,
+		eState_TurnMessageStartAnimation = 0,
+		eState_TurnMessageWaitAnimation,
+		eState_StonePlacementBegin,
+		eState_StonePlacmentEnd,
 		eState_ErrorMessage,
 	};
 
