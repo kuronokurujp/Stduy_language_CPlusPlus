@@ -231,8 +231,7 @@ void GameSceneModel::EndTurn()
 #endif
 		};
 
-		for (unsigned int i = 0; i < StaticSingleArrayLength(aResultTerminalText); ++i)
-		{
+		for (unsigned int i = 0; i < StaticSingleArrayLength(aResultTerminalText); ++i) {
 			this->_p_terminal->WriteLineText(i, aResultTerminalText[i].c_str());
 		}
 
