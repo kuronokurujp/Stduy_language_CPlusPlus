@@ -9,7 +9,10 @@
 #include "Font/Code/Header/simple_font_core_data.h"
 #include "Font/Code/Header/simple_text_image_rect.h"
 
-// テキストフォントデータ
+/// <summary>
+/// 文字列からテキストフォント画像を生成できる
+/// </summary>
+/// <seealso cref="FontTextData_Interface" />
 class SimpleFontTextData : public FontTextData_Interface
 {
 public:
@@ -64,9 +67,11 @@ public:
 		return (*free_buffer);
 	}
 
-	// 作成したフォント画像からテキストを書き込む
+	// 引数で指定した文字列から文字列画像を書き込む
 	bool WriteFontImageTextRect(
+		// 文字列画像を出力する書き込み用クラス
 		std::shared_ptr<SimpleTextImageRect> in_write_buffer,
+		// 文字列画像とする文字列を指定
 		const char in_a_texts[],
 		const unsigned int in_font_size,
 		// 空白文字サイズ
@@ -76,7 +81,7 @@ public:
 		// しかし横のサイズは0でも問題ない
 		FT_Set_Pixel_Sizes(this->_face, 0, in_font_size);
 
-		in_write_buffer->NewTextImage(*this, in_a_texts, in_font_size, in_blank_char_size);
+		in_write_buffer->CreateTextImage(*this, in_a_texts, in_font_size, in_blank_char_size);
 
 		return true;
 	}
@@ -92,27 +97,23 @@ public:
 		// しかし横のサイズは0でも問題ない
 		FT_Set_Pixel_Sizes(this->_face, 0, in_font_size);
 
-		in_p_write_buffer->NewTextImage(*this, in_a_texts, in_font_size, in_blank_char_size);
+		in_p_write_buffer->CreateTextImage(*this, in_a_texts, in_font_size, in_blank_char_size);
 
 		return true;
 	}
 
-
-	inline FT_Bitmap* LoadFontChar(unsigned long in_char_utf32) override final
-	{
+	inline FT_Bitmap* LoadFontChar(unsigned long in_char_utf32) override final {
 		FT_Load_Char(this->_face, in_char_utf32, FT_LOAD_RENDER);
 		return &this->_slot->bitmap;
 	}
 
-	inline FT_Bitmap* GetFontCharData(unsigned long in_char_utf32) override final
-	{
+	inline FT_Bitmap* GetFontCharData(unsigned long in_char_utf32) override final {
 		FT_Load_Glyph(this->_face, in_char_utf32, FT_LOAD_NO_BITMAP);
 		return &this->_slot->bitmap;
 	}
 
 private:
-	void _Clear()
-	{
+	void _Clear() {
 		this->_face = nullptr;
 		this->_slot = nullptr;
 	}

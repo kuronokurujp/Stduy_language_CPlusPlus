@@ -7,7 +7,7 @@
 #include FT_FREETYPE_H
 
 // フォントコアデータ
-// 外部のフォントシステム「FreeTyp2」を制御するようにしている
+// 外部のフォントシステム「FreeType2」の利用している
 
 // FreeType2について参考にしたサイト
 // https://tnzk.hatenadiary.org/entry/20081005/1223208785

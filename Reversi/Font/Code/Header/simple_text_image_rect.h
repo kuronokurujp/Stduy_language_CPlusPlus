@@ -26,15 +26,18 @@ public:
 	SimpleTextImageRect(const unsigned int in_buffer_mem_size = 0) {
 		this->_Clear();
 
-		this->CreateTempBufferSize(in_buffer_mem_size);
+		this->ResizeTempBuffer(in_buffer_mem_size);
 	}
 
 	~SimpleTextImageRect() {
 		this->_FreeBuffer();
 	}
 
-	// 作業用バッファを確保
-	void CreateTempBufferSize(const unsigned int in_buffer_mem_size)
+	/// <summary>
+	/// 作業用バッファのサイズを変える.
+	/// </summary>
+	/// <param name="in_buffer_mem_size">Size of the in buffer memory.</param>
+	void ResizeTempBuffer(const unsigned int in_buffer_mem_size)
 	{
 		// 作業用バッファサイズ値があればあらかじめバッファを確保
 		if (0 < in_buffer_mem_size)
@@ -42,7 +45,7 @@ public:
 	}
 
 	// テキスト画像作成
-	bool NewTextImage(
+	bool CreateTextImage(
 		FontTextData_Interface& in_r_font_text_data,
 		const char in_a_texts[],
 		const unsigned int in_font_size,

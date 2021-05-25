@@ -78,9 +78,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Code\main.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Source\Render\PathTracing\Collision\hit_table_list.cpp">
       <Filter>Code\Source\Render\PathTracing\Coillsion</Filter>
     </ClCompile>
@@ -113,6 +110,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\Source\Render\PathTracing\raytrace_space.cpp">
       <Filter>Code\Source\Render\PathTracing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\sample.cpp">
+      <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
