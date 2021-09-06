@@ -252,6 +252,11 @@
       <AdditionalDependencies>Window.lib;Font.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Window\Bin\$(Platform)\$(Configuration);$(SolutionDir)Font\Bin\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>rmdir  $(MSBuildProjectDirectory)\..\Bin\$(Platform)\$(Configuration)\Asset /s /q
+xcopy $(MSBuildProjectDirectory)\..\Asset $(MSBuildProjectDirectory)\..\Bin\$(Platform)\$(Configuration)\Asset /E /I
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -273,6 +278,11 @@
       <AdditionalLibraryDirectories>$(SolutionDir)Window\Bin\$(Platform)\$(Configuration);$(SolutionDir)Font\Bin\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Window.lib;Font.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>rmdir  $(MSBuildProjectDirectory)\..\Bin\$(Platform)\$(Configuration)\Asset /s /q
+xcopy $(MSBuildProjectDirectory)\..\Asset $(MSBuildProjectDirectory)\..\Bin\$(Platform)\$(Configuration)\Asset /E /I
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -302,6 +312,15 @@
       <AdditionalLibraryDirectories>$(SolutionDir)Window\Bin\$(Platform)\$(Configuration);$(SolutionDir)Font\Bin\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Window.lib;Font.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>rmdir  $(MSBuildProjectDirectory)\..\Bin\$(Platform)\$(Configuration)\Asset /s /q
+xcopy $(MSBuildProjectDirectory)\..\Asset $(MSBuildProjectDirectory)\..\Bin\$(Platform)\$(Configuration)\Asset /E /I
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Production|Win32'">
     <ClCompile>
@@ -332,6 +351,15 @@
       <AdditionalDependencies>Window.lib;Font.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>rmdir  $(MSBuildProjectDirectory)\..\Bin\$(Platform)\$(Configuration)\Asset /s /q
+xcopy $(MSBuildProjectDirectory)\..\Asset $(MSBuildProjectDirectory)\..\Bin\$(Platform)\$(Configuration)\Asset /E /I
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

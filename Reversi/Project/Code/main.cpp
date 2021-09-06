@@ -58,7 +58,7 @@ public:
 
 		// フォントテキストデータを作成
 		{
-			const char* p_font_file_name = "Font/Roboto/Roboto-Black.ttf";
+			const char* p_font_file_name = "Asset/Font/Roboto/Roboto-Black.ttf";
 
 			this->_font_core_data = std::make_shared<SimpleFontCoreData>();
 			this->_p_font_text_data = new SimpleFontTextData(
@@ -382,12 +382,12 @@ public:
 #endif
 					touch_event._touch_model.handle = it->object_handle;
 					touch_list.push_back(touch_event);
-				}
 			}
+		}
 			this->_p_game_ctrl->OnTouchEvent(
 				InputComponent::eTouchEvent::TOUCH_EVENT_MODEL, touch_list);
-		}
 	}
+}
 
 private:
 	Fps _fps;
