@@ -7,12 +7,12 @@
 <img width="435" alt="GameScreen" src="https://user-images.githubusercontent.com/6584759/119507655-fad02600-bda9-11eb-8a8b-d2f64fce7fe2.png">
 
 ## 開発環境
-    OS:            Windows10<br>
-    Visual Studio: Visual Studio Community 2017<br>
+    OS:            Windows10
+    Visual Studio: Visual Studio Community 2017
 
 ## 開発目的
     リアルタイムレイトレーシングで
-    ノンフォトレンダリングの品質が高い見た目でゲームが作れるかの検証をするために作りました。
+    フォトレンダリングの品質が高い見た目でゲームが作れるかの検証をするために作りました。
 
 ## うまくいかなかったこと
 
@@ -28,7 +28,6 @@
 1. 指し手がプレイヤーになった時にプレイヤーが置ける石が灰色になって表示されます。
 
     <img width="434" alt="GamePlay" src="https://user-images.githubusercontent.com/6584759/119507717-0a4f6f00-bdaa-11eb-8fc9-95b30359790f.png">
-
 
 1. 灰色になっている石をマウスクリックするとクリックした石が置かれます
 
