@@ -15,8 +15,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Font", "Font\VS2017\Font.vc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectX12", "DirectX12\DirectX12.vcxproj", "{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectX12Example", "DirectX12Example\DirectX12Example.vcxproj", "{9C635296-67BC-4EFE-A110-8E39A0E467EC}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -124,30 +122,6 @@ Global
 		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Window_Test_Release|x64.Build.0 = Release|x64
 		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Window_Test_Release|x86.ActiveCfg = Release|Win32
 		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Window_Test_Release|x86.Build.0 = Release|Win32
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Debug|x64.ActiveCfg = Debug|x64
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Debug|x64.Build.0 = Debug|x64
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Debug|x86.ActiveCfg = Debug|Win32
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Debug|x86.Build.0 = Debug|Win32
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Font_Test_Debug|x64.ActiveCfg = Debug|x64
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Font_Test_Debug|x64.Build.0 = Debug|x64
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Font_Test_Debug|x86.ActiveCfg = Debug|Win32
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Font_Test_Debug|x86.Build.0 = Debug|Win32
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Production|x64.ActiveCfg = Release|x64
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Production|x64.Build.0 = Release|x64
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Production|x86.ActiveCfg = Release|Win32
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Production|x86.Build.0 = Release|Win32
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Release|x64.ActiveCfg = Release|x64
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Release|x64.Build.0 = Release|x64
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Release|x86.ActiveCfg = Release|Win32
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Release|x86.Build.0 = Release|Win32
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Window_Test_Debug|x64.ActiveCfg = Debug|x64
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Window_Test_Debug|x64.Build.0 = Debug|x64
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Window_Test_Debug|x86.ActiveCfg = Debug|Win32
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Window_Test_Debug|x86.Build.0 = Debug|Win32
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Window_Test_Release|x64.ActiveCfg = Release|x64
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Window_Test_Release|x64.Build.0 = Release|x64
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Window_Test_Release|x86.ActiveCfg = Release|Win32
-		{9C635296-67BC-4EFE-A110-8E39A0E467EC}.Window_Test_Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

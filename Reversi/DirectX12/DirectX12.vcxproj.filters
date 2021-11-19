@@ -7,5 +7,13 @@
     <Filter Include="Code\Header">
       <UniqueIdentifier>{79cca71f-01c2-4f97-a859-47eae063795c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code\Source">
+      <UniqueIdentifier>{031d6ee3-1ded-4c73-8049-4ddbf0bc4c2e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Code\Source\main.cpp">
+      <Filter>Code\Source</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
