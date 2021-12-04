@@ -3,6 +3,10 @@
 #include <assert.h>
 #include <vector>
 
+// テスト・サンプル用のファイル
+#include "polygon_sample.hpp"
+#include "shader_test.hpp"
+
 #ifdef _DEBUG
 #include <iostream>
 #endif
@@ -285,6 +289,52 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         auto result = p_dev->CreateFence(fence_val, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&p_fence));
         assert(result == S_OK);
     }
+
+    // 頂点作成バッファ作成
+    {
+        // 頂点情報
+        static DirectX::XMFLOAT3 s_vertices[] = {
+            // 左下
+            {-1.0f, -1.0f, 0.0f},
+            // 左上
+            {-1.0f, 1.0f, 0.0f},
+            // 右下
+            {1.0f, -1.0f, 0.0f},
+        };
+        // 頂点バッファを生成
+        ID3D12Resource* p_vert_buff = DirectX::CreateVertices(p_dev, s_vertices);
+        assert(p_vert_buff != nullptr);
+
+        // 作った頂点バッファに情報をコピーする
+        DirectX::CopyVerticesData(p_vert_buff, std::begin(s_vertices), std::end(s_vertices));
+
+        // 頂点バッファ構成を出力
+        D3D12_VERTEX_BUFFER_VIEW vb_view = {};
+        DirectX::OutputVerticesBufferView(&vb_view, p_vert_buff, sizeof(s_vertices), sizeof(s_vertices[0]));
+    }
+
+    // シェーダーファイルロード
+    {
+        std::string error;
+        if (!DirectX::LoadVSShaderFileSample(&error))
+        {
+            DebugOutputFormatString(error.c_str());
+        }
+
+        if (!DirectX::LoadPSShaderFileSample(&error))
+        {
+            DebugOutputFormatString(error.c_str());
+        }
+    }
+
+    // 頂点レイアウト定義
+    D3D12_INPUT_ELEMENT_DESC input_layout[] = {
+        {
+            "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,
+            D3D12_APPEND_ALIGNED_ELEMENT,
+            D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+        },
+    };
 
     // ウィンドウ表示
     ShowWindow(hwnd, SW_SHOW);
