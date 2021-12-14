@@ -3,7 +3,7 @@
 //  シェーダーをテスト動作するためのコード
 #include <d3dcompiler.h>
 
-#pragma comment(lib, "d3dcompiler.lib");
+#pragma comment(lib, "d3dcompiler.lib")
 
 namespace DirectX
 {
@@ -32,13 +32,18 @@ namespace DirectX
 		}
 	}
 
-	static bool LoadVSShaderFileSample(ID3D10Blob** out_pp_vs_blob, std::string* out_p_error)
+	static bool LoadVSShaderFileSample(
+		ID3D10Blob** out_pp_vs_blob,
+		std::string* out_p_error,
+		const WCHAR* in_shader_filepath)
 	{
 		assert(out_pp_vs_blob != nullptr);
 
 		ID3DBlob* p_error_blob = nullptr;
 		auto result = D3DCompileFromFile(
-			L"BasicVertexShader.hlsl",
+			// --------------------
+			in_shader_filepath,
+			// --------------------
 			nullptr,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			"BasicVS", "vs_5_0",
@@ -54,13 +59,18 @@ namespace DirectX
 		return false;
 	}
 
-	static bool LoadPSShaderFileSample(ID3D10Blob** out_pp_ps_blob, std::string* out_p_error)
+	static bool LoadPSShaderFileSample(
+		ID3D10Blob** out_pp_ps_blob,
+		std::string* out_p_error,
+		const WCHAR* in_shader_filepath)
 	{
 		assert(out_pp_ps_blob != nullptr);
 
 		ID3DBlob* p_error_blob = nullptr;
 		auto result = D3DCompileFromFile(
-			L"BasicPixelShader.hlsl",
+			// -----------------------------------
+			in_shader_filepath,
+			// -----------------------------------
 			nullptr,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			"BasicPS", "ps_5_0",

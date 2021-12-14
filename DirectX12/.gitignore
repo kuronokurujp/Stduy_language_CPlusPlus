@@ -31,3 +31,6 @@ _ReSharper.*/
 .vs
 README_ja.md
 Samples/
+
+# nugetで取得したパッケージはコミットしない
+**/[Pp]ackages/*

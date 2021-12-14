@@ -13,4 +13,12 @@
       <Filter>Code\Sources</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="BasicPixelShader.hlsl" />
+    <FxCompile Include="BasicVertexShader.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Code\Sources\polygon_sample.hpp" />
+    <ClInclude Include="Code\Sources\shader_test.hpp" />
+  </ItemGroup>
 </Project>

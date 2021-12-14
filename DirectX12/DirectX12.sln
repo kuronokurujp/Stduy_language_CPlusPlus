@@ -5,12 +5,14 @@ VisualStudioVersion = 16.0.31911.196
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleWindow", "SimpleWindow\SimpleWindow.vcxproj", "{465B107A-A0F9-4C0E-9520-BA3EB30F1CA5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimplePolygon", "SimplePolygon\SimplePolygon.vcxproj", "{EE7C78EB-47B5-40FB-AD69-B295B1C3ABEB}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{227FC567-EAF3-4CE7-ACD2-A9DE941E0DA1}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleTexture", "SimpleTexture\SimpleTexture.vcxproj", "{C4B8465F-9BE2-46BB-9858-326F0EB37F81}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimplePolygon", "SimplePolygon\SimplePolygon.vcxproj", "{EE7C78EB-47B5-40FB-AD69-B295B1C3ABEB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,6 +30,14 @@ Global
 		{465B107A-A0F9-4C0E-9520-BA3EB30F1CA5}.Release|x64.Build.0 = Release|x64
 		{465B107A-A0F9-4C0E-9520-BA3EB30F1CA5}.Release|x86.ActiveCfg = Release|Win32
 		{465B107A-A0F9-4C0E-9520-BA3EB30F1CA5}.Release|x86.Build.0 = Release|Win32
+		{C4B8465F-9BE2-46BB-9858-326F0EB37F81}.Debug|x64.ActiveCfg = Debug|x64
+		{C4B8465F-9BE2-46BB-9858-326F0EB37F81}.Debug|x64.Build.0 = Debug|x64
+		{C4B8465F-9BE2-46BB-9858-326F0EB37F81}.Debug|x86.ActiveCfg = Debug|Win32
+		{C4B8465F-9BE2-46BB-9858-326F0EB37F81}.Debug|x86.Build.0 = Debug|Win32
+		{C4B8465F-9BE2-46BB-9858-326F0EB37F81}.Release|x64.ActiveCfg = Release|x64
+		{C4B8465F-9BE2-46BB-9858-326F0EB37F81}.Release|x64.Build.0 = Release|x64
+		{C4B8465F-9BE2-46BB-9858-326F0EB37F81}.Release|x86.ActiveCfg = Release|Win32
+		{C4B8465F-9BE2-46BB-9858-326F0EB37F81}.Release|x86.Build.0 = Release|Win32
 		{EE7C78EB-47B5-40FB-AD69-B295B1C3ABEB}.Debug|x64.ActiveCfg = Debug|x64
 		{EE7C78EB-47B5-40FB-AD69-B295B1C3ABEB}.Debug|x64.Build.0 = Debug|x64
 		{EE7C78EB-47B5-40FB-AD69-B295B1C3ABEB}.Debug|x86.ActiveCfg = Debug|Win32
