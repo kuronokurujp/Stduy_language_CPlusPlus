@@ -1,6 +1,7 @@
-﻿#include "Scene/Game/Actor/board_actor.h"
+#include "Scene/Game/Actor/board_actor.h"
 
 #include <assert.h>
+#include <iterator>
 
 #include "Scene/Game/Component/board_render_component.h"
 

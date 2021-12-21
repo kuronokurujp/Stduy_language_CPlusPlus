@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.757
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31911.196
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Reversi", "Project\VS2017\Reversi.vcxproj", "{2A8E168D-7F7C-4B65-8549-B4DED50C8445}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -12,8 +12,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Window", "Window\VS2017\Window.vcxproj", "{24DC78B6-EADA-4398-AE40-E16999CC35A0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Font", "Font\VS2017\Font.vcxproj", "{63ADAC9A-C73C-4FD4-A8B7-5B8A1A4DB88C}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectX12", "DirectX12\DirectX12.vcxproj", "{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,30 +96,6 @@ Global
 		{63ADAC9A-C73C-4FD4-A8B7-5B8A1A4DB88C}.Window_Test_Release|x64.ActiveCfg = Release|x64
 		{63ADAC9A-C73C-4FD4-A8B7-5B8A1A4DB88C}.Window_Test_Release|x64.Build.0 = Release|x64
 		{63ADAC9A-C73C-4FD4-A8B7-5B8A1A4DB88C}.Window_Test_Release|x86.ActiveCfg = Debug|Win32
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Debug|x64.ActiveCfg = Debug|x64
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Debug|x64.Build.0 = Debug|x64
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Debug|x86.ActiveCfg = Debug|Win32
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Debug|x86.Build.0 = Debug|Win32
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Font_Test_Debug|x64.ActiveCfg = Debug|x64
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Font_Test_Debug|x64.Build.0 = Debug|x64
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Font_Test_Debug|x86.ActiveCfg = Debug|Win32
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Font_Test_Debug|x86.Build.0 = Debug|Win32
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Production|x64.ActiveCfg = Release|x64
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Production|x64.Build.0 = Release|x64
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Production|x86.ActiveCfg = Release|Win32
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Production|x86.Build.0 = Release|Win32
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Release|x64.ActiveCfg = Release|x64
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Release|x64.Build.0 = Release|x64
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Release|x86.ActiveCfg = Release|Win32
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Release|x86.Build.0 = Release|Win32
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Window_Test_Debug|x64.ActiveCfg = Debug|x64
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Window_Test_Debug|x64.Build.0 = Debug|x64
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Window_Test_Debug|x86.ActiveCfg = Debug|Win32
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Window_Test_Debug|x86.Build.0 = Debug|Win32
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Window_Test_Release|x64.ActiveCfg = Release|x64
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Window_Test_Release|x64.Build.0 = Release|x64
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Window_Test_Release|x86.ActiveCfg = Release|Win32
-		{7FB626A7-85AB-46E6-9B58-BB63AD4CFCFA}.Window_Test_Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
