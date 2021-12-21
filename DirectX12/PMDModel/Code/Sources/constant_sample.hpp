@@ -62,7 +62,7 @@ namespace Constant
 	{
 		D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
 		cbv_desc.BufferLocation = in_p_buff->GetGPUVirtualAddress();
-		cbv_desc.SizeInBytes = in_p_buff->GetDesc().Width;
+		cbv_desc.SizeInBytes = static_cast<UINT>(in_p_buff->GetDesc().Width);
 
 		// ディスクリプタヒープのハンドルにビュー作成
 		in_p_dev->CreateConstantBufferView(&cbv_desc, in_r_desc_handle);

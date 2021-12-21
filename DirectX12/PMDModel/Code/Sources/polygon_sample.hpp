@@ -28,11 +28,11 @@ namespace DirectX
 	/// コミットリソースを作成.
 	/// </summary>
 	/// <returns></returns>
-	static ID3D12Resource* CreateResource(ID3D12Device* in_p_dev, UINT64 in_res_size)
+	static ID3D12Resource* CreateResourceForHeapUpload(ID3D12Device* in_p_dev, UINT in_res_size)
 	{
 		assert(in_p_dev != nullptr);
 
-		auto heap_prop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD, 0, 0);
+		auto heap_prop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 		auto res_desc = CD3DX12_RESOURCE_DESC::Buffer(in_res_size);
 
 		// 設定内容に基づいて頂点バッファを作成

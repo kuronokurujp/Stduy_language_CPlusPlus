@@ -1,19 +1,19 @@
 /*
-    DirextX12のテクスチャ表示
-    変更点は// -------------- xxx //-----------------
-    で囲っている箇所
+    DirextX12のPMDファイルを利用したモデル描画
 */
 #include <Windows.h>
 #include <tchar.h>
 #include <assert.h>
 #include <vector>
 
-// テスト・サンプル用のファイル
+// テスト・サンプル用のインクルードファイル
 #include "polygon_sample.hpp"
 #include "shader_test.hpp"
 #include "common.hpp"
 #include "constant_sample.hpp"
 #include "pmd_loader.hpp"
+#include "material_sample.hpp"
+#include "texture_sample.hpp"
 
 // DX12の面倒な処理をまとめている
 // しかしDirectX12のバージョンが異なるとコンパイルエラーになることもあるので注意
@@ -87,9 +87,31 @@ static IDXGIFactory6* CreateDXGIFactory()
 }
 
 // DirectX12のデバイス作成
-ID3D12Device* CreateDXDevice()
+ID3D12Device* CreateDXDevice(IDXGIFactory6* in_p_dxgi_factory)
 {
     ID3D12Device* p_dev = nullptr;
+
+    // グラフィックスアダプター一覧を取得して利用するアダプターを決める
+    // NVIDIAのみしか利用できないようにする
+    // 書籍「DirectX12の魔導書」のサンプル動作環境がNVIDIAだから
+    std::vector <IDXGIAdapter*> adapters;
+    IDXGIAdapter* p_tmp_adapter = nullptr;
+    {
+        for (int i = 0; in_p_dxgi_factory->EnumAdapters(i, &p_tmp_adapter) != DXGI_ERROR_NOT_FOUND; ++i)
+            adapters.push_back(p_tmp_adapter);
+
+        for (auto adpt : adapters)
+        {
+            DXGI_ADAPTER_DESC adesc = {};
+            adpt->GetDesc(&adesc);
+            std::wstring strDesc = adesc.Description;
+            if (strDesc.find(L"NVIDIA") != std::string::npos) {
+                p_tmp_adapter = adpt;
+                break;
+            }
+        }
+    }
+    assert(p_tmp_adapter);
 
     D3D_FEATURE_LEVEL feture_level;
     // 失敗は考えない
@@ -107,8 +129,8 @@ ID3D12Device* CreateDXDevice()
         };
         for (auto level : levels)
         {
-            // デバイス指定はnullptrで自動指定にしている
-            if (D3D12CreateDevice(nullptr, level, IID_PPV_ARGS(&p_dev)) == S_OK)
+            // 指定したアダプターを利用する
+            if (D3D12CreateDevice(p_tmp_adapter, level, IID_PPV_ARGS(&p_dev)) == S_OK)
             {
                 feture_level = level;
                 break;
@@ -174,15 +196,12 @@ int main()
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
 #endif
-    DebugOutputFormatString("DirectX12 Sample.");
+    // 必ず必要!
+    // テクスチャをロードする前に必ず呼び出さないとサポートなしとしてエラーになるので注意！
+    auto result_hr = CoInitializeEx(0, COINIT_MULTITHREADED);
+    assert(SUCCEEDED(result_hr));
 
-    // --------------------------------------------
-    // PMDファイルから情報をロード
-    PMDLoader::PMDDataPack pmd_data_pack;
-    {
-        auto error = PMDLoader::LoadFile(&pmd_data_pack, "Resources/Model/Miku.pmd");
-        assert(error == 0);
-    }
+    DebugOutputFormatString("DirectX12 Sample.");
 
     // 頂点レイアウト定義
     // ※ 頂点レイアウトに合わせて頂点シェーダーが受け取るパラメータも変えないとバグる
@@ -275,7 +294,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     // DXの描画インフラストラクチャーを生成して画面フリップや描画デバイスを制御
     IDXGIFactory6* p_dxgi_factory = CreateDXGIFactory();
     // DXのデバイス作成
-    ID3D12Device* p_dev = CreateDXDevice();
+    ID3D12Device* p_dev = CreateDXDevice(p_dxgi_factory);
 
     // DXのコマンドリストを生成
     ID3D12CommandAllocator* p_cmd_allocator = nullptr;
@@ -427,36 +446,74 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
     // ルートシグネチャー(ディスクリプタテーブルをまとめたもの)を作る
     ID3D12RootSignature* p_root_sig = nullptr;
+    D3D12_ROOT_PARAMETER root_params[2] = {};
+
+    // PMDモデルのマテリアルに張り付けるテクスチャ数
+    const UINT c_pmd_model_texture_num = 4;
     {
         ID3DBlob* p_root_sig_blob = nullptr;
 
         // テクスチャのサンプラ設定
         // テクスチャバッファがなくてもルートシグネチャーを作るためには必要
-        D3D12_STATIC_SAMPLER_DESC sampler_desc = {};
+        D3D12_STATIC_SAMPLER_DESC sampler_descs[2] = {};
         {
-            // 0-1の範囲外になった場合は繰り返すようにする
-            // 例えば 1.5とになると0.5, -0.5なら0.5と値が0-1の範囲になるように繰り返す
-            sampler_desc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-            sampler_desc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-            sampler_desc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+            // 基本となる共通サンプラー
+            {
+                // 0-1の範囲外になった場合は繰り返すようにする
+                // 例えば 1.5とになると0.5, -0.5なら0.5と値が0-1の範囲になるように繰り返す
+                auto p_sampler_desc = &sampler_descs[0];
+                p_sampler_desc->AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+                p_sampler_desc->AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+                p_sampler_desc->AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
-            sampler_desc.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
-            // 線形補間(バイリニア)だとピクセルをぼかす
-            sampler_desc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-            // 最近傍補間(ニアレストネイバー法)ピクセルをぼかさないでくっきり表示させる
-            sampler_desc.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+                p_sampler_desc->BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+                // 線形補間(バイリニア)だとピクセルをぼかす
+                p_sampler_desc->Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+                // 最近傍補間(ニアレストネイバー法)ピクセルをぼかさないでくっきり表示させる
+                p_sampler_desc->Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
 
-            sampler_desc.MaxLOD = D3D12_FLOAT32_MAX;
-            sampler_desc.MinLOD = 0.0f;
-            // ピクセルシェーダーから見える
-            // TODO: しかしこれルートパラメータでも同じ設定をしているが、
-            // 仮にサンプラは見えないようにしたらどうなるのかな？
-            sampler_desc.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-            sampler_desc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+                p_sampler_desc->MaxLOD = D3D12_FLOAT32_MAX;
+                p_sampler_desc->MinLOD = 0.0f;
+                // ピクセルシェーダーから見える
+                // TODO: しかしこれルートパラメータでも同じ設定をしているが、
+                // 仮にサンプラは見えないようにしたらどうなるのかな？
+                p_sampler_desc->ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+                p_sampler_desc->ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+
+                // シェーダースロット番号
+                p_sampler_desc->ShaderRegister = 0;
+            }
+
+            // トゥーン用のサンプラー
+            {
+                // 0-1の範囲外になった場合は繰り返すようにする
+                // 例えば 1.5とになると0.5, -0.5なら0.5と値が0-1の範囲になるように繰り返す
+                auto p_sampler_desc = &sampler_descs[1];
+                p_sampler_desc->AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+                p_sampler_desc->AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+                p_sampler_desc->AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+
+                p_sampler_desc->BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+                // 線形補間(バイリニア)だとピクセルをぼかす
+                p_sampler_desc->Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+                // 最近傍補間(ニアレストネイバー法)ピクセルをぼかさないでくっきり表示させる
+                p_sampler_desc->Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+
+                p_sampler_desc->MaxLOD = D3D12_FLOAT32_MAX;
+                p_sampler_desc->MinLOD = 0.0f;
+                // ピクセルシェーダーから見える
+                // TODO: しかしこれルートパラメータでも同じ設定をしているが、
+                // 仮にサンプラは見えないようにしたらどうなるのかな？
+                p_sampler_desc->ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+                p_sampler_desc->ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+
+                // シェーダースロット番号
+                p_sampler_desc->ShaderRegister = 1;
+            }
         }
 
         // ディスクリプタレンジを作成
-        D3D12_DESCRIPTOR_RANGE desc_tbl_ranges[1] = {};
+        D3D12_DESCRIPTOR_RANGE desc_tbl_ranges[3] = {};
         // 定数のレジスター設定
         {
             // 定数用レンスター0番
@@ -465,29 +522,46 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 1,
                 0
             );
+
+            // マテリアルの定数バッファを定数用レジスター1番に
+            desc_tbl_ranges[1] = CD3DX12_DESCRIPTOR_RANGE(
+                D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
+                1,
+                1
+            );
+
+            // テクスチャをレジスタ-0番目に
+            desc_tbl_ranges[2] = CD3DX12_DESCRIPTOR_RANGE(
+                D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+                // 基本 + sph + spa + toon
+                c_pmd_model_texture_num,
+                0
+            );
         }
 
+        // ※ NVIDIAなどのグラボでないとどうもディスクリプタヒープの複数利用できないみたい
+        // マザーボードに埋め込みGPUだとディスクリプタヒープは一つしか利用できないと考えたほうがいい
+        // なんて面倒な
+        // 以下参考サイト
+        // https://dixq.net/forum/viewtopic.php?t=21107
         // ルートパラメータを作成
-        D3D12_ROOT_PARAMETER root_param = {};
         {
-            root_param.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-            // すべてのシェーダーから見えるようにする
-            root_param.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-
-            // 配列の先頭アドレス指定
-            root_param.DescriptorTable.pDescriptorRanges = desc_tbl_ranges;
-            // 配列の要素数
-            root_param.DescriptorTable.NumDescriptorRanges = 1;
+            // [0]のレンジデータを参照する
+            CD3DX12_ROOT_PARAMETER::InitAsDescriptorTable(root_params[0], 1, &desc_tbl_ranges[0]);
+            // [1] / [2]をひとまとめのレンジデータを参照する
+            CD3DX12_ROOT_PARAMETER::InitAsDescriptorTable(root_params[1], 2, &desc_tbl_ranges[1]);
         }
 
         // ルートシグネチャー設定を作成
         auto root_sig_desc = CD3DX12_ROOT_SIGNATURE_DESC(
             // ルートパラメータの数
-            1,
+            _countof(root_params),
             // ルートパラメータ
-            &root_param,
-            1,
-            &sampler_desc,
+            root_params,
+            // サンプラーパラメータの数
+            _countof(sampler_descs),
+            // サンプラーパラメータ
+            sampler_descs,
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
         );
 
@@ -605,14 +679,147 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     }
 
     // ここからはモデル表示に必要な処理
+    // --------------------------------------------
+    // PMDファイルから情報をロード
+    PMDLoader::PMDDataPack pmd_data_pack;
+    std::vector<Material::Material> materials;
+    std::vector<Texture::Resource> tex_resources;
+    std::vector<Texture::Resource> sph_resources;
+    std::vector<Texture::Resource> spa_resources;
+    std::vector<Texture::Resource> toon_resources;
+    {
+        std::vector<PMDLoader::PMDMaterial> pmd_material;
+        const char* p_model_path = "Resources/Model/Miku.pmd";
+        //const char* p_model_path = "Resources/Model/Ruka.pmd";
+        auto error = PMDLoader::LoadFile(&pmd_data_pack, &pmd_material, p_model_path);
+        assert(error == 0);
+
+        // マテリアルデータコピー
+        {
+            // nullptr用のテクスチャを作成
+            // これは共通利用する
+            Texture::Resource white_share_texture;
+            Texture::Resource black_share_texture;
+            Texture::Resource gradation_share_texture;
+            {
+                auto result = Texture::CreateTextureResourceFromColor(&white_share_texture, p_dev, 0xff);
+                assert(result);
+
+                result = Texture::CreateTextureResourceFromColor(&black_share_texture, p_dev, 0x00);
+                assert(result);
+
+                result = Texture::CreateTextureResourceFromGradation(&gradation_share_texture, p_dev, 0xff);
+                assert(result);
+            }
+
+            materials.resize(pmd_material.size());
+            tex_resources.resize(pmd_material.size());
+            sph_resources.resize(pmd_material.size());
+            spa_resources.resize(pmd_material.size());
+            toon_resources.resize(pmd_material.size());
+
+            for (size_t i = 0; i < materials.size(); ++i)
+            {
+                materials[i].indices_num = pmd_material[i].indices_num;
+                materials[i].basic.diffuse = pmd_material[i].diffuse;
+                materials[i].basic.alpha = pmd_material[i].alpha;
+                materials[i].basic.speclar = pmd_material[i].specular;
+                materials[i].basic.specularity = pmd_material[i].specularity;
+                materials[i].basic.ambient = pmd_material[i].ambiend;
+
+                // テクスチャファイルパスからロードするファイルパスに置き換えてテクスチャロード
+                // マテリアルの数分用意
+                {
+                    // リソースの初期化
+                    tex_resources[i] = white_share_texture;
+                    sph_resources[i] = white_share_texture;
+                    spa_resources[i] = black_share_texture;
+
+                    std::vector<std::string> load_file_paths;
+                    if (0 < std::strlen(pmd_material[i].tex_file_path))
+                    {
+                        load_file_paths.clear();
+
+                        auto tex_file_path_str = std::string(pmd_material[i].tex_file_path);
+                        DebugOutputFormatString(tex_file_path_str.c_str());
+                        // ファイルパス内に*が入っているか存在する数でチェック
+                        if (std::count(tex_file_path_str.begin(), tex_file_path_str.end(), '*') > 0)
+                        {
+                            // *が入っている場合はファイルパスを分割する
+                            auto split_pair = Common::SplitFileName(tex_file_path_str);
+                            DebugOutputFormatString(split_pair.first.c_str());
+                            DebugOutputFormatString(split_pair.second.c_str());
+
+                            // スフィアファイルパスが存在するのはfirst/secondはどちらかをチェックして
+                            // スフィアファイルパスが存在しない方をテクスチャファイルパスとする
+                            auto first_file_extention = Common::GetFileExtension(split_pair.first);
+                            auto second_file_extention = Common::GetFileExtension(split_pair.second);
+
+                            // ファイルパスは2つある
+                            load_file_paths.push_back(split_pair.first);
+                            load_file_paths.push_back(split_pair.second);
+                        }
+                        else
+                        {
+                            load_file_paths.push_back(tex_file_path_str);
+                        }
+
+                        for (auto& load_file_path : load_file_paths)
+                        {
+                            // ロードする相対ファイルパスを作成
+                            auto load_tex_file_path_str = Common::GetPathForAddPathToDirectoryEndPath(p_model_path, load_file_path.c_str());
+
+                            // ロードするテクスチャファイルパス
+                            DebugOutputFormatString(("load texture filepath : " + load_tex_file_path_str).c_str());
+                            {
+                                if (Common::GetFileExtension(load_tex_file_path_str) == "sph")
+                                {
+                                    auto result = Texture::CreateTextureResourceFromLoadTextureFile(&sph_resources[i], p_dev, load_tex_file_path_str);
+                                    assert(result);
+                                }
+                                else if (Common::GetFileExtension(load_tex_file_path_str) == "spa")
+                                {
+                                    auto result = Texture::CreateTextureResourceFromLoadTextureFile(&spa_resources[i], p_dev, load_tex_file_path_str);
+                                    assert(result);
+                                }
+                                else
+                                {
+                                    auto result = Texture::CreateTextureResourceFromLoadTextureFile(&tex_resources[i], p_dev, load_tex_file_path_str);
+                                    assert(result);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // トゥーン番号からトゥーンテクスチャをロード
+                {
+                    toon_resources[i] = gradation_share_texture;
+                    std::string toon_file_path;
+                    // トゥーンテクスチャファイルパスを生成
+                    {
+                        const char* fmt = "Resources/Model/Toon/toon%02d.bmp";
+
+                        UINT32 file_toon_no = pmd_material[i].toon_idx + 1;
+                        int sz = std::snprintf(nullptr, 0, fmt, file_toon_no);
+                        toon_file_path.resize(sz + 1); // note +1 for null terminator
+                        std::snprintf(&toon_file_path[0], toon_file_path.size(), fmt, file_toon_no);
+                    }
+
+                    DebugOutputFormatString(("load toon texture file path: " + toon_file_path).c_str());
+                    auto result = Texture::CreateTextureResourceFromLoadTextureFile(&toon_resources[i], p_dev, toon_file_path);
+                    assert(result);
+                }
+            }
+        }
+    }
 
     // 頂点データ定義
     // 頂点バッファビュー作成
     D3D12_VERTEX_BUFFER_VIEW vb_view = {};
-    // --------------------------------------------------
     {
         // 頂点バッファを生成
-        ID3D12Resource* p_vert_buff = DirectX::CreateResource(p_dev, pmd_data_pack.vertexs.size());
+        ID3D12Resource* p_vert_buff = DirectX::CreateResourceForHeapUpload(p_dev, pmd_data_pack.vertexs.size());
         assert(p_vert_buff != nullptr);
 
         // 作った頂点バッファに情報をコピーする
@@ -627,10 +834,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     {
         // インデックスバッファを作成
         ID3D12Resource* p_idx_buff = nullptr;
-        UINT64 index_buffer_data_size =
-            static_cast<UINT64>(pmd_data_pack.indices.size()) * sizeof(pmd_data_pack.indices[0]);
+        UINT index_buffer_data_size =
+            static_cast<UINT>(pmd_data_pack.indices.size()) * sizeof(pmd_data_pack.indices[0]);
         {
-            p_idx_buff = DirectX::CreateResource(p_dev, index_buffer_data_size);
+            p_idx_buff = DirectX::CreateResourceForHeapUpload(p_dev, index_buffer_data_size);
 
             // コピーするデータの先頭と末尾の型と転送する型を指定
             DirectX::CopyBuffer<std::vector<UINT16>::iterator, UINT16>(
@@ -642,7 +849,63 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         ib_view.Format = DXGI_FORMAT_R16_UINT;
         ib_view.SizeInBytes = index_buffer_data_size;
     }
-    // ----------------------------------------------------
+
+    // マテリアル用のディスクリプタヒープとビュー作成
+    ID3D12DescriptorHeap* p_material_desc_heap = nullptr;
+    {
+        // マテリアルバッファを作成
+        ID3D12Resource* p_material_buff = nullptr;
+        // 256byteアライメントに調整
+        size_t basic_size = sizeof(materials[0].basic);
+        size_t alignment_size = (basic_size + 0xff) & ~0xff;
+
+        // バッファ作成とバッファにデータ書き込み
+        {
+            // マテリアルバッファを作成
+            // マテリアルの数から256byteアライメントしたサイズで作成
+            p_material_buff = DirectX::CreateResourceForHeapUpload(p_dev, alignment_size * materials.size());
+
+            // マップでデータを書き込み
+            INT8* p_map_material = nullptr;
+            auto result = p_material_buff->Map(0, nullptr, (void**)&p_map_material);
+            assert(SUCCEEDED(result));
+
+            for (auto& m : materials)
+            {
+                // 構造体サイズと定数バッファの256byteアライメントが違う
+                *((Material::MaterialForHlsl*)p_map_material) = m.basic;
+                // ポイントアドレスは定数バッファのアライメントに従って更新している
+                // 構造体サイズでのアドレスオフセット移動は出来ない
+                p_map_material += alignment_size;
+            }
+
+            p_material_buff->Unmap(0, nullptr);
+        }
+
+        // ディスクリプタヒープ作成
+        {
+            // ディスクリプタヒープとビューは密接に関わっているので一つでも設定をミスるとバグる
+            // 定数バッファ + (テクスチャバッファ + スフィアテクスチャ + 加算スフィアテクスチャ)
+            UINT32 desc_num = materials.size() * (1 + c_pmd_model_texture_num);
+            p_material_desc_heap = Material::CreateDescriptorHeap(p_dev, desc_num);
+            // 指定したバッファでマテリアル用のビューを作成
+            Material::CreateBufferView(
+                p_dev,
+                p_material_buff,
+                p_material_desc_heap,
+                // マテリアルの定数バッファ作成のため
+                materials,
+                // テクスチャのリソースバッファ作成のため
+                tex_resources,
+                // スフィアテクスチャのリソースバッファ作成のため
+                sph_resources,
+                // 加算スフィアテクスチャのリソースバッファ作成のため
+                spa_resources,
+                // トゥーンテクスチャのリソースバッファ作成のため
+                toon_resources,
+                alignment_size);
+        }
+    }
 
     // シェーダーファイルロード
     ID3D10Blob* p_vs_blob = nullptr;
@@ -667,6 +930,74 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
             DebugOutputFormatString(error.c_str());
         }
     }
+
+    // シェーダー側に渡すデータ構成
+    struct SceneShaderData
+    {
+        DirectX::XMMATRIX world_mat = DirectX::XMMatrixIdentity();
+        DirectX::XMMATRIX view_mat = DirectX::XMMatrixIdentity();
+        DirectX::XMMATRIX proj_mat = DirectX::XMMatrixIdentity();
+        DirectX::XMFLOAT3 eye = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+    };
+
+    DirectX::XMMATRIX mat = DirectX::XMMatrixIdentity();
+    // 3Dの座標変換
+    DirectX::XMMATRIX world_mat = DirectX::XMMatrixIdentity();
+    DirectX::XMMATRIX view_mat = DirectX::XMMatrixIdentity();
+    DirectX::XMMATRIX proj_mat = DirectX::XMMatrixIdentity();
+    // 視点
+    DirectX::XMFLOAT3 eye(0.0, 18.0f, -20.0);
+    {
+        // カメラ行列作成
+        {
+            DirectX::XMFLOAT3 target(0.0, 18.0f, 0.0);
+            DirectX::XMFLOAT3 up(0.0, 1.0f, 0.0);
+
+            view_mat = DirectX::XMMatrixLookAtLH(
+                DirectX::XMLoadFloat3(&eye),
+                DirectX::XMLoadFloat3(&target),
+                DirectX::XMLoadFloat3(&up));
+        }
+
+        // 射影行列作成
+        {
+            proj_mat = DirectX::XMMatrixPerspectiveFovLH(
+                DirectX::XM_PIDIV2 * 0.1,
+                static_cast<float>(window_width) / static_cast<float>(window_height),
+                // カメラが写し始めの値
+                1.0f,
+                // カメラが写し終わりの値
+                100.0f);
+        }
+    }
+
+    ID3D12Resource* p_mat_constant_buff = nullptr;
+    SceneShaderData* p_scene_shader_param = nullptr;
+    {
+        // 定数バッファを作成
+        p_mat_constant_buff = Constant::CreateBuffer(p_dev, sizeof(SceneShaderData));
+        // バッファにデータを書き込む
+        {
+            // バッファと書き込む先との関連付け
+            p_mat_constant_buff->Map(0, nullptr, (void**)&p_scene_shader_param);
+        }
+    }
+
+    // 基本ティスクリプタヒープを作る
+    auto p_basic_desc_heap = Common::CreateDescriptorHeap(p_dev, 1);
+    assert(p_basic_desc_heap != nullptr);
+
+    // ディスクリプタヒープに各リソースビューを作成
+    {
+        auto basic_heap_handle = p_basic_desc_heap->GetCPUDescriptorHandleForHeapStart();
+        // 行列の定数バッファビューを作る
+        {
+            auto result = Constant::CreateBufferView(p_dev, p_mat_constant_buff, basic_heap_handle);
+            assert(result);
+        }
+    }
+
+    // ----------------------------------------------------
 
     // グラフィックスパイプラインステートを構築
     ID3D12PipelineState* p_pipeline_state = nullptr;
@@ -745,7 +1076,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
             // ターゲットの数が１なので１に
             gpipeline.NumRenderTargets = 1;
             // 一つのターゲットに色のフォーマット指定
-            gpipeline.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+            // レンダリングのフォーマットと合わせないとエラー出力する
+            gpipeline.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
         }
 
         // アンチエイリアシング設定
@@ -757,70 +1089,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         auto result = p_dev->CreateGraphicsPipelineState(&gpipeline, IID_PPV_ARGS(&p_pipeline_state));
         assert(SUCCEEDED(result));
     }
-
-    // 行列データをGPUに送るための実装
-    struct MatricesData
-    {
-        DirectX::XMMATRIX world_mat = DirectX::XMMatrixIdentity();
-        DirectX::XMMATRIX viewproj_mat = DirectX::XMMatrixIdentity();
-    };
-
-    DirectX::XMMATRIX mat = DirectX::XMMatrixIdentity();
-    // 3Dの座標変換
-    DirectX::XMMATRIX world_mat = DirectX::XMMatrixIdentity();
-    DirectX::XMMATRIX view_mat = DirectX::XMMatrixIdentity();
-    DirectX::XMMATRIX proj_mat = DirectX::XMMatrixIdentity();
-    {
-        // カメラ行列作成
-        {
-            DirectX::XMFLOAT3 eye(0.0, 10.0f, -20.0);
-            DirectX::XMFLOAT3 target(0.0, 10.0f, 0.0);
-            DirectX::XMFLOAT3 up(0.0, 1.0f, 0.0);
-
-            view_mat = DirectX::XMMatrixLookAtLH(
-                DirectX::XMLoadFloat3(&eye),
-                DirectX::XMLoadFloat3(&target),
-                DirectX::XMLoadFloat3(&up));
-        }
-
-        // 射影行列作成
-        {
-            proj_mat = DirectX::XMMatrixPerspectiveLH(
-                DirectX::XM_PIDIV2,
-                static_cast<float>(window_width) / static_cast<float>(window_height),
-                // カメラが写し始めの値
-                1.0f,
-                // カメラが写し終わりの値
-                100.0f);
-        }
-    }
-
-    ID3D12Resource* p_mat_constant_buff = nullptr;
-    MatricesData* p_coordinate_transform_mat = nullptr;
-    {
-        // 定数バッファを作成
-        p_mat_constant_buff = Constant::CreateBuffer(p_dev, sizeof(MatricesData));
-        // バッファにデータを書き込む
-        {
-            // バッファと書き込む先との関連付け
-            p_mat_constant_buff->Map(0, nullptr, (void**)&p_coordinate_transform_mat);
-        }
-    }
-
-    // 基本ティスクリプタヒープを作る
-    auto p_basic_desc_heap = Common::CreateDescriptorHeap(p_dev, 1);
-    assert(p_basic_desc_heap != nullptr);
-
-    // ディスクリプタヒープに各リソースビューを作成
-    {
-        auto basic_heap_handle = p_basic_desc_heap->GetCPUDescriptorHandleForHeapStart();
-        // 行列の定数バッファビューを作る
-        {
-            auto result = Constant::CreateBufferView(p_dev, p_mat_constant_buff, basic_heap_handle);
-            assert(result);
-        }
-    }
-    // ここまで
 
     // ウィンドウ表示
     ShowWindow(hwnd, SW_SHOW);
@@ -849,6 +1117,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
         p_cmd_list->ResourceBarrier(1, &barrier_desc);
 
+        p_cmd_list->SetPipelineState(p_pipeline_state);
+
         // レンダーターゲットビューを設定コマンド追加
         // 参照するディスクリプタのポインターを利用してレンダーターゲットビューを設定
         auto rtv_h = p_rtv_heaps->GetCPUDescriptorHandleForHeapStart();
@@ -864,35 +1134,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 &dsv_h);
         }
 
-        // 設定したレンダーターゲットをクリア
-        {
-            float clear_color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-            p_cmd_list->ClearRenderTargetView(rtv_h, clear_color, 0, nullptr);
-        }
-
         // 深度バッファをクリア
         // 書き込まれた深度値をクリアしないと深度判定がうまくいかない
         {
             p_cmd_list->ClearDepthStencilView(dsv_h, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
         }
 
-        p_cmd_list->SetPipelineState(p_pipeline_state);
-        p_cmd_list->SetGraphicsRootSignature(p_root_sig);
-        // 作成テクスチャのヒープを設定してシェーダーで参照できるようにする
-        // これを実行しなかったら画面が壊れた
-        // シェーダーがレジストしたテクスチャを参照しているのでぶっ壊れたのだろう
+        // 設定したレンダーターゲットをクリア
         {
-            // テクスチャのディスクリプタヒープを設定
-            p_cmd_list->SetDescriptorHeaps(1, &p_basic_desc_heap);
-            auto basic_heap_handle = p_basic_desc_heap->GetGPUDescriptorHandleForHeapStart();
-            // ルートパラメータ0とディスクリプタヒープの関連付け
-            {
-                p_cmd_list->SetGraphicsRootDescriptorTable(
-                    // ルートパラメータインデックス
-                    0,
-                    // ヒープアドレス
-                    basic_heap_handle);
-            }
+            float clear_color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+            p_cmd_list->ClearRenderTargetView(rtv_h, clear_color, 0, nullptr);
         }
 
         p_cmd_list->RSSetViewports(1, &viewport);
@@ -905,15 +1156,54 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         // 頂点バッファビューを設定
         p_cmd_list->IASetVertexBuffers(0, 1, &vb_view);
 
-        // 座標更新
+        // シェーダーに受け渡すパラメータ
         {
-            world_mat *= DirectX::XMMatrixRotationY(DirectX::XM_PIDIV4 * 0.01f);
+            //            world_mat *= DirectX::XMMatrixRotationY(DirectX::XM_PIDIV4 * 0.01f);
 
-            p_coordinate_transform_mat->world_mat = mat * world_mat;
-            p_coordinate_transform_mat->viewproj_mat = view_mat * proj_mat;
+            p_scene_shader_param->world_mat = mat * world_mat;
+            p_scene_shader_param->view_mat = view_mat;
+            p_scene_shader_param->proj_mat = proj_mat;
+            p_scene_shader_param->eye = eye;
         }
 
-        p_cmd_list->DrawIndexedInstanced(pmd_data_pack.indices.size(), 1, 0, 0, 0);
+        p_cmd_list->SetGraphicsRootSignature(p_root_sig);
+        {
+            // ディスクリプタヒープを設定
+            p_cmd_list->SetDescriptorHeaps(1, &p_basic_desc_heap);
+            // ルートパラメータ0とディスクリプタヒープの関連付け
+            {
+                auto basic_heap_handle = p_basic_desc_heap->GetGPUDescriptorHandleForHeapStart();
+                p_cmd_list->SetGraphicsRootDescriptorTable(
+                    // ルートパラメータインデックス
+                    0,
+                    // ヒープアドレス
+                    basic_heap_handle);
+            }
+
+            // マテリアルのディスクリプタヒープ設定
+            p_cmd_list->SetDescriptorHeaps(1, &p_material_desc_heap);
+            {
+                // 一つのディスクリプタヒープにある複数ビューを参照するアドレスオフセットサイズ
+                auto cbvsrv_inc_size =
+                    p_dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) * (c_pmd_model_texture_num + 1);
+
+                auto material_h = p_material_desc_heap->GetGPUDescriptorHandleForHeapStart();
+                UINT32 idx_offset = 0;
+                for (auto& m : materials)
+                {
+                    p_cmd_list->SetGraphicsRootDescriptorTable(
+                        // ルートパラメータインデックス
+                        1,
+                        // ヒープアドレス
+                        material_h);
+
+                    p_cmd_list->DrawIndexedInstanced(m.indices_num, 1, idx_offset, 0, 0);
+
+                    material_h.ptr += cbvsrv_inc_size;
+                    idx_offset += m.indices_num;
+                }
+            }
+        }
 
         // バックバッファをフロントバッファにする
         {
@@ -927,13 +1217,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         // フェンスをやっていてコマンドが終了するまで待機もしている
         ExecuteAndCloseCmd(&fence_val, p_fence, p_cmd_queue, p_cmd_list);
 
+        // バッファを入れ替え
+        p_swapchain->Present(1, 0);
+
         // コマンドリストのリセット
         p_cmd_allocator->Reset();
         // コマンドのクローズ状態を解除
         p_cmd_list->Reset(p_cmd_allocator, nullptr);
-
-        // バッファを入れ替え
-        p_swapchain->Present(1, 0);
     }
 
     UnregisterClass(w.lpszClassName, w.hInstance);

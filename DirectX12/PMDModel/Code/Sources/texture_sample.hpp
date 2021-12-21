@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 
 // DXをインクルード
 // これらのファイル群はどの環境にも入っているわけじゃないよね？
@@ -16,6 +17,8 @@
 // すくなくともwindows sdkの19041バージョンなら大丈夫だった
 #include "d3dx12.h"
 
+#include "common.hpp"
+
 // DXのライブラリを含める
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -25,11 +28,20 @@
 
 namespace Texture
 {
+	struct Resource
+	{
+		ID3D12Resource* p_buf = nullptr;
+	};
+
 	// テクスチャー用のRGBA
 	struct TexRGBA
 	{
 		unsigned char R, G, B, A;
 	};
+
+	// ロードしたテクスチャリソースをキャッシュ用
+	// TODO: このままでは外部公開しまうが一旦これで
+	static std::map<std::string, ID3D12Resource*> _s_cache_texture_resoucre;
 
 	/// <summary>
 	/// 仮のテクスチャーのデータを出力
@@ -69,56 +81,11 @@ namespace Texture
 		}
 
 		// WriteToSubresourceで転送するためのヒープ設定
-		/*
-		D3D12_HEAP_PROPERTIES heap_prop = {};
-		{
-			// 特殊設定なのでカスタム設定にする
-			heap_prop.Type = D3D12_HEAP_TYPE_CUSTOM;
-
-			// TODO: ライトバック？
-			heap_prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;
-
-			// 転送はL0, という事はCPU側から直接行う
-			// TODO: L0とはなに？
-			heap_prop.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;
-
-			// 単一アダプターなので0
-			// TODO: 単一でない場合はどうなるの？
-			heap_prop.CreationNodeMask = 0;
-			heap_prop.VisibleNodeMask = 0;
-		}
-		*/
-		// 上記を置き換え
 		auto heap_prop = CD3DX12_HEAP_PROPERTIES(
 			D3D12_CPU_PAGE_PROPERTY_WRITE_BACK,
 			D3D12_MEMORY_POOL_L0,
 			0, 0);
 
-		/*
-		D3D12_RESOURCE_DESC res_desc = {};
-		{
-			// RGBAフォーマット
-			res_desc.Format = in_rgba_format;
-			// テクスチャの縦横サイズ
-			res_desc.Width = in_width;
-			res_desc.Height = in_height;
-			// TODO: これの用途が分からん
-			res_desc.DepthOrArraySize = in_depth_or_array_size;
-			// アンチエイリアシングしないので１に
-			res_desc.SampleDesc.Count = 1;
-			// クオリティは最低
-			res_desc.SampleDesc.Quality = 0;
-			// ミップマップしないので１に
-			res_desc.MipLevels = in_mip_levels;
-			// 2Dテクスチャ用
-			res_desc.Dimension = in_dimension;
-			// レイアウトは決めない
-			res_desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-			// フラグなし
-			res_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
-		}
-		*/
-		// 上記を置き換え
 		auto res_desc = CD3DX12_RESOURCE_DESC(
 			in_dimension,
 			0,
@@ -200,18 +167,69 @@ namespace Texture
 	static bool LoadImageFile(
 		DirectX::TexMetadata* out_p_metadata,
 		DirectX::ScratchImage* out_p_scratch_img,
-		const WCHAR* in_p_load_filepath)
+		const std::string& in_r_load_filepath)
 	{
 		{
-			assert(in_p_load_filepath != nullptr);
 			assert(out_p_metadata != nullptr);
 			assert(out_p_scratch_img != nullptr);
 		}
 
-		auto result = DirectX::LoadFromWICFile(in_p_load_filepath, DirectX::WIC_FLAGS_NONE, out_p_metadata, *out_p_scratch_img);
-		assert(SUCCEEDED(result));
+		static std::map<std::string, std::function<HRESULT(const std::wstring& path, DirectX::TexMetadata*, DirectX::ScratchImage*)>> load_lambda_table;
+		if (load_lambda_table.empty())
+		{
+			// WICFileでロード可能なファイル拡張子の登録
+			{
+				load_lambda_table["spa"] =
+					[](
+						const std::wstring& in_path,
+						DirectX::TexMetadata* out_p_metadata,
+						DirectX::ScratchImage* out_p_scratch_img) -> HRESULT
+				{
+					return DirectX::LoadFromWICFile(in_path.c_str(), DirectX::WIC_FLAGS_NONE, out_p_metadata, *out_p_scratch_img);
+				};
 
-		return true;
+				load_lambda_table["bmp"] = load_lambda_table["spa"];
+				load_lambda_table["sph"] = load_lambda_table["spa"];
+				load_lambda_table["jpg"] = load_lambda_table["spa"];
+			}
+
+			// TGAファイルロード登録
+			{
+				load_lambda_table["tga"] =
+					[](
+						const std::wstring& in_path,
+						DirectX::TexMetadata* out_p_metadata,
+						DirectX::ScratchImage* out_p_scratch_img) -> HRESULT
+				{
+					return DirectX::LoadFromTGAFile(in_path.c_str(), out_p_metadata, *out_p_scratch_img);
+				};
+			}
+
+			// ddsファイルロード登録
+			{
+				load_lambda_table["dds"] =
+					[](
+						const std::wstring& in_path,
+						DirectX::TexMetadata* out_p_metadata,
+						DirectX::ScratchImage* out_p_scratch_img) -> HRESULT
+				{
+					return DirectX::LoadFromDDSFile(in_path.c_str(), DirectX::DDS_FLAGS_NONE, out_p_metadata, *out_p_scratch_img);
+				};
+			}
+		}
+
+		auto extension = Common::GetFileExtension(in_r_load_filepath);
+		// keyの型をstringにしているのでstring型の変数を引数に与えればいいかと思ったが、
+		// 登録したkeyのstring型変数をそのまま渡すと失敗する！
+		// string::c_str()を使うと正しいfindは成功する。
+		// なぜ？
+		// mapのkeyをリテラル文字列すると発生するようだ
+		if (load_lambda_table.find(extension.c_str()) == load_lambda_table.end())
+			return false;
+
+		auto load_file_path_wstring = Common::GetWideStringFromString(in_r_load_filepath);
+		auto result = load_lambda_table[extension.c_str()](load_file_path_wstring, out_p_metadata, out_p_scratch_img);
+		return SUCCEEDED(result);
 	}
 
 	/// <summary>
@@ -225,50 +243,11 @@ namespace Texture
 		UINT64 in_width)
 	{
 		// 中間バッファとなるアップロードヒープ設定
-		/*
-		D3D12_HEAP_PROPERTIES upload_heapprop = {};
-		{
-			// マップ可能にするためにUPLOAD設定
-			upload_heapprop.Type = D3D12_HEAP_TYPE_UPLOAD;
-
-			// アップロード用なのでCPU/メモリは利用しない
-			upload_heapprop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-			upload_heapprop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-
-			// 単一アダプタのため0で良い
-			upload_heapprop.CreationNodeMask = 0;
-			upload_heapprop.VisibleNodeMask = 0;
-		}
-		*/
-		// 上記を置き換え
 		auto upload_heapprop = CD3DX12_HEAP_PROPERTIES(
 			D3D12_HEAP_TYPE_UPLOAD,
 			0, 0);
 
 		// アップロード用のリソース設定
-		/*
-		D3D12_RESOURCE_DESC res_desc = {};
-		{
-			// データの塊となるので未指定でいい
-			res_desc.Format = DXGI_FORMAT_UNKNOWN;
-			// 単なるバッファ指定
-			res_desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-
-			// データサイズ
-			res_desc.Width = in_width;
-			res_desc.Height = 1;
-			res_desc.DepthOrArraySize = 1;
-			res_desc.MipLevels = 1;
-
-			// 画像なので連続したデータなので連続データとして扱う
-			res_desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-			res_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
-
-			res_desc.SampleDesc.Count = 1;
-			res_desc.SampleDesc.Quality = 0;
-		}
-		*/
-		// 上記を置き換えている
 		auto res_desc = CD3DX12_RESOURCE_DESC::Buffer(in_width);
 
 		// 中間バッファを作成
@@ -302,46 +281,10 @@ namespace Texture
 		const DirectX::TexMetadata& in_metadata)
 	{
 		// ヒープ設定
-		/*
-		D3D12_HEAP_PROPERTIES texture_heapprop = {};
-		{
-			// テクスチャ用
-			texture_heapprop.Type = D3D12_HEAP_TYPE_DEFAULT;
-
-			// CPU/メモリは利用しない
-			texture_heapprop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-			texture_heapprop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-
-			// 単一アダプタのため0で良い
-			texture_heapprop.CreationNodeMask = 0;
-			texture_heapprop.VisibleNodeMask = 0;
-		}
-		*/
 		auto texture_heapprop = CD3DX12_HEAP_PROPERTIES(
 			D3D12_HEAP_TYPE_DEFAULT, 0, 0);
 
 		// リソース設定
-		/*
-		D3D12_RESOURCE_DESC res_desc = {};
-		{
-			// データの塊となるので未指定でいい
-			res_desc.Format = in_metadata.format;
-
-			res_desc.Dimension = static_cast<D3D12_RESOURCE_DIMENSION>(in_metadata.dimension);
-
-			// データサイズ
-			res_desc.Width = in_metadata.width;;
-			res_desc.Height = in_metadata.height;
-			res_desc.DepthOrArraySize = static_cast<UINT16>(in_metadata.arraySize);
-			res_desc.MipLevels = static_cast<UINT16>(in_metadata.mipLevels);
-
-			res_desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-
-			res_desc.SampleDesc.Count = 1;
-			res_desc.SampleDesc.Quality = 0;
-		}
-		*/
-		// 上記を置き換えている
 		auto res_desc = CD3DX12_RESOURCE_DESC(
 			static_cast<D3D12_RESOURCE_DIMENSION>(in_metadata.dimension),
 			0,
@@ -372,5 +315,142 @@ namespace Texture
 		}
 
 		return p_buffer;
+	}
+
+	/// <summary>
+	/// 単色テクスチャリソース作成
+	/// </summary>
+	/// <param name="out_p_texture"></param>
+	/// <param name="in_p_dev"></param>
+	/// <returns></returns>
+	static bool CreateTextureResourceFromColor(Resource* out_p_texture, ID3D12Device* in_p_dev, UINT8 in_color)
+	{
+		auto p_buff = CreateBuffer(
+			in_p_dev,
+			// 縦横4x4
+			4, 4,
+			// RGBAの4byte
+			DXGI_FORMAT_R8G8B8A8_UNORM,
+			1,
+			1,
+			// 2Dテクスチャ
+			D3D12_RESOURCE_DIMENSION_TEXTURE2D);
+		assert(p_buff != nullptr);
+
+		// 縦横4x4のRGBAの4byteのデータを作り、そのデータを0xffに埋めた白色データを作る
+		// UINT8にしているのは単色値(1byte)で一括書き込みを実現するため
+		std::vector<UINT8> data(4 * 4 * 4);
+		std::fill(data.begin(), data.end(), in_color);
+
+		// テクスチャバッファに白色データを書き込み
+		auto h_result = p_buff->WriteToSubresource(
+			0,
+			nullptr,
+			data.data(),
+			// 1行分のデータ幅
+			4 * 4,
+			data.size()
+		);
+		assert(SUCCEEDED(h_result));
+
+		out_p_texture->p_buf = p_buff;
+		return true;
+	}
+
+	/// <summary>
+	/// 単色のグラデーションテクスチャリソースを作成
+	/// </summary>
+	/// <param name="out_p_texture"></param>
+	/// <param name="in_p_dev"></param>
+	/// <param name="in_color"></param>
+	/// <returns></returns>
+	static bool CreateTextureResourceFromGradation(Resource* out_p_texture, ID3D12Device* in_p_dev, UINT8 in_color)
+	{
+		auto p_buff = CreateBuffer(
+			in_p_dev,
+			// 縦横4x256
+			4, 256,
+			// RGBAの4byte
+			DXGI_FORMAT_R8G8B8A8_UNORM,
+			1,
+			1,
+			// 2Dテクスチャ
+			D3D12_RESOURCE_DIMENSION_TEXTURE2D);
+		assert(p_buff != nullptr);
+
+		// 縦横4x256のRGBAの4byteのデータを作り、そのデータを0xffに埋めた白色データを作る
+		// 縦を256にしているのは色値は0 - 255になっているので0 - 255階調が作れる
+		std::vector<UINT32> data(4 * 256);
+		// 色のグラデーションを書き込む
+		{
+			UINT32 c = static_cast<UINT32>(in_color);
+			for (auto it = data.begin(); it != data.end(); it += 4)
+			{
+				UINT32 write_color = (c << 24) | (c << 16) | (c << 8) | c;
+				std::fill(it, it + 4, write_color);
+
+				--c;
+			}
+		}
+
+		// テクスチャバッファに色データを書き込み
+		auto h_result = p_buff->WriteToSubresource(
+			0,
+			nullptr,
+			data.data(),
+			// 横のサイズ
+			4 * sizeof(UINT32),
+			data.size() * sizeof(UINT32)
+		);
+		assert(SUCCEEDED(h_result));
+
+		out_p_texture->p_buf = p_buff;
+		return true;
+	}
+
+	/// <summary>
+	/// テクスチャファイルパスからファイルロードして作成バッファを返す
+	/// </summary>
+	/// <param name="in_r_file_path"></param>
+	/// <returns></returns>
+	static bool CreateTextureResourceFromLoadTextureFile(Resource* out_p_texture, ID3D12Device* in_p_dev, const std::string& in_r_file_path)
+	{
+		auto it = _s_cache_texture_resoucre.find(in_r_file_path);
+		if (it != _s_cache_texture_resoucre.end())
+		{
+			out_p_texture->p_buf = it->second;
+			return true;
+		}
+
+		DirectX::TexMetadata metadata = {};
+		DirectX::ScratchImage scratch_img = {};
+
+		auto result = LoadImageFile(&metadata, &scratch_img, in_r_file_path);
+		assert(result);
+
+		auto p_buff = CreateBuffer(
+			in_p_dev,
+			metadata.width, metadata.height,
+			metadata.format,
+			static_cast<UINT16>(metadata.arraySize),
+			static_cast<UINT16>(metadata.mipLevels),
+			static_cast<D3D12_RESOURCE_DIMENSION>(metadata.dimension));
+		assert(p_buff != nullptr);
+
+		auto p_img = scratch_img.GetImage(0, 0, 0);
+		auto h_result = p_buff->WriteToSubresource(
+			0,
+			nullptr,
+			p_img->pixels,
+			p_img->rowPitch,
+			p_img->slicePitch
+		);
+		assert(SUCCEEDED(h_result));
+
+		out_p_texture->p_buf = p_buff;
+
+		_s_cache_texture_resoucre[in_r_file_path] = p_buff;
+
+		return true;
 	}
 }

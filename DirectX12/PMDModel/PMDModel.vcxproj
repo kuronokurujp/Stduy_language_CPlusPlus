@@ -29,7 +29,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -136,6 +136,7 @@ xcopy $(ProjectDir)*.hlsli $(ProjectDir)Bin\$(Configuration)\Resources  /i /y
     <ClInclude Include="Code\Headers\d3dx12.h" />
     <ClInclude Include="Code\Sources\common.hpp" />
     <ClInclude Include="Code\Sources\constant_sample.hpp" />
+    <ClInclude Include="Code\Sources\material_sample.hpp" />
     <ClInclude Include="Code\Sources\pmd_loader.hpp" />
     <ClInclude Include="Code\Sources\polygon_sample.hpp" />
     <ClInclude Include="Code\Sources\shader_test.hpp" />

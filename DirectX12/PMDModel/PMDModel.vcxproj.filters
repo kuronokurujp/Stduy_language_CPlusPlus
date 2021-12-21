@@ -42,6 +42,9 @@
     <ClInclude Include="Code\Sources\pmd_loader.hpp">
       <Filter>Code\Sources</Filter>
     </ClInclude>
+    <ClInclude Include="Code\Sources\material_sample.hpp">
+      <Filter>Code\Sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BasicShaderHeader.hlsli" />
