@@ -6,8 +6,7 @@ root = true
 # Unix-style newlines with a newline ending every file
 # コードファイルは全てutf8にする(utfがすでに標準なので)
 [*]
-# end_of_line=lf
-end_of_line=crlf
+end_of_line=lf
 insert_final_newline=true
 charset=utf-8
 
@@ -41,7 +40,11 @@ indent_size = 4
 indent_style = space
 indent_size = 4
 
+# cpp/hファイルは改行コードなど独自の環境にしている
 [*.{cpp,h}]
 indent_style = space
 indent_size = 4 
+insert_final_newline=true
+charset=utf-8-bom
+end_of_line=crlf
 
