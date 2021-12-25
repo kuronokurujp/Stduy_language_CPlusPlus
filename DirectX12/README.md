@@ -14,6 +14,15 @@
 - <a href=https://sites.google.com/view/vpvp>MMD(PMD モデル表示の素材利用)</a>
 - <a href=https://www.shoeisha.co.jp/book/detail/9784798161938>DirectX 12 の魔導書 3D レンダリングの基礎から MMD モデルを踊らせるまで</a>
 
+## 利用ライブラリ
+
+- <a href="https://www.nuget.org/packages/Plog/">Plog</a>
+    - ログ出力に利用
+
+- <a hrea="https://www.nuget.org/packages/directxtex_desktop_win10/2021.11.8.1?_src=template">directxtex_desktop_win10</a>
+    - pngファイルなど画像ファイルをロードするために利用
+
+
 ## 商用利用について
 
 ソースコードそのものは、商用・有償・無償を問わず、ご自由にご使用下さい。
