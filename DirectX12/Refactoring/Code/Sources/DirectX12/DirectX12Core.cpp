@@ -1,4 +1,4 @@
-#include "DirectX12/DirectX12Core.h"
+﻿#include "DirectX12/DirectX12Core.h"
 
 // DX12の面倒な処理をまとめている
 // しかしDirectX12のバージョンが異なるとコンパイルエラーになることもあるので注意

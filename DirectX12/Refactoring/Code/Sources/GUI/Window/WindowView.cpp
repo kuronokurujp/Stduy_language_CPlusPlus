@@ -1,4 +1,4 @@
-#include "GUI/GUIMiniHeader.h"
+﻿#include "GUI/GUIMiniHeader.h"
 
 #include <assert.h>
 #include <vector>

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "DirectX12/DirectX12MiniHeader.h"
 

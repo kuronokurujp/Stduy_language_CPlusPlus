@@ -1,4 +1,4 @@
-#include "GUI/DirectX12/DirectX12WindowController.h"
+﻿#include "GUI/DirectX12/DirectX12WindowController.h"
 
 namespace GUI
 {

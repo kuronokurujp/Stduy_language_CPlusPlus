@@ -88,8 +88,7 @@
     </ClCompile>
     <PreBuildEvent>
       <Command>xcopy $(ProjectDir)Bin\Resources $(ProjectDir)Bin\$(Configuration)\Resources  /i /s /y
-xcopy $(ProjectDir)*.hlsl $(ProjectDir)Bin\$(Configuration)\Resources  /i /y
-xcopy $(ProjectDir)*.hlsli $(ProjectDir)Bin\$(Configuration)\Resources  /i /y
+xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Configuration)\Resources\Shader /i /s /y
 </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -133,7 +132,7 @@ xcopy $(ProjectDir)*.hlsli $(ProjectDir)Bin\$(Configuration)\Resources  /i /y
     <ClInclude Include="Code\Headers\App\AppMiniHeader.h" />
     <ClInclude Include="Code\Headers\App\GameController.h" />
     <ClInclude Include="Code\Headers\Common.h" />
-    <ClInclude Include="Code\Headers\d3dx12.h" />
+    <ClInclude Include="Code\Headers\DirectX12\d3dx12.h" />
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Core.h" />
     <ClInclude Include="Code\Headers\DirectX12\DirectX12MiniHeader.h" />
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Shader.h" />
@@ -147,28 +146,11 @@ xcopy $(ProjectDir)*.hlsli $(ProjectDir)Bin\$(Configuration)\Resources  /i /y
     <ClInclude Include="Code\Headers\GUI\Window\WindowView.h" />
     <ClInclude Include="Code\Headers\PMD\PMDLoader.h" />
     <ClInclude Include="Code\Headers\PMD\PMDMaterial.h" />
+    <ClInclude Include="Code\Headers\PMD\PMDRenderFactory.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="BasicPixelShader.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">BasicPS</EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="BasicVertexShader.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">BasicVS</EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="BasicShaderHeader.hlsli" />
     <None Include="packages.config" />
+    <None Include="Shader\PMD\BasicShaderHeader.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\Main.cpp" />
@@ -181,6 +163,19 @@ xcopy $(ProjectDir)*.hlsli $(ProjectDir)Bin\$(Configuration)\Resources  /i /y
     <ClCompile Include="Code\Sources\GUI\DirectX12\DirectX12WindowModel.cpp" />
     <ClCompile Include="Code\Sources\GUI\Window\WindowView.cpp" />
     <ClCompile Include="Code\Sources\PMD\PMDLoader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shader\PMD\BasicPixelShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">BasicPS</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shader\PMD\BasicVertexShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">BasicVS</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

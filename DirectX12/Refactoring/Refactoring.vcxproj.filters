@@ -49,10 +49,12 @@
     <Filter Include="Code\Sources\PMD">
       <UniqueIdentifier>{00f85e51-bf58-43b5-9bea-7f17a070fd97}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="BasicPixelShader.hlsl" />
-    <FxCompile Include="BasicVertexShader.hlsl" />
+    <Filter Include="Shader">
+      <UniqueIdentifier>{d1201b70-983a-4a12-b9bd-929f43b6271c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\PMD">
+      <UniqueIdentifier>{66569d9f-c052-497a-9a8d-4a0c231cc061}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Headers\GUI\GUIMiniHeader.h">
@@ -60,9 +62,6 @@
     </ClInclude>
     <ClInclude Include="Code\Headers\GUI\Window\WindowView.h">
       <Filter>Code\Headers\GUI\Window</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\Headers\d3dx12.h">
-      <Filter>Code\Headers\DirectX12</Filter>
     </ClInclude>
     <ClInclude Include="Code\Headers\DirectX12\DirectX12MiniHeader.h">
       <Filter>Code\Headers\DirectX12</Filter>
@@ -106,10 +105,18 @@
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Texture.h">
       <Filter>Code\Headers\DirectX12</Filter>
     </ClInclude>
+    <ClInclude Include="Code\Headers\PMD\PMDRenderFactory.h">
+      <Filter>Code\Headers\PMD</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\DirectX12\d3dx12.h">
+      <Filter>Code\Headers\DirectX12</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="BasicShaderHeader.hlsli" />
     <None Include="packages.config" />
+    <None Include="Shader\PMD\BasicShaderHeader.hlsli">
+      <Filter>Shader\PMD</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\Sources\GUI\Window\WindowView.cpp">
@@ -142,5 +149,13 @@
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Texture.cpp">
       <Filter>Code\Sources\DirectX12</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shader\PMD\BasicVertexShader.hlsl">
+      <Filter>Shader\PMD</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\PMD\BasicPixelShader.hlsl">
+      <Filter>Shader\PMD</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

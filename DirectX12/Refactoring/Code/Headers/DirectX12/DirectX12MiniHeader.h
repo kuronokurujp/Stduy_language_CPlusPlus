@@ -1,5 +1,4 @@
-// test
-#pragma once
+﻿#pragma once
 
 #pragma warning(disable: 4819)
 

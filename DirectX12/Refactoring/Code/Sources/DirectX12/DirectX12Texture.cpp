@@ -1,4 +1,4 @@
-#include "DirectX12/DirectX12Texture.h"
+﻿#include "DirectX12/DirectX12Texture.h"
 
 #include "DirectX12/DirectX12Core.h"
 #include "DirectX12/d3dx12.h"

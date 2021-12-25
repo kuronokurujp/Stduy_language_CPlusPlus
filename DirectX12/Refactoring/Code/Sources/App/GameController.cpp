@@ -1,4 +1,4 @@
-#include "App/GameController.h"
+﻿#include "App/GameController.h"
 
 #include "Common.h"
 #include "PMD/PMDMaterial.h"
@@ -169,7 +169,7 @@ namespace App
             ID3D10Blob* out_p_error_blob = nullptr;
             HRESULT h_result;
             {
-                auto vs_file_path = _T("Resources/BasicVertexShader.hlsl");
+                auto vs_file_path = _T("Resources/Shader/PMD/BasicVertexShader.hlsl");
                 LOGD << _T("vs file load => ") << vs_file_path;
 
                 h_result = DirectX12::SyncLoadShaderVS(context, "pmd_vs", &out_p_error_blob, vs_file_path);
@@ -180,11 +180,12 @@ namespace App
                     DirectX12::OutputErrorMessageForBlob(&error, h_result, out_p_error_blob);
 
                     LOGD << error;
+                    assert(false);
                 }
             }
 
             {
-                auto ps_file_path = _T("Resources/BasicPixelShader.hlsl");
+                auto ps_file_path = _T("Resources/Shader/PMD/BasicPixelShader.hlsl");
                 LOGD << _T("ps file load => ") << ps_file_path;
 
                 h_result = DirectX12::SyncLoadShaderPS(context, "pmd_ps", &out_p_error_blob, ps_file_path);
@@ -195,6 +196,7 @@ namespace App
                     DirectX12::OutputErrorMessageForBlob(&error, h_result, out_p_error_blob);
 
                     LOGD << error;
+                    assert(false);
                 }
             }
         }

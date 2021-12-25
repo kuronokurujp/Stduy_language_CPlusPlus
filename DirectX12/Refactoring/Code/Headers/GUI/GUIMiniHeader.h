@@ -1,6 +1,4 @@
-#pragma once
-
-#pragma warning(disable: 4819)
+﻿#pragma once
 
 // GUIで最低限必ず利用するヘッダーファイルのインクルード
 #include "Interface/WindowControllerInterface.h"

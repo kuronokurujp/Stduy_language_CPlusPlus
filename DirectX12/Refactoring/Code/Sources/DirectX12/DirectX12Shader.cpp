@@ -1,4 +1,4 @@
-#include "DirectX12/DirectX12MiniHeader.h"
+﻿#include "DirectX12/DirectX12MiniHeader.h"
 
 namespace DirectX12
 {
