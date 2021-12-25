@@ -18,6 +18,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Coordinateransform", "Coord
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PMDModel", "PMDModel\PMDModel.vcxproj", "{34BC2AE9-5D41-407F-B424-B48C5982DECE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Refactoring", "Refactoring\Refactoring.vcxproj", "{F9EB86F6-1B64-413B-9239-C8EDC9106FBF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -66,6 +68,14 @@ Global
 		{34BC2AE9-5D41-407F-B424-B48C5982DECE}.Release|x64.Build.0 = Release|x64
 		{34BC2AE9-5D41-407F-B424-B48C5982DECE}.Release|x86.ActiveCfg = Release|Win32
 		{34BC2AE9-5D41-407F-B424-B48C5982DECE}.Release|x86.Build.0 = Release|Win32
+		{F9EB86F6-1B64-413B-9239-C8EDC9106FBF}.Debug|x64.ActiveCfg = Debug|x64
+		{F9EB86F6-1B64-413B-9239-C8EDC9106FBF}.Debug|x64.Build.0 = Debug|x64
+		{F9EB86F6-1B64-413B-9239-C8EDC9106FBF}.Debug|x86.ActiveCfg = Debug|Win32
+		{F9EB86F6-1B64-413B-9239-C8EDC9106FBF}.Debug|x86.Build.0 = Debug|Win32
+		{F9EB86F6-1B64-413B-9239-C8EDC9106FBF}.Release|x64.ActiveCfg = Release|x64
+		{F9EB86F6-1B64-413B-9239-C8EDC9106FBF}.Release|x64.Build.0 = Release|x64
+		{F9EB86F6-1B64-413B-9239-C8EDC9106FBF}.Release|x86.ActiveCfg = Release|Win32
+		{F9EB86F6-1B64-413B-9239-C8EDC9106FBF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

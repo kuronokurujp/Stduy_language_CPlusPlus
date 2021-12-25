@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Code">
+      <UniqueIdentifier>{34d28c15-f8cc-4a4e-a6fd-af6a4cab709d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Sources">
+      <UniqueIdentifier>{a963bb31-0bff-4944-b06b-54c1a1b0cc6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Headers">
+      <UniqueIdentifier>{bca5ab5b-48ce-4ed1-9c3b-cb7060c8efed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Headers\GUI">
+      <UniqueIdentifier>{b8e84e8e-ead8-4205-93e1-1408e31c68a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Headers\GUI\Window">
+      <UniqueIdentifier>{d81c0ecb-1de3-4ce5-a6de-897d435f9ac9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Sources\GUI">
+      <UniqueIdentifier>{2ab14968-b354-49f9-b8eb-9e7292eae480}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Sources\GUI\Window">
+      <UniqueIdentifier>{069be329-7331-4dad-a6b7-57f73dd85b30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Headers\DirectX12">
+      <UniqueIdentifier>{22d1cc3e-b13d-4bc5-90ed-3379666f067d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Sources\DirectX12">
+      <UniqueIdentifier>{387af582-f21f-46e3-8754-70826c73d27a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Headers\GUI\DirectX12">
+      <UniqueIdentifier>{f7f7201c-c4c8-46ab-a34a-9aa455dd8472}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Headers\GUI\Interface">
+      <UniqueIdentifier>{0b6a28a5-37a2-445d-bb8d-24fa02eeac5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Sources\GUI\DirectX12">
+      <UniqueIdentifier>{be8f4e75-972a-40e3-bcc1-02a02137c2ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Headers\App">
+      <UniqueIdentifier>{1d1f70df-d86b-4a48-aed6-5d85fca0dee7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Sources\App">
+      <UniqueIdentifier>{f72a03b0-d094-4a26-b2de-7f35ea92ab5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Headers\PMD">
+      <UniqueIdentifier>{5e6c04e6-489f-4cad-a6c3-f190f8ac053a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Sources\PMD">
+      <UniqueIdentifier>{00f85e51-bf58-43b5-9bea-7f17a070fd97}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="BasicPixelShader.hlsl" />
+    <FxCompile Include="BasicVertexShader.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Code\Headers\GUI\GUIMiniHeader.h">
+      <Filter>Code\Headers\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\GUI\Window\WindowView.h">
+      <Filter>Code\Headers\GUI\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\d3dx12.h">
+      <Filter>Code\Headers\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\DirectX12\DirectX12MiniHeader.h">
+      <Filter>Code\Headers\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\DirectX12\DirectX12Core.h">
+      <Filter>Code\Headers\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\GUI\Interface\WindowModelInterface.h">
+      <Filter>Code\Headers\GUI\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\GUI\DirectX12\DirectX12WindowModel.h">
+      <Filter>Code\Headers\GUI\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\GUI\DirectX12\DirectX12WindowView.h">
+      <Filter>Code\Headers\GUI\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\App\GameController.h">
+      <Filter>Code\Headers\App</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\App\AppMiniHeader.h">
+      <Filter>Code\Headers\App</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\GUI\Interface\WindowControllerInterface.h">
+      <Filter>Code\Headers\GUI\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\GUI\DirectX12\DirectX12WindowController.h">
+      <Filter>Code\Headers\GUI\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\Common.h">
+      <Filter>Code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\DirectX12\DirectX12Shader.h">
+      <Filter>Code\Headers\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\PMD\PMDLoader.h">
+      <Filter>Code\Headers\PMD</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\PMD\PMDMaterial.h">
+      <Filter>Code\Headers\PMD</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\DirectX12\DirectX12Texture.h">
+      <Filter>Code\Headers\DirectX12</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BasicShaderHeader.hlsli" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Code\Sources\GUI\Window\WindowView.cpp">
+      <Filter>Code\Sources\GUI\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Sources\DirectX12\DirectX12Core.cpp">
+      <Filter>Code\Sources\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Main.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Sources\GUI\DirectX12\DirectX12WindowModel.cpp">
+      <Filter>Code\Sources\GUI\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Sources\GUI\DirectX12\DirectX12WindoeView.cpp">
+      <Filter>Code\Sources\GUI\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Sources\App\GameController.cpp">
+      <Filter>Code\Sources\App</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Sources\GUI\DirectX12\DirectX12WindowController.cpp">
+      <Filter>Code\Sources\GUI\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Sources\DirectX12\DirectX12Shader.cpp">
+      <Filter>Code\Sources\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Sources\PMD\PMDLoader.cpp">
+      <Filter>Code\Sources\PMD</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Sources\DirectX12\DirectX12Texture.cpp">
+      <Filter>Code\Sources\DirectX12</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
