@@ -41,6 +41,7 @@ indent_size = 4
 indent_style = space
 indent_size = 4
 
-[*.cpp]
+[*.{cpp,h}]
 indent_style = space
 indent_size = 4 
+
