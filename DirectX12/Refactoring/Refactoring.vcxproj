@@ -146,7 +146,7 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Configuration)\Resources\Shader /i 
     <ClInclude Include="Code\Headers\GUI\Window\WindowView.h" />
     <ClInclude Include="Code\Headers\PMD\PMDLoader.h" />
     <ClInclude Include="Code\Headers\PMD\PMDMaterial.h" />
-    <ClInclude Include="Code\Headers\PMD\PMDRenderFactory.h" />
+    <ClInclude Include="Code\Headers\PMD\PMDRendererFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -163,6 +163,7 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Configuration)\Resources\Shader /i 
     <ClCompile Include="Code\Sources\GUI\DirectX12\DirectX12WindowModel.cpp" />
     <ClCompile Include="Code\Sources\GUI\Window\WindowView.cpp" />
     <ClCompile Include="Code\Sources\PMD\PMDLoader.cpp" />
+    <ClCompile Include="Code\Sources\PMD\PMDRendererFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\PMD\BasicPixelShader.hlsl">

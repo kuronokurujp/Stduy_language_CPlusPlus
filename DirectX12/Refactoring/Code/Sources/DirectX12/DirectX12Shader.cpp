@@ -1,4 +1,8 @@
-﻿#include "DirectX12/DirectX12MiniHeader.h"
+﻿#include "DirectX12/DirectX12Shader.h"
+
+#include <assert.h>
+
+#pragma comment(lib, "d3dcompiler.lib")
 
 namespace DirectX12
 {

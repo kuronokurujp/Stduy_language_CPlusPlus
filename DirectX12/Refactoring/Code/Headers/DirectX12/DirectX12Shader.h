@@ -4,9 +4,6 @@
 
 // シェーダーを扱うのに必要
 #include <d3dcompiler.h>
-#pragma comment(lib, "d3dcompiler.lib")
-
-#include <assert.h>
 
 namespace DirectX12
 {

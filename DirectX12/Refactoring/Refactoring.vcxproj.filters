@@ -105,7 +105,7 @@
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Texture.h">
       <Filter>Code\Headers\DirectX12</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Headers\PMD\PMDRenderFactory.h">
+    <ClInclude Include="Code\Headers\PMD\PMDRendererFactory.h">
       <Filter>Code\Headers\PMD</Filter>
     </ClInclude>
     <ClInclude Include="Code\Headers\DirectX12\d3dx12.h">
@@ -148,6 +148,9 @@
     </ClCompile>
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Texture.cpp">
       <Filter>Code\Sources\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Sources\PMD\PMDRendererFactory.cpp">
+      <Filter>Code\Sources\PMD</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
