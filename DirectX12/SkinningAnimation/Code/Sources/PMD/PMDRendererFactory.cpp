@@ -45,9 +45,9 @@ namespace PMD
                 auto buff = in_context->res_buff_map[this->_vs_buff_key.c_str()];
                 vb_view.BufferLocation = buff->GetGPUVirtualAddress();
                 // バッファ全サイズ
-                vb_view.SizeInBytes = this->_pmd_data_pack.vertexs.size() * sizeof(this->_pmd_data_pack.vertexs[0]);
+                vb_view.SizeInBytes = this->_vb_size_in_bytes;
                 // バッファ内の一塊となるデータサイズ
-                vb_view.StrideInBytes = this->_pmd_data_pack.vertex_size;
+                vb_view.StrideInBytes = this->_vb_stride_in_bytes;
             }
 
             // 空バッファにインデックスビュー定義
@@ -58,7 +58,7 @@ namespace PMD
                 ib_view.BufferLocation = buff->GetGPUVirtualAddress();
                 // インデックスの要素データ型を16byteにしている
                 ib_view.Format = DXGI_FORMAT_R16_UINT;
-                ib_view.SizeInBytes = this->_pmd_data_pack.indices.size() * sizeof(this->_pmd_data_pack.indices[0]);
+                ib_view.SizeInBytes = this->_id_size_in_bytes;
             }
 
             // 描画
@@ -189,9 +189,28 @@ namespace PMD
 
             // PMDファイルを開く
             std::vector<PMD::Loader::PMDMaterial> pmd_material;
+            std::vector<PMD::Loader::PMDBone> pmd_bone;
+
+            ::PMD::Loader::PMDDataPack pmd_data_pack;
             {
-                auto error = PMD::Loader::SyncLoadFile(&_renderer->_pmd_data_pack, &pmd_material, in_r_pmd_filepath.c_str());
-                assert(error == 0);
+                {
+                    auto catch_data = this->_data_pack_map.find(in_r_pmd_filepath.c_str());
+                    if (catch_data == this->_data_pack_map.end())
+                    {
+                        auto error = PMD::Loader::SyncLoadFile(
+                            &pmd_data_pack,
+                            &pmd_material,
+                            &pmd_bone,
+                            in_r_pmd_filepath.c_str());
+                        assert(error == 0);
+
+                        this->_data_pack_map[in_r_pmd_filepath.c_str()] = pmd_data_pack;
+                    }
+                    else
+                    {
+                        pmd_data_pack = catch_data->second;
+                    }
+                }
 
                 // マテリアルデータコピー
                 {
@@ -360,10 +379,11 @@ namespace PMD
                 // 頂点バッファビュー作成
                 LOGD << _T("create v buffer");
                 {
-                    UINT buff_memory_size = _renderer->_pmd_data_pack.vertexs.size() * sizeof(_renderer->_pmd_data_pack.vertexs[0]);
+                    _renderer->_vb_size_in_bytes = pmd_data_pack.vertexs.size() * sizeof(pmd_data_pack.vertexs[0]);
+                    _renderer->_vb_stride_in_bytes = pmd_data_pack.vertex_size;
 
                     // 頂点情報を書き込むバッファを作成
-                    auto p_vert_buff = DirectX12::CreateBlankResForHeapUpload(in_context, _renderer->_vs_buff_key, buff_memory_size);
+                    auto p_vert_buff = DirectX12::CreateBlankResForHeapUpload(in_context, _renderer->_vs_buff_key, _renderer->_vb_size_in_bytes);
                     assert(p_vert_buff != nullptr);
 
                     // 作った頂点バッファに情報をコピーする
@@ -375,7 +395,7 @@ namespace PMD
                         assert(SUCCEEDED(result));
 
                         // 一括データ転送
-                        std::copy(_renderer->_pmd_data_pack.vertexs.begin(), _renderer->_pmd_data_pack.vertexs.end(), p_vert_map);
+                        std::copy(pmd_data_pack.vertexs.begin(), pmd_data_pack.vertexs.end(), p_vert_map);
 
                         p_vert_buff->Unmap(0, nullptr);
                     }
@@ -385,10 +405,9 @@ namespace PMD
                 LOGD << _T("create idx buffer");
                 {
                     // インデックスバッファを作成
-                    UINT buff_memory_size =
-                        static_cast<UINT>(_renderer->_pmd_data_pack.indices.size()) * sizeof(_renderer->_pmd_data_pack.indices[0]);
+                    _renderer->_id_size_in_bytes = pmd_data_pack.indices.size() * sizeof(pmd_data_pack.indices[0]);
                     {
-                        auto p_idx_buff = DirectX12::CreateBlankResForHeapUpload(in_context, _renderer->_idx_buff_key, buff_memory_size);
+                        auto p_idx_buff = DirectX12::CreateBlankResForHeapUpload(in_context, _renderer->_idx_buff_key, _renderer->_id_size_in_bytes);
                         assert(p_idx_buff != nullptr);
 
                         // コピーするデータ先頭と末尾の型と転送する型を指定
@@ -396,7 +415,7 @@ namespace PMD
                         auto result = p_idx_buff->Map(0, nullptr, (void**)&p_map);
                         assert(SUCCEEDED(result));
 
-                        std::copy(_renderer->_pmd_data_pack.indices.begin(), _renderer->_pmd_data_pack.indices.end(), p_map);
+                        std::copy(pmd_data_pack.indices.begin(), pmd_data_pack.indices.end(), p_map);
 
                         p_idx_buff->Unmap(0, nullptr);
                     }

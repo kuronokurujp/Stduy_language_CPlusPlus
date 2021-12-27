@@ -67,6 +67,18 @@ namespace PMD
             // テクスチャファイルパス
             char tex_file_path[20];
         };
+
+        // ボーン構造体
+        // アライメントに適したデータ構造体ではないのでpack(1)でアライメントを起きないようにする
+        struct PMDBone
+        {
+            char bone_name[20];
+            UINT16 parent_no;
+            UINT16 next_no;
+            INT8 type;
+            UINT16 ik_bone_no;
+            DirectX::XMFLOAT3 pos;
+        };
 #pragma pack()
 
         // PMDの関連データ一式
@@ -85,6 +97,10 @@ namespace PMD
         /// <param name="out_p_header"></param>
         /// <param name="in_p_pmd_filepath"></param>
         /// <returns></returns>
-        extern errno_t SyncLoadFile(PMDDataPack* out_p_data_pack, std::vector<PMDMaterial>* out_p_material_datas, const char* in_p_pmd_filepath);
+        extern errno_t SyncLoadFile(
+            PMDDataPack* out_p_data_pack,
+            std::vector<PMDMaterial>* out_p_material_datas,
+            std::vector<PMDBone>* out_p_bone_datas,
+            const char* in_p_pmd_filepath);
     }
 }

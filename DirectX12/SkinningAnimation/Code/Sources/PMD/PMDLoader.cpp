@@ -1,5 +1,7 @@
 ﻿#include "PMD/PMDLoader.h"
 
+#include "Common.h"
+
 namespace PMD
 {
     namespace Loader
@@ -13,8 +15,11 @@ namespace PMD
         errno_t SyncLoadFile(
             PMDDataPack* out_p_data_pack,
             std::vector<PMDMaterial>* out_p_material_datas,
+            std::vector<PMDBone>* out_p_bone_datas,
             const char* in_p_pmd_filepath)
         {
+            LOGD << "start load pmd file: " << in_p_pmd_filepath;
+
             FILE* fp = nullptr;
             auto error = fopen_s(&fp, in_p_pmd_filepath, "rb");
             if (error != 0)
@@ -57,6 +62,7 @@ namespace PMD
                         fclose(fp);
                         return error;
                     }
+
                     out_p_data_pack->vert_num = vert_num;
 
                     // 頂点データ一覧を取得
@@ -118,7 +124,42 @@ namespace PMD
                 }
             }
 
+            // ボーンをロード
+            error = 5;
+            {
+                UINT16 bone_num = 0;
+                if (fread(&bone_num, sizeof(bone_num), 1, fp) == 0)
+                {
+                    fclose(fp);
+                    return error;
+                }
+                LOGD << "bone_num: " << bone_num;
+
+                // ボーン数分データを確保
+                out_p_bone_datas->resize(bone_num);
+                // 要素のデータサイズを取得
+                auto data_size = sizeof((*out_p_bone_datas)[0]);
+                auto size = out_p_bone_datas->size();
+
+                if (fread(out_p_bone_datas->data(), data_size * size, 1, fp) == 0)
+                {
+                    fclose(fp);
+                    return error;
+                }
+#ifdef _DEBUG
+                // デバッグのため読み込んだボーン情報を出力
+                for (auto& bone : *out_p_bone_datas)
+                {
+                    // 日本語文字列をデバッグ出力するためwstring型に変更
+                    auto bone_name = Common::GetWideStringFromString(bone.bone_name);
+                    LOGD << bone_name;
+                }
+#endif
+            }
+
             fclose(fp);
+
+            LOGD << "end succees load pmd file: " << in_p_pmd_filepath;
 
             error = 0;
             return error;

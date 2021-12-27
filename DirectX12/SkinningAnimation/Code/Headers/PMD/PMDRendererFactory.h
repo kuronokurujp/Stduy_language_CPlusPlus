@@ -50,12 +50,15 @@ namespace PMD
 
             SceneShaderData* _p_scene_shader_param = nullptr;
 
-            ::PMD::Loader::PMDDataPack _pmd_data_pack;
             std::vector<::PMD::Material::Material> _pmd_materials;
             std::vector<::PMD::Material::MaterialTexture> _pmd_textures;
 
             UINT32 _material_desc_num = 0;
             UINT32 _material_texture_num = 0;
+
+            UINT _vb_size_in_bytes = 0;
+            UINT _vb_stride_in_bytes = 0;
+            UINT _id_size_in_bytes = 0;
 
             std::string _root_sig_key;
             std::string _gpipeline_key;
@@ -103,15 +106,10 @@ namespace PMD
                 const std::string& in_r_pmd_shader_ps_filepath,
                 const std::string& in_r_toon_path_fmt);
 
-            /// <summary>
-            /// 作成したレンダラーを取得
-            /// </summary>
-            /// <param name="in_r_key"></param>
-            /// <returns></returns>
-            std::shared_ptr<Renderer> GetRenderer(const std::string& in_r_key);
-
         private:
             std::shared_ptr<DirectX12::Context> context;
+
+            std::map<std::string, ::PMD::Loader::PMDDataPack> _data_pack_map;
 
             // nullptr用のテクスチャを作成
             // これは共通利用する
