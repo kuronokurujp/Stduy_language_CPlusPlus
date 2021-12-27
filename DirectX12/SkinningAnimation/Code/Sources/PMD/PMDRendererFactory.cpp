@@ -27,12 +27,10 @@ namespace PMD
             // カメラ視点
             const DirectX::XMFLOAT3& in_r_cam_pos)
         {
-            auto in_context = this->context;
-
             // PMD用のパイプラインステートを設定
             {
-                auto pipeline_state = in_context->_pipeline_state_map[this->_gpipeline_key.c_str()];
-                in_context->cmd_list->SetPipelineState(pipeline_state.Get());
+                auto pipeline_state = this->_context->_pipeline_state_map[this->_gpipeline_key.c_str()];
+                this->_context->cmd_list->SetPipelineState(pipeline_state.Get());
             }
 
             // 空バッファに頂点ビュー定義
@@ -42,7 +40,7 @@ namespace PMD
             // 頂点バッファが変わった時は当然ビューも変わるので更新箇所でやるのがいい気が
             {
                 // 内容を決めるバッファを取得
-                auto buff = in_context->res_buff_map[this->_vs_buff_key.c_str()];
+                auto buff = this->_context->res_buff_map[this->_vs_buff_key.c_str()];
                 vb_view.BufferLocation = buff->GetGPUVirtualAddress();
                 // バッファ全サイズ
                 vb_view.SizeInBytes = this->_vb_size_in_bytes;
@@ -54,7 +52,7 @@ namespace PMD
             D3D12_INDEX_BUFFER_VIEW ib_view = {};
             {
                 // 内容を決めるバッファを取得
-                auto buff = in_context->res_buff_map[this->_idx_buff_key.c_str()];
+                auto buff = this->_context->res_buff_map[this->_idx_buff_key.c_str()];
                 ib_view.BufferLocation = buff->GetGPUVirtualAddress();
                 // インデックスの要素データ型を16byteにしている
                 ib_view.Format = DXGI_FORMAT_R16_UINT;
@@ -62,12 +60,12 @@ namespace PMD
             }
 
             // 描画
-            in_context->cmd_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+            this->_context->cmd_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
             // 一度に設定できるインデックスバッファビューは一つのみ
-            in_context->cmd_list->IASetIndexBuffer(&ib_view);
+            this->_context->cmd_list->IASetIndexBuffer(&ib_view);
             // 頂点バッファビューを設定
-            in_context->cmd_list->IASetVertexBuffers(0, 1, &vb_view);
+            this->_context->cmd_list->IASetVertexBuffers(0, 1, &vb_view);
 
             // シェーダーに受け渡すパラメータ
             {
@@ -78,18 +76,18 @@ namespace PMD
             }
 
             // 利用するディスクリプタと関連付けたルートシグネチャを利用
-            auto root_sig = in_context->_root_sig_map[this->_root_sig_key.c_str()];
-            in_context->cmd_list->SetGraphicsRootSignature(root_sig.Get());
+            auto root_sig = this->_context->_root_sig_map[this->_root_sig_key.c_str()];
+            this->_context->cmd_list->SetGraphicsRootSignature(root_sig.Get());
             {
                 // ディスクリプタヒープを設定
-                auto p_basic_desc_heap = in_context->desc_heap_map[this->_basic_desc_heap_share_key.c_str()];
+                auto p_basic_desc_heap = this->_context->desc_heap_map[this->_basic_desc_heap_share_key.c_str()];
                 assert(p_basic_desc_heap != nullptr);
 
                 // ルートパラメータ0とディスクリプタヒープの関連付け
-                in_context->cmd_list->SetDescriptorHeaps(1, p_basic_desc_heap.GetAddressOf());
+                this->_context->cmd_list->SetDescriptorHeaps(1, p_basic_desc_heap.GetAddressOf());
                 {
                     auto basic_heap_handle = p_basic_desc_heap->GetGPUDescriptorHandleForHeapStart();
-                    in_context->cmd_list->SetGraphicsRootDescriptorTable(
+                    this->_context->cmd_list->SetGraphicsRootDescriptorTable(
                         // ルートパラメータインデックス
                         0,
                         // ヒープアドレス
@@ -97,24 +95,24 @@ namespace PMD
                 }
 
                 // マテリアルのディスクリプタヒープ設定
-                auto p_material_desc_heap = in_context->desc_heap_map[this->_material_desc_heap_share_key.c_str()];
-                in_context->cmd_list->SetDescriptorHeaps(1, p_material_desc_heap.GetAddressOf());
+                auto p_material_desc_heap = this->_context->desc_heap_map[this->_material_desc_heap_share_key.c_str()];
+                this->_context->cmd_list->SetDescriptorHeaps(1, p_material_desc_heap.GetAddressOf());
                 {
                     // 一つのディスクリプタヒープにある複数ビューを参照するアドレスオフセットサイズ
                     auto cbvsrv_inc_size =
-                        in_context->dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) * this->_material_desc_num;
+                        this->_context->dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) * this->_material_desc_num;
 
                     auto material_h = p_material_desc_heap->GetGPUDescriptorHandleForHeapStart();
                     UINT32 idx_offset = 0;
                     for (auto& m : this->_pmd_materials)
                     {
-                        in_context->cmd_list->SetGraphicsRootDescriptorTable(
+                        this->_context->cmd_list->SetGraphicsRootDescriptorTable(
                             // ルートパラメータインデックス
                             1,
                             // ヒープアドレス
                             material_h);
 
-                        in_context->cmd_list->DrawIndexedInstanced(m.indices_num, 1, idx_offset, 0, 0);
+                        this->_context->cmd_list->DrawIndexedInstanced(m.indices_num, 1, idx_offset, 0, 0);
 
                         material_h.ptr += cbvsrv_inc_size;
                         idx_offset += m.indices_num;
@@ -130,7 +128,7 @@ namespace PMD
         /// <returns></returns>
         const bool Factory::Initialize(std::shared_ptr<DirectX12::Context> in_context)
         {
-            this->context = in_context;
+            this->_context = in_context;
 
             // nullptr用のテクスチャを作成
             // これは共通利用する
@@ -140,7 +138,7 @@ namespace PMD
                 this->_gradation_share_texture = DirectX12::CreateTextureResourceFromGradation(in_context, 0xff);
             }
 
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -168,10 +166,10 @@ namespace PMD
             const std::string& in_r_pmd_shader_ps_filepath,
             const std::string& in_r_toon_path_fmt)
         {
-            auto in_context = this->context;
+            LOGD << "start create renderer: " + in_r_pmd_filepath;
 
             std::shared_ptr<Renderer> _renderer = std::make_shared<Renderer>();
-            _renderer->context = in_context;
+            _renderer->_context = this->_context;
 
             // 各データのデータ識別子ランダム文字列名を生成(被らないようにする)
             {
@@ -188,19 +186,16 @@ namespace PMD
             }
 
             // PMDファイルを開く
-            std::vector<PMD::Loader::PMDMaterial> pmd_material;
-            std::vector<PMD::Loader::PMDBone> pmd_bone;
-
             ::PMD::Loader::PMDDataPack pmd_data_pack;
             {
+                // データロード
                 {
                     auto catch_data = this->_data_pack_map.find(in_r_pmd_filepath.c_str());
                     if (catch_data == this->_data_pack_map.end())
                     {
+                        // PMDファイルロード
                         auto error = PMD::Loader::SyncLoadFile(
                             &pmd_data_pack,
-                            &pmd_material,
-                            &pmd_bone,
                             in_r_pmd_filepath.c_str());
                         assert(error == 0);
 
@@ -212,93 +207,11 @@ namespace PMD
                     }
                 }
 
-                // マテリアルデータコピー
-                {
-                    _renderer->_pmd_materials.resize(pmd_material.size());
-                    _renderer->_pmd_textures.resize(pmd_material.size());
+                // マテリアルデータ構築
+                this->_ApplyRenderMaterialData(_renderer, in_r_pmd_filepath, in_r_toon_path_fmt, pmd_data_pack.material);
 
-                    for (size_t i = 0; i < _renderer->_pmd_materials.size(); ++i)
-                    {
-                        _renderer->_pmd_materials[i].indices_num = pmd_material[i].indices_num;
-                        _renderer->_pmd_materials[i].basic.diffuse = pmd_material[i].diffuse;
-                        _renderer->_pmd_materials[i].basic.alpha = pmd_material[i].alpha;
-                        _renderer->_pmd_materials[i].basic.speclar = pmd_material[i].specular;
-                        _renderer->_pmd_materials[i].basic.specularity = pmd_material[i].specularity;
-                        _renderer->_pmd_materials[i].basic.ambient = pmd_material[i].ambiend;
-
-                        // リソースの初期化
-                        _renderer->_pmd_textures[i].tex = this->_white_share_texture;
-                        _renderer->_pmd_textures[i].sph = this->_white_share_texture;
-                        _renderer->_pmd_textures[i].spa = this->_black_share_texture;
-                        _renderer->_pmd_textures[i].toon = this->_gradation_share_texture;
-
-                        // テクスチャファイルパスからロードするファイルパスに置き換えてテクスチャロード
-                        // マテリアルの数分用意
-                        {
-                            std::vector<std::string> load_file_paths;
-                            if (0 < std::strlen(pmd_material[i].tex_file_path))
-                            {
-                                load_file_paths.clear();
-
-                                auto tex_file_path_str = std::string(pmd_material[i].tex_file_path);
-                                // ファイルパス内に*が入っているか存在する数でチェック
-                                if (std::count(tex_file_path_str.begin(), tex_file_path_str.end(), '*') > 0)
-                                {
-                                    // *が入っている場合はファイルパスを分割する
-                                    auto split_pair = Common::SplitFileName(tex_file_path_str);
-
-                                    // スフィアファイルパスが存在するのはfirst/secondはどちらかをチェックして
-                                    // スフィアファイルパスが存在しない方をテクスチャファイルパスとする
-                                    auto first_file_extention = Common::GetFileExtension(split_pair.first);
-                                    auto second_file_extention = Common::GetFileExtension(split_pair.second);
-
-                                    // ファイルパスは2つある
-                                    load_file_paths.push_back(split_pair.first);
-                                    load_file_paths.push_back(split_pair.second);
-                                }
-                                else
-                                {
-                                    load_file_paths.push_back(tex_file_path_str);
-                                }
-
-                                for (auto& load_file_path : load_file_paths)
-                                {
-                                    // ロードする相対ファイルパスを作成
-                                    auto load_tex_file_path_str =
-                                        Common::GetPathForAddPathToDirectoryEndPath(in_r_pmd_filepath, load_file_path.c_str());
-
-                                    // ロードするテクスチャファイルパス
-                                    {
-                                        if (Common::GetFileExtension(load_tex_file_path_str) == "sph")
-                                            _renderer->_pmd_textures[i].sph = DirectX12::CreateTextureResourceFromLoadTextureFile(in_context, load_tex_file_path_str);
-                                        else if (Common::GetFileExtension(load_tex_file_path_str) == "spa")
-                                            _renderer->_pmd_textures[i].spa = DirectX12::CreateTextureResourceFromLoadTextureFile(in_context, load_tex_file_path_str);
-                                        else
-                                            _renderer->_pmd_textures[i].tex = DirectX12::CreateTextureResourceFromLoadTextureFile(in_context, load_tex_file_path_str);
-                                    }
-                                }
-                            }
-                        }
-
-                        // トゥーン番号からトゥーンテクスチャをロード
-                        {
-                            std::string toon_file_path;
-                            // トゥーンテクスチャファイルパスを生成
-                            {
-                                UINT32 file_toon_no = pmd_material[i].toon_idx + 1;
-                                int sz = std::snprintf(nullptr, 0, in_r_toon_path_fmt.c_str(), file_toon_no);
-                                toon_file_path.resize(sz + 1);
-                                std::snprintf(&toon_file_path[0], toon_file_path.size(), in_r_toon_path_fmt.c_str(), file_toon_no);
-                            }
-
-                            _renderer->_pmd_textures[i].toon = DirectX12::CreateTextureResourceFromLoadTextureFile(in_context, toon_file_path);
-                        }
-                    }
-                }
-
-                // マテリアルのディスクリプタ数
-                _renderer->_material_texture_num = PMD::Material::c_pmd_model_texture_num;
-                _renderer->_material_desc_num = 1 + _renderer->_material_texture_num;
+                // TODO: ボーンデータ構築
+                this->_ApplyRenderBoneData(_renderer.get(), pmd_data_pack.bone);
             }
 
             // ティスクリプタヒープを作る
@@ -313,7 +226,7 @@ namespace PMD
                     desc_heap_desc.NumDescriptors = 1;
                     desc_heap_desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 
-                    auto b_result = DirectX12::CreateDescripterHeap(in_context, _renderer->_basic_desc_heap_share_key, desc_heap_desc);
+                    auto b_result = DirectX12::CreateDescripterHeap(this->_context, _renderer->_basic_desc_heap_share_key, desc_heap_desc);
                     assert(b_result);
                 }
 
@@ -332,7 +245,7 @@ namespace PMD
                         desc.NumDescriptors = desc_num;
                         desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
                     }
-                    auto b_result = DirectX12::CreateDescripterHeap(in_context, _renderer->_material_desc_heap_share_key, desc);
+                    auto b_result = DirectX12::CreateDescripterHeap(this->_context, _renderer->_material_desc_heap_share_key, desc);
                     assert(b_result);
                 }
             }
@@ -345,7 +258,7 @@ namespace PMD
                     LOGD << "vs file load => " << in_r_pmd_shader_vs_filepath;
 
                     auto filepath = Common::GetWideStringFromString(in_r_pmd_shader_vs_filepath);
-                    h_result = DirectX12::SyncLoadShaderVS(in_context, this->_vs_shader_key, &out_p_error_blob, filepath.c_str());
+                    h_result = DirectX12::SyncLoadShaderVS(this->_context, in_r_pmd_shader_vs_filepath, &out_p_error_blob, filepath.c_str());
                     if (FAILED(h_result))
                     {
                         // エラー表示
@@ -361,7 +274,7 @@ namespace PMD
                     LOGD << "ps file load => " << in_r_pmd_shader_ps_filepath;
 
                     auto ps_file_path = Common::GetWideStringFromString(in_r_pmd_shader_ps_filepath);
-                    h_result = DirectX12::SyncLoadShaderPS(in_context, this->_ps_shader_key, &out_p_error_blob, ps_file_path.c_str());
+                    h_result = DirectX12::SyncLoadShaderPS(this->_context, in_r_pmd_shader_ps_filepath, &out_p_error_blob, ps_file_path.c_str());
                     if (FAILED(h_result))
                     {
                         // エラー表示
@@ -383,7 +296,7 @@ namespace PMD
                     _renderer->_vb_stride_in_bytes = pmd_data_pack.vertex_size;
 
                     // 頂点情報を書き込むバッファを作成
-                    auto p_vert_buff = DirectX12::CreateBlankResForHeapUpload(in_context, _renderer->_vs_buff_key, _renderer->_vb_size_in_bytes);
+                    auto p_vert_buff = DirectX12::CreateBlankResForHeapUpload(this->_context, _renderer->_vs_buff_key, _renderer->_vb_size_in_bytes);
                     assert(p_vert_buff != nullptr);
 
                     // 作った頂点バッファに情報をコピーする
@@ -407,7 +320,7 @@ namespace PMD
                     // インデックスバッファを作成
                     _renderer->_id_size_in_bytes = pmd_data_pack.indices.size() * sizeof(pmd_data_pack.indices[0]);
                     {
-                        auto p_idx_buff = DirectX12::CreateBlankResForHeapUpload(in_context, _renderer->_idx_buff_key, _renderer->_id_size_in_bytes);
+                        auto p_idx_buff = DirectX12::CreateBlankResForHeapUpload(this->_context, _renderer->_idx_buff_key, _renderer->_id_size_in_bytes);
                         assert(p_idx_buff != nullptr);
 
                         // コピーするデータ先頭と末尾の型と転送する型を指定
@@ -437,7 +350,7 @@ namespace PMD
                     // マテリアルバッファを作成
                     // マテリアルの数から256byteアライメントしたサイズで作成
                     // マテリアルの数 * アライメントサイズでバッファ作成している
-                    p_material_buff = DirectX12::CreateBlankResForHeapUpload(in_context, _renderer->_material_buff_key, alignment_size * _renderer->_pmd_materials.size());
+                    p_material_buff = DirectX12::CreateBlankResForHeapUpload(this->_context, _renderer->_material_buff_key, alignment_size * _renderer->_pmd_materials.size());
 
                     // マテリアルデータを書き込み
                     INT8* p_map_material = nullptr;
@@ -503,17 +416,17 @@ namespace PMD
                     }
 
                     // あらかじめて作成したディスクリプタヒープにビュー付け
-                    auto heap = in_context->desc_heap_map[_renderer->_material_desc_heap_share_key.c_str()];
+                    auto heap = this->_context->desc_heap_map[_renderer->_material_desc_heap_share_key.c_str()];
                     assert(heap != nullptr);
 
                     auto heap_h = heap->GetCPUDescriptorHandleForHeapStart();
-                    auto inc_size = in_context->dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+                    auto inc_size = this->_context->dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
                     // マテリアルデータ数分ビューを作成
                     for (size_t i = 0; i < _renderer->_pmd_materials.size(); ++i)
                     {
                         // マテリアルの定数バッファビューを作成
-                        in_context->dev->CreateConstantBufferView(&mat_desc, heap_h);
+                        this->_context->dev->CreateConstantBufferView(&mat_desc, heap_h);
                         heap_h.ptr += inc_size;
 
                         // 設定するマテリアルのバッファアドレスを更新
@@ -522,7 +435,7 @@ namespace PMD
                         // テクスチャをビューに追加
                         {
                             tex_desc.Format = _renderer->_pmd_textures[i].tex->GetDesc().Format;
-                            in_context->dev->CreateShaderResourceView(
+                            this->_context->dev->CreateShaderResourceView(
                                 _renderer->_pmd_textures[i].tex.Get(),
                                 &tex_desc,
                                 heap_h
@@ -534,7 +447,7 @@ namespace PMD
                         // スフィアテクスチャをビューに追加
                         {
                             sp_tex_multi_desc.Format = _renderer->_pmd_textures[i].sph->GetDesc().Format;
-                            in_context->dev->CreateShaderResourceView(
+                            this->_context->dev->CreateShaderResourceView(
                                 _renderer->_pmd_textures[i].sph.Get(),
                                 &sp_tex_multi_desc,
                                 heap_h
@@ -546,7 +459,7 @@ namespace PMD
                         // 加算スフィアテクスチャをビューに追加
                         {
                             sp_tex_add_desc.Format = _renderer->_pmd_textures[i].spa->GetDesc().Format;
-                            in_context->dev->CreateShaderResourceView(
+                            this->_context->dev->CreateShaderResourceView(
                                 _renderer->_pmd_textures[i].spa.Get(),
                                 &sp_tex_add_desc,
                                 heap_h
@@ -558,7 +471,7 @@ namespace PMD
                         // トゥーンテクスチャをビューに追加
                         {
                             toon_tex_add_desc.Format = _renderer->_pmd_textures[i].toon->GetDesc().Format;
-                            in_context->dev->CreateShaderResourceView(
+                            this->_context->dev->CreateShaderResourceView(
                                 _renderer->_pmd_textures[i].toon.Get(),
                                 &toon_tex_add_desc,
                                 heap_h
@@ -572,7 +485,7 @@ namespace PMD
 
             // 座標変換シーン用の定数バッファを作成
             {
-                auto buff = DirectX12::CreateBlankResForHeapUpload(in_context, _renderer->_basic_buff_key, (sizeof(SceneShaderData) + 0xff) & ~0xff);
+                auto buff = DirectX12::CreateBlankResForHeapUpload(this->_context, _renderer->_basic_buff_key, (sizeof(SceneShaderData) + 0xff) & ~0xff);
                 buff->Map(0, nullptr, (void**)&_renderer->_p_scene_shader_param);
                 // マップ解除はしない
                 // 更新毎に書き込まれるから
@@ -580,19 +493,19 @@ namespace PMD
 
             // ディスクリプタヒープにリソースビューを設定する
             {
-                auto basic_heap = in_context->desc_heap_map[_renderer->_basic_desc_heap_share_key.c_str()];
+                auto basic_heap = this->_context->desc_heap_map[_renderer->_basic_desc_heap_share_key.c_str()];
                 auto basic_heap_handle = basic_heap->GetCPUDescriptorHandleForHeapStart();
                 // 行列の定数バッファビューを作る
                 {
                     D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
 
-                    auto buff = in_context->res_buff_map[_renderer->_basic_buff_key.c_str()];
+                    auto buff = this->_context->res_buff_map[_renderer->_basic_buff_key.c_str()];
                     cbv_desc.BufferLocation = buff->GetGPUVirtualAddress();
                     LOGD << _T("basic_heap: buff->GetDesc().Width = ") << buff->GetDesc().Width;
                     cbv_desc.SizeInBytes = static_cast<UINT>(buff->GetDesc().Width);
 
                     // ディスクリプタヒープのハンドルにビュー作成
-                    in_context->dev->CreateConstantBufferView(&cbv_desc, basic_heap_handle);
+                    this->_context->dev->CreateConstantBufferView(&cbv_desc, basic_heap_handle);
                 }
                 // このディスクリプタヒープに対してはリソース一つのみ
             }
@@ -715,7 +628,7 @@ namespace PMD
 
                     ID3DBlob* p_error_blob = nullptr;
 
-                    auto h_result = DirectX12::CreateRootSignature(in_context, _renderer->_root_sig_key, &p_error_blob, root_sig_desc);
+                    auto h_result = DirectX12::CreateRootSignature(this->_context, _renderer->_root_sig_key, &p_error_blob, root_sig_desc);
                     if (FAILED(h_result))
                     {
                         std::string error;
@@ -784,15 +697,120 @@ namespace PMD
 
                 // あらかじめて作成したシェーダー, ルートシグネチャと頂点レイアウトを指定グラフィックパイプラインを作成
                 auto h_result = DirectX12::CreateGraphicsPipeline(
-                    in_context,
+                    this->_context,
                     _renderer->_gpipeline_key,
                     _renderer->_root_sig_key,
-                    this->_vs_shader_key,
-                    this->_ps_shader_key,
+                    in_r_pmd_shader_vs_filepath,
+                    in_r_pmd_shader_ps_filepath,
                     input_layout, _countof(input_layout));
             }
 
+            LOGD << "end create renderer: " + in_r_pmd_filepath;
+
             return _renderer;
+        }
+
+        void Factory::_ApplyRenderMaterialData(
+            std::shared_ptr<Renderer> out_r_renderer,
+            const std::string& in_r_file_path,
+            const std::string& in_r_toon_file_path_fmt,
+            std::vector<PMD::Loader::PMDMaterial>& in_r_pmd_material)
+        {
+            out_r_renderer->_pmd_materials.resize(in_r_pmd_material.size());
+            out_r_renderer->_pmd_textures.resize(in_r_pmd_material.size());
+
+            for (size_t i = 0; i < out_r_renderer->_pmd_materials.size(); ++i)
+            {
+                out_r_renderer->_pmd_materials[i].indices_num = in_r_pmd_material[i].indices_num;
+                out_r_renderer->_pmd_materials[i].basic.diffuse = in_r_pmd_material[i].diffuse;
+                out_r_renderer->_pmd_materials[i].basic.alpha = in_r_pmd_material[i].alpha;
+                out_r_renderer->_pmd_materials[i].basic.speclar = in_r_pmd_material[i].specular;
+                out_r_renderer->_pmd_materials[i].basic.specularity = in_r_pmd_material[i].specularity;
+                out_r_renderer->_pmd_materials[i].basic.ambient = in_r_pmd_material[i].ambiend;
+
+                // リソースの初期化
+                out_r_renderer->_pmd_textures[i].tex = this->_white_share_texture;
+                out_r_renderer->_pmd_textures[i].sph = this->_white_share_texture;
+                out_r_renderer->_pmd_textures[i].spa = this->_black_share_texture;
+                out_r_renderer->_pmd_textures[i].toon = this->_gradation_share_texture;
+
+                // テクスチャファイルパスからロードするファイルパスに置き換えてテクスチャロード
+                // マテリアルの数分用意
+                {
+                    std::vector<std::string> load_file_paths;
+                    if (0 < std::strlen(in_r_pmd_material[i].tex_file_path))
+                    {
+                        load_file_paths.clear();
+
+                        auto tex_file_path_str = std::string(in_r_pmd_material[i].tex_file_path);
+                        // ファイルパス内に*が入っているか存在する数でチェック
+                        if (std::count(tex_file_path_str.begin(), tex_file_path_str.end(), '*') > 0)
+                        {
+                            // *が入っている場合はファイルパスを分割する
+                            auto split_pair = Common::SplitFileName(tex_file_path_str);
+
+                            // スフィアファイルパスが存在するのはfirst/secondはどちらかをチェックして
+                            // スフィアファイルパスが存在しない方をテクスチャファイルパスとする
+                            auto first_file_extention = Common::GetFileExtension(split_pair.first);
+                            auto second_file_extention = Common::GetFileExtension(split_pair.second);
+
+                            // ファイルパスは2つある
+                            load_file_paths.push_back(split_pair.first);
+                            load_file_paths.push_back(split_pair.second);
+                        }
+                        else
+                        {
+                            load_file_paths.push_back(tex_file_path_str);
+                        }
+
+                        for (auto& load_file_path : load_file_paths)
+                        {
+                            // ロードする相対ファイルパスを作成
+                            auto load_tex_file_path_str =
+                                Common::GetPathForAddPathToDirectoryEndPath(in_r_file_path, load_file_path.c_str());
+
+                            // ロードするテクスチャファイルパス
+                            {
+                                if (Common::GetFileExtension(load_tex_file_path_str) == "sph")
+                                    out_r_renderer->_pmd_textures[i].sph = DirectX12::CreateTextureResourceFromLoadTextureFile(this->_context, load_tex_file_path_str);
+                                else if (Common::GetFileExtension(load_tex_file_path_str) == "spa")
+                                    out_r_renderer->_pmd_textures[i].spa = DirectX12::CreateTextureResourceFromLoadTextureFile(this->_context, load_tex_file_path_str);
+                                else
+                                    out_r_renderer->_pmd_textures[i].tex = DirectX12::CreateTextureResourceFromLoadTextureFile(this->_context, load_tex_file_path_str);
+                            }
+                        }
+                    }
+                }
+
+                // トゥーン番号からトゥーンテクスチャをロード
+                {
+                    std::string toon_file_path;
+                    // トゥーンテクスチャファイルパスを生成
+                    {
+                        UINT32 file_toon_no = in_r_pmd_material[i].toon_idx + 1;
+                        int sz = std::snprintf(nullptr, 0, in_r_toon_file_path_fmt.c_str(), file_toon_no);
+                        toon_file_path.resize(sz + 1);
+                        std::snprintf(&toon_file_path[0], toon_file_path.size(), in_r_toon_file_path_fmt.c_str(), file_toon_no);
+                    }
+
+                    out_r_renderer->_pmd_textures[i].toon = DirectX12::CreateTextureResourceFromLoadTextureFile(this->_context, toon_file_path);
+                }
+            }
+
+            // マテリアルのディスクリプタ数
+            out_r_renderer->_material_texture_num = PMD::Material::c_pmd_model_texture_num;
+            out_r_renderer->_material_desc_num = 1 + out_r_renderer->_material_texture_num;
+        }
+
+        /// <summary>
+        /// ボーンデータ構築
+        /// </summary>
+        /// <param name="out_p_renderer"></param>
+        /// <param name="in_r_pmd_bone"></param>
+        void Factory::_ApplyRenderBoneData(
+            Renderer* out_p_renderer,
+            std::vector<PMD::Loader::PMDBone>& in_r_pmd_bone)
+        {
         }
     }
 }

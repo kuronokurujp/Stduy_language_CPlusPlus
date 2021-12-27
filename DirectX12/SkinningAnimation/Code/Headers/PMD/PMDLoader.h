@@ -89,18 +89,21 @@ namespace PMD
             std::vector<UINT16> indices;
             size_t vertex_size = 0;
             UINT32 vert_num = 0;
+
+            // pack(1)にしてアライメントを無視しているので非効率なデータ構造になっているので注意
+            // アライメント無視なのでメモリ読み書きの効率は悪い
+            // PMDファイル構造上しかたない
+            std::vector<PMD::Loader::PMDMaterial> material;
+            std::vector<PMD::Loader::PMDBone> bone;
         };
 
         /// <summary>
         /// PMDファイルからデータロード
         /// </summary>
         /// <param name="out_p_header"></param>
-        /// <param name="in_p_pmd_filepath"></param>
         /// <returns></returns>
         extern errno_t SyncLoadFile(
             PMDDataPack* out_p_data_pack,
-            std::vector<PMDMaterial>* out_p_material_datas,
-            std::vector<PMDBone>* out_p_bone_datas,
             const char* in_p_pmd_filepath);
     }
 }

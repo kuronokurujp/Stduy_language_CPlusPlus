@@ -10,12 +10,9 @@ namespace PMD
         /// PMDファイルからデータ同期ロード
         /// </summary>
         /// <param name="out_p_header"></param>
-        /// <param name="in_p_pmd_filepath"></param>
         /// <returns></returns>
         errno_t SyncLoadFile(
             PMDDataPack* out_p_data_pack,
-            std::vector<PMDMaterial>* out_p_material_datas,
-            std::vector<PMDBone>* out_p_bone_datas,
             const char* in_p_pmd_filepath)
         {
             LOGD << "start load pmd file: " << in_p_pmd_filepath;
@@ -112,12 +109,13 @@ namespace PMD
                 }
 
                 // マテリアルの数分データを確保
-                out_p_material_datas->resize(material_num);
+                out_p_data_pack->material.resize(material_num);
                 // 要素のデータサイズを取得
-                auto data_size = sizeof((*out_p_material_datas)[0]);
-                auto size = out_p_material_datas->size();
+                auto data_size = sizeof((out_p_data_pack->material)[0]);
+                auto size = out_p_data_pack->material.size();
+                LOGD << "pmd_material data_size => " << data_size;
 
-                if (fread(out_p_material_datas->data(), data_size * size, 1, fp) == 0)
+                if (fread(out_p_data_pack->material.data(), data_size * size, 1, fp) == 0)
                 {
                     fclose(fp);
                     return error;
@@ -136,19 +134,20 @@ namespace PMD
                 LOGD << "bone_num: " << bone_num;
 
                 // ボーン数分データを確保
-                out_p_bone_datas->resize(bone_num);
+                out_p_data_pack->bone.resize(bone_num);
                 // 要素のデータサイズを取得
-                auto data_size = sizeof((*out_p_bone_datas)[0]);
-                auto size = out_p_bone_datas->size();
+                auto data_size = sizeof((out_p_data_pack->bone)[0]);
+                auto size = out_p_data_pack->bone.size();
+                LOGD << "pmd_bone data_size => " << data_size;
 
-                if (fread(out_p_bone_datas->data(), data_size * size, 1, fp) == 0)
+                if (fread(out_p_data_pack->bone.data(), data_size * size, 1, fp) == 0)
                 {
                     fclose(fp);
                     return error;
                 }
 #ifdef _DEBUG
                 // デバッグのため読み込んだボーン情報を出力
-                for (auto& bone : *out_p_bone_datas)
+                for (auto& bone : out_p_data_pack->bone)
                 {
                     // 日本語文字列をデバッグ出力するためwstring型に変更
                     auto bone_name = Common::GetWideStringFromString(bone.bone_name);

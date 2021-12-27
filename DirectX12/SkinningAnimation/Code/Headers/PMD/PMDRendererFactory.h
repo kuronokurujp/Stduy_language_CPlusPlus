@@ -46,7 +46,7 @@ namespace PMD
                 const DirectX::XMFLOAT3& in_r_cam_pos);
 
         private:
-            std::shared_ptr<DirectX12::Context> context;
+            std::shared_ptr<DirectX12::Context> _context;
 
             SceneShaderData* _p_scene_shader_param = nullptr;
 
@@ -107,7 +107,25 @@ namespace PMD
                 const std::string& in_r_toon_path_fmt);
 
         private:
-            std::shared_ptr<DirectX12::Context> context;
+            void _ApplyRenderMaterialData(
+                // TODO: 後でポイントに直す！
+                std::shared_ptr<Renderer> out_r_renderer,
+                const std::string& in_r_file_path,
+                const std::string& in_r_toon_file_path_fmt,
+                std::vector<PMD::Loader::PMDMaterial>& in_r_pmd_material);
+
+            /// <summary>
+            /// ボーンデータ構築
+            /// TODO: 作り中
+            /// </summary>
+            /// <param name="out_p_renderer"></param>
+            /// <param name="in_r_pmd_bone"></param>
+            void _ApplyRenderBoneData(
+                Renderer* out_p_renderer,
+                std::vector<PMD::Loader::PMDBone>& in_r_pmd_bone);
+
+        private:
+            std::shared_ptr<DirectX12::Context> _context;
 
             std::map<std::string, ::PMD::Loader::PMDDataPack> _data_pack_map;
 
@@ -116,10 +134,6 @@ namespace PMD
             DirectX12::Context::ComPtr<ID3D12Resource> _white_share_texture;
             DirectX12::Context::ComPtr<ID3D12Resource> _black_share_texture;
             DirectX12::Context::ComPtr<ID3D12Resource> _gradation_share_texture;
-
-            // 共通で利用するシェーダーキー名
-            std::string _vs_shader_key = "pmd_vs";
-            std::string _ps_shader_key = "pmd_ps";
         };
     }
 }
