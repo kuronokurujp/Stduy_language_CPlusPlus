@@ -20,6 +20,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PMDModel", "PMDModel\PMDMod
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Refactoring", "Refactoring\Refactoring.vcxproj", "{F9EB86F6-1B64-413B-9239-C8EDC9106FBF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SkinningAnimation", "SkinningAnimation\SkinningAnimation.vcxproj", "{27DAA956-D529-49FA-BC4B-2D4710636AFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -76,6 +78,14 @@ Global
 		{F9EB86F6-1B64-413B-9239-C8EDC9106FBF}.Release|x64.Build.0 = Release|x64
 		{F9EB86F6-1B64-413B-9239-C8EDC9106FBF}.Release|x86.ActiveCfg = Release|Win32
 		{F9EB86F6-1B64-413B-9239-C8EDC9106FBF}.Release|x86.Build.0 = Release|Win32
+		{27DAA956-D529-49FA-BC4B-2D4710636AFB}.Debug|x64.ActiveCfg = Debug|x64
+		{27DAA956-D529-49FA-BC4B-2D4710636AFB}.Debug|x64.Build.0 = Debug|x64
+		{27DAA956-D529-49FA-BC4B-2D4710636AFB}.Debug|x86.ActiveCfg = Debug|Win32
+		{27DAA956-D529-49FA-BC4B-2D4710636AFB}.Debug|x86.Build.0 = Debug|Win32
+		{27DAA956-D529-49FA-BC4B-2D4710636AFB}.Release|x64.ActiveCfg = Release|x64
+		{27DAA956-D529-49FA-BC4B-2D4710636AFB}.Release|x64.Build.0 = Release|x64
+		{27DAA956-D529-49FA-BC4B-2D4710636AFB}.Release|x86.ActiveCfg = Release|Win32
+		{27DAA956-D529-49FA-BC4B-2D4710636AFB}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
