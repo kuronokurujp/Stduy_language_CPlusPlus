@@ -37,7 +37,6 @@ namespace PMD
             /// <param name="in_r_proj_mat"></param>
             /// <param name="in_r_cam_pos"></param>
             void Rendering(
-                std::shared_ptr<DirectX12::Context> in_context,
                 const DirectX::XMMATRIX& in_r_local_mat,
                 // 座標変換に必要な情報
                 const DirectX::XMMATRIX& in_r_world_mat,
@@ -47,6 +46,8 @@ namespace PMD
                 const DirectX::XMFLOAT3& in_r_cam_pos);
 
         private:
+            std::shared_ptr<DirectX12::Context> context;
+
             SceneShaderData* _p_scene_shader_param = nullptr;
 
             ::PMD::Loader::PMDDataPack _pmd_data_pack;
@@ -91,15 +92,12 @@ namespace PMD
             /// <summary>
             /// PMDファイルを解析してレンダラー作成
             /// </summary>
-            /// <param name="in_r_context"></param>
             /// <param name="in_r_key"></param>
             /// <param name="in_r_pmd_filepath"></param>
             /// <param name="in_r_pmd_shader_vs_filepath"></param>
             /// <param name="in_r_pmd_shader_ps_filepath"></param>
             /// <returns></returns>
             std::shared_ptr<Renderer> CreateRenderer(
-                std::shared_ptr<DirectX12::Context> in_context,
-                const std::string& in_r_key,
                 const std::string& in_r_pmd_filepath,
                 const std::string& in_r_pmd_shader_vs_filepath,
                 const std::string& in_r_pmd_shader_ps_filepath,
@@ -113,6 +111,8 @@ namespace PMD
             std::shared_ptr<Renderer> GetRenderer(const std::string& in_r_key);
 
         private:
+            std::shared_ptr<DirectX12::Context> context;
+
             // nullptr用のテクスチャを作成
             // これは共通利用する
             DirectX12::Context::ComPtr<ID3D12Resource> _white_share_texture;
@@ -122,8 +122,6 @@ namespace PMD
             // 共通で利用するシェーダーキー名
             std::string _vs_shader_key = "pmd_vs";
             std::string _ps_shader_key = "pmd_ps";
-
-            std::map<std::string, std::shared_ptr<Renderer>> _renderer_map;
         };
     }
 }

@@ -55,6 +55,12 @@
     <Filter Include="Shader\PMD">
       <UniqueIdentifier>{66569d9f-c052-497a-9a8d-4a0c231cc061}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code\Headers\Actor">
+      <UniqueIdentifier>{f9bf8dc7-fe96-4f4c-a1b2-9a37d5c6d539}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Sources\Actor">
+      <UniqueIdentifier>{40a33ccc-89ff-442c-8381-cd82a12aa0c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Headers\GUI\GUIMiniHeader.h">
@@ -111,6 +117,18 @@
     <ClInclude Include="Code\Headers\DirectX12\d3dx12.h">
       <Filter>Code\Headers\DirectX12</Filter>
     </ClInclude>
+    <ClInclude Include="Code\Headers\Actor\Actor.h">
+      <Filter>Code\Headers\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\Actor\ActorManager.h">
+      <Filter>Code\Headers\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\Actor\ActorMiniHeader.h">
+      <Filter>Code\Headers\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\App\PMDActor.h">
+      <Filter>Code\Headers\App</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -151,6 +169,15 @@
     </ClCompile>
     <ClCompile Include="Code\Sources\PMD\PMDRendererFactory.cpp">
       <Filter>Code\Sources\PMD</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Sources\Actor\Actor.cpp">
+      <Filter>Code\Sources\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Sources\Actor\ActorManager.cpp">
+      <Filter>Code\Sources\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Sources\App\PMDActor.cpp">
+      <Filter>Code\Sources\App</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -4,10 +4,9 @@
 #pragma once
 
 #include "GUI/GUIMiniHeader.h"
+#include "Actor/ActorMiniHeader.h"
 
-#include "PMD/PMDLoader.h"
-#include "PMD/PMDMaterial.h"
-#include "PMD/PMDRendererFactory.h"
+#include "PMDActor.h"
 
 namespace App
 {
@@ -27,16 +26,8 @@ namespace App
 
     private:
         std::shared_ptr<GUI::DirectX12WindowController> _window_ctrl;
+        std::unique_ptr<Actor::ActorManager> _actor_manager;
 
-        std::unique_ptr<PMD::Render::Factory> _pmd_render_factor;
-
-        // TODO: レンダリングテスト用の変数
-        DirectX::XMMATRIX _local_mat = DirectX::XMMatrixIdentity();
-        // 3Dの座標変換
-        DirectX::XMMATRIX _world_mat = DirectX::XMMatrixIdentity();
-        DirectX::XMMATRIX _view_mat = DirectX::XMMatrixIdentity();
-        DirectX::XMMATRIX _proj_mat = DirectX::XMMatrixIdentity();
-        // 視点
-        DirectX::XMFLOAT3 _eye = DirectX::XMFLOAT3(0.0, 10.0f, -15.0);
+        std::shared_ptr<PMD::Render::Factory> _pmd_render_factor;
     };
 }

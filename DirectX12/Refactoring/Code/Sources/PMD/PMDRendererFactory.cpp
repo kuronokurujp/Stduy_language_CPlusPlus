@@ -19,7 +19,6 @@ namespace PMD
         /// <param name="in_r_proj_mat"></param>
         /// <param name="in_r_cam_pos"></param>
         void Renderer::Rendering(
-            std::shared_ptr<DirectX12::Context> in_context,
             const DirectX::XMMATRIX& in_r_local_mat,
             // 座標変換に必要な情報
             const DirectX::XMMATRIX& in_r_world_mat,
@@ -28,6 +27,8 @@ namespace PMD
             // カメラ視点
             const DirectX::XMFLOAT3& in_r_cam_pos)
         {
+            auto in_context = this->context;
+
             // PMD用のパイプラインステートを設定
             {
                 auto pipeline_state = in_context->_pipeline_state_map[this->_gpipeline_key.c_str()];
@@ -129,6 +130,8 @@ namespace PMD
         /// <returns></returns>
         const bool Factory::Initialize(std::shared_ptr<DirectX12::Context> in_context)
         {
+            this->context = in_context;
+
             // nullptr用のテクスチャを作成
             // これは共通利用する
             {
@@ -160,27 +163,28 @@ namespace PMD
         /// <param name="in_r_pmd_shader_ps_filepath"></param>
         /// <returns></returns>
         std::shared_ptr<Renderer> Factory::CreateRenderer(
-            std::shared_ptr<DirectX12::Context> in_context,
-            const std::string& in_r_key,
             const std::string& in_r_pmd_filepath,
             const std::string& in_r_pmd_shader_vs_filepath,
             const std::string& in_r_pmd_shader_ps_filepath,
             const std::string& in_r_toon_path_fmt)
         {
+            auto in_context = this->context;
+
             std::shared_ptr<Renderer> _renderer = std::make_shared<Renderer>();
+            _renderer->context = in_context;
 
-            // TODO: 各データのデータ識別子ランダム文字列名を生成(被らないようにする)
+            // 各データのデータ識別子ランダム文字列名を生成(被らないようにする)
             {
-                _renderer->_root_sig_key = "pmd_root_sig";
-                _renderer->_gpipeline_key = "pmd_gpipeline";
-                _renderer->_vs_buff_key = "pmd_vs_buff";
-                _renderer->_idx_buff_key = "pmd_idx_buff";
+                _renderer->_root_sig_key = "pmd_root_sig" + Common::CreateGUIDString();
+                _renderer->_gpipeline_key = "pmd_gpipeline" + Common::CreateGUIDString();
+                _renderer->_vs_buff_key = "pmd_vs_buff" + Common::CreateGUIDString();
+                _renderer->_idx_buff_key = "pmd_idx_buff" + Common::CreateGUIDString();
 
-                _renderer->_basic_desc_heap_share_key = "basic_heap";
-                _renderer->_basic_buff_key = "pmd_scene_data";
+                _renderer->_basic_desc_heap_share_key = "basic_heap" + Common::CreateGUIDString();
+                _renderer->_basic_buff_key = "pmd_scene_data" + Common::CreateGUIDString();
 
-                _renderer->_material_desc_heap_share_key = "pmd_material_heap";
-                _renderer->_material_buff_key = "pmd_const_material";
+                _renderer->_material_desc_heap_share_key = "pmd_material_heap" + Common::CreateGUIDString();
+                _renderer->_material_buff_key = "pmd_const_material" + Common::CreateGUIDString();
             }
 
             // PMDファイルを開く
@@ -769,13 +773,7 @@ namespace PMD
                     input_layout, _countof(input_layout));
             }
 
-            this->_renderer_map[in_r_key.c_str()] = _renderer;
             return _renderer;
-        }
-
-        std::shared_ptr<Renderer> Factory::GetRenderer(const std::string& in_r_key)
-        {
-            return this->_renderer_map[in_r_key.c_str()];
         }
     }
 }

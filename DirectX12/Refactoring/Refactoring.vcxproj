@@ -129,8 +129,12 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Configuration)\Resources\Shader /i 
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Code\Headers\Actor\Actor.h" />
+    <ClInclude Include="Code\Headers\Actor\ActorManager.h" />
+    <ClInclude Include="Code\Headers\Actor\ActorMiniHeader.h" />
     <ClInclude Include="Code\Headers\App\AppMiniHeader.h" />
     <ClInclude Include="Code\Headers\App\GameController.h" />
+    <ClInclude Include="Code\Headers\App\PMDActor.h" />
     <ClInclude Include="Code\Headers\Common.h" />
     <ClInclude Include="Code\Headers\DirectX12\d3dx12.h" />
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Core.h" />
@@ -154,7 +158,10 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Configuration)\Resources\Shader /i 
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\Main.cpp" />
+    <ClCompile Include="Code\Sources\Actor\Actor.cpp" />
+    <ClCompile Include="Code\Sources\Actor\ActorManager.cpp" />
     <ClCompile Include="Code\Sources\App\GameController.cpp" />
+    <ClCompile Include="Code\Sources\App\PMDActor.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Core.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Shader.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Texture.cpp" />
