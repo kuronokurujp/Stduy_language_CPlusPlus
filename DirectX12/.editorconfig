@@ -41,9 +41,17 @@ indent_style = space
 indent_size = 4
 
 # cpp/hファイルは改行コードなど独自の環境にしている
-[*.{cpp,h,hlsl,hlsli}]
+[*.{cpp,h}]
 indent_style = space
 indent_size = 4 
 insert_final_newline=true
 charset=utf-8-bom
 end_of_line=crlf
+
+[*.{hlsl,hlsli}]
+indent_style = space
+indent_size = 4 
+insert_final_newline=true
+charset=utf-8
+end_of_line=crlf
+
