@@ -1,5 +1,7 @@
 ﻿#include "App/PMDActor.h"
 
+#include <assert.h>
+
 namespace App
 {
     PMDActor::PMDActor(std::shared_ptr<PMD::Render::Factory> in_factory, const GUI::WindowCommonData& in_window_data)
@@ -37,6 +39,22 @@ namespace App
                     // カメラが写し終わりの値
                     100.0f);
             }
+        }
+
+        // TEST
+        {
+            auto node = this->_renderer->_bone_node_table["左腕"];
+            auto mat =
+                // 原点へ移動
+                DirectX::XMMatrixTranslation(-node.start_pos.x, -node.start_pos.y, -node.start_pos.z)
+                // 回転
+                * DirectX::XMMatrixRotationZ(DirectX::XM_PIDIV2)
+                // 元の位置に戻す
+                * DirectX::XMMatrixTranslation(node.start_pos.x, node.start_pos.y, node.start_pos.z);
+
+            this->_renderer->RecursiveMatrixMuliply(&node, mat);
+
+            std::copy(this->_renderer->_bone_matrices.begin(), this->_renderer->_bone_matrices.end(), this->_renderer->_p_mapped_matrices + 1);
         }
     }
 

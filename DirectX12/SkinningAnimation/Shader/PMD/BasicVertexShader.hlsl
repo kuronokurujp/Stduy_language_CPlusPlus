@@ -1,4 +1,4 @@
-﻿#include "BasicShaderHeader.hlsli"
+#include "BasicShaderHeader.hlsli"
 
 Output BasicVS(
     // 頂点レイアウトに剃った引数にする
@@ -10,7 +10,7 @@ Output BasicVS(
 {
     Output output;
     // ローカル座標からボーン行列の座標変換
-    output.pos = mul(bone_mats[boneno], pos);
+    output.pos = mul(bone_mats[boneno[0]], pos);
 
     // ローカル座標からワールド座標系の座標に
     output.pos = mul(world_mat, output.pos);

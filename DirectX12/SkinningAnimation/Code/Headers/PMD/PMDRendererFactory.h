@@ -21,12 +21,6 @@ namespace PMD
             DirectX::XMFLOAT3 eye = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
         };
 
-        // シェーダー側に渡す座標変換データ
-        struct TransformShaderData
-        {
-            DirectX::XMMATRIX world_mat = DirectX::XMMatrixIdentity();
-        };
-
         // ボーンのノード
         struct BoneNode
         {
@@ -46,6 +40,9 @@ namespace PMD
         public:
             friend class Factory;
 
+            void RecursiveMatrixMuliply(
+                BoneNode* in_p_node, const DirectX::XMMATRIX& in_r_mat);
+
             /// <summary>
             /// レンダリング
             /// </summary>
@@ -63,11 +60,19 @@ namespace PMD
                 // カメラ視点
                 const DirectX::XMFLOAT3& in_r_cam_pos);
 
+        public:
+            // TODO: 検証のため公開しているので後で直す
+            DirectX::XMMATRIX* _p_mapped_matrices = nullptr;
+
+            // GPUに渡すボーン情報j
+            std::vector<DirectX::XMMATRIX> _bone_matrices;
+            // ボーンノードテーブル
+            std::map<std::string, BoneNode> _bone_node_table;
+
         private:
             std::shared_ptr<DirectX12::Context> _context;
 
             SceneShaderData* _p_scene_shader_param = nullptr;
-            TransformShaderData* _p_transform_shader_param = nullptr;
 
             std::vector<::PMD::Material::Material> _pmd_materials;
             std::vector<::PMD::Material::MaterialTexture> _pmd_textures;
@@ -92,11 +97,6 @@ namespace PMD
 
             std::string _material_buff_key;
             std::string _material_desc_heap_share_key;
-
-            // GPUに渡すボーン情報j
-            std::vector<DirectX::XMMATRIX> _bone_matrices;
-            // ボーンノードテーブル
-            std::map<std::string, BoneNode> _bone_node_table;
         };
 
         /// <summary>

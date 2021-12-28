@@ -287,20 +287,22 @@ namespace DirectX12
         }
 
         Context::ComPtr<ID3D12RootSignature> root_sig;
+        HRESULT h_result = S_OK;
         {
-            auto h_result = in_p_context->dev->CreateRootSignature(
+            h_result = in_p_context->dev->CreateRootSignature(
                 0,
                 p_root_sig_blob->GetBufferPointer(),
                 p_root_sig_blob->GetBufferSize(),
                 IID_PPV_ARGS(root_sig.ReleaseAndGetAddressOf())
             );
+
             // シグネチャー用のBLOBは不要になったので解放
             p_root_sig_blob->Release();
         }
 
         in_p_context->_root_sig_map[in_r_key.c_str()] = root_sig;
 
-        return S_OK;
+        return h_result;
     }
 
     /// <summary>
@@ -330,6 +332,7 @@ namespace DirectX12
 
             // ルートシグネチャーを設定
             gpipeline.pRootSignature = in_p_context->_root_sig_map[in_use_root_sig_key.c_str()].Get();
+            assert(gpipeline.pRootSignature != nullptr);
 
             // シェーダー設定
             {

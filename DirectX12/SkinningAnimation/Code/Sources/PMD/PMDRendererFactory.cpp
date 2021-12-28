@@ -10,6 +10,17 @@ namespace PMD
 {
     namespace Render
     {
+        void Renderer::RecursiveMatrixMuliply(
+            BoneNode* in_p_node, const DirectX::XMMATRIX& in_r_mat)
+        {
+            this->_bone_matrices[in_p_node->index] *= in_r_mat;
+
+            for (auto& r_node : in_p_node->children)
+            {
+                this->RecursiveMatrixMuliply(r_node, this->_bone_matrices[in_p_node->index]);
+            }
+        }
+
         /// <summary>
         /// レンダリング
         /// </summary>
@@ -75,7 +86,7 @@ namespace PMD
                 this->_p_scene_shader_param->eye = in_r_cam_pos;
 
                 // 座標変換
-                this->_p_transform_shader_param->world_mat = in_r_local_mat * in_r_world_mat;
+                this->_p_mapped_matrices[0] = in_r_local_mat * in_r_world_mat;
             }
 
             // 利用するディスクリプタと関連付けたルートシグネチャを利用
@@ -554,27 +565,34 @@ namespace PMD
 
             // 座標変換用の定数バッファ / ディスクリプタヒープを作成
             {
+                size_t buff_size = sizeof(DirectX::XMMATRIX) * (_renderer->_bone_matrices.size() + 1);
+                buff_size = (buff_size + 0xff) & ~0xff;
                 {
-                    auto buff = DirectX12::CreateBlankResForHeapUpload(this->_context, _renderer->_transform_buff_key, (sizeof(TransformShaderData) + 0xff) & ~0xff);
-                    buff->Map(0, nullptr, (void**)&_renderer->_p_transform_shader_param);
+                    // 座標変換とボーンのデータサイズ
+                    auto buff = DirectX12::CreateBlankResForHeapUpload(this->_context, _renderer->_transform_buff_key, buff_size);
+                    buff->Map(0, nullptr, (void**)&_renderer->_p_mapped_matrices);
                     // マップ解除はしない
                     // 更新毎に書き込まれるから
+
+                    // 先頭はワールド行列
+                    _renderer->_p_mapped_matrices[0] = DirectX::XMMatrixIdentity();
+                    // 以降はボーン行列
+                    // コピー元と先で要素数が違うとバグるので注意
+                    std::copy(_renderer->_bone_matrices.begin(), _renderer->_bone_matrices.end(), _renderer->_p_mapped_matrices + 1);
                 }
 
-                // ディスクリプタヒープ作成
+                // ディスクリプタヒープビュー作成
                 {
                     auto heap = this->_context->desc_heap_map[_renderer->_transform_desc_heap_share_key.c_str()];
                     auto heap_handle = heap->GetCPUDescriptorHandleForHeapStart();
-                    // 行列の定数バッファビューを作る
+                    // 定数バッファビューを作る
                     {
                         D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
 
                         auto buff = this->_context->res_buff_map[_renderer->_transform_buff_key.c_str()];
                         cbv_desc.BufferLocation = buff->GetGPUVirtualAddress();
-                        LOGD << _T("heap: buff->GetDesc().Width = ") << buff->GetDesc().Width;
-                        cbv_desc.SizeInBytes = static_cast<UINT>(buff->GetDesc().Width);
+                        cbv_desc.SizeInBytes = buff_size;
 
-                        // ディスクリプタヒープのハンドルにビュー作成
                         this->_context->dev->CreateConstantBufferView(&cbv_desc, heap_handle);
                     }
                     // このディスクリプタヒープに対してはリソース一つのみ
