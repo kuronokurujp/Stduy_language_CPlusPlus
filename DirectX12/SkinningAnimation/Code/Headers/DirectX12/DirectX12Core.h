@@ -6,6 +6,8 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 
+#include <DirectXMath.h>
+
 #include <windows.h>
 #include <wrl.h>
 
@@ -18,6 +20,17 @@
 
 namespace DirectX12
 {
+    // XMMATRIX型は16byteアライメントになっているので
+    // XMMATRIX型をクラス変数として定義するしてクラスをnewするとアライメント問題でハングする可能性がある
+    // それを防ぐために16byteアライメントでnewする。
+    // 以下のそれを行う構造体
+    // newで生成するクラス・構造体の場合では以下のを利用しないといけない
+    struct XMMATRIX
+    {
+        void* operator new(size_t size);
+        DirectX::XMMATRIX _m;
+    };
+
     // DirectX12制御のコンテキスト
     struct Context
     {

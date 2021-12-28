@@ -17,12 +17,11 @@ namespace App
     private:
         std::shared_ptr<PMD::Render::Renderer> _renderer;
 
-        // TODO: レンダリングテスト用の変数
-        DirectX::XMMATRIX _local_mat = DirectX::XMMatrixIdentity();
+        DirectX12::XMMATRIX _local_mat;
         // 3Dの座標変換
-        DirectX::XMMATRIX _world_mat = DirectX::XMMatrixIdentity();
-        DirectX::XMMATRIX _view_mat = DirectX::XMMatrixIdentity();
-        DirectX::XMMATRIX _proj_mat = DirectX::XMMatrixIdentity();
+        DirectX12::XMMATRIX _world_mat;
+        DirectX12::XMMATRIX _view_mat;
+        DirectX12::XMMATRIX _proj_mat;
         // 視点
         DirectX::XMFLOAT3 _eye = DirectX::XMFLOAT3(0.0, 10.0f, -15.0);
     };

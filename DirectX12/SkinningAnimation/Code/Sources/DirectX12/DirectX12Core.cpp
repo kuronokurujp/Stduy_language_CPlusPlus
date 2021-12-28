@@ -14,6 +14,16 @@
 namespace DirectX12
 {
     /// <summary>
+    /// DirectX::XMMATRIXを16byteアライメントで確保
+    /// </summary>
+    /// <param name="size"></param>
+    /// <returns></returns>
+    void* XMMATRIX::operator new(size_t size)
+    {
+        return _aligned_malloc(size, 16);
+    };
+
+    /// <summary>
     /// レイヤーデバッグ機能を有効
     /// </summary>
     static void EnableDebugLayer()

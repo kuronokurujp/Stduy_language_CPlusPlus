@@ -16,10 +16,28 @@ namespace PMD
         // シェーダー側に渡すデータ構成
         struct SceneShaderData
         {
-            DirectX::XMMATRIX world_mat = DirectX::XMMatrixIdentity();
             DirectX::XMMATRIX view_mat = DirectX::XMMatrixIdentity();
             DirectX::XMMATRIX proj_mat = DirectX::XMMatrixIdentity();
             DirectX::XMFLOAT3 eye = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+        };
+
+        // シェーダー側に渡す座標変換データ
+        struct TransformShaderData
+        {
+            DirectX::XMMATRIX world_mat = DirectX::XMMatrixIdentity();
+        };
+
+        // ボーンのノード
+        struct BoneNode
+        {
+            // ボーンインデックス
+            UINT32 index = 0;
+            // ボーン基準点
+            DirectX::XMFLOAT3 start_pos;
+            // ボーン先端点
+            DirectX::XMFLOAT3 end_pos;
+            // 子のノード
+            std::vector<BoneNode*> children;
         };
 
         // レンダラー
@@ -49,6 +67,7 @@ namespace PMD
             std::shared_ptr<DirectX12::Context> _context;
 
             SceneShaderData* _p_scene_shader_param = nullptr;
+            TransformShaderData* _p_transform_shader_param = nullptr;
 
             std::vector<::PMD::Material::Material> _pmd_materials;
             std::vector<::PMD::Material::MaterialTexture> _pmd_textures;
@@ -66,10 +85,18 @@ namespace PMD
             std::string _idx_buff_key;
 
             std::string _basic_buff_key;
-            std::string _basic_desc_heap_share_key;
+            std::string _scene_desc_heap_share_key;
+
+            std::string _transform_buff_key;
+            std::string _transform_desc_heap_share_key;
 
             std::string _material_buff_key;
             std::string _material_desc_heap_share_key;
+
+            // GPUに渡すボーン情報j
+            std::vector<DirectX::XMMATRIX> _bone_matrices;
+            // ボーンノードテーブル
+            std::map<std::string, BoneNode> _bone_node_table;
         };
 
         /// <summary>

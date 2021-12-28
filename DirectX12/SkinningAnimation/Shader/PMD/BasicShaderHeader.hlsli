@@ -18,14 +18,22 @@ struct Output
 cbuffer SceneBuffer : register(b0)
 {
 	// 座標変換行列
-	matrix world_mat;
 	matrix view_mat;
 	matrix proj_mat;
 	// カメラの視点
 	float3 eye;
 };
 
-cbuffer Material : register(b1)
+// ワールド座標変換
+cbuffer TranformBuffer : register(b1)
+{
+	// ワールド変換行列
+	matrix world_mat;
+	// ボーン行列
+//	matrix bone_mats[256];
+};
+
+cbuffer Material : register(b2)
 {
 	// 拡散反射
 	float4 diffuse;

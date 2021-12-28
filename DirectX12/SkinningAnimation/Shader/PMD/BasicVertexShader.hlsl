@@ -1,6 +1,7 @@
 #include "BasicShaderHeader.hlsli"
 
 Output BasicVS(
+	// 頂点レイアウトに剃った引数にする
 	float4 pos : POSITION,
 	float4 normal : NORMAL,
 	float2 uv : TEXCOORD,
@@ -8,6 +9,9 @@ Output BasicVS(
 	min16uint weight : WEIGHT)
 {
 	Output output;
+	// ローカル座標からボーン行列の座標変換
+//	outpot.pos = mul(bone_mats[boneno], pos);
+
 	// ローカル座標からワールド座標系の座標に
 	output.pos = mul(world_mat, pos);
 

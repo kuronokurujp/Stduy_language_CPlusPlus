@@ -12,13 +12,16 @@ namespace App
             "Resources/Model/Toon/toon%02d.bmp"
         );
 
+        this->_local_mat._m = DirectX::XMMatrixIdentity();
+        this->_world_mat._m = DirectX::XMMatrixIdentity();
+
         {
             // カメラ行列作成
             {
                 DirectX::XMFLOAT3 target(0.0, this->_eye.y, 0.0);
                 DirectX::XMFLOAT3 up(0.0, 1.0f, 0.0);
 
-                this->_view_mat = DirectX::XMMatrixLookAtLH(
+                this->_view_mat._m = DirectX::XMMatrixLookAtLH(
                     DirectX::XMLoadFloat3(&this->_eye),
                     DirectX::XMLoadFloat3(&target),
                     DirectX::XMLoadFloat3(&up));
@@ -26,7 +29,7 @@ namespace App
 
             // 射影行列作成
             {
-                this->_proj_mat = DirectX::XMMatrixPerspectiveFovLH(
+                this->_proj_mat._m = DirectX::XMMatrixPerspectiveFovLH(
                     DirectX::XM_PIDIV2,
                     static_cast<float>(in_window_data.width) / static_cast<float>(in_window_data.height),
                     // カメラが写し始めの値
@@ -41,10 +44,10 @@ namespace App
     {
         // レンダリング
         this->_renderer->Rendering(
-            this->_local_mat,
-            this->_world_mat,
-            this->_view_mat,
-            this->_proj_mat,
+            this->_local_mat._m,
+            this->_world_mat._m,
+            this->_view_mat._m,
+            this->_proj_mat._m,
             this->_eye);
     }
 }
