@@ -43,12 +43,6 @@
     <Filter Include="Code\Sources\App">
       <UniqueIdentifier>{f72a03b0-d094-4a26-b2de-7f35ea92ab5f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Headers\PMD">
-      <UniqueIdentifier>{5e6c04e6-489f-4cad-a6c3-f190f8ac053a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Code\Sources\PMD">
-      <UniqueIdentifier>{00f85e51-bf58-43b5-9bea-7f17a070fd97}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shader">
       <UniqueIdentifier>{d1201b70-983a-4a12-b9bd-929f43b6271c}</UniqueIdentifier>
     </Filter>
@@ -60,6 +54,12 @@
     </Filter>
     <Filter Include="Code\Sources\Actor">
       <UniqueIdentifier>{40a33ccc-89ff-442c-8381-cd82a12aa0c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Headers\MMD">
+      <UniqueIdentifier>{5e6c04e6-489f-4cad-a6c3-f190f8ac053a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Sources\MMD">
+      <UniqueIdentifier>{00f85e51-bf58-43b5-9bea-7f17a070fd97}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -102,17 +102,8 @@
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Shader.h">
       <Filter>Code\Headers\DirectX12</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Headers\PMD\PMDLoader.h">
-      <Filter>Code\Headers\PMD</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\Headers\PMD\PMDMaterial.h">
-      <Filter>Code\Headers\PMD</Filter>
-    </ClInclude>
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Texture.h">
       <Filter>Code\Headers\DirectX12</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\Headers\PMD\PMDRendererFactory.h">
-      <Filter>Code\Headers\PMD</Filter>
     </ClInclude>
     <ClInclude Include="Code\Headers\DirectX12\d3dx12.h">
       <Filter>Code\Headers\DirectX12</Filter>
@@ -128,6 +119,21 @@
     </ClInclude>
     <ClInclude Include="Code\Headers\App\PMDActor.h">
       <Filter>Code\Headers\App</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\MMD\PMDLoader.h">
+      <Filter>Code\Headers\MMD</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\MMD\PMDMaterial.h">
+      <Filter>Code\Headers\MMD</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\MMD\PMDRendererFactory.h">
+      <Filter>Code\Headers\MMD</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\MMD\MMDMiniHeader.h">
+      <Filter>Code\Headers\MMD</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Headers\MMD\VMDLoader.h">
+      <Filter>Code\Headers\MMD</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -161,14 +167,8 @@
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Shader.cpp">
       <Filter>Code\Sources\DirectX12</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Sources\PMD\PMDLoader.cpp">
-      <Filter>Code\Sources\PMD</Filter>
-    </ClCompile>
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Texture.cpp">
       <Filter>Code\Sources\DirectX12</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\Sources\PMD\PMDRendererFactory.cpp">
-      <Filter>Code\Sources\PMD</Filter>
     </ClCompile>
     <ClCompile Include="Code\Sources\Actor\Actor.cpp">
       <Filter>Code\Sources\Actor</Filter>
@@ -178,6 +178,15 @@
     </ClCompile>
     <ClCompile Include="Code\Sources\App\PMDActor.cpp">
       <Filter>Code\Sources\App</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Sources\MMD\PMDLoader.cpp">
+      <Filter>Code\Sources\MMD</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Sources\MMD\PMDRendererFactory.cpp">
+      <Filter>Code\Sources\MMD</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Sources\MMD\VMDLoader.cpp">
+      <Filter>Code\Sources\MMD</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -2,8 +2,7 @@
 
 #include "GUI/GUIMiniHeader.h"
 #include "Actor/ActorMiniHeader.h"
-
-#include "PMD/PMDRendererFactory.h"
+#include "MMD/MMDMiniHeader.h"
 
 namespace App
 {

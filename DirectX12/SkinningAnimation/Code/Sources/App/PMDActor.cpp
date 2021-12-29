@@ -41,18 +41,44 @@ namespace App
             }
         }
 
+        // VMDファイルからモーションデータ作成
+        {
+            in_factory->CreateMotion(
+                "Resources/Model/VMD/pose.vmd");
+        }
+
         // TEST
         {
-            auto node = this->_renderer->_bone_node_table["左腕"];
-            auto mat =
-                // 原点へ移動
-                DirectX::XMMatrixTranslation(-node.start_pos.x, -node.start_pos.y, -node.start_pos.z)
-                // 回転
-                * DirectX::XMMatrixRotationZ(DirectX::XM_PIDIV2)
-                // 元の位置に戻す
-                * DirectX::XMMatrixTranslation(node.start_pos.x, node.start_pos.y, node.start_pos.z);
+            // 左腕を曲げる
+            {
+                auto node = this->_renderer->_bone_node_table["左腕"];
+                auto mat =
+                    // 原点へ移動
+                    DirectX::XMMatrixTranslation(-node.start_pos.x, -node.start_pos.y, -node.start_pos.z)
+                    // 回転
+                    * DirectX::XMMatrixRotationZ(DirectX::XM_PIDIV2 * 0.5)
+                    // 元の位置に戻す
+                    * DirectX::XMMatrixTranslation(node.start_pos.x, node.start_pos.y, node.start_pos.z);
+                this->_renderer->_bone_matrices[node.index] = mat;
+            }
+            // 左ひじを曲げる
+            {
+                auto node = this->_renderer->_bone_node_table["左ひじ"];
+                auto mat =
+                    // 原点へ移動
+                    DirectX::XMMatrixTranslation(-node.start_pos.x, -node.start_pos.y, -node.start_pos.z)
+                    // 回転
+                    * DirectX::XMMatrixRotationZ(DirectX::XM_PIDIV2 * 0.5)
+                    // 元の位置に戻す
+                    * DirectX::XMMatrixTranslation(node.start_pos.x, node.start_pos.y, node.start_pos.z);
+                this->_renderer->_bone_matrices[node.index] = mat;
+            }
 
-            this->_renderer->RecursiveMatrixMuliply(&node, mat);
+            // ボーン全体を更新
+            {
+                auto node = this->_renderer->_bone_node_table[PMD::Render::Renderer::_center_bone_name.c_str()];
+                this->_renderer->RecursiveMatrixMuliply(&node, DirectX::XMMatrixIdentity());
+            }
 
             std::copy(this->_renderer->_bone_matrices.begin(), this->_renderer->_bone_matrices.end(), this->_renderer->_p_mapped_matrices + 1);
         }

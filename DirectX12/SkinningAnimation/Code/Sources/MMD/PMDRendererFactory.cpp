@@ -1,6 +1,6 @@
-﻿#include "PMD/PMDRendererFactory.h"
+﻿#include "MMD/PMDRendererFactory.h"
 
-#include "PMD/PMDLoader.h"
+#include "MMD/PMDLoader.h"
 
 #include "Common.h"
 
@@ -10,6 +10,8 @@ namespace PMD
 {
     namespace Render
     {
+        const std::string Renderer::_center_bone_name = "センター";
+
         void Renderer::RecursiveMatrixMuliply(
             BoneNode* in_p_node, const DirectX::XMMATRIX& in_r_mat)
         {
@@ -189,6 +191,17 @@ namespace PMD
         }
 
         /// <summary>
+        /// モーション作成
+        /// </summary>
+        /// <param name="in_r_pmd_filepath"></param>
+        void Factory::CreateMotion(
+            const std::string& in_r_pmd_filepath)
+        {
+            VMD::Loader::VMDDataPack pack;
+            VMD::Loader::SyncLoadFile(&pack, in_r_pmd_filepath.c_str());
+        }
+
+        /// <summary>
         /// PMDファイルを解析してレンダラー作成
         /// </summary>
         /// <param name="in_r_context"></param>
@@ -231,8 +244,8 @@ namespace PMD
             {
                 // データロード
                 {
-                    auto catch_data = this->_data_pack_map.find(in_r_pmd_filepath.c_str());
-                    if (catch_data == this->_data_pack_map.end())
+                    auto catch_data = this->_pmd_data_pack_map.find(in_r_pmd_filepath.c_str());
+                    if (catch_data == this->_pmd_data_pack_map.end())
                     {
                         // PMDファイルロード
                         auto error = PMD::Loader::SyncLoadFile(
@@ -240,7 +253,7 @@ namespace PMD
                             in_r_pmd_filepath.c_str());
                         assert(error == 0);
 
-                        this->_data_pack_map[in_r_pmd_filepath.c_str()] = pmd_data_pack;
+                        this->_pmd_data_pack_map[in_r_pmd_filepath.c_str()] = pmd_data_pack;
                     }
                     else
                     {

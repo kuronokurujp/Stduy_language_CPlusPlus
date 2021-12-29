@@ -1,7 +1,6 @@
 ﻿#include "App/GameController.h"
 
 #include "Common.h"
-#include "PMD/PMDMaterial.h"
 
 #include <tchar.h>
 

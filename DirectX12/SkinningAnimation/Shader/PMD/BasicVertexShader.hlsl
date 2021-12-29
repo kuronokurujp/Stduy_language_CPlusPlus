@@ -9,8 +9,12 @@ Output BasicVS(
     min16uint weight : WEIGHT)
 {
     Output output;
+    // weight値を0 - 1の値に変換
+    // weightは100が最大なので100で割っている
+    float w = weight / 100.0;
+    matrix bm = bone_mats[boneno[0]] * w + bone_mats[boneno[1]] * (1.0 - w);
     // ローカル座標からボーン行列の座標変換
-    output.pos = mul(bone_mats[boneno[0]], pos);
+    output.pos = mul(bm, pos);
 
     // ローカル座標からワールド座標系の座標に
     output.pos = mul(world_mat, output.pos);

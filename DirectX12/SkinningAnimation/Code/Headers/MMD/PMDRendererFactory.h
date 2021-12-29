@@ -9,6 +9,8 @@
 #include "PMDLoader.h"
 #include "PMDMaterial.h"
 
+#include "VMDLoader.h"
+
 namespace PMD
 {
     namespace Render
@@ -38,6 +40,9 @@ namespace PMD
         class Renderer
         {
         public:
+            // 共通しているルートボーン名
+            static const std::string _center_bone_name;
+
             friend class Factory;
 
             void RecursiveMatrixMuliply(
@@ -120,6 +125,13 @@ namespace PMD
             void Termiate();
 
             /// <summary>
+            /// モーション作成
+            /// </summary>
+            /// <param name="in_r_pmd_filepath"></param>
+            void CreateMotion(
+                const std::string& in_r_pmd_filepath);
+
+            /// <summary>
             /// PMDファイルを解析してレンダラー作成
             /// </summary>
             /// <param name="in_r_key"></param>
@@ -154,7 +166,8 @@ namespace PMD
         private:
             std::shared_ptr<DirectX12::Context> _context;
 
-            std::map<std::string, ::PMD::Loader::PMDDataPack> _data_pack_map;
+            std::map<std::string, ::PMD::Loader::PMDDataPack> _pmd_data_pack_map;
+            std::map<std::string, ::VMD::Loader::VMDDataPack> _vmd_data_pack_map;
 
             // nullptr用のテクスチャを作成
             // これは共通利用する
