@@ -36,15 +36,54 @@ namespace PMD
             std::vector<BoneNode*> children;
         };
 
+        /// <summary>
+        /// モーションのキーフレーム
+        /// </summary>
+        struct MotionKeyFrame
+        {
+            UINT32 frame_no = 0;
+            DirectX::XMVECTOR quaternion = DirectX::XMVectorZero();
+
+            MotionKeyFrame(const UINT32 in_frame_no, DirectX::XMVECTOR& in_r_que)
+                :
+                frame_no(in_frame_no),
+                quaternion(in_r_que)
+            {}
+        };
+
+        /// <summary>
+        /// PMDモデルのモーション
+        /// </summary>
+        class Motion
+        {
+        public:
+            friend class Factory;
+            friend class Renderer;
+
+            /// <summary>
+            /// モーションをレンダラーに適応
+            /// </summary>
+            /// <param name="in_p_renderer"></param>
+            void ApplyBoneForRenderer(class Renderer* in_p_renderer);
+
+        private:
+            std::map<std::string, std::vector<MotionKeyFrame>> _motion_key_frames;
+        };
+
         // レンダラー
         class Renderer
         {
         public:
             // 共通しているルートボーン名
-            static const std::string _center_bone_name;
+            static const std::string s_center_bone_name;
 
             friend class Factory;
 
+            /// <summary>
+            /// ボーンの親から子への行列を反映(再帰処理をする)
+            /// </summary>
+            /// <param name="in_p_node"></param>
+            /// <param name="in_r_mat"></param>
             void RecursiveMatrixMuliply(
                 BoneNode* in_p_node, const DirectX::XMMATRIX& in_r_mat);
 
@@ -128,8 +167,7 @@ namespace PMD
             /// モーション作成
             /// </summary>
             /// <param name="in_r_pmd_filepath"></param>
-            void CreateMotion(
-                const std::string& in_r_pmd_filepath);
+            std::shared_ptr<Motion> CreateMotion(const std::string& in_r_pmd_filepath);
 
             /// <summary>
             /// PMDファイルを解析してレンダラー作成
@@ -167,7 +205,6 @@ namespace PMD
             std::shared_ptr<DirectX12::Context> _context;
 
             std::map<std::string, ::PMD::Loader::PMDDataPack> _pmd_data_pack_map;
-            std::map<std::string, ::VMD::Loader::VMDDataPack> _vmd_data_pack_map;
 
             // nullptr用のテクスチャを作成
             // これは共通利用する

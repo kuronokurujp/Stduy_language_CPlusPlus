@@ -146,6 +146,7 @@ namespace PMD
                     return error;
                 }
 #ifdef _DEBUG
+                /*
                 // デバッグのため読み込んだボーン情報を出力
                 for (auto& bone : out_p_data_pack->bone)
                 {
@@ -153,6 +154,7 @@ namespace PMD
                     auto bone_name = Common::GetWideStringFromString(bone.bone_name);
                     LOGD << bone_name;
                 }
+                */
 #endif
             }
 

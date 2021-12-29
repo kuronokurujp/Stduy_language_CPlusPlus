@@ -10,8 +10,48 @@ namespace PMD
 {
     namespace Render
     {
-        const std::string Renderer::_center_bone_name = "センター";
+        const std::string Renderer::s_center_bone_name = "センター";
 
+        /// <summary>
+        /// ボーンを反映
+        /// </summary>
+        /// <param name="in_p_renderer"></param>
+        void Motion::ApplyBoneForRenderer(Renderer* in_p_renderer)
+        {
+            for (auto& m : this->_motion_key_frames)
+            {
+                auto& bone_name = m.first;
+                auto& key_frame = m.second;
+
+                auto& node = in_p_renderer->_bone_node_table[bone_name.c_str()];
+                auto& start_pos = node.start_pos;
+                auto mat =
+                    // 原点へ移動
+                    DirectX::XMMatrixTranslation(-start_pos.x, -start_pos.y, -start_pos.z)
+                    // 回転
+                    * DirectX::XMMatrixRotationQuaternion(key_frame[0].quaternion)
+                    // 元の位置に戻す
+                    * DirectX::XMMatrixTranslation(start_pos.x, start_pos.y, start_pos.z);
+
+                // ボーンに行列を設定
+                in_p_renderer->_bone_matrices[node.index] = mat;
+            }
+
+            // 設定した行列でボーン全体を更新
+            {
+                auto node = in_p_renderer->_bone_node_table[PMD::Render::Renderer::s_center_bone_name.c_str()];
+                in_p_renderer->RecursiveMatrixMuliply(&node, DirectX::XMMatrixIdentity());
+            }
+
+            // シェーダーに渡す行列更新
+            std::copy(in_p_renderer->_bone_matrices.begin(), in_p_renderer->_bone_matrices.end(), in_p_renderer->_p_mapped_matrices + 1);
+        }
+
+        /// <summary>
+        /// ボーンの親から子への行列を反映(再帰処理をする)
+        /// </summary>
+        /// <param name="in_p_node"></param>
+        /// <param name="in_r_mat"></param>
         void Renderer::RecursiveMatrixMuliply(
             BoneNode* in_p_node, const DirectX::XMMATRIX& in_r_mat)
         {
@@ -194,11 +234,23 @@ namespace PMD
         /// モーション作成
         /// </summary>
         /// <param name="in_r_pmd_filepath"></param>
-        void Factory::CreateMotion(
+        std::shared_ptr<Motion> Factory::CreateMotion(
             const std::string& in_r_pmd_filepath)
         {
             VMD::Loader::VMDDataPack pack;
             VMD::Loader::SyncLoadFile(&pack, in_r_pmd_filepath.c_str());
+
+            std::shared_ptr<Motion> motion = std::make_shared<Motion>();
+
+            for (auto& m : pack.motions)
+            {
+                auto q = DirectX::XMLoadFloat4(&m.quaternion);
+                auto add_item = MotionKeyFrame(m.frame_no, q);
+
+                motion->_motion_key_frames[m.bone_name].emplace_back(add_item);
+            }
+
+            return motion;
         }
 
         /// <summary>

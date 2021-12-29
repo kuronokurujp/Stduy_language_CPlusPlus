@@ -75,15 +75,17 @@ namespace VMD
                         return error;
                     }
 
-#ifdef _DEBUG
-                    LOGD << " - read bone info -";
-                    LOGD << " bone_name: " << motion.bone_name;
-                    LOGD << " frame_no: " << motion.frame_no;
-                    LOGD << " location(" << motion.location.x << "," << motion.location.y << "," << motion.location.z << ")";
-                    LOGD << " quaternion(" << motion.quaternion.x << "," << motion.quaternion.y << "," << motion.quaternion.z << motion.quaternion.w << ")";
-                    LOGD << " bezier: " << motion.bezier;
-                    LOGD << " ----------------- ";
-#endif
+                    /*
+                    #ifdef _DEBUG
+                                        LOGD << " - read bone info -";
+                                        LOGD << " bone_name: " << motion.bone_name;
+                                        LOGD << " frame_no: " << motion.frame_no;
+                                        LOGD << " location(" << motion.location.x << "," << motion.location.y << "," << motion.location.z << ")";
+                                        LOGD << " quaternion(" << motion.quaternion.x << "," << motion.quaternion.y << "," << motion.quaternion.z << motion.quaternion.w << ")";
+                                        LOGD << " bezier: " << motion.bezier;
+                                        LOGD << " ----------------- ";
+                    #endif
+                    */
                 }
             }
 

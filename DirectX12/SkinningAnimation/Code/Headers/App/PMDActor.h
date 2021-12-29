@@ -15,6 +15,7 @@ namespace App
 
     private:
         std::shared_ptr<PMD::Render::Renderer> _renderer;
+        std::shared_ptr<PMD::Render::Motion> _motion;
 
         DirectX12::XMMATRIX _local_mat;
         // 3Dの座標変換
@@ -22,6 +23,6 @@ namespace App
         DirectX12::XMMATRIX _view_mat;
         DirectX12::XMMATRIX _proj_mat;
         // 視点
-        DirectX::XMFLOAT3 _eye = DirectX::XMFLOAT3(0.0, 10.0f, -15.0);
+        DirectX::XMFLOAT3 _eye = DirectX::XMFLOAT3(0.0, 10.0f, -30.0);
     };
 }
