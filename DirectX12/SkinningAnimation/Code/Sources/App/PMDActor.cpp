@@ -44,10 +44,17 @@ namespace App
         // VMDファイルからモーションデータ作成
         {
             this->_motion = in_factory->CreateMotion(
-                "Resources/Model/VMD/pose.vmd");
-        }
+                //"Resources/Model/VMD/pose.vmd");
+                //"Resources/Model/VMD/charge.vmd");
+                "Resources/Model/VMD/motion.vmd");
 
-        this->_motion->ApplyBoneForRenderer(this->_renderer.get());
+            this->_motion->PlayAnimation();
+        }
+    }
+
+    void PMDActor::UpdateActor(float in_deltaTimeSecond)
+    {
+        this->_motion->UpdateAnimation(this->_renderer.get());
     }
 
     void PMDActor::Render()

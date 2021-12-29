@@ -43,11 +43,19 @@ namespace PMD
         {
             UINT32 frame_no = 0;
             DirectX::XMVECTOR quaternion = DirectX::XMVectorZero();
+            DirectX::XMFLOAT2 p1;
+            DirectX::XMFLOAT2 p2;
 
-            MotionKeyFrame(const UINT32 in_frame_no, DirectX::XMVECTOR& in_r_que)
+            MotionKeyFrame(
+                const UINT32 in_frame_no,
+                DirectX::XMVECTOR& in_r_que,
+                DirectX::XMFLOAT2 in_p1,
+                DirectX::XMFLOAT2 in_p2)
                 :
                 frame_no(in_frame_no),
-                quaternion(in_r_que)
+                quaternion(in_r_que),
+                p1(in_p1),
+                p2(in_p2)
             {}
         };
 
@@ -60,14 +68,15 @@ namespace PMD
             friend class Factory;
             friend class Renderer;
 
-            /// <summary>
-            /// モーションをレンダラーに適応
-            /// </summary>
-            /// <param name="in_p_renderer"></param>
-            void ApplyBoneForRenderer(class Renderer* in_p_renderer);
+            void PlayAnimation();
+            void UpdateAnimation(class Renderer* in_p_renderer);
 
         private:
+            const float _GetYFromXOnBezier(const float in_t, const DirectX::XMFLOAT2& in_r_p1, const DirectX::XMFLOAT2& in_r_p2, const UINT32 in_n);
+        private:
             std::map<std::string, std::vector<MotionKeyFrame>> _motion_key_frames;
+            DWORD _start_time = 0;
+            UINT32 _motion_duration = 0;
         };
 
         // レンダラー

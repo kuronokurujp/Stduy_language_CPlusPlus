@@ -5,6 +5,7 @@
 #include "Common.h"
 
 #include <tchar.h>
+#include <timeapi.h>
 
 namespace PMD
 {
@@ -12,29 +13,85 @@ namespace PMD
     {
         const std::string Renderer::s_center_bone_name = "センター";
 
-        /// <summary>
-        /// ボーンを反映
-        /// </summary>
-        /// <param name="in_p_renderer"></param>
-        void Motion::ApplyBoneForRenderer(Renderer* in_p_renderer)
+        void Motion::PlayAnimation()
         {
+            this->_start_time = ::timeGetTime();
+        }
+
+        void Motion::UpdateAnimation(Renderer* in_p_renderer)
+        {
+            auto elapsed_time = static_cast<float>(::timeGetTime() - this->_start_time);
+            UINT32 now_frame_no = static_cast<UINT32>(30.0f * (elapsed_time / 1000.0f));
+            /*
+            LOGD << "elapsed_time => " << elapsed_time;
+            LOGD << "frame_no => " << frame_no;
+            */
+            // アニメをループさせる
+            if (this->_motion_duration < now_frame_no)
+            {
+                this->_start_time = ::timeGetTime();
+                now_frame_no = 0;
+            }
+
+            auto& bone_matrices = in_p_renderer->_bone_matrices;
+            std::fill(bone_matrices.begin(), bone_matrices.end(), DirectX::XMMatrixIdentity());
+
             for (auto& m : this->_motion_key_frames)
             {
                 auto& bone_name = m.first;
-                auto& key_frame = m.second;
+                {
+                    auto find_it = in_p_renderer->_bone_node_table.find(bone_name.c_str());
+                    if (find_it == in_p_renderer->_bone_node_table.end())
+                        continue;
+                }
 
                 auto& node = in_p_renderer->_bone_node_table[bone_name.c_str()];
+                auto& key_frame = m.second;
+
+                // 配列末尾からの後方イテレーションで該当するフレームNOのモーション取得
+                auto rit = std::find_if(
+                    key_frame.rbegin(), key_frame.rend(),
+                    [now_frame_no](const MotionKeyFrame& in_r_motion_key_frame)
+                    {
+                        return in_r_motion_key_frame.frame_no <= now_frame_no;
+                    }
+                );
+
+                if (rit == key_frame.rend())
+                    continue;
+
+                // 前方方向のイテレーションを取得
+                auto it = rit.base();
+
+                DirectX::XMMATRIX rotaion;
+                if (it != key_frame.end())
+                {
+                    // モーションの線形補間をする
+                    auto t = static_cast<float>(now_frame_no - rit->frame_no);
+                    if (0.0f < t)
+                        t /= (static_cast<float>(it->frame_no - rit->frame_no));
+                    else
+                        t = 0.0f;
+
+                    t = this->_GetYFromXOnBezier(t, it->p1, it->p2, 12);
+                    rotaion = DirectX::XMMatrixRotationQuaternion(DirectX::XMQuaternionSlerp(rit->quaternion, it->quaternion, t));
+                }
+                else
+                {
+                    rotaion = DirectX::XMMatrixRotationQuaternion(rit->quaternion);
+                }
+
                 auto& start_pos = node.start_pos;
                 auto mat =
                     // 原点へ移動
                     DirectX::XMMatrixTranslation(-start_pos.x, -start_pos.y, -start_pos.z)
                     // 回転
-                    * DirectX::XMMatrixRotationQuaternion(key_frame[0].quaternion)
+                    * rotaion
                     // 元の位置に戻す
                     * DirectX::XMMatrixTranslation(start_pos.x, start_pos.y, start_pos.z);
 
                 // ボーンに行列を設定
-                in_p_renderer->_bone_matrices[node.index] = mat;
+                bone_matrices[node.index] = mat;
             }
 
             // 設定した行列でボーン全体を更新
@@ -44,7 +101,33 @@ namespace PMD
             }
 
             // シェーダーに渡す行列更新
-            std::copy(in_p_renderer->_bone_matrices.begin(), in_p_renderer->_bone_matrices.end(), in_p_renderer->_p_mapped_matrices + 1);
+            std::copy(bone_matrices.begin(), bone_matrices.end(), in_p_renderer->_p_mapped_matrices + 1);
+        }
+
+        const float Motion::_GetYFromXOnBezier(
+            const float in_t, const DirectX::XMFLOAT2& in_r_p1, const DirectX::XMFLOAT2& in_r_p2, const UINT32 in_n)
+        {
+            if (in_r_p1.x == in_r_p2.x && in_r_p1.y == in_r_p2.y)
+                return in_t;
+
+            float t = in_t;
+            const float k0 = 1 + 3 * in_r_p1.x - 3 * in_r_p2.x;
+            const float k1 = 3 * in_r_p2.x - 6 * in_r_p1.x;
+            const float k2 = 3 * in_r_p1.x;
+
+            constexpr float ep = 0.0005f;
+
+            for (UINT32 i = 0; i < in_n; ++i)
+            {
+                auto ft = k0 * t * t * t + k1 * t * t + k2 * t - in_t;
+                if (ft <= ep && ft >= -ep)
+                    break;
+
+                t -= ft * 0.5f;
+            }
+
+            auto r = 1.0f - t;
+            return t * t * t + 3 * t * t * r * in_r_p2.x + 2 * t * r * r * in_r_p1.x;
         }
 
         /// <summary>
@@ -245,9 +328,27 @@ namespace PMD
             for (auto& m : pack.motions)
             {
                 auto q = DirectX::XMLoadFloat4(&m.quaternion);
-                auto add_item = MotionKeyFrame(m.frame_no, q);
+                auto add_item = MotionKeyFrame(
+                    m.frame_no,
+                    q,
+                    DirectX::XMFLOAT2(static_cast<float>(m.bezier[3]) / 127.0f, static_cast<float>(m.bezier[7] / 127.0f)),
+                    DirectX::XMFLOAT2(static_cast<float>(m.bezier[11]) / 127.0f, static_cast<float>(m.bezier[15]) / 127.0f)
+                );
 
                 motion->_motion_key_frames[m.bone_name].emplace_back(add_item);
+
+                // モーション期間を取得
+                motion->_motion_duration = std::max<UINT32>(motion->_motion_duration, add_item.frame_no);
+            }
+
+            // モーションキーフレームリストがフレーム番号で昇順で並べ替える
+            for (auto& m : motion->_motion_key_frames)
+            {
+                std::sort(m.second.begin(), m.second.end(),
+                    [](const MotionKeyFrame& in_r_first, const MotionKeyFrame& in_r_second)
+                    {
+                        return in_r_first.frame_no <= in_r_second.frame_no;
+                    });
             }
 
             return motion;

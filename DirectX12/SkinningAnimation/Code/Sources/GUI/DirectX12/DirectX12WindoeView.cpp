@@ -29,18 +29,24 @@ namespace GUI
         // DXのスワップチェーンの生成
         // ダブルバッファリングをするために必要
         // ウィンドウモード前提
+
+        const UINT32 width = model->Width();
+        const UINT32 height = model->Height();
         {
             // まずスワップチェイン用の設定データを作る
             DXGI_SWAP_CHAIN_DESC1 swap_chain_desc = {};
-            swap_chain_desc.Width = model->Width();
-            swap_chain_desc.Height = model->Height();
+            swap_chain_desc.Width = width;
+            swap_chain_desc.Height = height;
             swap_chain_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
             swap_chain_desc.Stereo = false;
-            // マルチサンプルの指定
+            // 品質指定
             swap_chain_desc.SampleDesc.Count = 1;
             swap_chain_desc.SampleDesc.Quality = 0;
 
-            swap_chain_desc.BufferUsage = DXGI_USAGE_BACK_BUFFER;
+            // DXGI_USAGE_BACK_BUFFERを利用するとリソースがスワップチェーンかどうかを判定する事が出来るみたい
+            // https://docs.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-usage
+            //swap_chain_desc.BufferUsage = DXGI_USAGE_BACK_BUFFER;
+            swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
             // ダブルバッファリングするので2
             swap_chain_desc.BufferCount = 2;
 
@@ -132,8 +138,8 @@ namespace GUI
                 // 2Dテクスチャ
                 auto res_desc = CD3DX12_RESOURCE_DESC::Tex2D(
                     DXGI_FORMAT_D32_FLOAT,
-                    model->Width(),
-                    model->Height(),
+                    width,
+                    height,
                     1,
                     0,
                     1,
@@ -142,8 +148,7 @@ namespace GUI
                 );
 
                 // ヒープのプロパティ内容
-                auto heap_property = CD3DX12_HEAP_PROPERTIES(
-                    D3D12_HEAP_TYPE_DEFAULT, 0, 0);
+                auto heap_property = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT, 0, 0);
 
                 // バッファをクリアする内容
                 D3D12_CLEAR_VALUE depth_clear_value = {};

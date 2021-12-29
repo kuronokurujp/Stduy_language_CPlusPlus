@@ -91,6 +91,9 @@
 xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Configuration)\Resources\Shader /i /s /y
 </Command>
     </PreBuildEvent>
+    <Link>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
