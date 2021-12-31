@@ -39,6 +39,16 @@ namespace PMD
             UINT8 edge_flag;
         };
 
+        // IK構造体
+        struct IK
+        {
+            UINT16 bone_idx;
+            UINT16 target_idx;
+            UINT16 iterations;
+            float limit;
+            std::vector<UINT16> node_idxs;
+        };
+
 #pragma pack(1)
         // マテリアルデータ
         // 70byteのデータ塊なのでアライメントを発生しないようにしている
@@ -95,6 +105,8 @@ namespace PMD
             // PMDファイル構造上しかたない
             std::vector<PMD::Loader::PMDMaterial> material;
             std::vector<PMD::Loader::PMDBone> bone;
+
+            std::vector<PMD::Loader::IK> iks;
         };
 
         /// <summary>

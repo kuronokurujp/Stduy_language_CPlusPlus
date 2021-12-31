@@ -15,6 +15,19 @@ namespace PMD
 {
     namespace Render
     {
+        // ボーン種別
+        enum class BoneType
+        {
+            Rotation = 0,
+            RotAndMove,
+            IK,
+            Undefine,
+            IKChild,
+            RotationChild,
+            IKDestination,
+            Invisible,
+        };
+
         // シェーダー側に渡すデータ構成
         struct SceneShaderData
         {
@@ -28,6 +41,10 @@ namespace PMD
         {
             // ボーンインデックス
             UINT32 index = 0;
+            // ボーン種別
+            BoneType bone_type;
+            // IK親ボーン
+            UINT32 ik_parent_bone;
             // ボーン基準点
             DirectX::XMFLOAT3 start_pos;
             // ボーン先端点
@@ -43,17 +60,20 @@ namespace PMD
         {
             UINT32 frame_no = 0;
             DirectX::XMVECTOR quaternion = DirectX::XMVectorZero();
+            DirectX::XMFLOAT3 offset;
             DirectX::XMFLOAT2 p1;
             DirectX::XMFLOAT2 p2;
 
             MotionKeyFrame(
                 const UINT32 in_frame_no,
                 DirectX::XMVECTOR& in_r_que,
+                DirectX::XMFLOAT3& in_offset,
                 DirectX::XMFLOAT2 in_p1,
                 DirectX::XMFLOAT2 in_p2)
                 :
                 frame_no(in_frame_no),
                 quaternion(in_r_que),
+                offset(in_offset),
                 p1(in_p1),
                 p2(in_p2)
             {}
@@ -66,13 +86,14 @@ namespace PMD
         {
         public:
             friend class Factory;
-            friend class Renderer;
 
             void PlayAnimation();
             void UpdateAnimation(class Renderer* in_p_renderer);
 
         private:
-            const float _GetYFromXOnBezier(const float in_t, const DirectX::XMFLOAT2& in_r_p1, const DirectX::XMFLOAT2& in_r_p2, const UINT32 in_n);
+            const float _GetYFromXOnBezier(
+                const float in_t, const DirectX::XMFLOAT2& in_r_p1, const DirectX::XMFLOAT2& in_r_p2, const UINT32 in_n);
+
         private:
             std::map<std::string, std::vector<MotionKeyFrame>> _motion_key_frames;
             DWORD _start_time = 0;
@@ -87,6 +108,7 @@ namespace PMD
             static const std::string s_center_bone_name;
 
             friend class Factory;
+            friend class Motion;
 
             /// <summary>
             /// ボーンの親から子への行列を反映(再帰処理をする)
@@ -113,8 +135,9 @@ namespace PMD
                 // カメラ視点
                 const DirectX::XMFLOAT3& in_r_cam_pos);
 
-        public:
-            // TODO: 検証のため公開しているので後で直す
+        private:
+            std::shared_ptr<DirectX12::Context> _context;
+
             DirectX::XMMATRIX* _p_mapped_matrices = nullptr;
 
             // GPUに渡すボーン情報j
@@ -122,8 +145,10 @@ namespace PMD
             // ボーンノードテーブル
             std::map<std::string, BoneNode> _bone_node_table;
 
-        private:
-            std::shared_ptr<DirectX12::Context> _context;
+            // ボーン名をボーンインデックスと対応したテーブル
+            std::vector<std::string> _bone_name_array;
+            // ボーンインデックスからボーンノードと対応したテーブル
+            std::vector<BoneNode*> _bone_node_address_array;
 
             SceneShaderData* _p_scene_shader_param = nullptr;
 

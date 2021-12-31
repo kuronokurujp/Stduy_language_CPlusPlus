@@ -331,6 +331,7 @@ namespace PMD
                 auto add_item = MotionKeyFrame(
                     m.frame_no,
                     q,
+                    m.location,
                     DirectX::XMFLOAT2(static_cast<float>(m.bezier[3]) / 127.0f, static_cast<float>(m.bezier[7] / 127.0f)),
                     DirectX::XMFLOAT2(static_cast<float>(m.bezier[11]) / 127.0f, static_cast<float>(m.bezier[15]) / 127.0f)
                 );
@@ -417,8 +418,42 @@ namespace PMD
                 // マテリアルデータ構築
                 this->_ApplyRenderMaterialData(_renderer, in_r_pmd_filepath, in_r_toon_path_fmt, pmd_data_pack.material);
 
-                // TODO: ボーンデータ構築
+                // ボーンデータ構築
                 this->_ApplyRenderBoneData(_renderer.get(), pmd_data_pack.bone);
+                // IKに対応しているボーン情報を出力
+#ifdef _DEBUG
+                {
+                    // ボーンidxからボーン名を取得する関数変数をラムダ式で作る
+                    auto get_name_from_idx = [&](UINT16 idx)->std::string
+                    {
+                        auto it = std::find_if(
+                            _renderer->_bone_node_table.begin(),
+                            _renderer->_bone_node_table.end(),
+                            [idx](const std::pair<std::string, BoneNode>& obj)
+                            {
+                                return obj.second.index == idx;
+                            }
+                        );
+
+                        if (it != _renderer->_bone_node_table.end())
+                        {
+                            return it->first;
+                        }
+
+                        return "";
+                    };
+
+                    for (auto& ik : pmd_data_pack.iks)
+                    {
+                        LOGD << "IKボーン番号:" << ik.bone_idx << ":" << get_name_from_idx(ik.bone_idx);
+
+                        for (auto& node : ik.node_idxs)
+                        {
+                            LOGD << "\t ノード番号:" << node << ":" << get_name_from_idx(node);
+                        }
+                    }
+                }
+#endif
             }
 
             // ティスクリプタヒープを作る
@@ -1081,6 +1116,9 @@ namespace PMD
 
             // ボーンテーブル作成
             {
+                out_p_renderer->_bone_name_array.resize(in_r_pmd_bone.size());
+                out_p_renderer->_bone_node_address_array.resize(in_r_pmd_bone.size());
+
                 for (size_t i = 0; i < in_r_pmd_bone.size(); ++i)
                 {
                     auto& r_pmd_node = in_r_pmd_bone[i];
@@ -1092,6 +1130,12 @@ namespace PMD
                     auto& r_bone_node = out_p_renderer->_bone_node_table[r_pmd_node.bone_name];
                     r_bone_node.index = i;
                     r_bone_node.start_pos = r_pmd_node.pos;
+
+                    // ボーンインデックスからボーン名を
+                    // ボーンインデックスからボーンデータを
+                    // すぐにアクセスできるようにするためのテーブルを用意
+                    out_p_renderer->_bone_node_address_array[i] = &r_bone_node;
+                    out_p_renderer->_bone_name_array[i] = bone_names[i];
                 }
             }
 

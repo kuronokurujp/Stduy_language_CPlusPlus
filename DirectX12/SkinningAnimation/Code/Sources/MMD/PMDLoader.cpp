@@ -158,6 +158,35 @@ namespace PMD
 #endif
             }
 
+            // IK情報をロード
+            error = 6;
+            {
+                UINT16 ik_num = 0;
+                if (fread(&ik_num, sizeof(ik_num), 1, fp) == 0)
+                {
+                    fclose(fp);
+                    return error;
+                }
+
+                out_p_data_pack->iks.resize(ik_num);
+                for (auto& ik : out_p_data_pack->iks)
+                {
+                    fread(&ik.bone_idx, sizeof(ik.bone_idx), 1, fp);
+                    fread(&ik.target_idx, sizeof(ik.target_idx), 1, fp);
+
+                    UINT8 chain_len = 0;
+                    fread(&chain_len, sizeof(chain_len), 1, fp);
+                    fread(&ik.iterations, sizeof(ik.iterations), 1, fp);
+                    fread(&ik.limit, sizeof(ik.limit), 1, fp);
+
+                    if (chain_len == 0)
+                        continue;
+
+                    ik.node_idxs.resize(chain_len);
+                    fread(ik.node_idxs.data(), sizeof(ik.node_idxs[0]) * chain_len, 1, fp);
+                }
+            }
+
             fclose(fp);
 
             LOGD << "end succees load pmd file: " << in_p_pmd_filepath;
