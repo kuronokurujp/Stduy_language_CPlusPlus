@@ -3,6 +3,9 @@
 #include <locale.h>
 #include <assert.h>
 #include <tchar.h>
+#include <filesystem>
+#include <string>
+#include <chrono>
 
 #include "GUI/GUIMiniHeader.h"
 #include "DirectX12/DirectX12MiniHeader.h"
@@ -19,7 +22,12 @@ int main(int argc, const char* argv[])
     // TODO: コマンドプロンプトで日本語表示を可能にしたい
     {
         static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
-        static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("Output.txt");
+
+        std::string log_dir_path = "Save/Logs";
+        std::filesystem::create_directories(log_dir_path.c_str());
+
+        std::string log_file_path = log_dir_path + "/" + "log.txt";
+        static plog::RollingFileAppender<plog::TxtFormatter> fileAppender(log_file_path.c_str());
         plog::init(plog::debug, &consoleAppender).addAppender(&fileAppender);
         LOGD << _T("start application");
     }
@@ -67,28 +75,44 @@ int main(int argc, const char* argv[])
     std::shared_ptr<GUI::DirectX12WindowView> win_view = std::make_shared<GUI::DirectX12WindowView>();
     std::shared_ptr<GUI::DirectX12WindowController> win_ctrl = std::make_shared<GUI::DirectX12WindowController>(win_model, win_view);
     if (win_ctrl->Start() == false)
-        return -1;
+        assert(false);
 
     // ゲーム制御
     App::GameController game_ctrl(win_ctrl);
     if (game_ctrl.Start() == false)
-        return -1;
+        assert(false);
 
+    // 現在日時を取得
+    std::chrono::system_clock::time_point previous_clock = std::chrono::system_clock::now();
+    double lag_s_time = 0.0;
+    // 1フレームレートの秒数(60FPS)
+    const double fixed_framerate_s_time = 1.0 / 60.0;
     do {
-        // ウィンドウの前更新
-        win_ctrl->PostUpdate();
+        std::chrono::system_clock::time_point current_clock = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = current_clock - previous_clock;
+        previous_clock = current_clock;
 
-        // ゲーム更新
-        game_ctrl.Update();
+        // 更新フレームを固定化している
+        lag_s_time += elapsed_seconds.count();
+        while (lag_s_time >= fixed_framerate_s_time)
+        {
+            // ウィンドウの前更新
+            win_ctrl->PostUpdate();
+
+            // ゲーム更新
+            game_ctrl.Update();
+
+            lag_s_time -= fixed_framerate_s_time;
+        }
 
         // 描画開始
-        win_ctrl->BeginUpdate();
+        win_ctrl->BeginRender();
         {
             // ゲーム専用の描画
             game_ctrl.Render();
         }
         // 描画終了
-        win_ctrl->EndUpdate();
+        win_ctrl->EndRender();
     } while (win_ctrl->IsUpdate());
 
     // ゲーム終了処理

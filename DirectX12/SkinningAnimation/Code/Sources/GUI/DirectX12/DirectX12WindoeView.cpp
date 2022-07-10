@@ -274,6 +274,8 @@ namespace GUI
         DirectX12::ExecuteAndCloseCmd(context);
 
         // バッファを入れ替え
+        // 第1引数を1にする事でVSYNCを有効にする
+        // FPSはDisplayの設定に依存するので注意
         this->_swapchain->Present(1, 0);
 
         // コマンドリストのリセット

@@ -20,8 +20,8 @@ namespace GUI
         void PostUpdate() override final;
 
         // 更新の開始と終了
-        void BeginUpdate() override final;
-        void EndUpdate() override final;
+        void BeginRender() override final;
+        void EndRender() override final;
 
         // 更新終了
         const bool IsUpdate() override final;

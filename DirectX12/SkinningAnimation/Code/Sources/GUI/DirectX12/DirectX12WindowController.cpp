@@ -34,12 +34,12 @@ namespace GUI
         this->_view->PostUpdate();
     }
 
-    void DirectX12WindowController::BeginUpdate()
+    void DirectX12WindowController::BeginRender()
     {
         this->_view->BeginRender();
     }
 
-    void DirectX12WindowController::EndUpdate()
+    void DirectX12WindowController::EndRender()
     {
         this->_view->EndRender();
 

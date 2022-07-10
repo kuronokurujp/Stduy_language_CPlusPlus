@@ -31,9 +31,9 @@ namespace GUI
 
         virtual void PostUpdate() = 0;
 
-        // 更新の開始と終了
-        virtual void BeginUpdate() = 0;
-        virtual void EndUpdate() = 0;
+        // 描画の開始と終了
+        virtual void BeginRender() = 0;
+        virtual void EndRender() = 0;
 
         // 更新終了
         virtual const bool IsUpdate() = 0;
