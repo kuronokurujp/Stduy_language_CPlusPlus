@@ -222,7 +222,7 @@ namespace DirectX12
     /// <param name="in_r_key"></param>
     /// <param name="in_memory_size"></param>
     /// <returns></returns>
-    Context::ComPtr<ID3D12Resource> CreateBlankResForHeapUpload(
+    Context::ComPtr<ID3D12Resource> CreateEmptyResourceByGPUTransition(
         std::shared_ptr<Context> in_p_context, const std::string& in_r_key, const UINT in_memory_size)
     {
         auto heap_prop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);

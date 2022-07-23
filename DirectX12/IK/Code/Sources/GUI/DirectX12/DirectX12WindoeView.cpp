@@ -202,11 +202,6 @@ namespace GUI
     // 描画開始(描画に必要な前処理をする)
     void DirectX12WindowView::BeginRender()
     {
-        auto p_dx12_ctrl = dynamic_cast<DirectX12WindowController*>(this->_p_ctrl);
-        auto model = p_dx12_ctrl->GetModel();
-
-        auto context = model->Context();
-
         // バックバッファのレンダーターゲットインデックスを取得
         auto bb_idx = this->_swapchain->GetCurrentBackBufferIndex();
 
@@ -218,6 +213,9 @@ namespace GUI
             D3D12_RESOURCE_STATE_RENDER_TARGET
         );
 
+        auto p_dx12_ctrl = dynamic_cast<DirectX12WindowController*>(this->_p_ctrl);
+        auto model = p_dx12_ctrl->GetModel();
+        auto context = model->Context();
         context->cmd_list->ResourceBarrier(1, &this->_barrier_desc);
 
         // レンダーターゲットビューを設定コマンド追加

@@ -122,7 +122,7 @@ namespace DirectX12
     /// <param name="in_r_key"></param>
     /// <param name="in_memory_size"></param>
     /// <returns></returns>
-    extern Context::ComPtr<ID3D12Resource> CreateBlankResForHeapUpload(std::shared_ptr<Context> in_p_context, const std::string& in_r_key, const UINT in_memory_size);
+    extern Context::ComPtr<ID3D12Resource> CreateEmptyResourceByGPUTransition(std::shared_ptr<Context> in_p_context, const std::string& in_r_key, const UINT in_memory_size);
 
     /// <summary>
     /// ディスクリプタヒープを作成

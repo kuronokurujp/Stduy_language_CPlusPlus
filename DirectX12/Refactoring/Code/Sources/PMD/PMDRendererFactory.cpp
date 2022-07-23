@@ -363,7 +363,7 @@ namespace PMD
 					UINT buff_memory_size = _renderer->_pmd_data_pack.vertexs.size() * sizeof(_renderer->_pmd_data_pack.vertexs[0]);
 
 					// 頂点情報を書き込むバッファを作成
-					auto p_vert_buff = DirectX12::CreateBlankResForHeapUpload(in_context, _renderer->_vs_buff_key, buff_memory_size);
+					auto p_vert_buff = DirectX12::CreateEmptyResourceByGPUTransition(in_context, _renderer->_vs_buff_key, buff_memory_size);
 					assert(p_vert_buff != nullptr);
 
 					// 作った頂点バッファに情報をコピーする
@@ -388,7 +388,7 @@ namespace PMD
 					UINT buff_memory_size =
 						static_cast<UINT>(_renderer->_pmd_data_pack.indices.size()) * sizeof(_renderer->_pmd_data_pack.indices[0]);
 					{
-						auto p_idx_buff = DirectX12::CreateBlankResForHeapUpload(in_context, _renderer->_idx_buff_key, buff_memory_size);
+						auto p_idx_buff = DirectX12::CreateEmptyResourceByGPUTransition(in_context, _renderer->_idx_buff_key, buff_memory_size);
 						assert(p_idx_buff != nullptr);
 
 						// コピーするデータ先頭と末尾の型と転送する型を指定
@@ -418,7 +418,7 @@ namespace PMD
 					// マテリアルバッファを作成
 					// マテリアルの数から256byteアライメントしたサイズで作成
 					// マテリアルの数 * アライメントサイズでバッファ作成している
-					p_material_buff = DirectX12::CreateBlankResForHeapUpload(in_context, _renderer->_material_buff_key, alignment_size * _renderer->_pmd_materials.size());
+					p_material_buff = DirectX12::CreateEmptyResourceByGPUTransition(in_context, _renderer->_material_buff_key, alignment_size * _renderer->_pmd_materials.size());
 
 					// マテリアルデータを書き込み
 					INT8* p_map_material = nullptr;
@@ -553,7 +553,7 @@ namespace PMD
 
 			// 座標変換シーン用の定数バッファを作成
 			{
-				auto buff = DirectX12::CreateBlankResForHeapUpload(in_context, _renderer->_basic_buff_key, (sizeof(SceneShaderData) + 0xff) & ~0xff);
+				auto buff = DirectX12::CreateEmptyResourceByGPUTransition(in_context, _renderer->_basic_buff_key, (sizeof(SceneShaderData) + 0xff) & ~0xff);
 				buff->Map(0, nullptr, (void**)&_renderer->_p_scene_shader_param);
 				// マップ解除はしない
 				// 更新毎に書き込まれるから

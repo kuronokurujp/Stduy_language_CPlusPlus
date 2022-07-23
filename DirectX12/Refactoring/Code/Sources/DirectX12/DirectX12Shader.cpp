@@ -8,7 +8,7 @@ namespace DirectX12
 {
 	namespace Impl
 	{
-		static const HRESULT SyncLoadShader(
+		static const HRESULT LoadShaderBySync(
 			Context::ComPtr<ID3D10Blob>& out_p_blob,
 			ID3D10Blob** out_pp_error_blob,
 			const WCHAR* in_shader_filepath,
@@ -50,7 +50,7 @@ namespace DirectX12
 
 		Context::ComPtr<ID3D10Blob> vs_blob;
 
-		auto result = Impl::SyncLoadShader(
+		auto result = Impl::LoadShaderBySync(
 			vs_blob,
 			out_pp_error_blob,
 			in_shader_filepath,
@@ -79,7 +79,7 @@ namespace DirectX12
 		assert(!in_r_key_name.empty());
 
 		Context::ComPtr<ID3D10Blob> ps_blob;
-		auto result = Impl::SyncLoadShader(
+		auto result = Impl::LoadShaderBySync(
 			ps_blob,
 			out_pp_error_blob,
 			in_shader_filepath,

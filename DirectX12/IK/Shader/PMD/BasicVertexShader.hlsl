@@ -1,7 +1,7 @@
 #include "BasicShaderHeader.hlsli"
 
 Output BasicVS(
-    // 頂点レイアウトに剃った引数にする
+    // 頂点レイアウトに沿った引数にする
     float4 pos : POSITION,
     float4 normal : NORMAL,
     float2 uv : TEXCOORD,
