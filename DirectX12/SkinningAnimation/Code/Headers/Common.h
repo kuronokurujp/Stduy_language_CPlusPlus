@@ -18,7 +18,7 @@ namespace Common
     /// vectorで登録している要素を安全に外す.
     /// </summary>
     template <class T>
-    static bool SafetyRemoveObjects(T* in_pObject, std::vector<T*>& in_rObjects)
+    static bool SafeRemoveObject(T* in_pObject, std::vector<T*>& in_rObjects)
     {
         // 解除するObjectがキャッシュリストに含まれているかチェック
         auto iter = std::find(in_rObjects.begin(), in_rObjects.end(), in_pObject);
@@ -69,7 +69,7 @@ namespace Common
     /// </summary>
     /// <param name="in_r_str"></param>
     /// <returns></returns>
-    static std::wstring GetWideStringFromString(const std::string& in_r_str)
+    static std::wstring ConvertStringToWideString(const std::string& in_r_str)
     {
         // wstringの文字列数を取得
         auto num_1 = MultiByteToWideChar(
@@ -106,7 +106,7 @@ namespace Common
     /// <param name="in_currnet_path"></param>
     /// <param name="in_p_append_path"></param>
     /// <returns></returns>
-    static std::string GetPathForAddPathToDirectoryEndPath(
+    static std::string CombineDirPath(
         const std::string& in_currnet_path,
         const char* in_p_append_path)
     {

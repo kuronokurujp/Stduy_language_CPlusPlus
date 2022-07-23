@@ -4,14 +4,14 @@
 
 namespace Actor
 {
-    void ActorManager::AddActorMemData(Actor* in_pActor)
+    void ActorManager::AddActor(Actor* in_pActor)
     {
         this->_actors.emplace_back(in_pActor);
     }
 
     void ActorManager::RemoveActor(Actor* in_pActor)
     {
-        Common::SafetyRemoveObjects<Actor>(in_pActor, this->_actors);
+        Common::SafeRemoveObject<Actor>(in_pActor, this->_actors);
     }
 
     const bool ActorManager::IsActor(class Actor* in_pActor)

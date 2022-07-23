@@ -39,10 +39,10 @@ namespace GUI
         WindowControllerInterface* _p_ctrl;
 
     private:
-        static void PushViewFromCallbackList(WindowView* in_p_view);
-        static const bool PopViewFromList(WindowView* in_p_view);
+        static void PushView(WindowView* in_p_view);
+        static const bool PopView(WindowView* in_p_view);
         // ウィンドウハンドルと対応したViewを取得
-        static WindowView* SearchViewFromList(HWND in_h_wnd);
+        static WindowView* FindView(HWND in_h_wnd);
 
         void _Clear()
         {

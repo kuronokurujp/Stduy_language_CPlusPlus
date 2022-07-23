@@ -39,7 +39,7 @@ namespace Common
 	/// </summary>
 	/// <param name="in_r_str"></param>
 	/// <returns></returns>
-	static std::wstring GetWideStringFromString(const std::string& in_r_str)
+	static std::wstring ConvertStringToWideString(const std::string& in_r_str)
 	{
 		// wstringの文字列数を取得
 		auto num_1 = MultiByteToWideChar(
@@ -76,7 +76,7 @@ namespace Common
 	/// <param name="in_currnet_path"></param>
 	/// <param name="in_p_append_path"></param>
 	/// <returns></returns>
-	static std::string GetPathForAddPathToDirectoryEndPath(
+	static std::string CombineDirPath(
 		const std::string& in_currnet_path,
 		const char* in_p_append_path)
 	{

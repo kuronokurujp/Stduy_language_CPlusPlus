@@ -10,7 +10,7 @@ namespace GUI
 
     WindowView::~WindowView()
     {
-        if (!PopViewFromList(this))
+        if (!PopView(this))
             return;
 
         // 生成したウィンドウ登録を解除
@@ -80,7 +80,7 @@ namespace GUI
         }
 
         // Windowのコールバックリストに追加
-        PushViewFromCallbackList(this);
+        PushView(this);
     }
 
     void WindowView::Show()
@@ -113,7 +113,7 @@ namespace GUI
         {
         case WM_QUIT:
         {
-            auto view = WindowView::SearchViewFromList(hWnd);
+            auto view = WindowView::FindView(hWnd);
             if (view != NULL)
                 view->_p_ctrl->OnAppQuitEvent();
 
@@ -132,7 +132,7 @@ namespace GUI
             int x = LOWORD(lParam);
             int y = HIWORD(lParam);
 
-            auto view = WindowView::SearchViewFromList(hWnd);
+            auto view = WindowView::FindView(hWnd);
             // タッチイベントを呼ぶ
 #if _DEBUG
             printf("left button by mouse: x %d / y %d\n", x, y);
@@ -154,13 +154,13 @@ namespace GUI
         return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
     }
 
-    void WindowView::PushViewFromCallbackList(WindowView* in_p_view)
+    void WindowView::PushView(WindowView* in_p_view)
     {
         assert(in_p_view != NULL);
         s_window_view_list.push_back(in_p_view);
     }
 
-    const bool WindowView::PopViewFromList(WindowView* in_p_view)
+    const bool WindowView::PopView(WindowView* in_p_view)
     {
         assert(in_p_view != NULL);
         for (auto it = s_window_view_list.begin(); it != s_window_view_list.end(); ++it)
@@ -175,7 +175,7 @@ namespace GUI
         return false;
     }
 
-    WindowView* WindowView::SearchViewFromList(HWND in_h_wnd)
+    WindowView* WindowView::FindView(HWND in_h_wnd)
     {
         for (auto it = s_window_view_list.begin(); it != s_window_view_list.end(); ++it)
         {

@@ -227,7 +227,7 @@ namespace Texture
 		if (load_lambda_table.find(extension.c_str()) == load_lambda_table.end())
 			return false;
 
-		auto load_file_path_wstring = Common::GetWideStringFromString(in_r_load_filepath);
+		auto load_file_path_wstring = Common::ConvertStringToWideString(in_r_load_filepath);
 		auto result = load_lambda_table[extension.c_str()](load_file_path_wstring, out_p_metadata, out_p_scratch_img);
 		return SUCCEEDED(result);
 	}

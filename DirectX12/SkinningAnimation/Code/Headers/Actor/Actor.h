@@ -56,7 +56,7 @@ namespace Actor
             {
                 if (dynamic_cast<T*>(iter) != NULL)
                 {
-                    SafetyRemoveObjects(iter, this->_components);
+                    SafeRemoveObject(iter, this->_components);
                     SAFETY_MEM_RELEASE(iter);
                     return;
                 }
