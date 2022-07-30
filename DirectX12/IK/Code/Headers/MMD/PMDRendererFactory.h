@@ -235,6 +235,10 @@ namespace PMD
                 Renderer* out_p_renderer,
                 std::vector<PMD::Loader::PMDBone>& in_r_pmd_bone);
 
+#ifdef _DEBUG
+            void _DebugPrintByIKBone(std::shared_ptr<Renderer> in_r_renderer, std::shared_ptr<::PMD::Loader::PMDDataPack> in_r_pmd_data_pack);
+#endif
+
         private:
             std::shared_ptr<DirectX12::Context> _context;
 

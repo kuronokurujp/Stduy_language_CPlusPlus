@@ -4,195 +4,198 @@
 
 namespace PMD
 {
-	namespace Loader
-	{
-		/// <summary>
-		/// PMDファイルからデータ同期ロード
-		/// </summary>
-		/// <param name="out_p_header"></param>
-		/// <returns></returns>
-		errno_t LoadFileBySync(
-			PMDDataPack* out_p_data_pack,
-			const char* in_p_pmd_filepath)
-		{
-			LOGD << "start load pmd file: " << in_p_pmd_filepath;
+    namespace Loader
+    {
+        /// <summary>
+        /// PMDファイルからデータ同期ロード
+        /// </summary>
+        /// <param name="out_p_header"></param>
+        /// <returns></returns>
+        errno_t LoadFileBySync(
+            PMDDataPack* out_p_data_pack,
+            const char* in_p_pmd_filepath)
+        {
+            LOGD << "start load pmd file: " << in_p_pmd_filepath;
 
-			FILE* fp = nullptr;
-			auto error = fopen_s(&fp, in_p_pmd_filepath, "rb");
-			if (error != 0)
-				return error;
+            FILE* fp = nullptr;
+            auto error = fopen_s(&fp, in_p_pmd_filepath, "rb");
+            if (error != 0)
+                return error;
 
-			// シグネチャーロード
-			error = 1;
-			{
-				char signature[3] = {};
-				if (fread(signature, sizeof(signature), 1, fp) == 0)
-				{
-					fclose(fp);
-					return error;
-				}
-			}
+            // シグネチャーロード
+            error = 1;
+            {
+                char signature[3] = {};
+                if (fread(signature, sizeof(signature), 1, fp) == 0)
+                {
+                    fclose(fp);
+                    return error;
+                }
+            }
 
-			// TODO: シグネチャー名が正しいかのチェックは必要かな
+            // TODO: シグネチャー名が正しいかのチェックは必要かな
 
-			// ヘッダーをロード
-			error = 2;
-			{
-				if (fread(&out_p_data_pack->header, sizeof(PMDHeader), 1, fp) == 0)
-				{
-					fclose(fp);
-					return error;
-				}
-			}
+            // ヘッダーをロード
+            error = 2;
+            {
+                if (fread(&out_p_data_pack->header, sizeof(PMDHeader), 1, fp) == 0)
+                {
+                    fclose(fp);
+                    return error;
+                }
+            }
 
-			// 頂点データ群をロード
-			error = 3;
-			{
-				constexpr size_t pmdvertex_size = 38;
-				out_p_data_pack->vertex_size = pmdvertex_size;
+            // 頂点データ群をロード
+            error = 3;
+            {
+                constexpr size_t pmdvertex_size = 38;
+                out_p_data_pack->vertex_size = pmdvertex_size;
 
-				// 頂点数
-				{
-					UINT32 vert_num = 0;
-					if (fread(&vert_num, sizeof(vert_num), 1, fp) == 0)
-					{
-						fclose(fp);
-						return error;
-					}
+                // 頂点数
+                {
+                    UINT32 vert_num = 0;
+                    if (fread(&vert_num, sizeof(vert_num), 1, fp) == 0)
+                    {
+                        fclose(fp);
+                        return error;
+                    }
 
-					out_p_data_pack->vert_num = vert_num;
+                    out_p_data_pack->vert_num = vert_num;
 
-					// 頂点データ一覧を取得
-					out_p_data_pack->vertexs.resize(vert_num * pmdvertex_size);
+                    // 頂点データ一覧を取得
+                    out_p_data_pack->vertexs.resize(vert_num * pmdvertex_size);
 
-					auto size = out_p_data_pack->vertexs.size();
-					auto data_size = sizeof(out_p_data_pack->vertexs[0]);
+                    auto size = out_p_data_pack->vertexs.size();
+                    auto data_size = sizeof(out_p_data_pack->vertexs[0]);
 
-					if (fread(out_p_data_pack->vertexs.data(), size * data_size, 1, fp) == 0)
-					{
-						fclose(fp);
-						return error;
-					}
-				}
+                    if (fread(out_p_data_pack->vertexs.data(), size * data_size, 1, fp) == 0)
+                    {
+                        fclose(fp);
+                        return error;
+                    }
+                }
 
-				{
-					// インデックス数
-					UINT32 indices_num = 0;
-					if (fread(&indices_num, sizeof(indices_num), 1, fp) == 0)
-					{
-						fclose(fp);
-						return error;
-					}
-					out_p_data_pack->indices.resize(indices_num);
+                {
+                    // インデックス数
+                    UINT32 indices_num = 0;
+                    if (fread(&indices_num, sizeof(indices_num), 1, fp) == 0)
+                    {
+                        fclose(fp);
+                        return error;
+                    }
+                    out_p_data_pack->indices.resize(indices_num);
 
-					auto size = out_p_data_pack->indices.size();
-					auto data_size = sizeof(out_p_data_pack->indices[0]);
+                    auto size = out_p_data_pack->indices.size();
+                    auto data_size = sizeof(out_p_data_pack->indices[0]);
 
-					// インデックスデータ一覧を取得
-					if (fread(out_p_data_pack->indices.data(), size * data_size, 1, fp) == 0)
-					{
-						fclose(fp);
-						return error;
-					}
-				}
-			}
+                    // インデックスデータ一覧を取得
+                    if (fread(out_p_data_pack->indices.data(), size * data_size, 1, fp) == 0)
+                    {
+                        fclose(fp);
+                        return error;
+                    }
+                }
+            }
 
-			// マテリアルデータ確保
-			error = 4;
-			{
-				// マテリアルの数を取得
-				UINT32 material_num = 0;
-				if (fread(&material_num, sizeof(material_num), 1, fp) == 0)
-				{
-					fclose(fp);
-					return error;
-				}
+            // マテリアルデータ確保
+            error = 4;
+            {
+                // マテリアルの数を取得
+                UINT32 material_num = 0;
+                if (fread(&material_num, sizeof(material_num), 1, fp) == 0)
+                {
+                    fclose(fp);
+                    return error;
+                }
 
-				// マテリアルの数分データを確保
-				out_p_data_pack->material.resize(material_num);
-				// 要素のデータサイズを取得
-				auto data_size = sizeof((out_p_data_pack->material)[0]);
-				auto size = out_p_data_pack->material.size();
-				LOGD << "pmd_material data_size => " << data_size;
+                // マテリアルの数分データを確保
+                out_p_data_pack->material.resize(material_num);
+                // 要素のデータサイズを取得
+                auto data_size = sizeof((out_p_data_pack->material)[0]);
+                auto size = out_p_data_pack->material.size();
+                LOGD << "pmd_material data_size => " << data_size;
 
-				if (fread(out_p_data_pack->material.data(), data_size * size, 1, fp) == 0)
-				{
-					fclose(fp);
-					return error;
-				}
-			}
+                if (fread(out_p_data_pack->material.data(), data_size * size, 1, fp) == 0)
+                {
+                    fclose(fp);
+                    return error;
+                }
+            }
 
-			// ボーンをロード
-			error = 5;
-			{
-				UINT16 bone_num = 0;
-				if (fread(&bone_num, sizeof(bone_num), 1, fp) == 0)
-				{
-					fclose(fp);
-					return error;
-				}
-				LOGD << "bone_num: " << bone_num;
+            // ボーンをロード
+            error = 5;
+            {
+                UINT16 bone_num = 0;
+                if (fread(&bone_num, sizeof(bone_num), 1, fp) == 0)
+                {
+                    fclose(fp);
+                    return error;
+                }
+                LOGD << "bone_num: " << bone_num;
 
-				// ボーン数分データを確保
-				out_p_data_pack->bone.resize(bone_num);
-				// 要素のデータサイズを取得
-				auto data_size = sizeof((out_p_data_pack->bone)[0]);
-				auto size = out_p_data_pack->bone.size();
-				LOGD << "pmd_bone data_size => " << data_size;
+                // ボーン数分データを確保
+                out_p_data_pack->bone.resize(bone_num);
+                // 要素のデータサイズを取得
+                auto data_size = sizeof((out_p_data_pack->bone)[0]);
+                auto size = out_p_data_pack->bone.size();
+                LOGD << "pmd_bone data_size => " << data_size;
 
-				if (fread(out_p_data_pack->bone.data(), data_size * size, 1, fp) == 0)
-				{
-					fclose(fp);
-					return error;
-				}
+                if (fread(out_p_data_pack->bone.data(), data_size * size, 1, fp) == 0)
+                {
+                    fclose(fp);
+                    return error;
+                }
 #ifdef _DEBUG
-				/*
-				// デバッグのため読み込んだボーン情報を出力
-				for (auto& bone : out_p_data_pack->bone)
-				{
-					// 日本語文字列をデバッグ出力するためwstring型に変更
-					auto bone_name = Common::GetWideStringFromString(bone.bone_name);
-					LOGD << bone_name;
-				}
-				*/
+                /*
+                // デバッグのため読み込んだボーン情報を出力
+                for (auto& bone : out_p_data_pack->bone)
+                {
+                    // 日本語文字列をデバッグ出力するためwstring型に変更
+                    auto bone_name = Common::GetWideStringFromString(bone.bone_name);
+                    LOGD << bone_name;
+                }
+                */
 #endif
-			}
+            }
 
-			// IK情報をロード
-			error = 6;
-			{
-				UINT16 ik_num = 0;
-				if (fread(&ik_num, sizeof(ik_num), 1, fp) == 0)
-				{
-					fclose(fp);
-					return error;
-				}
+            // IK情報をロード
+            error = 6;
+            {
+                UINT16 ik_num = 0;
+                if (fread(&ik_num, sizeof(ik_num), 1, fp) == 0)
+                {
+                    fclose(fp);
+                    return error;
+                }
 
-				out_p_data_pack->iks.resize(ik_num);
-				for (auto& ik : out_p_data_pack->iks)
-				{
-					fread(&ik.bone_idx, sizeof(ik.bone_idx), 1, fp);
-					fread(&ik.target_idx, sizeof(ik.target_idx), 1, fp);
+#ifdef _DEBUG
+                LOGD << "ik_num " << ik_num;
+#endif
+                out_p_data_pack->iks.resize(ik_num);
+                for (auto& ik : out_p_data_pack->iks)
+                {
+                    fread(&ik.bone_idx, sizeof(ik.bone_idx), 1, fp);
+                    fread(&ik.target_idx, sizeof(ik.target_idx), 1, fp);
 
-					UINT8 chain_len = 0;
-					fread(&chain_len, sizeof(chain_len), 1, fp);
-					fread(&ik.iterations, sizeof(ik.iterations), 1, fp);
-					fread(&ik.limit, sizeof(ik.limit), 1, fp);
+                    UINT8 chain_len = 0;
+                    fread(&chain_len, sizeof(chain_len), 1, fp);
+                    fread(&ik.iterations, sizeof(ik.iterations), 1, fp);
+                    fread(&ik.limit, sizeof(ik.limit), 1, fp);
 
-					if (chain_len == 0)
-						continue;
+                    if (chain_len == 0)
+                        continue;
 
-					ik.node_idxs.resize(chain_len);
-					fread(ik.node_idxs.data(), sizeof(ik.node_idxs[0]) * chain_len, 1, fp);
-				}
-			}
+                    ik.node_idxs.resize(chain_len);
+                    fread(ik.node_idxs.data(), sizeof(ik.node_idxs[0]) * chain_len, 1, fp);
+                }
+            }
 
-			fclose(fp);
+            fclose(fp);
 
-			LOGD << "end succees load pmd file: " << in_p_pmd_filepath;
+            LOGD << "end succees load pmd file: " << in_p_pmd_filepath;
 
-			error = 0;
-			return error;
-		}
-	}
+            error = 0;
+            return error;
+        }
+    }
 }
