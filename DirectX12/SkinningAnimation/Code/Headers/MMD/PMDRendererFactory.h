@@ -20,7 +20,7 @@ namespace PMD
 		{
 			Rotation = 0,
 			RotAndMove,
-			IK,
+			PMDIK,
 			Undefine,
 			IKChild,
 			RotationChild,

@@ -40,7 +40,7 @@ namespace PMD
         };
 
         // IK構造体
-        struct IK
+        struct PMDIK
         {
             UINT16 bone_idx;
             UINT16 target_idx;
@@ -106,7 +106,7 @@ namespace PMD
             std::vector<PMD::Loader::PMDMaterial> material;
             std::vector<PMD::Loader::PMDBone> bone;
 
-            std::vector<PMD::Loader::IK> iks;
+            std::vector<PMD::Loader::PMDIK> iks;
         };
 
         /// <summary>

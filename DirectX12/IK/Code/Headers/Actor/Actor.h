@@ -17,7 +17,7 @@ namespace Actor
         /// <summary>
         /// Actorの状態
         /// </summary>
-        enum eState
+        enum class eState
         {
             eState_Active = 0,
             eState_Pause,

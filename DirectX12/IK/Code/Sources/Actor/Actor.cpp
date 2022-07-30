@@ -21,7 +21,7 @@ namespace Actor
 
     void Actor::Update(float in_deltaTimeSecond)
     {
-        if (this->_state != eState_Active)
+        if (this->_state != eState::eState_Active)
         {
             return;
         }
@@ -89,7 +89,7 @@ namespace Actor
 
     void Actor::_Clear()
     {
-        this->_state = eState_Active;
+        this->_state = eState::eState_Active;
         this->_components.clear();
     }
 }

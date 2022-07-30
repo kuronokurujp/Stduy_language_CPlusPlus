@@ -7,8 +7,10 @@ namespace App
     PMDActor::PMDActor(std::shared_ptr<PMD::Render::Factory> in_factory, const GUI::WindowCommonData& in_window_data)
     {
         // PMDファイルからレンダリングできるインスタンスを生成
+        const std::string file_name_and_key = "Resources/Model/Miku.pmd";
         this->_renderer = in_factory->CreateRenderer(
-            "Resources/Model/Miku.pmd",
+            file_name_and_key.c_str(),
+            //"Resources/Model/Miku.pmd",
             "Resources/Shader/PMD/BasicVertexShader.hlsl",
             "Resources/Shader/PMD/BasicPixelShader.hlsl",
             "Resources/Model/Toon/toon%02d.bmp"
@@ -16,6 +18,9 @@ namespace App
 
         this->_local_mat._m = DirectX::XMMatrixIdentity();
         this->_world_mat._m = DirectX::XMMatrixIdentity();
+
+        // IKデータをあらかじめ取得
+        this->_ik_datas = std::make_shared<std::vector<PMD::Loader::PMDIK>>(in_factory->GetPMDDataPack(file_name_and_key).get()->iks);
 
         {
             // カメラ行列作成
@@ -59,6 +64,8 @@ namespace App
 
     void PMDActor::Render()
     {
+        this->_IKSolve();
+
         // レンダリング
         this->_renderer->Rendering(
             this->_local_mat._m,
@@ -66,5 +73,37 @@ namespace App
             this->_view_mat._m,
             this->_proj_mat._m,
             this->_eye);
+    }
+
+    /// <summary>
+    /// IK解決処理
+    /// </summary>
+    void PMDActor::_IKSolve()
+    {
+        for (auto& ik : *(this->_ik_datas.get()))
+        {
+            auto children_nodes_count = ik.node_idxs.size();
+            switch (children_nodes_count)
+            {
+            case 0:
+            {
+                assert(0);
+                continue;
+            }
+            case 1:
+            {
+                this->_SolveLockIK(ik);
+                break;
+            }
+            case 2:
+            {
+                this->_SolveCosineIK(ik);
+                break;
+            }
+            default:
+                this->_SolveCCDIK(ik);
+                break;
+            }
+        }
     }
 }

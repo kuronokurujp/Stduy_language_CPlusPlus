@@ -18,13 +18,21 @@ namespace PMD
         // ボーン種別
         enum class BoneType
         {
-            Rotation = 0,
+            // 回転
+            Rotation,
+            // 回転と移動
             RotAndMove,
-            IK,
+            // IK
+            PMDIK,
+            // 未定義
             Undefine,
+            // IK影響ボーン
             IKChild,
+            // 回転影響ボーン
             RotationChild,
+            // IK接続先
             IKDestination,
+            // 見えないボーン
             Invisible,
         };
 
@@ -47,8 +55,8 @@ namespace PMD
             UINT32 ik_parent_bone;
             // ボーン基準点
             DirectX::XMFLOAT3 start_pos;
-            // ボーン先端点
-            DirectX::XMFLOAT3 end_pos;
+            // ボーン先端点(未使用)
+            //DirectX::XMFLOAT3 end_pos;
             // 子のノード
             std::vector<BoneNode*> children;
         };
@@ -217,6 +225,13 @@ namespace PMD
                 const std::string& in_r_pmd_shader_ps_filepath,
                 const std::string& in_r_toon_path_fmt);
 
+            /// <summary>
+            /// 指定キー名からPMDデータを返す
+            /// </summary>
+            std::shared_ptr<::PMD::Loader::PMDDataPack> GetPMDDataPack(std::string in_key) {
+                return std::make_shared<::PMD::Loader::PMDDataPack>(_pmd_data_pack_map[in_key]);
+            }
+
         private:
             void _ApplyRenderMaterialData(
                 // TODO: 後でポインターに直す！
@@ -227,7 +242,6 @@ namespace PMD
 
             /// <summary>
             /// ボーンデータ構築
-            /// TODO: 作り中
             /// </summary>
             /// <param name="out_p_renderer"></param>
             /// <param name="in_r_pmd_bone"></param>
