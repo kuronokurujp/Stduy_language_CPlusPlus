@@ -49,9 +49,10 @@ namespace App
         // VMDファイルからモーションデータ作成
         {
             this->_motion = in_factory->CreateMotion(
-                //"Resources/Model/VMD/pose.vmd");
+                //    "Resources/Model/VMD/pose.vmd");
                 //"Resources/Model/VMD/charge.vmd");
-                "Resources/Model/VMD/motion.vmd");
+            //"Resources/Model/VMD/motion.vmd");
+                "Resources/Model/VMD/squat.vmd");
 
             this->_motion->PlayAnimation();
         }

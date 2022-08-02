@@ -99,7 +99,10 @@ namespace PMD
             void UpdateAnimation(class Renderer* in_p_renderer);
 
         private:
-            const float _GetYFromXOnBezier(
+            /// <summary>
+            /// 2次元を2点を使ったベジェ曲線計算
+            /// </summary>
+            const float _CalcBezierByTwo2DPoint(
                 const float in_t, const DirectX::XMFLOAT2& in_r_p1, const DirectX::XMFLOAT2& in_r_p2, const UINT32 in_n);
 
         private:
@@ -123,7 +126,7 @@ namespace PMD
             /// </summary>
             /// <param name="in_p_node"></param>
             /// <param name="in_r_mat"></param>
-            void MultiplayMatrixByNode(
+            void MulBoneMatrixAndRecursive(
                 BoneNode* in_p_node, const DirectX::XMMATRIX& in_r_mat);
 
             /// <summary>
@@ -214,11 +217,6 @@ namespace PMD
             /// <summary>
             /// PMDファイルを解析してレンダラー作成
             /// </summary>
-            /// <param name="in_r_key"></param>
-            /// <param name="in_r_pmd_filepath"></param>
-            /// <param name="in_r_pmd_shader_vs_filepath"></param>
-            /// <param name="in_r_pmd_shader_ps_filepath"></param>
-            /// <returns></returns>
             std::shared_ptr<Renderer> CreateRenderer(
                 const std::string& in_r_pmd_filepath,
                 const std::string& in_r_pmd_shader_vs_filepath,
@@ -233,7 +231,7 @@ namespace PMD
             }
 
         private:
-            void _ApplyRenderMaterialData(
+            void _ApplyMaterial(
                 // TODO: 後でポインターに直す！
                 std::shared_ptr<Renderer> out_r_renderer,
                 const std::string& in_r_file_path,
@@ -245,7 +243,7 @@ namespace PMD
             /// </summary>
             /// <param name="out_p_renderer"></param>
             /// <param name="in_r_pmd_bone"></param>
-            void _ApplyRenderBoneData(
+            void _ApplyBone(
                 Renderer* out_p_renderer,
                 std::vector<PMD::Loader::PMDBone>& in_r_pmd_bone);
 
