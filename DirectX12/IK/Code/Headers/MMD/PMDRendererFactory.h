@@ -51,6 +51,8 @@ namespace PMD
             UINT32 index = 0;
             // ボーン種別
             BoneType bone_type;
+
+            UINT32 parent_bone;
             // IK親ボーン
             UINT32 ik_parent_bone;
             // ボーン基準点
@@ -96,7 +98,7 @@ namespace PMD
             friend class Factory;
 
             void PlayAnimation();
-            void UpdateAnimation(class Renderer* in_p_renderer);
+            void UpdateAnimation(class Renderer* in_p_renderer, std::shared_ptr<std::vector<PMD::Loader::PMDIK>> in_ik_datas);
 
         private:
             /// <summary>
@@ -104,6 +106,31 @@ namespace PMD
             /// </summary>
             const float _CalcBezierByTwo2DPoint(
                 const float in_t, const DirectX::XMFLOAT2& in_r_p1, const DirectX::XMFLOAT2& in_r_p2, const UINT32 in_n);
+
+            /// <summary>
+            /// IK解決処理
+            /// TODO: 作成中
+            /// </summary>
+            void _IKSolve(class Renderer* in_p_renderer, std::shared_ptr<std::vector<PMD::Loader::PMDIK>> in_ik_datas);
+
+            /// <summary>
+            /// CCD-IKによるボーン方向を解決
+            /// TODO: 作成中
+            /// </summary>
+            /// <param name="in_r_ik"></param>
+            void _SolveCCDIK(class Renderer* in_p_renderer, const PMD::Loader::PMDIK& in_r_ik);
+            /// <summary>
+            /// 余弦定理によるボーン方向を解決
+            /// TODO: 作成中
+            /// </summary>
+            /// <param name="in_r_ik"></param>
+            void _SolveCosineIK(class Renderer* in_p_renderer, const PMD::Loader::PMDIK& in_r_ik);
+            /// <summary>
+            /// LockAt行列によるボーン方向を解決
+            /// TODO: 作成中
+            /// </summary>
+            /// <param name="in_r_ik"></param>
+            void _SolveLockIK(class Renderer* in_p_renderer, const PMD::Loader::PMDIK& in_r_ik);
 
         private:
             std::map<std::string, std::vector<MotionKeyFrame>> _motion_key_frames;
@@ -127,7 +154,7 @@ namespace PMD
             /// <param name="in_p_node"></param>
             /// <param name="in_r_mat"></param>
             void MulBoneMatrixAndRecursive(
-                BoneNode* in_p_node, const DirectX::XMMATRIX& in_r_mat);
+                BoneNode* in_p_node, const DirectX::XMMATRIX& in_r_mat, bool in_flg = false);
 
             /// <summary>
             /// レンダリング
@@ -146,20 +173,24 @@ namespace PMD
                 // カメラ視点
                 const DirectX::XMFLOAT3& in_r_cam_pos);
 
+        public:
+            // TODO: getterを作る手間を省くため即参照できるようにした
+            // ボーン名をボーンインデックスと対応したテーブル
+            std::vector<std::string> _bone_name_array;
+            // ボーンインデックスからボーンノードと対応したテーブル
+            std::vector<BoneNode*> _bone_node_address_array;
+            // GPUに渡すボーン情報
+            std::vector<DirectX::XMMATRIX> _bone_matrices;
+
+            // ひざボーンのidx
+            std::vector<uint32_t> _knee_idxs;
         private:
             std::shared_ptr<DirectX12::Context> _context;
 
             DirectX::XMMATRIX* _p_mapped_matrices = nullptr;
 
-            // GPUに渡すボーン情報j
-            std::vector<DirectX::XMMATRIX> _bone_matrices;
             // ボーンノードテーブル
             std::map<std::string, BoneNode> _bone_node_table;
-
-            // ボーン名をボーンインデックスと対応したテーブル
-            std::vector<std::string> _bone_name_array;
-            // ボーンインデックスからボーンノードと対応したテーブル
-            std::vector<BoneNode*> _bone_node_address_array;
 
             SceneShaderData* _p_scene_shader_param = nullptr;
 
@@ -189,7 +220,7 @@ namespace PMD
         };
 
         /// <summary>
-        /// ファクトリーパターンでレンダリング生成を管理
+        /// ファクトリーパターンでPMD関連のオブジェクトを生成
         /// </summary>
         class Factory
         {
@@ -216,6 +247,7 @@ namespace PMD
 
             /// <summary>
             /// PMDファイルを解析してレンダラー作成
+            /// TODO: ボーンや頂点情報を収めるMeshクラス, Meshに張り付けるマテリアルクラスを用意してこのメソッドで一括で作成するようにするいずれ
             /// </summary>
             std::shared_ptr<Renderer> CreateRenderer(
                 const std::string& in_r_pmd_filepath,

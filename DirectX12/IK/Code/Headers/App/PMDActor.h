@@ -17,31 +17,6 @@ namespace App
         void Render() override final;
 
     private:
-        /// <summary>
-        /// IK解決処理
-        /// TODO: 作成中
-        /// </summary>
-        void _IKSolve();
-
-        /// <summary>
-        /// CCD-IKによるボーン方向を解決
-        /// TODO: 作成中
-        /// </summary>
-        /// <param name="in_r_ik"></param>
-        void _SolveCCDIK(const PMD::Loader::PMDIK& in_r_ik) {}
-        /// <summary>
-        /// 余弦定理によるボーン方向を解決
-        /// TODO: 作成中
-        /// </summary>
-        /// <param name="in_r_ik"></param>
-        void _SolveCosineIK(const PMD::Loader::PMDIK& in_r_ik) {}
-        /// <summary>
-        /// LockAt行列によるボーン方向を解決
-        /// TODO: 作成中
-        /// </summary>
-        /// <param name="in_r_ik"></param>
-        void _SolveLockIK(const PMD::Loader::PMDIK& in_r_ik) {}
-    private:
         std::shared_ptr<PMD::Render::Renderer> _renderer;
         std::shared_ptr<PMD::Render::Motion> _motion;
         std::shared_ptr<std::vector<PMD::Loader::PMDIK>> _ik_datas;

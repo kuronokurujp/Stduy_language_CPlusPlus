@@ -42,8 +42,11 @@ namespace PMD
         // IK構造体
         struct PMDIK
         {
+            // ルートボーンidx
             UINT16 bone_idx;
+            // 先端ボーンidx
             UINT16 target_idx;
+
             UINT16 iterations;
             float limit;
             std::vector<UINT16> node_idxs;

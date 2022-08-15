@@ -60,51 +60,19 @@ namespace App
 
     void PMDActor::UpdateActor(float in_deltaTimeSecond)
     {
-        this->_motion->UpdateAnimation(this->_renderer.get());
+        this->_motion->UpdateAnimation(this->_renderer.get(), this->_ik_datas);
     }
 
     void PMDActor::Render()
     {
-        this->_IKSolve();
+        //        this->_IKSolve();
 
-        // レンダリング
+                // レンダリング
         this->_renderer->Rendering(
             this->_local_mat._m,
             this->_world_mat._m,
             this->_view_mat._m,
             this->_proj_mat._m,
             this->_eye);
-    }
-
-    /// <summary>
-    /// IK解決処理
-    /// </summary>
-    void PMDActor::_IKSolve()
-    {
-        for (auto& ik : *(this->_ik_datas.get()))
-        {
-            auto children_nodes_count = ik.node_idxs.size();
-            switch (children_nodes_count)
-            {
-            case 0:
-            {
-                assert(0);
-                continue;
-            }
-            case 1:
-            {
-                this->_SolveLockIK(ik);
-                break;
-            }
-            case 2:
-            {
-                this->_SolveCosineIK(ik);
-                break;
-            }
-            default:
-                this->_SolveCCDIK(ik);
-                break;
-            }
-        }
     }
 }

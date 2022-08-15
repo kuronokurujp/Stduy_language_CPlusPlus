@@ -20,7 +20,7 @@ namespace VMD
             // ボーン名
             char bone_name[15];
             // アニメフレーム番号
-            UINT32  frame_no;
+            UINT32 frame_no;
             // 位置
             DirectX::XMFLOAT3 location;
             // 回転のクォータニオン

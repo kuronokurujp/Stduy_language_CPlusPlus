@@ -7,8 +7,6 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 
-#include <DirectXMath.h>
-
 #include <windows.h>
 #include <wrl.h>
 
@@ -18,11 +16,12 @@
 #include <map>
 
 #include "d3dx12.h"
+#include <DirectXMath.h>
 
 namespace DirectX12
 {
     // XMMATRIX型は16byteアライメントになっているので
-    // XMMATRIX型をクラス変数として定義するしてクラスをnewするとアライメント問題でハングする可能性がある
+    // XMMATRIX型をクラス変数として定義してクラスをnewするとアライメント問題でハングする可能性がある
     // それを防ぐために16byteアライメントでnewする。
     // 以下のそれを行う構造体
     // newで生成するクラス・構造体の場合では以下のを利用しないといけない
@@ -167,4 +166,31 @@ namespace DirectX12
     /// Blobからエラーメッセージを出力
     /// </summary>
     extern const bool OutputErrorMessageForBlob(std::string* out_p_error, const HRESULT in_result, ID3DBlob* const in_p_error_blob);
+
+    /// <summary>
+    /// Z軸をLockAt先へ回転する回転行列を出力
+    /// TODO: 製作中
+    /// </summary>
+    /// <param name="in_lockat"></param>
+    /// <param name="in_up"></param>
+    /// <param name="in_right"></param>
+    /// <returns></returns>
+    extern DirectX::XMMATRIX LockAtMatrixByZAxis(const DirectX::XMVECTOR& in_lockat, const DirectX::XMFLOAT3& in_up, const DirectX::XMFLOAT3& in_right);
+
+    /// <summary>
+    /// 特定ベクトルをLockAt先へ回転する回転行列を出力
+    /// TODO: 製作中
+    /// </summary>
+    /// <param name="in_lockat"></param>
+    /// <param name="in_up"></param>
+    /// <param name="in_right"></param>
+    /// <returns></returns>
+    extern DirectX::XMMATRIX LockAtMatrix(
+        const DirectX::XMVECTOR& in_org,
+        const DirectX::XMVECTOR& in_lockat,
+        const DirectX::XMFLOAT3& in_up,
+        const DirectX::XMFLOAT3& in_right);
+
+    static const DirectX::XMFLOAT3 XFloat3UPVec = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
+    static const DirectX::XMFLOAT3 XFloat3RightVec = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
 }
