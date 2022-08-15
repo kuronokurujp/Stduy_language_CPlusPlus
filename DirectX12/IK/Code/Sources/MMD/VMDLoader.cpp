@@ -89,6 +89,72 @@ namespace VMD
                 }
             }
 
+            // 表情データをロード
+            {
+                UINT32 morph_count = 0;
+                fread(&morph_count, sizeof(morph_count), 1, fp);
+
+                std::vector<VMDMorph> morphs(morph_count);
+                fread(morphs.data(), sizeof(VMDMorph), morph_count, fp);
+            }
+
+            // カメラデータをロード
+            {
+                UINT32 vmd_camera_count = 0;
+                fread(&vmd_camera_count, sizeof(vmd_camera_count), 1, fp);
+
+                std::vector<VMDCamera> cams(vmd_camera_count);
+                fread(cams.data(), sizeof(VMDCamera), vmd_camera_count, fp);
+            }
+
+            // 照明データをロード
+            {
+                UINT32 vmd_light_count = 0;
+                fread(&vmd_light_count, sizeof(vmd_light_count), 1, fp);
+
+                std::vector<VMDLight> lights(vmd_light_count);
+                fread(lights.data(), sizeof(VMDLight), vmd_light_count, fp);
+            }
+
+            // 影データをロード
+            {
+                UINT32 self_shadow_count = 0;
+                fread(&self_shadow_count, sizeof(self_shadow_count), 1, fp);
+
+                std::vector<VMDSelfShadow> self_shadows(self_shadow_count);
+                fread(self_shadows.data(), sizeof(VMDSelfShadow), self_shadow_count, fp);
+            }
+
+            // IKのOn/Offデータをロード
+            {
+                UINT32 ik_switch_count = 0;
+                fread(&ik_switch_count, sizeof(ik_switch_count), 1, fp);
+
+                out_p_data_pack->ik_enables.resize(ik_switch_count);
+
+                for (auto& ik_enable : out_p_data_pack->ik_enables)
+                {
+                    // フレーム番号をロード
+                    fread(&ik_enable.frame_no, sizeof(ik_enable.frame_no), 1, fp);
+
+                    UINT8 visible_flg = 0;
+                    fread(&visible_flg, sizeof(visible_flg), 1, fp);
+
+                    UINT32 ik_bone_count = 0;
+                    fread(&ik_bone_count, sizeof(ik_bone_count), 1, fp);
+
+                    for (int i = 0; i < ik_bone_count; ++i)
+                    {
+                        char ik_bone_name[20] = { 0 };
+                        fread(ik_bone_name, sizeof(ik_bone_name[0]) * _countof(ik_bone_name), 1, fp);
+
+                        UINT8 flg = 0;
+                        fread(&flg, sizeof(flg), 1, fp);
+                        ik_enable.ik_enable_table[ik_bone_name] = static_cast<bool>(flg);
+                    }
+                }
+            }
+
             // ファイルを閉じる
             fclose(fp);
 

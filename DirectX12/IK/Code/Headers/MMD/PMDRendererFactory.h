@@ -111,7 +111,7 @@ namespace PMD
             /// IK解決処理
             /// TODO: 作成中
             /// </summary>
-            void _IKSolve(class Renderer* in_p_renderer, std::shared_ptr<std::vector<PMD::Loader::PMDIK>> in_ik_datas);
+            void _IKSolve(class Renderer* in_p_renderer, std::shared_ptr<std::vector<PMD::Loader::PMDIK>> in_ik_datas, const UINT32 in_now_frame);
 
             /// <summary>
             /// CCD-IKによるボーン方向を解決
@@ -134,6 +134,7 @@ namespace PMD
 
         private:
             std::map<std::string, std::vector<MotionKeyFrame>> _motion_key_frames;
+            std::vector<VMD::Loader::VMDIkEnable> _ik_enables;
             DWORD _start_time = 0;
             UINT32 _motion_duration = 0;
         };

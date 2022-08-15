@@ -4,6 +4,7 @@
 
 #include "Common.h"
 
+#include <unordered_map>
 #include <tchar.h>
 #include <timeapi.h>
 #include <array>
@@ -101,7 +102,7 @@ namespace PMD
             }
 
             // TODO: IK関連の処理はここで実行しないとだめ
-            this->_IKSolve(in_p_renderer, in_ik_datas);
+            this->_IKSolve(in_p_renderer, in_ik_datas, now_frame_no);
 
             // シェーダーに渡す行列更新
             std::copy(bone_matrices.begin(), bone_matrices.end(), in_p_renderer->_p_mapped_matrices + 1);
@@ -136,10 +137,28 @@ namespace PMD
         /// <summary>
         /// IK解決処理
         /// </summary>
-        void Motion::_IKSolve(Renderer* in_p_renderer, std::shared_ptr<std::vector<PMD::Loader::PMDIK>> in_ik_datas)
+        void Motion::_IKSolve(Renderer* in_p_renderer, std::shared_ptr<std::vector<PMD::Loader::PMDIK>> in_ik_datas, const UINT32 in_now_frame)
         {
+            // IK有効フラグをチェックしてIK処理するか決める
+            auto it = std::find_if(
+                this->_ik_enables.rbegin(),
+                this->_ik_enables.rend(),
+                [in_now_frame](const VMD::Loader::VMDIkEnable& in_r_ik_enable) {
+                return in_r_ik_enable.frame_no <= in_now_frame;
+            });
+
             for (auto& ik : *(in_ik_datas.get()))
             {
+                if (it != this->_ik_enables.rend())
+                {
+                    auto ik_enable_it = it->ik_enable_table.find(in_p_renderer->_bone_name_array[ik.bone_idx]);
+                    if (ik_enable_it != it->ik_enable_table.end())
+                    {
+                        if (!ik_enable_it->second)
+                            continue;
+                    }
+                }
+
                 auto children_nodes_count = ik.node_idxs.size();
                 switch (children_nodes_count)
                 {
@@ -605,6 +624,8 @@ namespace PMD
             VMD::Loader::LoadFileBySync(&pack, in_r_pmd_filepath.c_str());
 
             std::shared_ptr<Motion> motion = std::make_shared<Motion>();
+            motion->_ik_enables.resize(pack.ik_enables.size());
+            std::copy(pack.ik_enables.begin(), pack.ik_enables.end(), motion->_ik_enables.begin());
 
             for (auto& m : pack.motions)
             {
