@@ -24,6 +24,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SkinningAnimation", "Skinni
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IK", "IK\IK.vcxproj", "{B7FFC318-B77A-426F-96BF-0D5F3BFEA86B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Refactoring2", "Refactoring2\Refactoring2.vcxproj", "{4AB7AAD6-9EB1-4832-AEDE-56535DA88E26}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -96,6 +98,14 @@ Global
 		{B7FFC318-B77A-426F-96BF-0D5F3BFEA86B}.Release|x64.Build.0 = Release|x64
 		{B7FFC318-B77A-426F-96BF-0D5F3BFEA86B}.Release|x86.ActiveCfg = Release|Win32
 		{B7FFC318-B77A-426F-96BF-0D5F3BFEA86B}.Release|x86.Build.0 = Release|Win32
+		{4AB7AAD6-9EB1-4832-AEDE-56535DA88E26}.Debug|x64.ActiveCfg = Debug|x64
+		{4AB7AAD6-9EB1-4832-AEDE-56535DA88E26}.Debug|x64.Build.0 = Debug|x64
+		{4AB7AAD6-9EB1-4832-AEDE-56535DA88E26}.Debug|x86.ActiveCfg = Debug|Win32
+		{4AB7AAD6-9EB1-4832-AEDE-56535DA88E26}.Debug|x86.Build.0 = Debug|Win32
+		{4AB7AAD6-9EB1-4832-AEDE-56535DA88E26}.Release|x64.ActiveCfg = Release|x64
+		{4AB7AAD6-9EB1-4832-AEDE-56535DA88E26}.Release|x64.Build.0 = Release|x64
+		{4AB7AAD6-9EB1-4832-AEDE-56535DA88E26}.Release|x86.ActiveCfg = Release|Win32
+		{4AB7AAD6-9EB1-4832-AEDE-56535DA88E26}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
