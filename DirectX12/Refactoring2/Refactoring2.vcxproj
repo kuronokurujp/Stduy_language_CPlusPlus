@@ -181,6 +181,7 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Configuration)\Resources\Shader /i 
     <ClCompile Include="Code\Sources\GUI\DirectX12\DirectX12WindowModel.cpp" />
     <ClCompile Include="Code\Sources\GUI\Window\WindowView.cpp" />
     <ClCompile Include="Code\Sources\MMD\PMDLoader.cpp" />
+    <ClCompile Include="Code\Sources\MMD\PMDMaterial.cpp" />
     <ClCompile Include="Code\Sources\MMD\PMDRendererFactory.cpp" />
     <ClCompile Include="Code\Sources\MMD\VMDLoader.cpp" />
   </ItemGroup>

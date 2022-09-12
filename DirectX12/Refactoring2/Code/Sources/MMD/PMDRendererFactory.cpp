@@ -11,6 +11,8 @@
 #include <timeapi.h>
 #include <array>
 
+#define MATERIAL_CLASS_MODE
+
 namespace PMD
 {
     namespace Render
@@ -107,7 +109,7 @@ namespace PMD
             this->_IKSolve(in_p_renderer, in_ik_datas, now_frame_no);
 
             // シェーダーに渡す行列更新
-            std::copy(bone_matrices.begin(), bone_matrices.end(), in_p_renderer->_p_mapped_matrices + 1);
+            std::copy(bone_matrices.begin(), bone_matrices.end(), in_p_renderer->_shader_effect->GetMappedMatrices() + 1);
         }
 
         const float Motion::_CalcBezierByTwo2DPoint(
@@ -470,93 +472,25 @@ namespace PMD
             // カメラ視点
             const DirectX::XMFLOAT3& in_r_cam_pos)
         {
-            // PMD用のパイプラインステートを設定
-            {
-                auto pipeline_state = this->_context->_pipeline_state_map[this->_gpipeline_key.c_str()];
-                this->_context->cmd_list->SetPipelineState(pipeline_state.Get());
-            }
+            this->_shader_effect->BeginEffect(this->_context);
 
-            // メッシュの描画コマンドを挿入
+            // メッシュの描画に必要なコマンドを挿入
+            // メッシュだけでは描画できない
             this->_mesh->InsertCmdToCmdPipeline(this->_context, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
             // シェーダーに受け渡すパラメータ
             {
                 // シーン情報
-                this->_p_scene_shader_param->view_mat = in_r_view_mat;
-                this->_p_scene_shader_param->proj_mat = in_r_proj_mat;
-                this->_p_scene_shader_param->eye = in_r_cam_pos;
+                auto scene_param = this->_shader_effect->GetSceneParam();
+                scene_param->view_mat = in_r_view_mat;
+                scene_param->proj_mat = in_r_proj_mat;
+                scene_param->eye = in_r_cam_pos;
 
                 // 座標変換
-                this->_p_mapped_matrices[0] = in_r_local_mat * in_r_world_mat;
+                auto mapped_matrices = this->_shader_effect->GetMappedMatrices();
+                mapped_matrices[0] = in_r_local_mat * in_r_world_mat;
             }
 
-            // 利用するディスクリプタと関連付けたルートシグネチャを利用
-            auto root_sig = this->_context->_root_sig_map[this->_root_sig_key.c_str()];
-            this->_context->cmd_list->SetGraphicsRootSignature(root_sig.Get());
-            {
-                // ディスクリプタヒープを設定
-
-                // シーンパラメータを設定
-                {
-                    auto p_basic_desc_heap = this->_context->desc_heap_map[this->_scene_desc_heap_share_key.c_str()];
-                    assert(p_basic_desc_heap != nullptr);
-
-                    // ルートパラメータ0とディスクリプタヒープの関連付け
-                    this->_context->cmd_list->SetDescriptorHeaps(1, p_basic_desc_heap.GetAddressOf());
-                    {
-                        auto basic_heap_handle = p_basic_desc_heap->GetGPUDescriptorHandleForHeapStart();
-                        this->_context->cmd_list->SetGraphicsRootDescriptorTable(
-                            // ルートパラメータインデックス
-                            0,
-                            // ヒープアドレス
-                            basic_heap_handle);
-                    }
-                }
-
-                // 座標変換パラメータを設定
-                {
-                    auto p_desc_heap = this->_context->desc_heap_map[this->_transform_desc_heap_share_key.c_str()];
-                    assert(p_desc_heap != nullptr);
-
-                    // ルートパラメータ0とディスクリプタヒープの関連付け
-                    this->_context->cmd_list->SetDescriptorHeaps(1, p_desc_heap.GetAddressOf());
-                    {
-                        auto heap_handle = p_desc_heap->GetGPUDescriptorHandleForHeapStart();
-                        this->_context->cmd_list->SetGraphicsRootDescriptorTable(
-                            // ルートパラメータインデックス
-                            1,
-                            // ヒープアドレス
-                            heap_handle);
-                    }
-                }
-
-                // マテリアルのディスクリプタヒープ設定
-                {
-                    auto p_desc_heap = this->_context->desc_heap_map[this->_material_desc_heap_share_key.c_str()];
-                    this->_context->cmd_list->SetDescriptorHeaps(1, p_desc_heap.GetAddressOf());
-                    {
-                        // 一つのディスクリプタヒープにある複数ビューを参照するアドレスオフセットサイズ
-                        auto cbvsrv_inc_size =
-                            this->_context->dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) * this->_material_desc_num;
-
-                        auto material_h = p_desc_heap->GetGPUDescriptorHandleForHeapStart();
-                        UINT32 idx_offset = 0;
-                        for (auto& m : this->_pmd_materials)
-                        {
-                            this->_context->cmd_list->SetGraphicsRootDescriptorTable(
-                                // ルートパラメータインデックス
-                                2,
-                                // ヒープアドレス
-                                material_h);
-
-                            this->_context->cmd_list->DrawIndexedInstanced(m.indices_num, 1, idx_offset, 0, 0);
-
-                            material_h.ptr += cbvsrv_inc_size;
-                            idx_offset += m.indices_num;
-                        }
-                    }
-                }
-            }
+            this->_shader_effect->EndEffect(this->_context);
         }
 
         /// <summary>
@@ -647,24 +581,6 @@ namespace PMD
             std::shared_ptr<Renderer> _renderer = std::make_shared<Renderer>();
             _renderer->_context = this->_context;
 
-            // 各データのデータ識別子ランダム文字列名を生成(被らないようにする)
-            {
-                _renderer->_root_sig_key = "pmd_root_sig" + Common::CreateGUIDString();
-                _renderer->_gpipeline_key = "pmd_gpipeline" + Common::CreateGUIDString();
-
-                _renderer->_vs_buff_key = "pmd_vs_buff" + Common::CreateGUIDString();
-                _renderer->_idx_buff_key = "pmd_idx_buff" + Common::CreateGUIDString();
-
-                _renderer->_scene_desc_heap_share_key = "basic_heap" + Common::CreateGUIDString();
-                _renderer->_basic_buff_key = "pmd_scene_data" + Common::CreateGUIDString();
-
-                _renderer->_transform_buff_key = "transform_heap" + Common::CreateGUIDString();
-                _renderer->_transform_desc_heap_share_key = "pmd_transform_data" + Common::CreateGUIDString();
-
-                _renderer->_material_desc_heap_share_key = "pmd_material_heap" + Common::CreateGUIDString();
-                _renderer->_material_buff_key = "pmd_const_material" + Common::CreateGUIDString();
-            }
-
             // PMDファイルを開く
             ::PMD::Loader::PMDDataPack pmd_data_pack;
             {
@@ -698,511 +614,21 @@ namespace PMD
 #endif
             }
 
-            // ティスクリプタヒープを作る
-            // しかしマザボのOnGPUだとディスクリプタヒープは1つしか作れないので注意
-            {
-                // シーンディスクリプタヒープ作成
-                {
-                    D3D12_DESCRIPTOR_HEAP_DESC desc_heap_desc = {};
-                    desc_heap_desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-                    desc_heap_desc.NodeMask = 0;
-                    desc_heap_desc.NumDescriptors = 1;
-                    desc_heap_desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-
-                    auto b_result = DirectX12::CreateDescripterHeap(this->_context, _renderer->_scene_desc_heap_share_key, desc_heap_desc);
-                    assert(b_result);
-                }
-
-                // 座標変換ディスクリプタヒープ作成
-                {
-                    D3D12_DESCRIPTOR_HEAP_DESC desc_heap_desc = {};
-                    desc_heap_desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-                    desc_heap_desc.NodeMask = 0;
-                    desc_heap_desc.NumDescriptors = 1;
-                    desc_heap_desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-
-                    auto b_result = DirectX12::CreateDescripterHeap(this->_context, _renderer->_transform_desc_heap_share_key, desc_heap_desc);
-                    assert(b_result);
-                }
-
-                // PMDマテリアル用のディスクリプタヒープ作成
-                // マテリアルの数が分かった段階でないと作れない
-                {
-                    // ディスクリプタヒープとビューは密接に関わっているので一つでも設定をミスるとバグる
-                    // 定数バッファ + (テクスチャバッファ + スフィアテクスチャ + 加算スフィアテクスチャ)
-                    UINT32 desc_num = _renderer->_pmd_materials.size() * _renderer->_material_desc_num;
-                    ID3D12DescriptorHeap* p_material_heap = nullptr;
-
-                    D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-                    {
-                        desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-                        desc.NodeMask = 0;
-                        desc.NumDescriptors = desc_num;
-                        desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-                    }
-                    auto b_result = DirectX12::CreateDescripterHeap(this->_context, _renderer->_material_desc_heap_share_key, desc);
-                    assert(b_result);
-                }
-            }
-
-            // シェーダーロード
-            {
-                ID3D10Blob* out_p_error_blob = nullptr;
-                HRESULT h_result;
-                {
-                    LOGD << "vs file load => " << in_r_pmd_shader_vs_filepath;
-
-                    auto filepath = Common::ConvertStringToWideString(in_r_pmd_shader_vs_filepath);
-                    h_result = DirectX12::LoadShaderVSBySync(this->_context, in_r_pmd_shader_vs_filepath, &out_p_error_blob, filepath.c_str());
-                    if (FAILED(h_result))
-                    {
-                        // エラー表示
-                        std::string error;
-                        DirectX12::OutputErrorMessageForBlob(&error, h_result, out_p_error_blob);
-
-                        LOGD << error;
-                        assert(false);
-                    }
-                }
-
-                {
-                    LOGD << "ps file load => " << in_r_pmd_shader_ps_filepath;
-
-                    auto ps_file_path = Common::ConvertStringToWideString(in_r_pmd_shader_ps_filepath);
-                    h_result = DirectX12::LoadShaderPSBySync(this->_context, in_r_pmd_shader_ps_filepath, &out_p_error_blob, ps_file_path.c_str());
-                    if (FAILED(h_result))
-                    {
-                        // エラー表示
-                        std::string error;
-                        DirectX12::OutputErrorMessageForBlob(&error, h_result, out_p_error_blob);
-
-                        LOGD << error;
-                        assert(false);
-                    }
-                }
-            }
-
             // メッシュ作成
             {
                 _renderer->_mesh = std::make_shared<DirectX12::Mesh>("pmd_vs_buff" + Common::CreateGUIDString(), "pmd_idx_buff" + Common::CreateGUIDString());
                 _renderer->_mesh->Create(this->_context, pmd_data_pack.vertexs, pmd_data_pack.vertex_size, pmd_data_pack.indices);
             }
 
-            // マテリアルバッファを作成
+            // PMD用のシェーダーエフェクト作成
             {
-                DirectX12::Context::ComPtr<ID3D12Resource> p_material_buff;
-                // 定数バッファはデータ一塊が256byteになっている。
-                // なのでバッファに複数のデータを書き込む場合は256byteアライメントに調整しないといけない
-                // 工夫すればメモリの無駄使いを解消できるみたいだが、ちょっと分からない
-                size_t basic_size = sizeof(_renderer->_pmd_materials[0].basic);
-                size_t alignment_size = (basic_size + 0xff) & ~0xff;
-
-                // バッファ作成とバッファにデータ書き込み
-                {
-                    // マテリアルバッファを作成
-                    // マテリアルの数から256byteアライメントしたサイズで作成
-                    // マテリアルの数 * アライメントサイズでバッファ作成している
-                    p_material_buff = DirectX12::CreateEmptyResourceByGPUTransition(this->_context, _renderer->_material_buff_key, alignment_size * _renderer->_pmd_materials.size());
-
-                    // マテリアルデータを書き込み
-                    INT8* p_map_material = nullptr;
-                    auto result = p_material_buff->Map(0, nullptr, (void**)&p_map_material);
-                    assert(SUCCEEDED(result));
-
-                    for (auto& m : _renderer->_pmd_materials)
-                    {
-                        // 構造体サイズと定数バッファの256byteアライメントが違う
-                        *((PMD::Material::MaterialForHlsl*)p_map_material) = m.basic;
-                        // ポイントアドレスは定数バッファのアライメントに従って更新している
-                        // 構造体サイズでのアドレスオフセット移動は出来ない
-                        p_map_material += alignment_size;
-                    }
-
-                    p_material_buff->Unmap(0, nullptr);
-                }
-
-                // 作成したディスクリプタヒープにビュー付け
-                {
-                    // マテリアル定数バッファビューの設定データ
-                    D3D12_CONSTANT_BUFFER_VIEW_DESC mat_desc = {};
-                    {
-                        mat_desc.BufferLocation = p_material_buff->GetGPUVirtualAddress();
-                        // 定数バッファの一塊サイズ
-                        mat_desc.SizeInBytes = alignment_size;
-                    }
-
-                    // テクスチャバッファビューの設定データ
-                    D3D12_SHADER_RESOURCE_VIEW_DESC tex_desc = {};
-                    {
-                        tex_desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-                        tex_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-                        tex_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-                        tex_desc.Texture2D.MipLevels = 1;
-                    }
-
-                    D3D12_SHADER_RESOURCE_VIEW_DESC sp_tex_multi_desc = {};
-                    {
-                        sp_tex_multi_desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-                        sp_tex_multi_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-                        sp_tex_multi_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-                        sp_tex_multi_desc.Texture2D.MipLevels = 1;
-                    }
-
-                    D3D12_SHADER_RESOURCE_VIEW_DESC sp_tex_add_desc = {};
-                    // MISS: 変数名を間違えて初期化してしまった
-                    // spaの変数を利用しているつもりが、sphの変数を利用しまっていた
-                    // 一文字違いの変数だとミスとなるので長い変数名にする
-                    {
-                        sp_tex_add_desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-                        sp_tex_add_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-                        sp_tex_add_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-                        sp_tex_add_desc.Texture2D.MipLevels = 1;
-                    }
-
-                    D3D12_SHADER_RESOURCE_VIEW_DESC toon_tex_add_desc = {};
-                    {
-                        toon_tex_add_desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-                        toon_tex_add_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-                        toon_tex_add_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-                        toon_tex_add_desc.Texture2D.MipLevels = 1;
-                    }
-
-                    // あらかじめて作成したディスクリプタヒープにビュー付け
-                    auto heap = this->_context->desc_heap_map[_renderer->_material_desc_heap_share_key.c_str()];
-                    assert(heap != nullptr);
-
-                    auto heap_h = heap->GetCPUDescriptorHandleForHeapStart();
-                    auto inc_size = this->_context->dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-                    // マテリアルデータ数分ビューを作成
-                    for (size_t i = 0; i < _renderer->_pmd_materials.size(); ++i)
-                    {
-                        // マテリアルの定数バッファビューを作成
-                        this->_context->dev->CreateConstantBufferView(&mat_desc, heap_h);
-                        heap_h.ptr += inc_size;
-
-                        // 設定するマテリアルのバッファアドレスを更新
-                        mat_desc.BufferLocation += mat_desc.SizeInBytes;
-
-                        // テクスチャをビューに追加
-                        {
-                            tex_desc.Format = _renderer->_pmd_textures[i].tex->GetDesc().Format;
-                            this->_context->dev->CreateShaderResourceView(
-                                _renderer->_pmd_textures[i].tex.Get(),
-                                &tex_desc,
-                                heap_h
-                            );
-
-                            heap_h.ptr += inc_size;
-                        }
-
-                        // スフィアテクスチャをビューに追加
-                        {
-                            sp_tex_multi_desc.Format = _renderer->_pmd_textures[i].sph->GetDesc().Format;
-                            this->_context->dev->CreateShaderResourceView(
-                                _renderer->_pmd_textures[i].sph.Get(),
-                                &sp_tex_multi_desc,
-                                heap_h
-                            );
-
-                            heap_h.ptr += inc_size;
-                        }
-
-                        // 加算スフィアテクスチャをビューに追加
-                        {
-                            sp_tex_add_desc.Format = _renderer->_pmd_textures[i].spa->GetDesc().Format;
-                            this->_context->dev->CreateShaderResourceView(
-                                _renderer->_pmd_textures[i].spa.Get(),
-                                &sp_tex_add_desc,
-                                heap_h
-                            );
-
-                            heap_h.ptr += inc_size;
-                        }
-
-                        // トゥーンテクスチャをビューに追加
-                        {
-                            toon_tex_add_desc.Format = _renderer->_pmd_textures[i].toon->GetDesc().Format;
-                            this->_context->dev->CreateShaderResourceView(
-                                _renderer->_pmd_textures[i].toon.Get(),
-                                &toon_tex_add_desc,
-                                heap_h
-                            );
-
-                            heap_h.ptr += inc_size;
-                        }
-                    }
-                }
-            }
-
-            // シーン用の定数バッファ / ディスクリプタヒープビュー作成
-            {
-                {
-                    auto buff = DirectX12::CreateEmptyResourceByGPUTransition(this->_context, _renderer->_basic_buff_key, (sizeof(SceneShaderData) + 0xff) & ~0xff);
-                    buff->Map(0, nullptr, (void**)&_renderer->_p_scene_shader_param);
-                    // マップ解除はしない
-                    // 更新毎に書き込まれるから
-                }
-
-                // ディスクリプタヒープビュー作成
-                {
-                    auto heap = this->_context->desc_heap_map[_renderer->_scene_desc_heap_share_key.c_str()];
-                    auto heap_handle = heap->GetCPUDescriptorHandleForHeapStart();
-                    // 行列の定数バッファビューを作る
-                    {
-                        D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
-
-                        auto buff = this->_context->res_buff_map[_renderer->_basic_buff_key.c_str()];
-                        cbv_desc.BufferLocation = buff->GetGPUVirtualAddress();
-                        LOGD << _T("basic_heap: buff->GetDesc().Width = ") << buff->GetDesc().Width;
-                        cbv_desc.SizeInBytes = static_cast<UINT>(buff->GetDesc().Width);
-
-                        // ディスクリプタヒープのハンドルにビュー作成
-                        this->_context->dev->CreateConstantBufferView(&cbv_desc, heap_handle);
-                    }
-                    // このディスクリプタヒープに対してはリソース一つのみ
-                }
-            }
-
-            // 座標変換用の定数バッファ / ディスクリプタヒープを作成
-            {
-                size_t buff_size = sizeof(DirectX::XMMATRIX) * (_renderer->_bone_matrices.size() + 1);
-                buff_size = (buff_size + 0xff) & ~0xff;
-                {
-                    // 座標変換とボーンのデータサイズ
-                    auto buff = DirectX12::CreateEmptyResourceByGPUTransition(this->_context, _renderer->_transform_buff_key, buff_size);
-                    buff->Map(0, nullptr, (void**)&_renderer->_p_mapped_matrices);
-                    // マップ解除はしない
-                    // 更新毎に書き込まれるから
-
-                    // 先頭はワールド行列
-                    _renderer->_p_mapped_matrices[0] = DirectX::XMMatrixIdentity();
-                    // 以降はボーン行列
-                    // コピー元と先で要素数が違うとバグるので注意
-                    std::copy(_renderer->_bone_matrices.begin(), _renderer->_bone_matrices.end(), _renderer->_p_mapped_matrices + 1);
-                }
-
-                // ディスクリプタヒープビュー作成
-                {
-                    auto heap = this->_context->desc_heap_map[_renderer->_transform_desc_heap_share_key.c_str()];
-                    auto heap_handle = heap->GetCPUDescriptorHandleForHeapStart();
-                    // 定数バッファビューを作る
-                    {
-                        D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
-
-                        auto buff = this->_context->res_buff_map[_renderer->_transform_buff_key.c_str()];
-                        cbv_desc.BufferLocation = buff->GetGPUVirtualAddress();
-                        cbv_desc.SizeInBytes = buff_size;
-
-                        this->_context->dev->CreateConstantBufferView(&cbv_desc, heap_handle);
-                    }
-                    // このディスクリプタヒープに対してはリソース一つのみ
-                }
-            }
-
-            // ディスクリプタヒープやサンプラをまとめたルートシグネチャを作成
-            {
-                // テクスチャサンプラー作成
-                D3D12_STATIC_SAMPLER_DESC sampler_descs[2] = {};
-                {
-                    // 基本となる共通サンプラー
-                    {
-                        // 0-1の範囲外になった場合は繰り返すようにする
-                        // 例えば 1.5とになると0.5, -0.5なら0.5と値が0-1の範囲になるように繰り返す
-                        auto p_sampler_desc = &sampler_descs[0];
-                        p_sampler_desc->AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-                        p_sampler_desc->AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-                        p_sampler_desc->AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-
-                        p_sampler_desc->BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
-                        // 線形補間(バイリニア)だとピクセルをぼかす
-                        p_sampler_desc->Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-                        // 最近傍補間(ニアレストネイバー法)ピクセルをぼかさないでくっきり表示させる
-                        p_sampler_desc->Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
-
-                        p_sampler_desc->MaxLOD = D3D12_FLOAT32_MAX;
-                        p_sampler_desc->MinLOD = 0.0f;
-                        // ピクセルシェーダーから見える
-                        // TODO: しかしこれルートパラメータでも同じ設定をしているが、
-                        // 仮にサンプラは見えないようにしたらどうなるのかな？
-                        p_sampler_desc->ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-                        p_sampler_desc->ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
-
-                        // シェーダースロット番号
-                        p_sampler_desc->ShaderRegister = 0;
-                    }
-
-                    // トゥーン用のサンプラー
-                    {
-                        // 0-1の範囲外になった場合は繰り返すようにする
-                        // 例えば 1.5とになると0.5, -0.5なら0.5と値が0-1の範囲になるように繰り返す
-                        auto p_sampler_desc = &sampler_descs[1];
-                        p_sampler_desc->AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-                        p_sampler_desc->AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-                        p_sampler_desc->AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-
-                        p_sampler_desc->BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
-                        // 線形補間(バイリニア)だとピクセルをぼかす
-                        p_sampler_desc->Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-                        // 最近傍補間(ニアレストネイバー法)ピクセルをぼかさないでくっきり表示させる
-                        p_sampler_desc->Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
-
-                        p_sampler_desc->MaxLOD = D3D12_FLOAT32_MAX;
-                        p_sampler_desc->MinLOD = 0.0f;
-                        // ピクセルシェーダーから見える
-                        // TODO: しかしこれルートパラメータでも同じ設定をしているが、
-                        // 仮にサンプラは見えないようにしたらどうなるのかな？
-                        p_sampler_desc->ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-                        p_sampler_desc->ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
-
-                        // シェーダースロット番号
-                        p_sampler_desc->ShaderRegister = 1;
-                    }
-                }
-
-                // ルートシグネチャ作成
-                DirectX12::Context::ComPtr<ID3D12RootSignature> p_root_sig = nullptr;
-                {
-                    // ルートシグネチャー(ディスクリプタテーブルをまとめたもの)を作る
-                    D3D12_ROOT_PARAMETER root_params[3] = {};
-
-                    // ディスクリプタレンジを作成
-                    D3D12_DESCRIPTOR_RANGE desc_tbl_ranges[4] = {};
-                    // 定数のレジスター設定
-                    {
-                        // ディスクリプタヒープ1つ目
-                        // 定数用レンスター0番
-                        desc_tbl_ranges[0] = CD3DX12_DESCRIPTOR_RANGE(
-                            D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
-                            1,
-                            0
-                        );
-
-                        // 定数用レジスター1番
-                        // 座標変換
-                        desc_tbl_ranges[1] = CD3DX12_DESCRIPTOR_RANGE(
-                            D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
-                            1,
-                            1
-                        );
-
-                        // ディスクリプタヒープ2つ目
-                        // マテリアルの定数バッファを定数用レジスター2番に
-                        desc_tbl_ranges[2] = CD3DX12_DESCRIPTOR_RANGE(
-                            D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
-                            1,
-                            2
-                        );
-
-                        // テクスチャをレジスタ-0番目に
-                        desc_tbl_ranges[3] = CD3DX12_DESCRIPTOR_RANGE(
-                            D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
-                            _renderer->_material_texture_num,
-                            0
-                        );
-                    }
-
-                    // ルートパラメータを作成
-                    // ディスクリプタヒープの対応表のディスクリプタテーブルの設定を作成
-                    {
-                        // ディスクリプタヒープの一つ目は[0]のレンジデータ
-                        CD3DX12_ROOT_PARAMETER::InitAsDescriptorTable(root_params[0], 1, &desc_tbl_ranges[0]);
-                        // ディスクリプタヒープの一つ目は[1]のレンジデータ
-                        CD3DX12_ROOT_PARAMETER::InitAsDescriptorTable(root_params[1], 1, &desc_tbl_ranges[1]);
-                        // ディスクリプタヒープの2つ目は[2] / [3]をひとまとめのレンジデータ
-                        CD3DX12_ROOT_PARAMETER::InitAsDescriptorTable(root_params[2], 2, &desc_tbl_ranges[2]);
-                    }
-
-                    // ルートシグネチャー設定を作成
-                    auto root_sig_desc = CD3DX12_ROOT_SIGNATURE_DESC(
-                        // ルートパラメータの数
-                        _countof(root_params),
-                        // ルートパラメータ
-                        root_params,
-                        // サンプラーパラメータの数
-                        _countof(sampler_descs),
-                        // サンプラーパラメータ
-                        sampler_descs,
-                        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
-                    );
-
-                    ID3DBlob* p_error_blob = nullptr;
-
-                    auto h_result = DirectX12::CreateRootSignature(this->_context, _renderer->_root_sig_key, &p_error_blob, root_sig_desc);
-                    if (FAILED(h_result))
-                    {
-                        std::string error;
-                        DirectX12::OutputErrorMessageForBlob(&error, h_result, p_error_blob);
-                        LOGD << error.c_str();
-
-                        assert(false);
-                    }
-                }
-            }
-
-            // グラフィックパイプラインを作成
-            {
-                // 頂点レイアウト作成
-                D3D12_INPUT_ELEMENT_DESC input_layout[] = {
-                    // 座標情報
-                    {
-                        // 予約セマンティック名
-                        "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,
-                        D3D12_APPEND_ALIGNED_ELEMENT,
-                        D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-                    },
-
-                    // 法線情報
-                    {
-                        // 予約セマンティック名
-                        "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,
-                        D3D12_APPEND_ALIGNED_ELEMENT,
-                        D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-                    },
-
-                    // uv情報
-                    {
-                        // 予約セマンティック名
-                        "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0,
-                        D3D12_APPEND_ALIGNED_ELEMENT,
-                        D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-                    },
-
-                    // ボーン番号
-                    {
-                        // 独自セマンティック名
-                        "BONE_NO", 0, DXGI_FORMAT_R16G16_UINT, 0,
-                        D3D12_APPEND_ALIGNED_ELEMENT,
-                        D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-                    },
-
-                    // ボーン影響度
-                    {
-                        // 独自セマンティック名
-                        "WEIGHT", 0, DXGI_FORMAT_R8_UINT, 0,
-                        D3D12_APPEND_ALIGNED_ELEMENT,
-                        D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-                    },
-
-                    /*
-                    // 輪郭線フラグ
-                    {
-                        // 独自セマンティック名
-                        "EDGE_FLG", 0, DXGI_FORMAT_R8_UINT, 0,
-                        D3D12_APPEND_ALIGNED_ELEMENT,
-                        D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-                    },
-                    */
-                };
-
-                // あらかじめて作成したシェーダー, ルートシグネチャと頂点レイアウトを指定グラフィックパイプラインを作成
-                auto h_result = DirectX12::CreateGraphicsPipeline(
+                _renderer->_shader_effect = std::make_shared<Material::ShaderEffect>();
+                _renderer->_shader_effect->Load(this->_context, in_r_pmd_shader_vs_filepath, in_r_pmd_shader_ps_filepath);
+                _renderer->_shader_effect->Apply(
                     this->_context,
-                    _renderer->_gpipeline_key,
-                    _renderer->_root_sig_key,
-                    in_r_pmd_shader_vs_filepath,
-                    in_r_pmd_shader_ps_filepath,
-                    input_layout, _countof(input_layout));
+                    _renderer->_pmd_materials,
+                    _renderer->_pmd_textures,
+                    _renderer->_bone_matrices);
             }
 
             LOGD << "end create renderer: " + in_r_pmd_filepath;
@@ -1303,10 +729,6 @@ namespace PMD
                     out_r_source->_pmd_textures[i].toon = DirectX12::CreateTextureResourceFromLoadTextureFile(this->_context, toon_file_path);
                 }
             }
-
-            // マテリアルのディスクリプタ数
-            out_r_source->_material_texture_num = PMD::Material::c_pmd_model_texture_num;
-            out_r_source->_material_desc_num = 1 + out_r_source->_material_texture_num;
         }
 
         /// <summary>

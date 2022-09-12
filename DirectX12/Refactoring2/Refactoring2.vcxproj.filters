@@ -206,6 +206,7 @@
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Material.cpp">
       <Filter>Code\Sources\DirectX12</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Sources\MMD\PMDMaterial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\PMD\BasicVertexShader.hlsl">

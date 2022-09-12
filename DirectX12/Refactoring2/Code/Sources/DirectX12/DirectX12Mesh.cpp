@@ -107,7 +107,7 @@ namespace DirectX12
         if (!this->_ready)
             return;
 
-        // 描画
+        // 描画するプリミティブ設定
         in_r_context->cmd_list->IASetPrimitiveTopology(in_topology);
 
         // 一度に設定できるインデックスバッファビューは一つのみ

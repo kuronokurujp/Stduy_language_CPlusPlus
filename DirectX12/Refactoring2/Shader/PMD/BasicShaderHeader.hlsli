@@ -15,6 +15,7 @@ struct Output
     float3 ray : VECTOR;
 };
 
+// シーンバッファ
 cbuffer SceneBuffer : register(b0)
 {
     // 座標変換行列
@@ -24,7 +25,7 @@ cbuffer SceneBuffer : register(b0)
     float3 eye;
 };
 
-// ワールド座標変換
+// ワールド座標変換のバッファ
 cbuffer TranformBuffer : register(b1)
 {
     // ワールド変換行列
@@ -33,7 +34,8 @@ cbuffer TranformBuffer : register(b1)
     matrix bone_mats[256];
 };
 
-cbuffer Material : register(b2)
+// マテリアルのバッファ
+cbuffer MaterialData : register(b2)
 {
     // 拡散反射
     float4 diffuse;
