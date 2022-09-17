@@ -56,6 +56,25 @@ namespace Actor
         this->_actors.clear();
     }
 
+    void ActorManager::Tick(float in_deltaTimeSecond)
+    {
+        for (auto actor : this->_actors)
+        {
+            if (actor->GetState() == Actor::eState::eState_Begin)
+            {
+                actor->Begin();
+                actor->SetState(Actor::eState::eState_Active);
+            }
+            actor->Tick(in_deltaTimeSecond);
+        }
+    }
+
+    void ActorManager::Render()
+    {
+        for (auto actor : this->_actors)
+            actor->Render();
+    }
+
     void ActorManager::_Clear()
     {
         this->_actors.clear();

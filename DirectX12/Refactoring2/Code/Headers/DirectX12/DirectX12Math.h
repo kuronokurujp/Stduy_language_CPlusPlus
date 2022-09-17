@@ -28,6 +28,7 @@ namespace DirectX12
         const DirectX::XMFLOAT3& in_up,
         const DirectX::XMFLOAT3& in_right);
 
-    static const DirectX::XMFLOAT3 XFloat3UPVec = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
-    static const DirectX::XMFLOAT3 XFloat3RightVec = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
+    static const DirectX::XMFLOAT3 XFloat3UP = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
+    static const DirectX::XMFLOAT3 XFloat3Right = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
+    static const DirectX::XMFLOAT3 XFloat3RFront = DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f);
 }

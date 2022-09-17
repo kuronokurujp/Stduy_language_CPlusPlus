@@ -136,9 +136,12 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Configuration)\Resources\Shader /i 
     <ClInclude Include="Code\Headers\Actor\ActorManager.h" />
     <ClInclude Include="Code\Headers\Actor\ActorMiniHeader.h" />
     <ClInclude Include="Code\Headers\App\AppMiniHeader.h" />
+    <ClInclude Include="Code\Headers\App\BaseCameraActor.h" />
     <ClInclude Include="Code\Headers\App\GameController.h" />
     <ClInclude Include="Code\Headers\App\PMDActor.h" />
     <ClInclude Include="Code\Headers\Common.h" />
+    <ClInclude Include="Code\Headers\Component\Component.h" />
+    <ClInclude Include="Code\Headers\Component\SimpleCameraComponent.h" />
     <ClInclude Include="Code\Headers\DirectX12\d3dx12.h" />
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Core.h" />
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Material.h" />
@@ -168,8 +171,10 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Configuration)\Resources\Shader /i 
     <ClCompile Include="Code\Main.cpp" />
     <ClCompile Include="Code\Sources\Actor\Actor.cpp" />
     <ClCompile Include="Code\Sources\Actor\ActorManager.cpp" />
+    <ClCompile Include="Code\Sources\App\BaseCameraActor.cpp" />
     <ClCompile Include="Code\Sources\App\GameController.cpp" />
     <ClCompile Include="Code\Sources\App\PMDActor.cpp" />
+    <ClCompile Include="Code\Sources\Component\Component.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Core.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Material.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Math.cpp" />

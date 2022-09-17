@@ -40,9 +40,4 @@ namespace GUI
     {
         this->_update_flag = in_flag;
     }
-
-    // 描画バッファを更新
-    void DirectX12WindowModel::UpdateRender()
-    {
-    }
 }

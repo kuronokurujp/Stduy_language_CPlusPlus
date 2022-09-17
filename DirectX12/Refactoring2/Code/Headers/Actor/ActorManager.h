@@ -34,6 +34,9 @@ namespace Actor
         /// </summary>
         void DeleteAllActorsAndMemFree();
 
+        void Tick(float in_deltaTimeSecond);
+        void Render();
+
     protected:
         // Actor登録リスト
         std::vector<Actor*> _actors;

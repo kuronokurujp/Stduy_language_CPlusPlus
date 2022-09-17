@@ -2,9 +2,10 @@
 
 #include <vector>
 #include <stdio.h>
+#include <memory>
 
 // 前方宣言
-class Component;
+namespace Component { class Component; }
 
 namespace Actor
 {
@@ -19,7 +20,8 @@ namespace Actor
         /// </summary>
         enum class eState
         {
-            eState_Active = 0,
+            eState_Begin = 0,
+            eState_Active,
             eState_Pause,
             eState_End,
             eState_Dead,
@@ -40,7 +42,7 @@ namespace Actor
         /// <summary>
         /// コンポーネントを追加.
         /// </summary>
-        void AddComponentMemData(Component* in_pComponent);
+        void AddComponentMemData(std::shared_ptr<Component::Component> in_component);
 
         /// <summary>
         /// くっつている全てのコンポーネント削除.
@@ -51,7 +53,7 @@ namespace Actor
         /// <summary>
         /// 引数で指定したコンポーネントを外す.
         /// </summary>
-        bool RemoveComponentAndMemFree(Component* in_pComponent);
+        bool RemoveComponentAndMemFree(std::shared_ptr<Component::Component> in_component);
 
         template<class T>
         void RemoveComponentClassNameAndMemFree()
@@ -77,7 +79,7 @@ namespace Actor
         {
             for (unsigned int i = 0; i < this->_components.size(); ++i)
             {
-                Component* pComponent = this->_components[i];
+                Component::Component* pComponent = this->_components[i];
                 T t = dynamic_cast<T>(pComponent);
                 if (t != NULL)
                 {
@@ -92,10 +94,10 @@ namespace Actor
         void _Clear();
 
         // Actorの状態
-        eState _state = eState::eState_Active;
+        eState _state = eState::eState_Begin;
 
         // Actorにつけるコンポーネントリスト
         // ポインターにしているのはポインターからリストの要素を削除するため
-        std::vector<Component*> _components;
+        std::vector<std::shared_ptr<Component::Component>> _components;
     };
 }

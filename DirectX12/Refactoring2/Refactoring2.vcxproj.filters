@@ -144,6 +144,9 @@
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Material.h">
       <Filter>Code\Headers\DirectX12</Filter>
     </ClInclude>
+    <ClInclude Include="Code\Headers\App\BaseCameraActor.h" />
+    <ClInclude Include="Code\Headers\Component\Component.h" />
+    <ClInclude Include="Code\Headers\Component\SimpleCameraComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -207,6 +210,8 @@
       <Filter>Code\Sources\DirectX12</Filter>
     </ClCompile>
     <ClCompile Include="Code\Sources\MMD\PMDMaterial.cpp" />
+    <ClCompile Include="Code\Sources\App\BaseCameraActor.cpp" />
+    <ClCompile Include="Code\Sources\Component\Component.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\PMD\BasicVertexShader.hlsl">

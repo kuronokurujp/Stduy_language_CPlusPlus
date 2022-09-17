@@ -1,6 +1,7 @@
 ﻿#include "App/GameController.h"
 
 #include "Common.h"
+#include "App/BaseCameraActor.h"
 
 #include <tchar.h>
 
@@ -23,28 +24,30 @@ namespace App
         }
         this->_pmd_render_factor->Initialize(context);
 
+        // カメラアクター設定
+        {
+            auto p_cam_actor = new App::BaseCameraActor(this->_window_ctrl->GetModel());
+            this->_actor_manager->AddActor(p_cam_actor);
+        }
+
+        // PMDキャラクターのアクター作成
         {
             auto p_pmd_actor = new App::PMDActor(this->_pmd_render_factor, this->_window_ctrl->GetWindowData());
-            // TODO: ActorのBeginをここで呼んでいる
-            // Beginを呼ぶ前にBeginのActorを登録してTickメソッドで一括して呼ぶべき
-            p_pmd_actor->Begin();
             this->_actor_manager->AddActor(p_pmd_actor);
         }
 
         return true;
     }
 
-    void GameController::Tick()
+    void GameController::Tick(float in_deltaTimeSecond)
     {
         // アクター更新
-        for (auto actor : this->_actor_manager->GetActors())
-            actor->Tick(0);
+        this->_actor_manager->Tick(in_deltaTimeSecond);
     }
 
     void GameController::Render()
     {
-        for (auto actor : this->_actor_manager->GetActors())
-            actor->Render();
+        this->_actor_manager->Render();
     }
 
     void GameController::End()

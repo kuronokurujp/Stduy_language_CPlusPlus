@@ -10,7 +10,6 @@ namespace App
         const std::string file_name_and_key = "Resources/Model/Miku.pmd";
         this->_renderer = in_factory->CreateRenderer(
             file_name_and_key.c_str(),
-            //"Resources/Model/Miku.pmd",
             "Resources/Shader/PMD/BasicVertexShader.hlsl",
             "Resources/Shader/PMD/BasicPixelShader.hlsl",
             "Resources/Model/Toon/toon%02d.bmp"
@@ -49,9 +48,6 @@ namespace App
         // VMDファイルからモーションデータ作成
         {
             this->_motion = in_factory->CreateMotion(
-                //    "Resources/Model/VMD/pose.vmd");
-                //"Resources/Model/VMD/charge.vmd");
-            //"Resources/Model/VMD/motion.vmd");
                 "Resources/Model/VMD/squat.vmd");
 
             this->_motion->PlayAnimation();
@@ -62,16 +58,21 @@ namespace App
     {
     }
 
+    void PMDActor::Begin()
+    {
+    }
+
     void PMDActor::TickImplement(float in_deltaTimeSecond)
     {
+        DirectX::XMFLOAT3 up(0.0, 1.0f, 0.0);
+        this->_world_mat._m *= DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&up), 0.01f);
+
         this->_motion->UpdateAnimation(this->_renderer.get(), this->_ik_datas);
     }
 
     void PMDActor::Render()
     {
-        //        this->_IKSolve();
-
-                // レンダリング
+        // レンダリング
         this->_renderer->InsertCmdToCmdPipeline(
             this->_local_mat._m,
             this->_world_mat._m,

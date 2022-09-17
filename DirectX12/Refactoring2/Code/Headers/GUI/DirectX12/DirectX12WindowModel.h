@@ -40,13 +40,14 @@ namespace GUI
         inline UINT32 Width() override final { return static_cast<UINT32>(this->_viewport.Width); }
         inline UINT32 Height() override final { return static_cast<UINT32>(this->_viewport.Height); }
 
+        // ウィンドウサイズのアスペクト比
+        // 横を基準にする
+        inline float AspectRatio() override final { return (this->_viewport.Width / this->_viewport.Height); }
+
         // 更新可能かどうか
         const bool IsUpdate() override final { return this->_update_flag; }
         // 更新するかどうかのフラグ
         void EnableUpdate(const bool in_flag) override final;
-
-        // 描画バッファを更新
-        void UpdateRender() override final;
 
         // DirectX12のコンテキスト取得
         std::shared_ptr<DirectX12::Context> Context() { return this->_context; }

@@ -12,6 +12,7 @@ namespace App
         PMDActor(std::shared_ptr<PMD::Render::Factory> in_factory, const GUI::WindowCommonData& in_window_data);
         virtual ~PMDActor();
 
+        virtual void Begin() override;
         void TickImplement(float in_deltaTimeSecond) override final;
 
         // レンダリングする
