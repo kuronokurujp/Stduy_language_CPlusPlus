@@ -13,6 +13,8 @@ namespace Actor
     class ActorManager
     {
     public:
+        ActorManager() { this->_Clear(); }
+
         /// <summary>
         /// アクターを登録.
         /// </summary>

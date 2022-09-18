@@ -57,7 +57,6 @@ namespace Actor
 
         this->_components.erase(iter);
         in_component->End();
-
         in_component.reset();
 
         return true;

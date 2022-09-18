@@ -147,6 +147,7 @@
     <ClInclude Include="Code\Headers\App\BaseCameraActor.h" />
     <ClInclude Include="Code\Headers\Component\Component.h" />
     <ClInclude Include="Code\Headers\Component\SimpleCameraComponent.h" />
+    <ClInclude Include="Code\Headers\Component\ActorComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -212,6 +213,7 @@
     <ClCompile Include="Code\Sources\MMD\PMDMaterial.cpp" />
     <ClCompile Include="Code\Sources\App\BaseCameraActor.cpp" />
     <ClCompile Include="Code\Sources\Component\Component.cpp" />
+    <ClCompile Include="Code\Sources\Component\ActorComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\PMD\BasicVertexShader.hlsl">

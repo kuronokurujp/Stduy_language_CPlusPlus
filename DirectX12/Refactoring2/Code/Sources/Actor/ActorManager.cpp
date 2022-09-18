@@ -1,12 +1,17 @@
 ﻿#include "Actor/ActorMiniHeader.h"
 
 #include "Common.h"
+#include "Component/ActorComponent.h"
 
 namespace Actor
 {
     void ActorManager::AddActor(Actor* in_pActor)
     {
         this->_actors.emplace_back(in_pActor);
+
+        // アクター用のコンポーネントを追加
+        auto actor_component = std::make_shared<Component::ActorComponent>(this, in_pActor);
+        in_pActor->AddComponentMemData(actor_component);
     }
 
     void ActorManager::RemoveActor(Actor* in_pActor)

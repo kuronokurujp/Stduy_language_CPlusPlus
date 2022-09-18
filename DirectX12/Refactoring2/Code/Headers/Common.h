@@ -14,6 +14,9 @@
 
 namespace Common
 {
+    // イプシロン値
+    static constexpr float Epsilon = 0.0005f;
+
     /// <summary>
     /// 設定した値をアライメント値に合わせて返す
     /// </summary>

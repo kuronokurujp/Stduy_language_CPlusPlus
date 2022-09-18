@@ -17,13 +17,13 @@ namespace Component
         Component(Actor::Actor* in_pOwner);
         virtual ~Component() {}
 
-        virtual void Begin() = 0;
-        virtual void End() = 0;
+        virtual void Begin() {}
+        virtual void End() {}
 
         /// <summary>
         /// 毎フレーム更新.
         /// </summary>
-        virtual void Update(const float in_deltaTimeSecond) = 0;
+        virtual void Update(const float in_deltaTimeSecond) {}
 
     protected:
         Actor::Actor* _pOwner;

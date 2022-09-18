@@ -143,7 +143,7 @@ namespace VMD
                     UINT32 ik_bone_count = 0;
                     fread(&ik_bone_count, sizeof(ik_bone_count), 1, fp);
 
-                    for (int i = 0; i < ik_bone_count; ++i)
+                    for (UINT32 i = 0; i < ik_bone_count; ++i)
                     {
                         char ik_bone_name[20] = { 0 };
                         fread(ik_bone_name, sizeof(ik_bone_name[0]) * _countof(ik_bone_name), 1, fp);

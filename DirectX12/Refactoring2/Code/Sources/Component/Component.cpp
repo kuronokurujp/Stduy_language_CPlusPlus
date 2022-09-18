@@ -13,8 +13,6 @@ namespace Component
         }
 
         this->_pOwner = in_pOwner;
-
-        this->_pOwner->AddComponentMemData(std::shared_ptr<Component>(this));
     }
 
     void Component::_Clear()
