@@ -115,7 +115,7 @@ namespace DirectX12
             for (auto level : a_levels)
             {
                 // 指定アダプターを利用する
-                result = D3D12CreateDevice(p_adapter, level, IID_PPV_ARGS(in_context->dev.ReleaseAndGetAddressOf()));
+                result = D3D12CreateDevice(p_adapter.Get(), level, IID_PPV_ARGS(in_context->dev.ReleaseAndGetAddressOf()));
                 if (SUCCEEDED(result))
                     break;
             }

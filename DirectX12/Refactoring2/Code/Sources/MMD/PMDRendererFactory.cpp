@@ -17,12 +17,230 @@ namespace PMD
     {
         const std::string Renderer::s_center_bone_name = "センター";
 
+        namespace Impl
+        {
+            /// <summary>
+            /// 指定したマテリアルデータを適応
+            /// </summary>
+            /// <param name="out_r_source"></param>
+            /// <param name="in_r_file_path"></param>
+            /// <param name="in_r_toon_file_path_fmt"></param>
+            /// <param name="in_r_pmd_material"></param>
+            void _ApplyMaterial(
+                RenderBaseData* out_p_source,
+                std::shared_ptr<DirectX12::Context> in_dx12_context,
+                const std::string& in_r_current_resource_path,
+                const std::string& in_r_toon_file_path_fmt,
+                std::vector<PMD::Loader::PMDMaterial>& in_r_pmd_material,
+                DirectX12::Context::ComPtr<ID3D12Resource> in_white_share_texture,
+                DirectX12::Context::ComPtr<ID3D12Resource> in_black_share_texture,
+                DirectX12::Context::ComPtr<ID3D12Resource> in_gradation_share_texture)
+            {
+                out_p_source->pmd_materials.resize(in_r_pmd_material.size());
+                out_p_source->pmd_textures.resize(in_r_pmd_material.size());
+
+                for (size_t i = 0; i < out_p_source->pmd_materials.size(); ++i)
+                {
+                    out_p_source->pmd_materials[i].indices_num = in_r_pmd_material[i].indices_num;
+                    out_p_source->pmd_materials[i].basic.diffuse = in_r_pmd_material[i].diffuse;
+                    out_p_source->pmd_materials[i].basic.alpha = in_r_pmd_material[i].alpha;
+                    out_p_source->pmd_materials[i].basic.speclar = in_r_pmd_material[i].specular;
+                    out_p_source->pmd_materials[i].basic.specularity = in_r_pmd_material[i].specularity;
+                    out_p_source->pmd_materials[i].basic.ambient = in_r_pmd_material[i].ambiend;
+
+                    // リソースの初期化
+                    out_p_source->pmd_textures[i].tex = in_white_share_texture;
+                    out_p_source->pmd_textures[i].sph = in_white_share_texture;
+                    out_p_source->pmd_textures[i].spa = in_black_share_texture;
+                    out_p_source->pmd_textures[i].toon = in_gradation_share_texture;
+
+                    // テクスチャファイルパスからロードするファイルパスに置き換えてテクスチャロード
+                    // マテリアルの数分用意
+                    {
+                        std::vector<std::string> load_file_paths;
+                        if (0 < std::strlen(in_r_pmd_material[i].tex_file_path))
+                        {
+                            load_file_paths.clear();
+
+                            auto tex_file_path_str = std::string(in_r_pmd_material[i].tex_file_path);
+                            // ファイルパス内に*が入っているか存在する数でチェック
+                            if (std::count(tex_file_path_str.begin(), tex_file_path_str.end(), '*') > 0)
+                            {
+                                // *が入っている場合はファイルパスを分割する
+                                auto split_pair = Common::SplitFileName(tex_file_path_str);
+
+                                // スフィアファイルパスが存在するのはfirst/secondはどちらかをチェックして
+                                // スフィアファイルパスが存在しない方をテクスチャファイルパスとする
+                                auto first_file_extention = Common::GetFileExtension(split_pair.first);
+                                auto second_file_extention = Common::GetFileExtension(split_pair.second);
+
+                                // ファイルパスは2つある
+                                load_file_paths.push_back(split_pair.first);
+                                load_file_paths.push_back(split_pair.second);
+                            }
+                            else
+                            {
+                                load_file_paths.push_back(tex_file_path_str);
+                            }
+
+                            for (auto& load_file_path : load_file_paths)
+                            {
+                                // テキスチャファイルパス作成
+                                auto load_tex_file_path_str =
+                                    Common::CombineDirPath(in_r_current_resource_path, load_file_path.c_str());
+
+                                // ロードするテクスチャファイルパス
+                                {
+                                    if (Common::GetFileExtension(load_tex_file_path_str) == "sph")
+                                        out_p_source->pmd_textures[i].sph = DirectX12::CreateTextureResourceFromLoadTextureFile(in_dx12_context, load_tex_file_path_str);
+                                    else if (Common::GetFileExtension(load_tex_file_path_str) == "spa")
+                                        out_p_source->pmd_textures[i].spa = DirectX12::CreateTextureResourceFromLoadTextureFile(in_dx12_context, load_tex_file_path_str);
+                                    else
+                                        out_p_source->pmd_textures[i].tex = DirectX12::CreateTextureResourceFromLoadTextureFile(in_dx12_context, load_tex_file_path_str);
+                                }
+                            }
+                        }
+                    }
+
+                    // トゥーン番号からトゥーンテクスチャをロード
+                    {
+                        std::string toon_file_path;
+                        // トゥーンテクスチャファイルパスを生成
+                        {
+                            UINT32 file_toon_no = in_r_pmd_material[i].toon_idx + 1;
+                            int sz = std::snprintf(nullptr, 0, in_r_toon_file_path_fmt.c_str(), file_toon_no);
+                            toon_file_path.resize(sz + 1);
+                            std::snprintf(&toon_file_path[0], toon_file_path.size(), in_r_toon_file_path_fmt.c_str(), file_toon_no);
+                        }
+
+                        out_p_source->pmd_textures[i].toon = DirectX12::CreateTextureResourceFromLoadTextureFile(in_dx12_context, toon_file_path);
+                    }
+                }
+            }
+
+            /// <summary>
+            /// 指定したボーンデータを適応
+            /// </summary>
+            /// <param name="out_p_renderer"></param>
+            /// <param name="in_r_pmd_bone"></param>
+            void _ApplyBone(
+                RenderBaseData* out_p_source,
+                std::vector<PMD::Loader::PMDBone>& in_r_pmd_bone)
+            {
+                // 親インデックスに対応したボーン名の配列
+                std::vector<std::string> bone_names(in_r_pmd_bone.size());
+
+                // ボーンテーブル作成
+                {
+                    out_p_source->bone_name_array.resize(in_r_pmd_bone.size());
+                    out_p_source->bone_node_address_array.resize(in_r_pmd_bone.size());
+
+                    out_p_source->knee_idxs.clear();
+                    for (size_t i = 0; i < in_r_pmd_bone.size(); ++i)
+                    {
+                        auto& r_pmd_node = in_r_pmd_bone[i];
+
+                        // 親インデックスに対応したボーン名を設定
+                        bone_names[i] = r_pmd_node.bone_name;
+
+                        // ボーン情報からノード情報を設定
+                        auto& r_bone_node = out_p_source->bone_node_table[r_pmd_node.bone_name];
+                        r_bone_node.index = i;
+                        r_bone_node.start_pos = r_pmd_node.pos;
+                        r_bone_node.bone_type = static_cast<BoneType>(r_pmd_node.type);
+                        r_bone_node.parent_bone = r_pmd_node.parent_no;
+                        r_bone_node.ik_parent_bone = r_pmd_node.ik_bone_no;
+
+                        // ボーンインデックスからボーン名を
+                        // ボーンインデックスからボーンデータを
+                        // すぐにアクセスできるようにするためのテーブルを用意
+                        out_p_source->bone_node_address_array[i] = &r_bone_node;
+                        out_p_source->bone_name_array[i] = bone_names[i];
+
+                        // TODO: ひざの番号を収集する
+                        {
+                            std::string bone_name = r_pmd_node.bone_name;
+                            if (bone_name.find("ひざ") != std::string::npos)
+                            {
+                                out_p_source->knee_idxs.emplace_back(i);
+                                LOGD << _T("find ひざ: idx => ") << i;
+                            }
+                        }
+                    }
+                }
+
+                // ボーンの親子関係を構築
+                {
+                    for (auto& r_pmd_node : in_r_pmd_bone)
+                    {
+                        auto parent_no = r_pmd_node.parent_no;
+                        // noが不正値かどうかチェック
+                        if (in_r_pmd_bone.size() <= parent_no)
+                            continue;
+
+                        auto parent_node_name = bone_names[parent_no];
+
+                        // 親ノードに現在参照しているノードをアタッチ
+                        out_p_source->bone_node_table[parent_node_name].children.emplace_back(
+                            &out_p_source->bone_node_table[r_pmd_node.bone_name]
+                        );
+                    }
+                }
+
+                // 各ボーンの行列作成
+                auto& r_bone_matrices = out_p_source->bone_matrices;
+                r_bone_matrices.resize(in_r_pmd_bone.size());
+
+                // すべて単位行列で初期化
+                std::fill(r_bone_matrices.begin(), r_bone_matrices.end(), DirectX::XMMatrixIdentity());
+            }
+
+            /// <summary>
+            /// IKのボーン情報をデバッグ出力
+            /// </summary>
+            /// <param name="in_r_renderer"></param>
+            void _DebugPrintByIKBone(RenderBaseData& in_r_data, std::shared_ptr<::PMD::Loader::PMDDataPack> in_r_pmd_data_pack)
+            {
+                {
+                    // ボーンidxからボーン名を取得する関数変数をラムダ式で作る
+                    auto get_name_from_idx = [&](UINT16 idx)->std::string
+                    {
+                        auto it = std::find_if(
+                            in_r_data.bone_node_table.begin(),
+                            in_r_data.bone_node_table.end(),
+                            [idx](const std::pair<std::string, BoneNode>& obj)
+                        {
+                            return obj.second.index == idx;
+                        }
+                        );
+
+                        if (it != in_r_data.bone_node_table.end())
+                        {
+                            return it->first;
+                        }
+
+                        return "";
+                    };
+
+                    for (auto& ik : in_r_pmd_data_pack.get()->iks)
+                    {
+                        LOGD << "IKボーン番号:" << ik.bone_idx << ":" << get_name_from_idx(ik.bone_idx);
+
+                        for (auto& node : ik.node_idxs)
+                        {
+                            LOGD << "\t ノード番号:" << node << ":" << get_name_from_idx(node);
+                        }
+                    }
+                }
+            }
+        }
+
         void Motion::PlayAnimation()
         {
             this->_start_time = ::timeGetTime();
         }
 
-        void Motion::UpdateAnimation(Renderer* in_p_renderer, std::shared_ptr<std::vector<PMD::Loader::PMDIK>> in_ik_datas)
+        void Motion::UpdateAnimation(Renderer* in_p_renderer, std::vector<PMD::Loader::PMDIK>& in_r_ik_datas)
         {
             auto elapsed_time = static_cast<float>(::timeGetTime() - this->_start_time);
             UINT32 now_frame_no = static_cast<UINT32>(30.0f * (elapsed_time / 1000.0f));
@@ -37,19 +255,20 @@ namespace PMD
                 now_frame_no = 0;
             }
 
-            auto& bone_matrices = in_p_renderer->_bone_matrices;
+            auto render_fix_data = in_p_renderer->GetBaseData();
+            auto& bone_matrices = render_fix_data->bone_matrices;
             std::fill(bone_matrices.begin(), bone_matrices.end(), DirectX::XMMatrixIdentity());
 
             for (auto& m : this->_motion_key_frames)
             {
                 auto& bone_name = m.first;
                 {
-                    auto find_it = in_p_renderer->_bone_node_table.find(bone_name.c_str());
-                    if (find_it == in_p_renderer->_bone_node_table.end())
+                    auto find_it = render_fix_data->bone_node_table.find(bone_name.c_str());
+                    if (find_it == render_fix_data->bone_node_table.end())
                         continue;
                 }
 
-                auto& node = in_p_renderer->_bone_node_table[bone_name.c_str()];
+                auto& node = render_fix_data->bone_node_table[bone_name.c_str()];
                 auto& key_frame = m.second;
 
                 // 配列末尾からの後方イテレーションで該当するフレームNOのモーション取得
@@ -98,12 +317,12 @@ namespace PMD
 
             // 設定した行列でボーン全体を更新
             {
-                auto node = in_p_renderer->_bone_node_table[PMD::Render::Renderer::s_center_bone_name.c_str()];
+                auto node = render_fix_data->bone_node_table[PMD::Render::Renderer::s_center_bone_name.c_str()];
                 in_p_renderer->MulBoneMatrixAndRecursive(&node, DirectX::XMMatrixIdentity());
             }
 
             // TODO: IK関連の処理はここで実行しないとだめ
-            this->_IKSolve(in_p_renderer, in_ik_datas, now_frame_no);
+            this->_IKSolve(in_p_renderer, in_r_ik_datas, now_frame_no);
 
             // シェーダーに渡す行列更新
             std::copy(bone_matrices.begin(), bone_matrices.end(), in_p_renderer->_shader_effect->GetMappedMatrices() + 1);
@@ -138,7 +357,7 @@ namespace PMD
         /// <summary>
         /// IK解決処理
         /// </summary>
-        void Motion::_IKSolve(Renderer* in_p_renderer, std::shared_ptr<std::vector<PMD::Loader::PMDIK>> in_ik_datas, const UINT32 in_now_frame)
+        void Motion::_IKSolve(Renderer* in_p_renderer, std::vector<PMD::Loader::PMDIK>& in_r_ik_datas, const UINT32 in_now_frame)
         {
             // IK有効フラグをチェックしてIK処理するか決める
             auto it = std::find_if(
@@ -148,11 +367,12 @@ namespace PMD
                 return in_r_ik_enable.frame_no <= in_now_frame;
             });
 
-            for (auto& ik : *(in_ik_datas.get()))
+            auto render_fix_data = in_p_renderer->GetBaseData();
+            for (auto& ik : in_r_ik_datas)
             {
                 if (it != this->_ik_enables.rend())
                 {
-                    auto ik_enable_it = it->ik_enable_table.find(in_p_renderer->_bone_name_array[ik.bone_idx]);
+                    auto ik_enable_it = it->ik_enable_table.find(render_fix_data->bone_name_array[ik.bone_idx]);
                     if (ik_enable_it != it->ik_enable_table.end())
                     {
                         if (!ik_enable_it->second)
@@ -188,27 +408,28 @@ namespace PMD
         void Motion::_SolveCCDIK(Renderer* in_p_renderer, const PMD::Loader::PMDIK& in_r_ik)
         {
             auto work_render = in_p_renderer;
+            auto render_fix_data = work_render->GetBaseData();
 
             // ターゲット
-            auto target_bone_node = work_render->_bone_node_address_array[in_r_ik.bone_idx];
+            auto target_bone_node = render_fix_data->bone_node_address_array[in_r_ik.bone_idx];
             auto target_org_pos = DirectX::XMLoadFloat3(&target_bone_node->start_pos);
 
             // ターゲット座標をワールドからローカル座標系に変換
-            const DirectX::XMMATRIX parent_mat = work_render->_bone_matrices[work_render->_bone_node_address_array[in_r_ik.bone_idx]->ik_parent_bone];
+            const DirectX::XMMATRIX parent_mat = render_fix_data->bone_matrices[render_fix_data->bone_node_address_array[in_r_ik.bone_idx]->ik_parent_bone];
             DirectX::XMVECTOR det;
             auto inv_parent_mat = DirectX::XMMatrixInverse(&det, parent_mat);
             auto target_next_pos = DirectX::XMVector3Transform(
-                target_org_pos, work_render->_bone_matrices[in_r_ik.bone_idx] * inv_parent_mat);
+                target_org_pos, render_fix_data->bone_matrices[in_r_ik.bone_idx] * inv_parent_mat);
 
             // 末端ノード
-            auto end_pos = DirectX::XMLoadFloat3(&work_render->_bone_node_address_array[in_r_ik.target_idx]->start_pos);
+            auto end_pos = DirectX::XMLoadFloat3(&render_fix_data->bone_node_address_array[in_r_ik.target_idx]->start_pos);
 
             // 中間ノード(ルートを含む)
             std::vector<DirectX::XMVECTOR> bone_positions;
             {
                 for (auto& cidx : in_r_ik.node_idxs)
                 {
-                    bone_positions.push_back(DirectX::XMLoadFloat3(&work_render->_bone_node_address_array[cidx]->start_pos));
+                    bone_positions.push_back(DirectX::XMLoadFloat3(&render_fix_data->bone_node_address_array[cidx]->start_pos));
                 }
             }
 
@@ -296,14 +517,14 @@ namespace PMD
                 int idx = 0;
                 for (auto& cidx : in_r_ik.node_idxs)
                 {
-                    work_render->_bone_matrices[cidx] = mats[idx];
+                    render_fix_data->bone_matrices[cidx] = mats[idx];
                     ++idx;
                 }
             }
 
             // ボーンの親子関係更新
             {
-                auto root_node = work_render->_bone_node_address_array[in_r_ik.node_idxs.back()];
+                auto root_node = render_fix_data->bone_node_address_array[in_r_ik.node_idxs.back()];
                 in_p_renderer->MulBoneMatrixAndRecursive(root_node, parent_mat, true);
             }
         }
@@ -311,6 +532,7 @@ namespace PMD
         void Motion::_SolveCosineIK(Renderer* in_p_renderer, const PMD::Loader::PMDIK& in_r_ik)
         {
             auto work_render = in_p_renderer;
+            auto render_base_data = work_render->GetBaseData();
 
             // IK構成点を保存
             std::vector<DirectX::XMVECTOR> positions;
@@ -318,14 +540,14 @@ namespace PMD
             std::array<float, 2> edge_lens;
 
             // 末端ボーンが近づく目標ボーン
-            auto& target_node = work_render->_bone_node_address_array[in_r_ik.bone_idx];
+            auto& target_node = render_base_data->bone_node_address_array[in_r_ik.bone_idx];
             auto target_pos = DirectX::XMVector3Transform(
-                DirectX::XMLoadFloat3(&target_node->start_pos), work_render->_bone_matrices[in_r_ik.bone_idx]);
+                DirectX::XMLoadFloat3(&target_node->start_pos), render_base_data->bone_matrices[in_r_ik.bone_idx]);
 
             // IKチェーンが逆順らしいので、逆に並べる
             // 末端ボーン
             {
-                auto end_node = work_render->_bone_node_address_array[in_r_ik.target_idx];
+                auto end_node = render_base_data->bone_node_address_array[in_r_ik.target_idx];
                 positions.emplace_back(DirectX::XMLoadFloat3(&end_node->start_pos));
             }
 
@@ -333,7 +555,7 @@ namespace PMD
             {
                 for (auto& chain_bone_idx : in_r_ik.node_idxs)
                 {
-                    auto bone_node = work_render->_bone_node_address_array[chain_bone_idx];
+                    auto bone_node = render_base_data->bone_node_address_array[chain_bone_idx];
                     positions.emplace_back(DirectX::XMLoadFloat3(&bone_node->start_pos));
                 }
             }
@@ -350,9 +572,9 @@ namespace PMD
             // ボーンの座標変換
             {
                 // ルートボーン
-                positions[0] = DirectX::XMVector3Transform(positions[0], work_render->_bone_matrices[in_r_ik.node_idxs[1]]);
+                positions[0] = DirectX::XMVector3Transform(positions[0], render_base_data->bone_matrices[in_r_ik.node_idxs[1]]);
                 // 先端ボーン
-                positions[2] = DirectX::XMVector3Transform(positions[2], work_render->_bone_matrices[in_r_ik.bone_idx]);
+                positions[2] = DirectX::XMVector3Transform(positions[2], render_base_data->bone_matrices[in_r_ik.bone_idx]);
             }
 
             // ルートから先端ボーンのベクトル
@@ -373,9 +595,9 @@ namespace PMD
             DirectX::XMVECTOR axis;
             {
                 if (std::find(
-                    work_render->_knee_idxs.begin(),
-                    work_render->_knee_idxs.end(),
-                    in_r_ik.node_idxs[0]) == work_render->_knee_idxs.end())
+                    render_base_data->knee_idxs.begin(),
+                    render_base_data->knee_idxs.end(),
+                    in_r_ik.node_idxs[0]) == render_base_data->knee_idxs.end())
                 {
                     auto vm = DirectX::XMVector3Normalize(
                         DirectX::XMVectorSubtract(positions[2], positions[0]));
@@ -400,24 +622,26 @@ namespace PMD
                 mat2 *= DirectX::XMMatrixRotationAxis(axis, theta2 - DirectX::XM_PI);
                 mat2 *= DirectX::XMMatrixTranslationFromVector(positions[1]);
 
-                work_render->_bone_matrices[in_r_ik.node_idxs[1]] *= mat1;
-                work_render->_bone_matrices[in_r_ik.node_idxs[0]] = mat2 * work_render->_bone_matrices[in_r_ik.node_idxs[1]];
-                work_render->_bone_matrices[in_r_ik.target_idx] = work_render->_bone_matrices[in_r_ik.node_idxs[0]];
+                render_base_data->bone_matrices[in_r_ik.node_idxs[1]] *= mat1;
+                render_base_data->bone_matrices[in_r_ik.node_idxs[0]] = mat2 * render_base_data->bone_matrices[in_r_ik.node_idxs[1]];
+                render_base_data->bone_matrices[in_r_ik.target_idx] = render_base_data->bone_matrices[in_r_ik.node_idxs[0]];
             }
         }
 
         void Motion::_SolveLockIK(Renderer* in_p_renderer, const PMD::Loader::PMDIK& in_r_ik)
         {
+            auto render_base_data = in_p_renderer->GetBaseData();
+
             // 制御するノードが一つしかないので配列要素の直接指定でいい
-            auto root_node = in_p_renderer->_bone_node_address_array[in_r_ik.node_idxs[0]];
-            auto target_node = in_p_renderer->_bone_node_address_array[in_r_ik.target_idx];
+            auto root_node = render_base_data->bone_node_address_array[in_r_ik.node_idxs[0]];
+            auto target_node = render_base_data->bone_node_address_array[in_r_ik.target_idx];
 
             auto rpos1 = DirectX::XMLoadFloat3(&root_node->start_pos);
             auto tpos1 = DirectX::XMLoadFloat3(&target_node->start_pos);
 
             // ノード先となるボーンの座標を取得
-            auto rpos2 = DirectX::XMVector3Transform(rpos1, in_p_renderer->_bone_matrices[in_r_ik.node_idxs[0]]);
-            auto tpos2 = DirectX::XMVector3Transform(tpos1, in_p_renderer->_bone_matrices[in_r_ik.bone_idx]);
+            auto rpos2 = DirectX::XMVector3Transform(rpos1, render_base_data->bone_matrices[in_r_ik.node_idxs[0]]);
+            auto tpos2 = DirectX::XMVector3Transform(tpos1, render_base_data->bone_matrices[in_r_ik.bone_idx]);
 
             // ノードと目的のボーンとの方向ベクトルを取得
             auto origin_vec = DirectX::XMVectorSubtract(tpos1, rpos1);
@@ -431,7 +655,7 @@ namespace PMD
                 DirectX::XMMatrixTranslationFromVector(rpos2);
 
             // 方向ベクトルに従ってボーンを回転させる
-            in_p_renderer->_bone_matrices[in_r_ik.node_idxs[0]] = mat;
+            render_base_data->bone_matrices[in_r_ik.node_idxs[0]] = mat;
         }
 
         Renderer::Renderer()
@@ -446,10 +670,11 @@ namespace PMD
         void Renderer::MulBoneMatrixAndRecursive(
             BoneNode* in_p_node, const DirectX::XMMATRIX& in_r_mat, bool in_flg)
         {
-            this->_bone_matrices[in_p_node->index] *= in_r_mat;
+            auto render_base_data = this->GetBaseData();
+            render_base_data->bone_matrices[in_p_node->index] *= in_r_mat;
 
             for (auto& r_node : in_p_node->children)
-                this->MulBoneMatrixAndRecursive(r_node, this->_bone_matrices[in_p_node->index], in_flg);
+                this->MulBoneMatrixAndRecursive(r_node, render_base_data->bone_matrices[in_p_node->index], in_flg);
         }
 
         /// <summary>
@@ -564,57 +789,79 @@ namespace PMD
             return motion;
         }
 
-        /// <summary>
-        /// PMDファイルを解析してレンダラー作成
-        /// </summary>
-        std::shared_ptr<Renderer> Factory::CreateRenderer(
+        const bool Factory::LoadRenderData(
+            std::shared_ptr<RenderBaseData> out_p_render_data,
             const std::string& in_r_pmd_filepath,
-            const std::string& in_r_pmd_shader_vs_filepath,
-            const std::string& in_r_pmd_shader_ps_filepath,
-            const std::string& in_r_toon_path_fmt)
+            const std::string& in_r_toontex_filepath)
         {
-            LOGD << "start create renderer: " + in_r_pmd_filepath;
-
-            std::shared_ptr<Renderer> _renderer = std::make_shared<Renderer>();
-            _renderer->_context = this->_context;
+            assert(out_p_render_data);
 
             // PMDファイルを開く
             ::PMD::Loader::PMDDataPack pmd_data_pack;
             {
                 // データロード
+                auto catch_data = this->_pmd_data_pack_map.find(in_r_pmd_filepath.c_str());
+                if (catch_data == this->_pmd_data_pack_map.end())
                 {
-                    auto catch_data = this->_pmd_data_pack_map.find(in_r_pmd_filepath.c_str());
-                    if (catch_data == this->_pmd_data_pack_map.end())
-                    {
-                        // PMDファイルロード
-                        auto error = PMD::Loader::LoadFileBySync(
-                            &pmd_data_pack,
-                            in_r_pmd_filepath.c_str());
-                        assert(error == 0);
+                    // PMDファイルロード
+                    auto error = PMD::Loader::LoadFileBySync(
+                        &pmd_data_pack,
+                        in_r_pmd_filepath.c_str());
+                    assert(error == 0);
 
-                        this->_pmd_data_pack_map[in_r_pmd_filepath.c_str()] = pmd_data_pack;
-                    }
-                    else
-                    {
-                        pmd_data_pack = catch_data->second;
-                    }
+                    this->_pmd_data_pack_map[in_r_pmd_filepath.c_str()] = pmd_data_pack;
                 }
+            }
+
+            {
+                out_p_render_data->vertexs = pmd_data_pack.vertexs;
+                out_p_render_data->indices = pmd_data_pack.indices;
+                out_p_render_data->vertex_size = pmd_data_pack.vertex_size;
+                out_p_render_data->iks = pmd_data_pack.iks;
+
+                std::vector<UINT16> indices;
+                size_t vertex_size = 0;
 
                 // マテリアルデータ構築
-                this->_ApplyMaterial(_renderer, in_r_pmd_filepath, in_r_toon_path_fmt, pmd_data_pack.material);
+                Impl::_ApplyMaterial(
+                    out_p_render_data.get(),
+                    this->_context,
+                    in_r_pmd_filepath,
+                    in_r_toontex_filepath,
+                    pmd_data_pack.material,
+                    this->_white_share_texture,
+                    this->_black_share_texture,
+                    this->_gradation_share_texture);
 
                 // ボーンデータ構築
-                this->_ApplyBone(_renderer.get(), pmd_data_pack.bone);
+                Impl::_ApplyBone(out_p_render_data.get(), pmd_data_pack.bone);
 #ifdef _DEBUG
                 // IKに対応しているボーン情報を出力
-                this->_DebugPrintByIKBone(_renderer, std::make_shared<::PMD::Loader::PMDDataPack>(pmd_data_pack));
+                Impl::_DebugPrintByIKBone(*out_p_render_data, std::make_shared<::PMD::Loader::PMDDataPack>(pmd_data_pack));
 #endif
             }
+
+            return true;
+        }
+
+        /// <summary>
+        /// PMDファイルを解析してレンダラー作成
+        /// </summary>
+        std::shared_ptr<Renderer> Factory::CreateRenderer(
+            std::shared_ptr<RenderBaseData> in_p_render_data,
+            const std::string& in_r_pmd_shader_vs_filepath,
+            const std::string& in_r_pmd_shader_ps_filepath)
+        {
+            std::shared_ptr<Renderer> _renderer = std::make_shared<Renderer>();
+            _renderer->_context = this->_context;
+
+            // レンダリングに必要なデータを設定
+            _renderer->_base_data = in_p_render_data;
 
             // メッシュ作成
             {
                 _renderer->_mesh = std::make_shared<DirectX12::Mesh>("pmd_vs_buff" + Common::CreateGUIDString(), "pmd_idx_buff" + Common::CreateGUIDString());
-                _renderer->_mesh->Create(this->_context, pmd_data_pack.vertexs, pmd_data_pack.vertex_size, pmd_data_pack.indices);
+                _renderer->_mesh->Create(this->_context, _renderer->_base_data->vertexs, _renderer->_base_data->vertex_size, _renderer->_base_data->indices);
             }
 
             // PMD用のシェーダーエフェクト作成
@@ -623,225 +870,12 @@ namespace PMD
                 _renderer->_shader_effect->Load(this->_context, in_r_pmd_shader_vs_filepath, in_r_pmd_shader_ps_filepath);
                 _renderer->_shader_effect->Apply(
                     this->_context,
-                    _renderer->_pmd_materials,
-                    _renderer->_pmd_textures,
-                    _renderer->_bone_matrices);
+                    _renderer->_base_data->pmd_materials,
+                    _renderer->_base_data->pmd_textures,
+                    _renderer->_base_data->bone_matrices);
             }
-
-            LOGD << "end create renderer: " + in_r_pmd_filepath;
 
             return _renderer;
-        }
-
-        /// <summary>
-        /// 指定したマテリアルデータを適応
-        /// </summary>
-        /// <param name="out_r_source"></param>
-        /// <param name="in_r_file_path"></param>
-        /// <param name="in_r_toon_file_path_fmt"></param>
-        /// <param name="in_r_pmd_material"></param>
-        void Factory::_ApplyMaterial(
-            std::shared_ptr<Renderer> out_r_source,
-            const std::string& in_r_current_resource_path,
-            const std::string& in_r_toon_file_path_fmt,
-            std::vector<PMD::Loader::PMDMaterial>& in_r_pmd_material)
-        {
-            out_r_source->_pmd_materials.resize(in_r_pmd_material.size());
-            out_r_source->_pmd_textures.resize(in_r_pmd_material.size());
-
-            for (size_t i = 0; i < out_r_source->_pmd_materials.size(); ++i)
-            {
-                out_r_source->_pmd_materials[i].indices_num = in_r_pmd_material[i].indices_num;
-                out_r_source->_pmd_materials[i].basic.diffuse = in_r_pmd_material[i].diffuse;
-                out_r_source->_pmd_materials[i].basic.alpha = in_r_pmd_material[i].alpha;
-                out_r_source->_pmd_materials[i].basic.speclar = in_r_pmd_material[i].specular;
-                out_r_source->_pmd_materials[i].basic.specularity = in_r_pmd_material[i].specularity;
-                out_r_source->_pmd_materials[i].basic.ambient = in_r_pmd_material[i].ambiend;
-
-                // リソースの初期化
-                out_r_source->_pmd_textures[i].tex = this->_white_share_texture;
-                out_r_source->_pmd_textures[i].sph = this->_white_share_texture;
-                out_r_source->_pmd_textures[i].spa = this->_black_share_texture;
-                out_r_source->_pmd_textures[i].toon = this->_gradation_share_texture;
-
-                // テクスチャファイルパスからロードするファイルパスに置き換えてテクスチャロード
-                // マテリアルの数分用意
-                {
-                    std::vector<std::string> load_file_paths;
-                    if (0 < std::strlen(in_r_pmd_material[i].tex_file_path))
-                    {
-                        load_file_paths.clear();
-
-                        auto tex_file_path_str = std::string(in_r_pmd_material[i].tex_file_path);
-                        // ファイルパス内に*が入っているか存在する数でチェック
-                        if (std::count(tex_file_path_str.begin(), tex_file_path_str.end(), '*') > 0)
-                        {
-                            // *が入っている場合はファイルパスを分割する
-                            auto split_pair = Common::SplitFileName(tex_file_path_str);
-
-                            // スフィアファイルパスが存在するのはfirst/secondはどちらかをチェックして
-                            // スフィアファイルパスが存在しない方をテクスチャファイルパスとする
-                            auto first_file_extention = Common::GetFileExtension(split_pair.first);
-                            auto second_file_extention = Common::GetFileExtension(split_pair.second);
-
-                            // ファイルパスは2つある
-                            load_file_paths.push_back(split_pair.first);
-                            load_file_paths.push_back(split_pair.second);
-                        }
-                        else
-                        {
-                            load_file_paths.push_back(tex_file_path_str);
-                        }
-
-                        for (auto& load_file_path : load_file_paths)
-                        {
-                            // テキスチャファイルパス作成
-                            auto load_tex_file_path_str =
-                                Common::CombineDirPath(in_r_current_resource_path, load_file_path.c_str());
-
-                            // ロードするテクスチャファイルパス
-                            {
-                                if (Common::GetFileExtension(load_tex_file_path_str) == "sph")
-                                    out_r_source->_pmd_textures[i].sph = DirectX12::CreateTextureResourceFromLoadTextureFile(this->_context, load_tex_file_path_str);
-                                else if (Common::GetFileExtension(load_tex_file_path_str) == "spa")
-                                    out_r_source->_pmd_textures[i].spa = DirectX12::CreateTextureResourceFromLoadTextureFile(this->_context, load_tex_file_path_str);
-                                else
-                                    out_r_source->_pmd_textures[i].tex = DirectX12::CreateTextureResourceFromLoadTextureFile(this->_context, load_tex_file_path_str);
-                            }
-                        }
-                    }
-                }
-
-                // トゥーン番号からトゥーンテクスチャをロード
-                {
-                    std::string toon_file_path;
-                    // トゥーンテクスチャファイルパスを生成
-                    {
-                        UINT32 file_toon_no = in_r_pmd_material[i].toon_idx + 1;
-                        int sz = std::snprintf(nullptr, 0, in_r_toon_file_path_fmt.c_str(), file_toon_no);
-                        toon_file_path.resize(sz + 1);
-                        std::snprintf(&toon_file_path[0], toon_file_path.size(), in_r_toon_file_path_fmt.c_str(), file_toon_no);
-                    }
-
-                    out_r_source->_pmd_textures[i].toon = DirectX12::CreateTextureResourceFromLoadTextureFile(this->_context, toon_file_path);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 指定したボーンデータを適応
-        /// </summary>
-        /// <param name="out_p_renderer"></param>
-        /// <param name="in_r_pmd_bone"></param>
-        void Factory::_ApplyBone(
-            Renderer* out_p_source,
-            std::vector<PMD::Loader::PMDBone>& in_r_pmd_bone)
-        {
-            // 親インデックスに対応したボーン名の配列
-            std::vector<std::string> bone_names(in_r_pmd_bone.size());
-
-            // ボーンテーブル作成
-            {
-                out_p_source->_bone_name_array.resize(in_r_pmd_bone.size());
-                out_p_source->_bone_node_address_array.resize(in_r_pmd_bone.size());
-
-                out_p_source->_knee_idxs.clear();
-                for (size_t i = 0; i < in_r_pmd_bone.size(); ++i)
-                {
-                    auto& r_pmd_node = in_r_pmd_bone[i];
-
-                    // 親インデックスに対応したボーン名を設定
-                    bone_names[i] = r_pmd_node.bone_name;
-
-                    // ボーン情報からノード情報を設定
-                    auto& r_bone_node = out_p_source->_bone_node_table[r_pmd_node.bone_name];
-                    r_bone_node.index = i;
-                    r_bone_node.start_pos = r_pmd_node.pos;
-                    r_bone_node.bone_type = static_cast<BoneType>(r_pmd_node.type);
-                    r_bone_node.parent_bone = r_pmd_node.parent_no;
-                    r_bone_node.ik_parent_bone = r_pmd_node.ik_bone_no;
-
-                    // ボーンインデックスからボーン名を
-                    // ボーンインデックスからボーンデータを
-                    // すぐにアクセスできるようにするためのテーブルを用意
-                    out_p_source->_bone_node_address_array[i] = &r_bone_node;
-                    out_p_source->_bone_name_array[i] = bone_names[i];
-
-                    // TODO: ひざの番号を収集する
-                    {
-                        std::string bone_name = r_pmd_node.bone_name;
-                        if (bone_name.find("ひざ") != std::string::npos)
-                        {
-                            out_p_source->_knee_idxs.emplace_back(i);
-                            LOGD << _T("find ひざ: idx => ") << i;
-                        }
-                    }
-                }
-            }
-
-            // ボーンの親子関係を構築
-            {
-                for (auto& r_pmd_node : in_r_pmd_bone)
-                {
-                    auto parent_no = r_pmd_node.parent_no;
-                    // noが不正値かどうかチェック
-                    if (in_r_pmd_bone.size() <= parent_no)
-                        continue;
-
-                    auto parent_node_name = bone_names[parent_no];
-
-                    // 親ノードに現在参照しているノードをアタッチ
-                    out_p_source->_bone_node_table[parent_node_name].children.emplace_back(
-                        &out_p_source->_bone_node_table[r_pmd_node.bone_name]
-                    );
-                }
-            }
-
-            // 各ボーンの行列作成
-            auto& r_bone_matrices = out_p_source->_bone_matrices;
-            r_bone_matrices.resize(in_r_pmd_bone.size());
-
-            // すべて単位行列で初期化
-            std::fill(r_bone_matrices.begin(), r_bone_matrices.end(), DirectX::XMMatrixIdentity());
-        }
-
-        /// <summary>
-        /// IKのボーン情報をデバッグ出力
-        /// </summary>
-        /// <param name="in_r_renderer"></param>
-        void Factory::_DebugPrintByIKBone(std::shared_ptr<Renderer> in_r_renderer, std::shared_ptr<::PMD::Loader::PMDDataPack> in_r_pmd_data_pack)
-        {
-            {
-                // ボーンidxからボーン名を取得する関数変数をラムダ式で作る
-                auto get_name_from_idx = [&](UINT16 idx)->std::string
-                {
-                    auto it = std::find_if(
-                        in_r_renderer->_bone_node_table.begin(),
-                        in_r_renderer->_bone_node_table.end(),
-                        [idx](const std::pair<std::string, BoneNode>& obj)
-                    {
-                        return obj.second.index == idx;
-                    }
-                    );
-
-                    if (it != in_r_renderer->_bone_node_table.end())
-                    {
-                        return it->first;
-                    }
-
-                    return "";
-                };
-
-                for (auto& ik : in_r_pmd_data_pack.get()->iks)
-                {
-                    LOGD << "IKボーン番号:" << ik.bone_idx << ":" << get_name_from_idx(ik.bone_idx);
-
-                    for (auto& node : ik.node_idxs)
-                    {
-                        LOGD << "\t ノード番号:" << node << ":" << get_name_from_idx(node);
-                    }
-                }
-            }
         }
     }
 }

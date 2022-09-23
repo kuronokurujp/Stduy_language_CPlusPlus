@@ -91,7 +91,7 @@ namespace PMD
             friend class Factory;
 
             void PlayAnimation();
-            void UpdateAnimation(class Renderer* in_p_renderer, std::shared_ptr<std::vector<PMD::Loader::PMDIK>> in_ik_datas);
+            void UpdateAnimation(class Renderer* in_p_renderer, std::vector<PMD::Loader::PMDIK>& in_r_ik_datas);
 
         private:
             /// <summary>
@@ -104,7 +104,7 @@ namespace PMD
             /// IK解決処理
             /// TODO: 作成中
             /// </summary>
-            void _IKSolve(class Renderer* in_p_renderer, std::shared_ptr<std::vector<PMD::Loader::PMDIK>> in_ik_datas, const UINT32 in_now_frame);
+            void _IKSolve(class Renderer* in_p_renderer, std::vector<PMD::Loader::PMDIK>& in_r_ik_datas, const UINT32 in_now_frame);
 
             /// <summary>
             /// CCD-IKによるボーン方向を解決
@@ -130,6 +130,32 @@ namespace PMD
             std::vector<VMD::Loader::VMDIkEnable> _ik_enables;
             DWORD _start_time = 0;
             UINT32 _motion_duration = 0;
+        };
+
+        struct RenderBaseData
+        {
+            // ボーン名をボーンインデックスと対応したテーブル
+            std::vector<std::string> bone_name_array;
+            // ボーンインデックスからボーンノードと対応したテーブル
+            std::vector<BoneNode*> bone_node_address_array;
+            // GPUに渡すボーン情報
+            std::vector<DirectX::XMMATRIX> bone_matrices;
+
+            std::vector<::PMD::Material::MaterialData> pmd_materials;
+            std::vector<::PMD::Material::MaterialTexture> pmd_textures;
+
+            // ボーンノードテーブル
+            std::map<std::string, BoneNode> bone_node_table;
+
+            // ひざボーンのidx
+            std::vector<uint32_t> knee_idxs;
+
+            // メッシュ構築に必要なデータ
+            std::vector<UINT8> vertexs;
+            std::vector<UINT16> indices;
+            size_t vertex_size = 0;
+
+            std::vector<PMD::Loader::PMDIK> iks;
         };
 
         // レンダラー
@@ -169,28 +195,16 @@ namespace PMD
                 // カメラ視点
                 const DirectX::XMFLOAT3& in_r_cam_pos);
 
+            const std::shared_ptr<RenderBaseData> GetBaseData() { return this->_base_data; }
+
         public:
-            // TODO: getterを作る手間を省くため即参照できるようにした
-            // ボーン名をボーンインデックスと対応したテーブル
-            std::vector<std::string> _bone_name_array;
-            // ボーンインデックスからボーンノードと対応したテーブル
-            std::vector<BoneNode*> _bone_node_address_array;
-            // GPUに渡すボーン情報
-            std::vector<DirectX::XMMATRIX> _bone_matrices;
-
-            // ひざボーンのidx
-            std::vector<uint32_t> _knee_idxs;
-
             std::shared_ptr<Material::ShaderEffect> _shader_effect;
         private:
             std::shared_ptr<DirectX12::Context> _context;
             std::shared_ptr<DirectX12::Mesh> _mesh;
 
-            // ボーンノードテーブル
-            std::map<std::string, BoneNode> _bone_node_table;
-
-            std::vector<::PMD::Material::MaterialData> _pmd_materials;
-            std::vector<::PMD::Material::MaterialTexture> _pmd_textures;
+            // レンダリングの基本データ
+            std::shared_ptr<RenderBaseData> _base_data;
         };
 
         /// <summary>
@@ -214,6 +228,15 @@ namespace PMD
             void Terminate();
 
             /// <summary>
+            /// レンダリングに必要データロード
+            /// 自動で解放するのでアンロードはいらない
+            /// </summary>
+            const bool LoadRenderData(
+                std::shared_ptr<RenderBaseData> out_p_render_data,
+                const std::string& in_r_pmd_filepath,
+                const std::string& in_r_toontex_filepath);
+
+            /// <summary>
             /// モーション作成
             /// </summary>
             /// <param name="in_r_pmd_filepath"></param>
@@ -224,10 +247,9 @@ namespace PMD
             /// TODO: ボーンや頂点情報を収めるMeshクラス, Meshに張り付けるマテリアルクラスを用意してこのメソッドで一括で作成するようにするいずれ
             /// </summary>
             std::shared_ptr<Renderer> CreateRenderer(
-                const std::string& in_r_pmd_filepath,
+                std::shared_ptr<RenderBaseData> in_p_render_data,
                 const std::string& in_r_pmd_shader_vs_filepath,
-                const std::string& in_r_pmd_shader_ps_filepath,
-                const std::string& in_r_toon_path_fmt);
+                const std::string& in_r_pmd_shader_ps_filepath);
 
             /// <summary>
             /// 指定キー名からPMDデータを返す
@@ -235,27 +257,6 @@ namespace PMD
             std::shared_ptr<::PMD::Loader::PMDDataPack> GetPMDDataPack(std::string in_key) {
                 return std::make_shared<::PMD::Loader::PMDDataPack>(_pmd_data_pack_map[in_key]);
             }
-
-        private:
-            void _ApplyMaterial(
-                // TODO: 後でポインターに直す！
-                std::shared_ptr<Renderer> out_r_renderer,
-                const std::string& in_r_file_path,
-                const std::string& in_r_toon_file_path_fmt,
-                std::vector<PMD::Loader::PMDMaterial>& in_r_pmd_material);
-
-            /// <summary>
-            /// ボーンデータ構築
-            /// </summary>
-            /// <param name="out_p_renderer"></param>
-            /// <param name="in_r_pmd_bone"></param>
-            void _ApplyBone(
-                Renderer* out_p_renderer,
-                std::vector<PMD::Loader::PMDBone>& in_r_pmd_bone);
-
-#ifdef _DEBUG
-            void _DebugPrintByIKBone(std::shared_ptr<Renderer> in_r_renderer, std::shared_ptr<::PMD::Loader::PMDDataPack> in_r_pmd_data_pack);
-#endif
 
         private:
             std::shared_ptr<DirectX12::Context> _context;

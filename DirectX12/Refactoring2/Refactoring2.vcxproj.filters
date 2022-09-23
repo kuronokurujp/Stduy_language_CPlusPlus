@@ -214,6 +214,7 @@
     <ClCompile Include="Code\Sources\App\BaseCameraActor.cpp" />
     <ClCompile Include="Code\Sources\Component\Component.cpp" />
     <ClCompile Include="Code\Sources\Component\ActorComponent.cpp" />
+    <ClCompile Include="Code\Sources\Component\SimpleCameraComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\PMD\BasicVertexShader.hlsl">

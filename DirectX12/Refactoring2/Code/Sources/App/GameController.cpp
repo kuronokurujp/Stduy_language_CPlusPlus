@@ -32,7 +32,7 @@ namespace App
 
         // PMDキャラクターのアクター作成
         {
-            auto p_pmd_actor = new App::PMDActor(this->_pmd_render_factor, this->_window_ctrl->GetWindowData());
+            auto p_pmd_actor = new App::PMDActor(this->_pmd_render_factor, "Resources/Model/Miku.pmd", "Resources/Model/VMD/squat.vmd");
             this->_actor_manager->AddActor(p_pmd_actor);
         }
 

@@ -50,7 +50,7 @@ namespace DirectX12
         ComPtr<ID3D12CommandQueue> cmd_queue;
 
         // アダプター一覧
-        std::vector <IDXGIAdapter*> adapters;
+        std::vector <ComPtr<IDXGIAdapter>> adapters;
 
         // フェンス値
         UINT64 fence_val = 0;

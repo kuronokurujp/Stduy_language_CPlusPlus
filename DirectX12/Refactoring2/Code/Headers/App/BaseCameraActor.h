@@ -21,6 +21,7 @@ namespace App
 
         inline DirectX12::XMMATRIX GetViewMat() const { return this->_view_mat; }
         inline DirectX12::XMMATRIX GetProjMat() const { return this->_proj_mat; }
+        inline DirectX::XMFLOAT3 GetEye() const { return this->_eye; }
 
     protected:
         // カメラの注視点

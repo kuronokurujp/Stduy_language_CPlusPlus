@@ -2,17 +2,17 @@
 
 #include "Component/Component.h"
 
+#include "DirectX12/DirectX12MiniHeader.h"
+
 namespace Component
 {
     class SimpleCameraComponent : public Component
     {
     public:
-        virtual void Begin() override {}
-        virtual void End() override {}
+        SimpleCameraComponent(Actor::Actor* in_pOwner);
 
-        /// <summary>
-        /// 毎フレーム更新.
-        /// </summary>
-        virtual void Update(const float in_deltaTimeSecond) override {}
+        const DirectX12::XMMATRIX GetViewMat() const;
+        const DirectX12::XMMATRIX GetProjMat() const;
+        const DirectX::XMFLOAT3 GetEye() const;
     };
 }

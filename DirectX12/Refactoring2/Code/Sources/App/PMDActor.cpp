@@ -1,55 +1,36 @@
 ﻿#include "App/PMDActor.h"
+#include "Component/SimpleCameraComponent.h"
 
 #include <assert.h>
 
 namespace App
 {
-    PMDActor::PMDActor(std::shared_ptr<PMD::Render::Factory> in_factory, const GUI::WindowCommonData& in_window_data)
+    PMDActor::PMDActor(
+        std::shared_ptr<PMD::Render::Factory> in_factory,
+        const std::string& in_pmd_filepath,
+        const std::string& in_vmd_filepath)
     {
-        // PMDファイルからレンダリングできるインスタンスを生成
-        const std::string file_name_and_key = "Resources/Model/Miku.pmd";
+        // 必要コンポーネントを追加
+        {
+            this->AddComponentMemData(std::make_shared<Component::SimpleCameraComponent>(this));
+        }
+
+        // PMDファイルからレンダリングの基本データ作成
+        std::shared_ptr<PMD::Render::RenderBaseData> render_data = std::make_shared<PMD::Render::RenderBaseData>();
+        in_factory->LoadRenderData(render_data, in_pmd_filepath, "Resources/Model/Toon/toon%02d.bmp");
+
+        // レンダリングコンポーネント作成
         this->_renderer = in_factory->CreateRenderer(
-            file_name_and_key.c_str(),
+            render_data,
             "Resources/Shader/PMD/BasicVertexShader.hlsl",
-            "Resources/Shader/PMD/BasicPixelShader.hlsl",
-            "Resources/Model/Toon/toon%02d.bmp"
-        );
+            "Resources/Shader/PMD/BasicPixelShader.hlsl");
 
         this->_local_mat._m = DirectX::XMMatrixIdentity();
         this->_world_mat._m = DirectX::XMMatrixIdentity();
 
-        // IKデータをあらかじめ取得
-        this->_ik_datas = std::make_shared<std::vector<PMD::Loader::PMDIK>>(in_factory->GetPMDDataPack(file_name_and_key).get()->iks);
-
-        {
-            // カメラ行列作成
-            {
-                DirectX::XMFLOAT3 target(0.0, this->_eye.y, 0.0);
-                DirectX::XMFLOAT3 up(0.0, 1.0f, 0.0);
-
-                this->_view_mat._m = DirectX::XMMatrixLookAtLH(
-                    DirectX::XMLoadFloat3(&this->_eye),
-                    DirectX::XMLoadFloat3(&target),
-                    DirectX::XMLoadFloat3(&up));
-            }
-
-            // 射影行列作成
-            {
-                this->_proj_mat._m = DirectX::XMMatrixPerspectiveFovLH(
-                    DirectX::XM_PIDIV4,
-                    static_cast<float>(in_window_data.width) / static_cast<float>(in_window_data.height),
-                    // カメラが写し始めの値
-                    1.0f,
-                    // カメラが写し終わりの値
-                    100.0f);
-            }
-        }
-
         // VMDファイルからモーションデータ作成
         {
-            this->_motion = in_factory->CreateMotion(
-                "Resources/Model/VMD/squat.vmd");
-
+            this->_motion = in_factory->CreateMotion(in_vmd_filepath);
             this->_motion->PlayAnimation();
         }
     }
@@ -58,26 +39,27 @@ namespace App
     {
     }
 
-    void PMDActor::Begin()
-    {
-    }
-
     void PMDActor::TickImplement(float in_deltaTimeSecond)
     {
         DirectX::XMFLOAT3 up(0.0, 1.0f, 0.0);
         this->_world_mat._m *= DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&up), 0.01f);
 
-        this->_motion->UpdateAnimation(this->_renderer.get(), this->_ik_datas);
+        this->_motion->UpdateAnimation(this->_renderer.get(), this->_renderer->GetBaseData()->iks);
     }
 
     void PMDActor::Render()
     {
+        auto simple_camera_component = this->GetComponent<Component::SimpleCameraComponent*>();
+        auto view_mat = simple_camera_component->GetViewMat();
+        auto proj_mat = simple_camera_component->GetProjMat();
+        auto eye_vec = simple_camera_component->GetEye();
+
         // レンダリング
         this->_renderer->InsertCmdToCmdPipeline(
             this->_local_mat._m,
             this->_world_mat._m,
-            this->_view_mat._m,
-            this->_proj_mat._m,
-            this->_eye);
+            view_mat._m,
+            proj_mat._m,
+            eye_vec);
     }
 }

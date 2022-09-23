@@ -79,8 +79,8 @@ namespace Actor
         {
             for (unsigned int i = 0; i < this->_components.size(); ++i)
             {
-                Component::Component* pComponent = this->_components[i];
-                T t = dynamic_cast<T>(pComponent);
+                auto component = this->_components[i];
+                T t = dynamic_cast<T>(component.get());
                 if (t != NULL)
                 {
                     return t;

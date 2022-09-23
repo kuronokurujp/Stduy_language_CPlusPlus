@@ -177,6 +177,7 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Configuration)\Resources\Shader /i 
     <ClCompile Include="Code\Sources\App\PMDActor.cpp" />
     <ClCompile Include="Code\Sources\Component\ActorComponent.cpp" />
     <ClCompile Include="Code\Sources\Component\Component.cpp" />
+    <ClCompile Include="Code\Sources\Component\SimpleCameraComponent.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Core.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Material.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Math.cpp" />

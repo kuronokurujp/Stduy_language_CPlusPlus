@@ -29,6 +29,23 @@ namespace Actor
         const bool IsActor(Actor* in_pActor);
 
         const std::vector<Actor*> GetActors();
+        // テンプレートで指定したアクターを取得.
+        // ポインター型限定.
+        template <class T> const std::vector<T> GetActors()
+        {
+            std::vector<T> find_list;
+            for (unsigned int i = 0; i < this->_actors.size(); ++i)
+            {
+                auto actor = this->_actors[i];
+                T t = dynamic_cast<T>(actor);
+                if (t != NULL)
+                {
+                    find_list.emplace_back(t);
+                }
+            }
+
+            return find_list;
+        }
 
         /// <summary>
         /// 全てのアクターを破棄.
