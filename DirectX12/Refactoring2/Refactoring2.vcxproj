@@ -135,14 +135,18 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Configuration)\Resources\Shader /i 
     <ClInclude Include="Code\Headers\Actor\Actor.h" />
     <ClInclude Include="Code\Headers\Actor\ActorManager.h" />
     <ClInclude Include="Code\Headers\Actor\ActorMiniHeader.h" />
+    <ClInclude Include="Code\Headers\Animation\BaseAnimation.h" />
     <ClInclude Include="Code\Headers\App\AppMiniHeader.h" />
     <ClInclude Include="Code\Headers\App\BaseCameraActor.h" />
+    <ClInclude Include="Code\Headers\App\GameActor.h" />
     <ClInclude Include="Code\Headers\App\GameController.h" />
     <ClInclude Include="Code\Headers\App\PMDActor.h" />
     <ClInclude Include="Code\Headers\Common.h" />
     <ClInclude Include="Code\Headers\Component\ActorComponent.h" />
     <ClInclude Include="Code\Headers\Component\Component.h" />
+    <ClInclude Include="Code\Headers\Component\PMDMeshComponent.h" />
     <ClInclude Include="Code\Headers\Component\SimpleCameraComponent.h" />
+    <ClInclude Include="Code\Headers\Component\SkeletalMeshComponent.h" />
     <ClInclude Include="Code\Headers\DirectX12\d3dx12.h" />
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Core.h" />
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Material.h" />
@@ -161,7 +165,8 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Configuration)\Resources\Shader /i 
     <ClInclude Include="Code\Headers\MMD\MMDMiniHeader.h" />
     <ClInclude Include="Code\Headers\MMD\PMDLoader.h" />
     <ClInclude Include="Code\Headers\MMD\PMDMaterial.h" />
-    <ClInclude Include="Code\Headers\MMD\PMDRendererFactory.h" />
+    <ClInclude Include="Code\Headers\MMD\PMDFactory.h" />
+    <ClInclude Include="Code\Headers\MMD\VMDAnimation.h" />
     <ClInclude Include="Code\Headers\MMD\VMDLoader.h" />
   </ItemGroup>
   <ItemGroup>
@@ -173,11 +178,14 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Configuration)\Resources\Shader /i 
     <ClCompile Include="Code\Sources\Actor\Actor.cpp" />
     <ClCompile Include="Code\Sources\Actor\ActorManager.cpp" />
     <ClCompile Include="Code\Sources\App\BaseCameraActor.cpp" />
+    <ClCompile Include="Code\Sources\App\GameActor.cpp" />
     <ClCompile Include="Code\Sources\App\GameController.cpp" />
     <ClCompile Include="Code\Sources\App\PMDActor.cpp" />
     <ClCompile Include="Code\Sources\Component\ActorComponent.cpp" />
     <ClCompile Include="Code\Sources\Component\Component.cpp" />
+    <ClCompile Include="Code\Sources\Component\PMDMeshComponent.cpp" />
     <ClCompile Include="Code\Sources\Component\SimpleCameraComponent.cpp" />
+    <ClCompile Include="Code\Sources\Component\SkeletalMeshComponent.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Core.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Material.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Math.cpp" />
@@ -190,7 +198,8 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Configuration)\Resources\Shader /i 
     <ClCompile Include="Code\Sources\GUI\Window\WindowView.cpp" />
     <ClCompile Include="Code\Sources\MMD\PMDLoader.cpp" />
     <ClCompile Include="Code\Sources\MMD\PMDMaterial.cpp" />
-    <ClCompile Include="Code\Sources\MMD\PMDRendererFactory.cpp" />
+    <ClCompile Include="Code\Sources\MMD\PMDFactory.cpp" />
+    <ClCompile Include="Code\Sources\MMD\VMDAnimation.cpp" />
     <ClCompile Include="Code\Sources\MMD\VMDLoader.cpp" />
   </ItemGroup>
   <ItemGroup>

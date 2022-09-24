@@ -6,60 +6,48 @@
 namespace App
 {
     PMDActor::PMDActor(
-        std::shared_ptr<PMD::Render::Factory> in_factory,
+        std::shared_ptr<PMD::Factory> in_factory,
         const std::string& in_pmd_filepath,
         const std::string& in_vmd_filepath)
     {
+        // PMDファイルからレンダリングの基本データ作成
+        std::shared_ptr<Component::PMDMeshCameraComponent::RenderBaseData> render_data = std::make_shared<Component::PMDMeshCameraComponent::RenderBaseData>();
+        in_factory->LoadRenderData(render_data, in_pmd_filepath, "Resources/Model/Toon/toon%02d.bmp");
+
         // 必要コンポーネントを追加
         {
             this->AddComponentMemData(std::make_shared<Component::SimpleCameraComponent>(this));
-        }
 
-        // PMDファイルからレンダリングの基本データ作成
-        std::shared_ptr<PMD::Render::RenderBaseData> render_data = std::make_shared<PMD::Render::RenderBaseData>();
-        in_factory->LoadRenderData(render_data, in_pmd_filepath, "Resources/Model/Toon/toon%02d.bmp");
+            // メッシュコンポーネント作成
+            this->_mesh_comp = in_factory->CreateMeshComponent(
+                this,
+                render_data,
+                "Resources/Shader/PMD/BasicVertexShader.hlsl",
+                "Resources/Shader/PMD/BasicPixelShader.hlsl");
+            this->AddComponentMemData(this->_mesh_comp);
 
-        // レンダリングコンポーネント作成
-        this->_renderer = in_factory->CreateRenderer(
-            render_data,
-            "Resources/Shader/PMD/BasicVertexShader.hlsl",
-            "Resources/Shader/PMD/BasicPixelShader.hlsl");
-
-        this->_local_mat._m = DirectX::XMMatrixIdentity();
-        this->_world_mat._m = DirectX::XMMatrixIdentity();
-
-        // VMDファイルからモーションデータ作成
-        {
-            this->_motion = in_factory->CreateMotion(in_vmd_filepath);
-            this->_motion->PlayAnimation();
+            // VMDファイルからアニメーションを作成してメッシュに設定
+            auto anim = in_factory->CreateAnimation(in_vmd_filepath);
+            this->_mesh_comp->SetAnimation(anim);
+            anim->PlayAnimation();
         }
     }
 
-    PMDActor::~PMDActor()
+    void PMDActor::SetWorldLocation(DirectX::XMFLOAT3 in_vec)
     {
+        auto p_mat = this->_mesh_comp->GetWorldMatPtr();
+
+        DirectX::XMFLOAT4 v4 = DirectX::XMFLOAT4(in_vec.x, in_vec.y, in_vec.z, 1.0f);
+        p_mat->_m.r[3] = DirectX::XMLoadFloat4(&v4);
     }
 
-    void PMDActor::TickImplement(float in_deltaTimeSecond)
+    DirectX::XMFLOAT3 PMDActor::GetWorldLoaction()
     {
-        DirectX::XMFLOAT3 up(0.0, 1.0f, 0.0);
-        this->_world_mat._m *= DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&up), 0.01f);
+        auto p_mat = this->_mesh_comp->GetWorldMatPtr();
 
-        this->_motion->UpdateAnimation(this->_renderer.get(), this->_renderer->GetBaseData()->iks);
-    }
+        DirectX::XMFLOAT4 v4;
+        DirectX::XMStoreFloat4(&v4, p_mat->_m.r[3]);
 
-    void PMDActor::Render()
-    {
-        auto simple_camera_component = this->GetComponent<Component::SimpleCameraComponent*>();
-        auto view_mat = simple_camera_component->GetViewMat();
-        auto proj_mat = simple_camera_component->GetProjMat();
-        auto eye_vec = simple_camera_component->GetEye();
-
-        // レンダリング
-        this->_renderer->InsertCmdToCmdPipeline(
-            this->_local_mat._m,
-            this->_world_mat._m,
-            view_mat._m,
-            proj_mat._m,
-            eye_vec);
+        return DirectX::XMFLOAT3(v4.x, v4.y, v4.z);
     }
 }

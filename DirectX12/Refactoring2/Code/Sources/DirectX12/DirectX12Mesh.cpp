@@ -10,7 +10,11 @@ namespace DirectX12
         this->_idx_buff_key = in_r_idx_key;
     }
 
-    const bool Mesh::Create(std::shared_ptr<Context> in_r_context, std::vector<UINT8>& in_r_vertexs, size_t in_vertex_stride_byte_size, std::vector<UINT16>& in_r_indices)
+    const bool Mesh::Create(
+        std::shared_ptr<Context> in_r_context,
+        std::vector<UINT8>& in_r_vertexs,
+        size_t in_vertex_stride_byte_size,
+        std::vector<UINT16>& in_r_indices)
     {
         if (this->_ready)
             return false;

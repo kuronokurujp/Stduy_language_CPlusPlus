@@ -109,25 +109,23 @@ namespace PMD
 
             /// <summary>
             /// IK解決処理
-            /// TODO: 作成中
             /// </summary>
             void _IKSolve(class Renderer* in_p_renderer, std::shared_ptr<std::vector<PMD::Loader::PMDIK>> in_ik_datas, const UINT32 in_now_frame);
 
             /// <summary>
             /// CCD-IKによるボーン方向を解決
-            /// TODO: 作成中
             /// </summary>
             /// <param name="in_r_ik"></param>
             void _SolveCCDIK(class Renderer* in_p_renderer, const PMD::Loader::PMDIK& in_r_ik);
+
             /// <summary>
             /// 余弦定理によるボーン方向を解決
             /// TODO: 作成中
-            /// </summary>
             /// <param name="in_r_ik"></param>
             void _SolveCosineIK(class Renderer* in_p_renderer, const PMD::Loader::PMDIK& in_r_ik);
+
             /// <summary>
             /// LockAt行列によるボーン方向を解決
-            /// TODO: 作成中
             /// </summary>
             /// <param name="in_r_ik"></param>
             void _SolveLockIK(class Renderer* in_p_renderer, const PMD::Loader::PMDIK& in_r_ik);

@@ -3,8 +3,7 @@
 #include <stdio.h>
 #include <cstdint>
 
-// 前方宣言
-namespace Actor { class Actor; }
+#include <Actor/Actor.h>
 
 namespace Component
 {

@@ -12,7 +12,7 @@ namespace App
         this->_window_ctrl = in_window_ctrl;
 
         this->_actor_manager = std::make_unique<Actor::ActorManager>();
-        this->_pmd_render_factor = std::make_shared<PMD::Render::Factory>();
+        this->_pmd_render_factor = std::make_shared<PMD::Factory>();
     }
 
     const bool GameController::Start()
@@ -33,6 +33,14 @@ namespace App
         // PMDキャラクターのアクター作成
         {
             auto p_pmd_actor = new App::PMDActor(this->_pmd_render_factor, "Resources/Model/Miku.pmd", "Resources/Model/VMD/squat.vmd");
+            p_pmd_actor->SetWorldLocation(DirectX::XMFLOAT3(10, 0, 0));
+            this->_actor_manager->AddActor(p_pmd_actor);
+        }
+
+        // PMDキャラクターのアクター作成
+        {
+            auto p_pmd_actor = new App::PMDActor(this->_pmd_render_factor, "Resources/Model/Miku.pmd", "Resources/Model/VMD/squat.vmd");
+            p_pmd_actor->SetWorldLocation(DirectX::XMFLOAT3(0, 0, 0));
             this->_actor_manager->AddActor(p_pmd_actor);
         }
 

@@ -1,5 +1,4 @@
 ﻿#include "Component/component.h"
-#include "Actor/actor.h"
 
 namespace Component
 {

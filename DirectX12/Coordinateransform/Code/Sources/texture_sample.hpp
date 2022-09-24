@@ -68,57 +68,11 @@ namespace Texture
 			assert(0 < in_height);
 		}
 
-		// WriteToSubresourceで転送するためのヒープ設定
-		/*
-		D3D12_HEAP_PROPERTIES heap_prop = {};
-		{
-			// 特殊設定なのでカスタム設定にする
-			heap_prop.Type = D3D12_HEAP_TYPE_CUSTOM;
-
-			// TODO: ライトバック？
-			heap_prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;
-
-			// 転送はL0, という事はCPU側から直接行う
-			// TODO: L0とはなに？
-			heap_prop.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;
-
-			// 単一アダプターなので0
-			// TODO: 単一でない場合はどうなるの？
-			heap_prop.CreationNodeMask = 0;
-			heap_prop.VisibleNodeMask = 0;
-		}
-		*/
-		// 上記を置き換え
 		auto heap_prop = CD3DX12_HEAP_PROPERTIES(
 			D3D12_CPU_PAGE_PROPERTY_WRITE_BACK,
 			D3D12_MEMORY_POOL_L0,
 			0, 0);
 
-		/*
-		D3D12_RESOURCE_DESC res_desc = {};
-		{
-			// RGBAフォーマット
-			res_desc.Format = in_rgba_format;
-			// テクスチャの縦横サイズ
-			res_desc.Width = in_width;
-			res_desc.Height = in_height;
-			// TODO: これの用途が分からん
-			res_desc.DepthOrArraySize = in_depth_or_array_size;
-			// アンチエイリアシングしないので１に
-			res_desc.SampleDesc.Count = 1;
-			// クオリティは最低
-			res_desc.SampleDesc.Quality = 0;
-			// ミップマップしないので１に
-			res_desc.MipLevels = in_mip_levels;
-			// 2Dテクスチャ用
-			res_desc.Dimension = in_dimension;
-			// レイアウトは決めない
-			res_desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-			// フラグなし
-			res_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
-		}
-		*/
-		// 上記を置き換え
 		auto res_desc = CD3DX12_RESOURCE_DESC(
 			in_dimension,
 			0,

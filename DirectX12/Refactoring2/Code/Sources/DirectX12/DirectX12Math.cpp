@@ -51,7 +51,6 @@ namespace DirectX12
 
     /// <summary>
     /// 特定ベクトルをLockAt先へ回転する回転行列を出力
-    /// TODO: 製作中
     /// </summary>
     /// <param name="in_lockat"></param>
     /// <param name="in_up"></param>

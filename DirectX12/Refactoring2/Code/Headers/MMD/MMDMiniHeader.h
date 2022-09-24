@@ -1,3 +1,3 @@
 ﻿#pragma once
 
-#include "MMD/PMDRendererFactory.h"
+#include "MMD/PMDFactory.h"

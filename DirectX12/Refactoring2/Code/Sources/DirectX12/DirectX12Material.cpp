@@ -31,7 +31,7 @@ namespace DirectX12
             auto result = p_material_buff->Map(0, nullptr, (void**)&p_map_material);
             assert(SUCCEEDED(result));
 
-            // TODO: 呼び出し側でやってもらうか
+            // 呼び出し側でやってもらうか
             in_lambda_write_material_buff(p_map_material);
 
             p_material_buff->Unmap(0, nullptr);

@@ -28,6 +28,6 @@ namespace App
         std::shared_ptr<GUI::DirectX12WindowController> _window_ctrl;
         std::unique_ptr<Actor::ActorManager> _actor_manager;
 
-        std::shared_ptr<PMD::Render::Factory> _pmd_render_factor;
+        std::shared_ptr<PMD::Factory> _pmd_render_factor;
     };
 }

@@ -126,7 +126,7 @@
     <ClInclude Include="Code\Headers\MMD\PMDMaterial.h">
       <Filter>Code\Headers\MMD</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Headers\MMD\PMDRendererFactory.h">
+    <ClInclude Include="Code\Headers\MMD\PMDFactory.h">
       <Filter>Code\Headers\MMD</Filter>
     </ClInclude>
     <ClInclude Include="Code\Headers\MMD\MMDMiniHeader.h">
@@ -148,6 +148,11 @@
     <ClInclude Include="Code\Headers\Component\Component.h" />
     <ClInclude Include="Code\Headers\Component\SimpleCameraComponent.h" />
     <ClInclude Include="Code\Headers\Component\ActorComponent.h" />
+    <ClInclude Include="Code\Headers\Component\SkeletalMeshComponent.h" />
+    <ClInclude Include="Code\Headers\Component\PMDMeshComponent.h" />
+    <ClInclude Include="Code\Headers\Animation\BaseAnimation.h" />
+    <ClInclude Include="Code\Headers\MMD\VMDAnimation.h" />
+    <ClInclude Include="Code\Headers\App\GameActor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -195,7 +200,7 @@
     <ClCompile Include="Code\Sources\MMD\PMDLoader.cpp">
       <Filter>Code\Sources\MMD</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Sources\MMD\PMDRendererFactory.cpp">
+    <ClCompile Include="Code\Sources\MMD\PMDFactory.cpp">
       <Filter>Code\Sources\MMD</Filter>
     </ClCompile>
     <ClCompile Include="Code\Sources\MMD\VMDLoader.cpp">
@@ -215,6 +220,10 @@
     <ClCompile Include="Code\Sources\Component\Component.cpp" />
     <ClCompile Include="Code\Sources\Component\ActorComponent.cpp" />
     <ClCompile Include="Code\Sources\Component\SimpleCameraComponent.cpp" />
+    <ClCompile Include="Code\Sources\MMD\VMDAnimation.cpp" />
+    <ClCompile Include="Code\Sources\Component\PMDMeshComponent.cpp" />
+    <ClCompile Include="Code\Sources\Component\SkeletalMeshComponent.cpp" />
+    <ClCompile Include="Code\Sources\App\GameActor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\PMD\BasicVertexShader.hlsl">

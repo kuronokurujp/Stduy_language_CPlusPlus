@@ -1,31 +1,26 @@
 ﻿#pragma once
 
 #include "GUI/GUIMiniHeader.h"
-#include "Actor/ActorMiniHeader.h"
 #include "MMD/MMDMiniHeader.h"
+
+#include "GameActor.h"
+
+#include "Component/PMDMeshComponent.h"
 
 namespace App
 {
-    class PMDActor : public Actor::Actor
+    class PMDActor : public GameActor
     {
     public:
         PMDActor(
-            std::shared_ptr<PMD::Render::Factory> in_factory,
+            std::shared_ptr<PMD::Factory> in_factory,
             const std::string& in_pmd_filepath,
             const std::string& in_vmd_filepath);
-        virtual ~PMDActor();
 
-        void TickImplement(float in_deltaTimeSecond) override final;
-
-        // レンダリングする
-        void Render() override final;
+        void SetWorldLocation(DirectX::XMFLOAT3 in_vec) override final;
+        DirectX::XMFLOAT3 GetWorldLoaction() override final;
 
     private:
-        std::shared_ptr<PMD::Render::Renderer> _renderer;
-        std::shared_ptr<PMD::Render::Motion> _motion;
-
-        // 3Dの座標変換
-        DirectX12::XMMATRIX _local_mat;
-        DirectX12::XMMATRIX _world_mat;
+        std::shared_ptr<Component::PMDMeshCameraComponent> _mesh_comp;
     };
 }
