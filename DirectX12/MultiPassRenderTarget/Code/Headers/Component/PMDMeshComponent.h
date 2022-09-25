@@ -47,11 +47,11 @@ namespace Component
             // ボーンインデックス
             UINT32 index = 0;
             // ボーン種別
-            BoneType bone_type = BoneType::Rotation;
+            BoneType bone_type;
 
-            UINT32 parent_bone = 0;
+            UINT32 parent_bone;
             // IK親ボーン
-            UINT32 ik_parent_bone = 0;
+            UINT32 ik_parent_bone;
             // ボーン基準点
             DirectX::XMFLOAT3 start_pos;
             // ボーン先端点(未使用)
