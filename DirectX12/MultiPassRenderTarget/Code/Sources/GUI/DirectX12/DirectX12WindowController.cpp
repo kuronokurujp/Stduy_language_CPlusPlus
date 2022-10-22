@@ -1,5 +1,7 @@
 ﻿#include "GUI/DirectX12/DirectX12WindowController.h"
 
+#include "DirectX12/DirectX12RednerTarget.h"
+
 namespace GUI
 {
     // 制御モデルは外部から受け取る
@@ -66,5 +68,11 @@ namespace GUI
     const WindowCommonData& DirectX12WindowController::GetWindowData()
     {
         return this->_window_common_data;
+    }
+
+    bool DirectX12WindowController::AddRenderTarget()
+    {
+        this->_view->AddRednerTarget();
+        return true;
     }
 }

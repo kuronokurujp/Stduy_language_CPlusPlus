@@ -170,8 +170,10 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Platform)\$(Configuration)\Resource
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Math.h" />
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Mesh.h" />
     <ClInclude Include="Code\Headers\DirectX12\DirectX12MiniHeader.h" />
+    <ClInclude Include="Code\Headers\DirectX12\DirectX12RednerTarget.h" />
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Shader.h" />
     <ClInclude Include="Code\Headers\DirectX12\DirectX12Texture.h" />
+    <ClInclude Include="Code\Headers\Geometry\PeraPoly.h" />
     <ClInclude Include="Code\Headers\GUI\DirectX12\DirectX12WindowController.h" />
     <ClInclude Include="Code\Headers\GUI\DirectX12\DirectX12WindowModel.h" />
     <ClInclude Include="Code\Headers\GUI\DirectX12\DirectX12WindowView.h" />
@@ -188,6 +190,7 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Platform)\$(Configuration)\Resource
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Shader\Geometry\PeraPoly\PeraShaderHeader.hlsli" />
     <None Include="Shader\PMD\BasicShaderHeader.hlsli" />
   </ItemGroup>
   <ItemGroup>
@@ -207,8 +210,10 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Platform)\$(Configuration)\Resource
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Material.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Math.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Mesh.cpp" />
+    <ClCompile Include="Code\Sources\DirectX12\DirectX12RednerTarget.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Shader.cpp" />
     <ClCompile Include="Code\Sources\DirectX12\DirectX12Texture.cpp" />
+    <ClCompile Include="Code\Sources\Geometry\PeraPoly.cpp" />
     <ClCompile Include="Code\Sources\GUI\DirectX12\DirectX12WindoeView.cpp" />
     <ClCompile Include="Code\Sources\GUI\DirectX12\DirectX12WindowController.cpp" />
     <ClCompile Include="Code\Sources\GUI\DirectX12\DirectX12WindowModel.cpp" />
@@ -220,6 +225,24 @@ xcopy $(ProjectDir)Shader $(ProjectDir)Bin\$(Platform)\$(Configuration)\Resource
     <ClCompile Include="Code\Sources\MMD\VMDLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Shader\Geometry\PeraPoly\PeraPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">main</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">BasicPS</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="Shader\Geometry\PeraPoly\PeraVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">main</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">BasicVS</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Shader\PMD\BasicPixelShader.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">BasicPS</EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>

@@ -24,9 +24,9 @@ namespace PMD
             const std::string& in_r_current_resource_path,
             const std::string& in_r_toon_file_path_fmt,
             std::vector<PMD::Loader::PMDMaterial>& in_r_pmd_material,
-            DirectX12::Context::ComPtr<ID3D12Resource> in_white_share_texture,
-            DirectX12::Context::ComPtr<ID3D12Resource> in_black_share_texture,
-            DirectX12::Context::ComPtr<ID3D12Resource> in_gradation_share_texture)
+            DirectX12::ComPtr<ID3D12Resource> in_white_share_texture,
+            DirectX12::ComPtr<ID3D12Resource> in_black_share_texture,
+            DirectX12::ComPtr<ID3D12Resource> in_gradation_share_texture)
         {
             out_p_source->pmd_materials.resize(in_r_pmd_material.size());
             out_p_source->pmd_textures.resize(in_r_pmd_material.size());

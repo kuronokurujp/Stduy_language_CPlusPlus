@@ -44,6 +44,9 @@ namespace App
             this->_actor_manager->AddActor(p_pmd_actor);
         }
 
+        // 利用するレンダーターゲットを追加
+        this->_window_ctrl->AddRenderTarget();
+
         return true;
     }
 

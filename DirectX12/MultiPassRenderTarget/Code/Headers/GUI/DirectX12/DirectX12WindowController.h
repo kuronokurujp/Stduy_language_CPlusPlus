@@ -35,6 +35,8 @@ namespace GUI
 
         std::shared_ptr<DirectX12WindowModel> GetModel() { return this->_model; }
 
+        bool AddRenderTarget();
+
     private:
         std::shared_ptr<DirectX12WindowModel> _model;
         std::shared_ptr<DirectX12WindowView> _view;

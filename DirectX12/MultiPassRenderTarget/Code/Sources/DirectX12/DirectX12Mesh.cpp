@@ -19,6 +19,10 @@ namespace DirectX12
         if (this->_ready)
             return false;
 
+        // インデックスバッファを利用しない場合はキー名をクリア
+        if (in_r_indices.size() <= 0)
+            this->_idx_buff_key.clear();
+
         // メッシュ作成
         // 頂点バッファビュー作成
         {
@@ -45,6 +49,7 @@ namespace DirectX12
         }
 
         // 頂点のインデックスバッファビューを作成
+        if (!this->_idx_buff_key.empty())
         {
             // インデックスバッファを作成
             this->_id_size_in_bytes = static_cast<UINT>(in_r_indices.size() * sizeof(in_r_indices[0]));
@@ -79,6 +84,7 @@ namespace DirectX12
 
         // 空バッファにインデックスビュー定義
         this->_ib_view = {};
+        if (!this->_idx_buff_key.empty())
         {
             // 内容を決めるバッファを取得
             auto buff = in_r_context->res_buff_map[this->_idx_buff_key.c_str()];
@@ -99,7 +105,9 @@ namespace DirectX12
             return false;
 
         DirectX12::ReleaseResourceByGPUTransition(in_r_context, this->_vs_buff_key);
-        DirectX12::ReleaseResourceByGPUTransition(in_r_context, this->_idx_buff_key);
+
+        if (!this->_idx_buff_key.empty())
+            DirectX12::ReleaseResourceByGPUTransition(in_r_context, this->_idx_buff_key);
 
         this->_ready = false;
 
@@ -115,7 +123,9 @@ namespace DirectX12
         in_r_context->cmd_list->IASetPrimitiveTopology(in_topology);
 
         // 一度に設定できるインデックスバッファビューは一つのみ
-        in_r_context->cmd_list->IASetIndexBuffer(&this->_ib_view);
+        if (!this->_idx_buff_key.empty())
+            in_r_context->cmd_list->IASetIndexBuffer(&this->_ib_view);
+
         // 頂点バッファビューを設定
         in_r_context->cmd_list->IASetVertexBuffers(0, 1, &this->_vb_view);
     }

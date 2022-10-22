@@ -1,7 +1,9 @@
 ﻿#include "GUI/GUIMiniHeader.h"
 
 #include "DirectX12/d3dx12.h"
+#include "DirectX12/DirectX12RednerTarget.h"
 
+#include <memory>
 #include <assert.h>
 
 namespace GUI
@@ -89,7 +91,7 @@ namespace GUI
             heap_desc.NumDescriptors = 2;
             heap_desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
-            auto result = context->dev->CreateDescriptorHeap(&heap_desc, IID_PPV_ARGS(this->_rtv_heaps.ReleaseAndGetAddressOf()));
+            auto result = context->dev->CreateDescriptorHeap(&heap_desc, IID_PPV_ARGS(this->_rtv_desc_heap.ReleaseAndGetAddressOf()));
             assert(SUCCEEDED(result));
         }
 
@@ -110,7 +112,7 @@ namespace GUI
             rtv_desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 
             // ディスクリプタの先頭ハンドルを取得
-            D3D12_CPU_DESCRIPTOR_HANDLE handle = this->_rtv_heaps->GetCPUDescriptorHandleForHeapStart();
+            D3D12_CPU_DESCRIPTOR_HANDLE handle = this->_rtv_desc_heap->GetCPUDescriptorHandleForHeapStart();
             auto buff_offset = context->dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
             for (UINT i = 0; i < swap_desc.BufferCount; ++i)
             {
@@ -177,7 +179,7 @@ namespace GUI
                 heap_desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
                 heap_desc.NumDescriptors = 1;
 
-                auto result = context->dev->CreateDescriptorHeap(&heap_desc, IID_PPV_ARGS(this->_dsv_heap.ReleaseAndGetAddressOf()));
+                auto result = context->dev->CreateDescriptorHeap(&heap_desc, IID_PPV_ARGS(this->_dsv_desc_heap.ReleaseAndGetAddressOf()));
                 assert(SUCCEEDED(result));
             }
 
@@ -193,7 +195,7 @@ namespace GUI
                     this->_depth_buffer.Get(),
                     &dsv_desc,
                     // ビュー対応させるディスクリプタヒープのアドレス
-                    this->_dsv_heap->GetCPUDescriptorHandleForHeapStart()
+                    this->_dsv_desc_heap->GetCPUDescriptorHandleForHeapStart()
                 );
             }
         }
@@ -202,53 +204,18 @@ namespace GUI
     // 描画開始(描画に必要な前処理をする)
     void DirectX12WindowView::BeginRender()
     {
-        // バックバッファのレンダーターゲットインデックスを取得
-        auto bb_idx = this->_swapchain->GetCurrentBackBufferIndex();
-
-        // バックバッファをレンダーターゲットとして使用通知のバリアコマンド追加
-        // EndRenderメソッドで利用するので壊さないように注意
-        this->_barrier_desc = CD3DX12_RESOURCE_BARRIER::Transition(
-            this->_back_buffers[bb_idx].Get(),
-            D3D12_RESOURCE_STATE_PRESENT,
-            D3D12_RESOURCE_STATE_RENDER_TARGET
-        );
-
         auto p_dx12_ctrl = dynamic_cast<DirectX12WindowController*>(this->_p_ctrl);
         auto model = p_dx12_ctrl->GetModel();
         auto context = model->Context();
-        context->cmd_list->ResourceBarrier(1, &this->_barrier_desc);
 
-        // レンダーターゲットビューを設定コマンド追加
-        // 参照するディスクリプタのポインターを利用してレンダーターゲットビューを設定
-        auto rtv_h = this->_rtv_heaps->GetCPUDescriptorHandleForHeapStart();
-        auto dsv_h = this->_dsv_heap->GetCPUDescriptorHandleForHeapStart();
+        const auto& clear_color = model->GetClearClear();
+        // レンダーゲット開始
         {
-            rtv_h.ptr += bb_idx * context->dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
-            context->cmd_list->OMSetRenderTargets(
-                1,
-                &rtv_h,
-                true,
-                // 深度バッファを作成したヒープハンドルを設定
-                &dsv_h);
+            for (auto r : this->_render_target_list)
+            {
+                r->BeginWrite(context->cmd_list, this->_dsv_desc_heap, clear_color);
+            }
         }
-
-        // 深度バッファをクリア
-        // 書き込まれた深度値をクリアしないと深度判定がうまくいかない
-        {
-            context->cmd_list->ClearDepthStencilView(dsv_h, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-        }
-
-        // 設定したレンダーターゲットを色クリア
-        {
-            // 画面全体をクリアする色
-            const auto& clear_color = model->GetClearClear();
-            context->cmd_list->ClearRenderTargetView(rtv_h, clear_color._color, 0, nullptr);
-        }
-
-        // ビュー領域とシザー領域を設定
-        context->cmd_list->RSSetViewports(1, &model->GetViewPort());
-        context->cmd_list->RSSetScissorRects(1, &model->GetScissorRect());
     }
 
     // 描画終了(描画内容を画面へ反映)
@@ -256,8 +223,25 @@ namespace GUI
     {
         auto p_dx12_ctrl = dynamic_cast<DirectX12WindowController*>(this->_p_ctrl);
         auto model = p_dx12_ctrl->GetModel();
-
         auto context = model->Context();
+
+        // レンダーゲット終了
+        {
+            for (auto r : this->_render_target_list)
+            {
+                r->EndWrite(context->cmd_list);
+            }
+        }
+
+        this->_ClearRender();
+
+        // 書き込んだレンダーターゲットをレンダリング
+        {
+            for (auto r : this->_render_target_list)
+            {
+                r->Render(context);
+            }
+        }
 
         // バックバッファをフロントバッファにする
         {
@@ -280,5 +264,86 @@ namespace GUI
         context->cmd_allocator->Reset();
         // コマンドのクローズ状態を解除
         context->cmd_list->Reset(context->cmd_allocator.Get(), nullptr);
+    }
+
+    void DirectX12WindowView::AddRednerTarget()
+    {
+        auto p_dx12_ctrl = dynamic_cast<DirectX12WindowController*>(this->_p_ctrl);
+        auto model = p_dx12_ctrl->GetModel();
+
+        // TODO: レンダーターゲットを作成してモデルに追加
+        auto render_target = std::make_shared<DirectX12::RenderTarget>(
+            model->Context(),
+            this->_rtv_desc_heap,
+            this->_dsv_desc_heap,
+            this->_back_buffers[0],
+            model->GetClearClear());
+
+        this->_render_target_list.push_back(render_target);
+    }
+
+    void DirectX12WindowView::_ClearRender()
+    {
+        auto p_dx12_ctrl = dynamic_cast<DirectX12WindowController*>(this->_p_ctrl);
+        auto model = p_dx12_ctrl->GetModel();
+        auto context = model->Context();
+
+        const auto& clear_color = model->GetClearClear();
+
+        // 最後のレンダーターゲットコマンド
+        {
+            // バックバッファのレンダーターゲットインデックスを取得
+            auto bb_idx = this->_swapchain->GetCurrentBackBufferIndex();
+
+            // バックバッファをレンダーターゲットとして使用通知のバリアコマンド追加
+            // EndRenderメソッドで利用するので壊さないように注意
+            this->_barrier_desc = CD3DX12_RESOURCE_BARRIER::Transition(
+                this->_back_buffers[bb_idx].Get(),
+                D3D12_RESOURCE_STATE_PRESENT,
+                D3D12_RESOURCE_STATE_RENDER_TARGET
+            );
+
+            context->cmd_list->ResourceBarrier(1, &this->_barrier_desc);
+
+            // レンダーターゲットビューを設定コマンド追加
+            // 参照するディスクリプタのポインターを利用してレンダーターゲットビューを設定
+            auto rtv_h = this->_rtv_desc_heap->GetCPUDescriptorHandleForHeapStart();
+            auto dsv_h = this->_dsv_desc_heap->GetCPUDescriptorHandleForHeapStart();
+            {
+                rtv_h.ptr += bb_idx * context->dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+                /*
+                    context->cmd_list->OMSetRenderTargets(
+                        1,
+                        &rtv_h,
+                        true,
+                        // 深度バッファを作成したヒープハンドルを設定
+                        &dsv_h);
+                */
+
+                // MEMO: レンダーターゲットを使うとDepthはいらない？
+                context->cmd_list->OMSetRenderTargets(
+                    1,
+                    &rtv_h,
+                    false,
+                    nullptr);
+            }
+
+            // 深度バッファをクリア
+            // 書き込まれた深度値をクリアしないと深度判定がうまくいかない
+            // MEMO: レンダーターゲットを使うといらない？
+            {
+                //context->cmd_list->ClearDepthStencilView(dsv_h, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+            }
+
+            // 設定したレンダーターゲットを色クリア
+            {
+                // 画面全体をクリアする色
+                context->cmd_list->ClearRenderTargetView(rtv_h, clear_color.Color, 0, nullptr);
+            }
+
+            // ビュー領域とシザー領域を設定
+            context->cmd_list->RSSetViewports(1, &model->GetViewPort());
+            context->cmd_list->RSSetScissorRects(1, &model->GetScissorRect());
+        }
     }
 }

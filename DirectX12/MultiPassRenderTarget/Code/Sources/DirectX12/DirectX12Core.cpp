@@ -230,14 +230,14 @@ namespace DirectX12
     /// <param name="in_r_key"></param>
     /// <param name="in_memory_size"></param>
     /// <returns></returns>
-    Context::ComPtr<ID3D12Resource> CreateEmptyResourceByGPUTransition(
+    ComPtr<ID3D12Resource> CreateEmptyResourceByGPUTransition(
         std::shared_ptr<Context> in_p_context, const std::string& in_r_key, const UINT in_memory_size)
     {
         auto heap_prop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
         auto res_desc = CD3DX12_RESOURCE_DESC::Buffer(in_memory_size);
 
         // 設定内容に基づいて頂点バッファを作成
-        Context::ComPtr<ID3D12Resource> p_buff;
+        ComPtr<ID3D12Resource> p_buff;
         auto result = in_p_context->dev->CreateCommittedResource(
             &heap_prop,
             D3D12_HEAP_FLAG_NONE,
@@ -246,7 +246,7 @@ namespace DirectX12
             nullptr,
             IID_PPV_ARGS(p_buff.ReleaseAndGetAddressOf())
         );
-        assert(SUCCEEDED(result));
+        _ASSERTE(SUCCEEDED(result));
 
         in_p_context->res_buff_map[in_r_key.c_str()] = p_buff;
 
@@ -312,7 +312,7 @@ namespace DirectX12
                 return h_result;
         }
 
-        Context::ComPtr<ID3D12RootSignature> root_sig;
+        ComPtr<ID3D12RootSignature> root_sig;
         HRESULT h_result = S_OK;
         {
             h_result = in_p_context->dev->CreateRootSignature(
@@ -401,6 +401,7 @@ namespace DirectX12
             }
 
             // ブレンドの設定
+            // TODO: いずれ CD3DX12_BLEND_DESC(D3D12_DEFAULT)に置き換えたほうがいいかも
             {
                 gpipeline.BlendState.AlphaToCoverageEnable = false;
                 gpipeline.BlendState.IndependentBlendEnable = false;
@@ -442,7 +443,55 @@ namespace DirectX12
                 gpipeline.SampleDesc.Quality = 0;
             }
 
-            Context::ComPtr<ID3D12PipelineState> p_pipeline_state;
+            ComPtr<ID3D12PipelineState> p_pipeline_state;
+            h_result = in_p_context->dev->CreateGraphicsPipelineState(&gpipeline, IID_PPV_ARGS(p_pipeline_state.ReleaseAndGetAddressOf()));
+            assert(SUCCEEDED(h_result));
+
+            in_p_context->_pipeline_state_map[in_r_key.c_str()] = p_pipeline_state;
+        }
+
+        return h_result;
+    }
+
+    const HRESULT CreateCustomGraphicsPipeline(
+        std::shared_ptr<Context> in_p_context,
+        const std::string& in_r_key,
+        const D3D12_GRAPHICS_PIPELINE_STATE_DESC in_gpipeline,
+        const std::string& in_use_root_sig_key,
+        const std::string& in_use_vs_shader_key,
+        const std::string& in_use_ps_shader_key,
+        const D3D12_INPUT_ELEMENT_DESC* in_p_input_layouts,
+        const UINT in_input_layout_num)
+    {
+        HRESULT h_result;
+        // グラフィックスパイプラインステートを構築
+        {
+            D3D12_GRAPHICS_PIPELINE_STATE_DESC gpipeline = in_gpipeline;
+
+            // ルートシグネチャーを設定
+            gpipeline.pRootSignature = in_p_context->_root_sig_map[in_use_root_sig_key.c_str()].Get();
+            assert(gpipeline.pRootSignature != nullptr);
+
+            // シェーダー設定
+            {
+                auto vs_blob = in_p_context->p_vs_blob_map[in_use_vs_shader_key.c_str()];
+                assert(vs_blob != nullptr);
+                gpipeline.VS.pShaderBytecode = vs_blob->GetBufferPointer();
+                gpipeline.VS.BytecodeLength = vs_blob->GetBufferSize();
+
+                auto ps_blob = in_p_context->p_ps_blob_map[in_use_ps_shader_key.c_str()];
+                assert(ps_blob != nullptr);
+                gpipeline.PS.pShaderBytecode = ps_blob->GetBufferPointer();
+                gpipeline.PS.BytecodeLength = ps_blob->GetBufferSize();
+            }
+
+            // 入力レイアウトの設定
+            {
+                gpipeline.InputLayout.pInputElementDescs = in_p_input_layouts;
+                gpipeline.InputLayout.NumElements = in_input_layout_num;
+            }
+
+            ComPtr<ID3D12PipelineState> p_pipeline_state;
             h_result = in_p_context->dev->CreateGraphicsPipelineState(&gpipeline, IID_PPV_ARGS(p_pipeline_state.ReleaseAndGetAddressOf()));
             assert(SUCCEEDED(h_result));
 
@@ -465,7 +514,7 @@ namespace DirectX12
         const std::string& in_r_key,
         const D3D12_DESCRIPTOR_HEAP_DESC& in_desc)
     {
-        Context::ComPtr<ID3D12DescriptorHeap> p_tex_desc_heap;
+        ComPtr<ID3D12DescriptorHeap> p_tex_desc_heap;
         auto result = in_p_context->dev->CreateDescriptorHeap(&in_desc, IID_PPV_ARGS(p_tex_desc_heap.ReleaseAndGetAddressOf()));
         assert(SUCCEEDED(result));
 

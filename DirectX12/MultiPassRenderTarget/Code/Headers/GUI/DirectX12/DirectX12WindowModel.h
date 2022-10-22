@@ -4,14 +4,23 @@
 
 #include "GUI/MVC/WindowModelInterface.h"
 
+namespace DirectX12
+{
+    class RenderTarget;
+}
+
 namespace GUI
 {
+    class DirectX12WindowController;
+
     /// <summary>
     /// DirectX12用のウィンドウモデル
     /// </summary>
     class DirectX12WindowModel : public WindowModelInterface
     {
     public:
+        friend DirectX12WindowController;
+
         // 画面クリア色データ構造
         // TODO: もしかしたら探せば既に定義されているかもしれないので後で差し替えるかも
         typedef union
@@ -57,15 +66,21 @@ namespace GUI
         const D3D12_RECT& GetScissorRect() const { return this->_scissor_rect; }
 
         // 画面全体をクリアする色
-        const ClearColorRGB& GetClearClear() const { return this->_clear_color; }
+        const D3D12_CLEAR_VALUE& GetClearClear() const { return this->_clear_color; }
+
+        // レンダリングターゲットリスト
+        std::vector<std::shared_ptr<DirectX12::RenderTarget>> GetRenderTargetList() { return this->_render_target_list; }
 
     private:
         std::shared_ptr<DirectX12::Context> _context;
+        std::vector<std::shared_ptr<DirectX12::RenderTarget>> _render_target_list;
 
         CD3DX12_VIEWPORT _viewport;
         D3D12_RECT _scissor_rect;
 
-        ClearColorRGB _clear_color;
+        //ClearColorRGB _clear_color;
+        D3D12_CLEAR_VALUE  _clear_color;
+
         bool _update_flag;
     };
 }

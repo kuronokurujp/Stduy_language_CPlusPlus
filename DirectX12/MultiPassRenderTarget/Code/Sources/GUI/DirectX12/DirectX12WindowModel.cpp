@@ -28,8 +28,11 @@ namespace GUI
             this->_scissor_rect.bottom = this->_scissor_rect.top + in_height;
         }
 
-        std::fill(std::begin(this->_clear_color._color), std::end(this->_clear_color._color), 1.0f);
-        this->_clear_color.rgba.a = 1.0f;
+        // レンダリングクリア値を作成
+        {
+            float cls_clr[4] = { 1.0, 1.0, 1.0, 1.0 };
+            this->_clear_color = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R8G8B8A8_UNORM, cls_clr);
+        }
     }
 
     DirectX12WindowModel::~DirectX12WindowModel()

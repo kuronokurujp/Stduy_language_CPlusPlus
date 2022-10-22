@@ -20,15 +20,16 @@
 int main(int argc, const char* argv[])
 {
     // TODO: コマンドプロンプトで日本語表示を可能にしたい
+    // TODO: リリースの場合はどうしよう
     {
-        static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
+        static plog::ColorConsoleAppender<plog::TxtFormatter> console_appender;
 
         std::string log_dir_path = "Save/Logs";
         std::filesystem::create_directories(log_dir_path.c_str());
 
         std::string log_file_path = log_dir_path + "/" + "log.txt";
-        static plog::RollingFileAppender<plog::TxtFormatter> fileAppender(log_file_path.c_str());
-        plog::init(plog::debug, &consoleAppender).addAppender(&fileAppender);
+        static plog::RollingFileAppender<plog::TxtFormatter> file_appender(log_file_path.c_str());
+        plog::init(plog::debug, &console_appender).addAppender(&file_appender);
         LOGD << _T("start application");
     }
 
@@ -54,6 +55,7 @@ int main(int argc, const char* argv[])
     // 指定アダプターを選択
     // NVIDIAのみしか利用できないようにする
     // 書籍「DirectX12の魔導書」のサンプル動作環境がNVIDIAだから
+    // TODO: AMD / OnBoardでも対応はいずれしたい
     const auto adaptar_name = _T("NVIDIA");
     LOGD << _T("use adapter name => ") << adaptar_name;
     auto adapter_idx = DirectX12::GetAdapterIdx(context, adaptar_name);

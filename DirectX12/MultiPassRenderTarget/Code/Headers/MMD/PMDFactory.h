@@ -75,8 +75,8 @@ namespace PMD
 
         // nullptr用のテクスチャを作成
         // これは共通利用する
-        DirectX12::Context::ComPtr<ID3D12Resource> _white_share_texture;
-        DirectX12::Context::ComPtr<ID3D12Resource> _black_share_texture;
-        DirectX12::Context::ComPtr<ID3D12Resource> _gradation_share_texture;
+        DirectX12::ComPtr<ID3D12Resource> _white_share_texture;
+        DirectX12::ComPtr<ID3D12Resource> _black_share_texture;
+        DirectX12::ComPtr<ID3D12Resource> _gradation_share_texture;
     };
 }

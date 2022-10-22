@@ -20,6 +20,11 @@
 
 namespace DirectX12
 {
+    // ComPtrを利用して解放時にReleaseを呼び出すようにしている
+    // DirectX12のAPI全般で利用
+    template<typename T>
+    using ComPtr = Microsoft::WRL::ComPtr<T>;
+
     // XMMATRIX型は16byteアライメントになっているので
     // XMMATRIX型をクラス変数として定義してクラスをnewするとアライメント問題でハングする可能性がある
     // それを防ぐために16byteアライメントでnewする。
@@ -34,11 +39,6 @@ namespace DirectX12
     // DirectX12制御のコンテキスト
     struct Context
     {
-        // ComPtrを利用して解放時にReleaseを呼び出すようにしている
-        // DirectX12のAPI全般で利用
-        template<typename T>
-        using ComPtr = Microsoft::WRL::ComPtr<T>;
-
         // ドライバーやディスプレイなどの直接制御APIに利用
         ComPtr<IDXGIFactory6> dxgi_factory;
 
@@ -76,6 +76,8 @@ namespace DirectX12
 
         // パイプラインステートマップ
         std::map<std::string, ComPtr<ID3D12PipelineState>> _pipeline_state_map;
+
+        // TODO: コンテキストを利用して発生したエラーメッセージをためる
     };
 
     /// <summary>
@@ -128,7 +130,7 @@ namespace DirectX12
     /// <param name="in_r_key"></param>
     /// <param name="in_memory_size"></param>
     /// <returns></returns>
-    extern Context::ComPtr<ID3D12Resource> CreateEmptyResourceByGPUTransition(std::shared_ptr<Context> in_p_context, const std::string& in_r_key, const UINT in_memory_size);
+    extern ComPtr<ID3D12Resource> CreateEmptyResourceByGPUTransition(std::shared_ptr<Context> in_p_context, const std::string& in_r_key, const UINT in_memory_size);
     extern bool ReleaseResourceByGPUTransition(std::shared_ptr<Context> in_p_context, const std::string& in_r_key);
 
     /// <summary>
@@ -164,6 +166,19 @@ namespace DirectX12
     extern const HRESULT CreateGraphicsPipeline(
         std::shared_ptr<Context> in_p_context,
         const std::string& in_r_key,
+        const std::string& in_use_root_sig_key,
+        const std::string& in_use_vs_shader_key,
+        const std::string& in_use_ps_shader_key,
+        const D3D12_INPUT_ELEMENT_DESC* in_p_input_layouts,
+        const UINT in_input_layout_num);
+
+    /// <summary>
+    /// グラフィックパイプラインのパラメータを使う側が設定する事で柔軟なグラフィックパイプラインが生成できる
+    /// </summary>
+    extern const HRESULT CreateCustomGraphicsPipeline(
+        std::shared_ptr<Context> in_p_context,
+        const std::string& in_r_key,
+        const D3D12_GRAPHICS_PIPELINE_STATE_DESC in_gpipeline,
         const std::string& in_use_root_sig_key,
         const std::string& in_use_vs_shader_key,
         const std::string& in_use_ps_shader_key,
