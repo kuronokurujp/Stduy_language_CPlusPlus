@@ -57,7 +57,7 @@ namespace GUI
         const D3D12_RECT& GetScissorRect() const { return this->_scissor_rect; }
 
         // 画面全体をクリアする色
-        const ClearColorRGB& GetClearClear() const { return this->_clear_color; }
+        const CD3DX12_CLEAR_VALUE& GetClearClear() const { return this->_clear_color; }
 
     private:
         std::shared_ptr<DirectX12::Context> _context;
@@ -65,7 +65,7 @@ namespace GUI
         CD3DX12_VIEWPORT _viewport;
         D3D12_RECT _scissor_rect;
 
-        ClearColorRGB _clear_color;
+        CD3DX12_CLEAR_VALUE _clear_color;
         bool _update_flag;
     };
 }

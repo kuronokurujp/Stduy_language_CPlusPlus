@@ -89,7 +89,7 @@ namespace GUI
             heap_desc.NumDescriptors = 2;
             heap_desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
-            auto result = context->dev->CreateDescriptorHeap(&heap_desc, IID_PPV_ARGS(this->_rtv_heaps.ReleaseAndGetAddressOf()));
+            auto result = context->dev->CreateDescriptorHeap(&heap_desc, IID_PPV_ARGS(this->_rtv_desc_heap.ReleaseAndGetAddressOf()));
             assert(SUCCEEDED(result));
         }
 
@@ -110,7 +110,7 @@ namespace GUI
             rtv_desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 
             // ディスクリプタの先頭ハンドルを取得
-            D3D12_CPU_DESCRIPTOR_HANDLE handle = this->_rtv_heaps->GetCPUDescriptorHandleForHeapStart();
+            D3D12_CPU_DESCRIPTOR_HANDLE handle = this->_rtv_desc_heap->GetCPUDescriptorHandleForHeapStart();
             auto buff_offset = context->dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
             for (UINT i = 0; i < swap_desc.BufferCount; ++i)
             {
@@ -177,7 +177,7 @@ namespace GUI
                 heap_desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
                 heap_desc.NumDescriptors = 1;
 
-                auto result = context->dev->CreateDescriptorHeap(&heap_desc, IID_PPV_ARGS(this->_dsv_heap.ReleaseAndGetAddressOf()));
+                auto result = context->dev->CreateDescriptorHeap(&heap_desc, IID_PPV_ARGS(this->_dsv_desc_heap.ReleaseAndGetAddressOf()));
                 assert(SUCCEEDED(result));
             }
 
@@ -193,7 +193,7 @@ namespace GUI
                     this->_depth_buffer.Get(),
                     &dsv_desc,
                     // ビュー対応させるディスクリプタヒープのアドレス
-                    this->_dsv_heap->GetCPUDescriptorHandleForHeapStart()
+                    this->_dsv_desc_heap->GetCPUDescriptorHandleForHeapStart()
                 );
             }
         }
@@ -220,8 +220,8 @@ namespace GUI
 
         // レンダーターゲットビューを設定コマンド追加
         // 参照するディスクリプタのポインターを利用してレンダーターゲットビューを設定
-        auto rtv_h = this->_rtv_heaps->GetCPUDescriptorHandleForHeapStart();
-        auto dsv_h = this->_dsv_heap->GetCPUDescriptorHandleForHeapStart();
+        auto rtv_h = this->_rtv_desc_heap->GetCPUDescriptorHandleForHeapStart();
+        auto dsv_h = this->_dsv_desc_heap->GetCPUDescriptorHandleForHeapStart();
         {
             rtv_h.ptr += bb_idx * context->dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
@@ -243,7 +243,7 @@ namespace GUI
         {
             // 画面全体をクリアする色
             const auto& clear_color = model->GetClearClear();
-            context->cmd_list->ClearRenderTargetView(rtv_h, clear_color._color, 0, nullptr);
+            context->cmd_list->ClearRenderTargetView(rtv_h, clear_color.Color, 0, nullptr);
         }
 
         // ビュー領域とシザー領域を設定

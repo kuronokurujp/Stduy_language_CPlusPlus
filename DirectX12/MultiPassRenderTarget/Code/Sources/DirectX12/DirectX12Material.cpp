@@ -21,7 +21,7 @@ namespace DirectX12
 
         this->_constant_buff_key = in_buff_key;
 
-        DirectX12::Context::ComPtr<ID3D12Resource> p_material_buff;
+        DirectX12::ComPtr<ID3D12Resource> p_material_buff;
         // マテリアル数分のバッファ作成してデータ書き込み
         {
             // マテリアルバッファを作成

@@ -26,7 +26,7 @@ namespace DirectX12
     /// <summary>
     /// テクスチャーバッファを作成
     /// </summary>
-    extern Context::ComPtr<ID3D12Resource> CreateTextureBuffer(
+    extern ComPtr<ID3D12Resource> CreateTextureBuffer(
         std::shared_ptr<Context> in_p_context,
         UINT64 in_width,
         UINT in_height,
@@ -49,7 +49,7 @@ namespace DirectX12
     /// <returns></returns>
     extern bool CreateShaderResourceView(
         std::shared_ptr<Context> in_p_context,
-        Context::ComPtr<ID3D12Resource> in_p_tex_buff,
+        ComPtr<ID3D12Resource> in_p_tex_buff,
         DXGI_FORMAT in_rgba_format,
         D3D12_CPU_DESCRIPTOR_HANDLE& in_r_desc_handle);
 
@@ -59,7 +59,7 @@ namespace DirectX12
     /// <param name="in_p_dev"></param>
     /// <param name="in_width"></param>
     /// <returns></returns>
-    extern Context::ComPtr<ID3D12Resource> CreateUploadResoucre(
+    extern ComPtr<ID3D12Resource> CreateUploadResoucre(
         std::shared_ptr<Context> in_p_context, UINT64 in_width);
 
     /// <summary>
@@ -68,7 +68,7 @@ namespace DirectX12
     /// <param name="in_p_dev"></param>
     /// <param name="in_metadata"></param>
     /// <returns></returns>
-    extern Context::ComPtr<ID3D12Resource> CreateCopyTextureResoucre(
+    extern ComPtr<ID3D12Resource> CreateCopyTextureResoucre(
         std::shared_ptr<Context> in_p_context, const DirectX::TexMetadata& in_metadata);
 
     /// <summary>
@@ -77,7 +77,7 @@ namespace DirectX12
     /// <param name="out_p_texture"></param>
     /// <param name="in_p_dev"></param>
     /// <returns></returns>
-    extern Context::ComPtr<ID3D12Resource> CreateTextureResourceFromColor(
+    extern ComPtr<ID3D12Resource> CreateTextureResourceFromColor(
         std::shared_ptr<Context> in_p_context, UINT8 in_color);
 
     /// <summary>
@@ -87,7 +87,7 @@ namespace DirectX12
     /// <param name="in_p_dev"></param>
     /// <param name="in_color"></param>
     /// <returns></returns>
-    extern Context::ComPtr<ID3D12Resource> CreateTextureResourceFromGradation(
+    extern ComPtr<ID3D12Resource> CreateTextureResourceFromGradation(
         std::shared_ptr<Context> in_p_context, UINT8 in_color);
 
     /// <summary>
@@ -95,6 +95,6 @@ namespace DirectX12
     /// </summary>
     /// <param name="in_r_file_path"></param>
     /// <returns></returns>
-    extern Context::ComPtr<ID3D12Resource> CreateTextureResourceFromLoadTextureFile(
+    extern ComPtr<ID3D12Resource> CreateTextureResourceFromLoadTextureFile(
         std::shared_ptr<Context> in_p_context, const std::string& in_r_file_path);
 }

@@ -2,16 +2,22 @@
 
 #include "GUI/MVC/Windows/WindowView.h"
 
+#include "DirectX12/DirectX12Core.h"
+
 #include <vector>
 
 namespace GUI
 {
+    class DirectX12WindowController;
+
     /// <summary>
     /// DirectX12のウィンドウView
     /// </summary>
     class DirectX12WindowView : public WindowView
     {
     public:
+        friend DirectX12WindowController;
+
         /// <summary>
         /// ウィンドウオブジェクトを生成
         /// </summary>
@@ -25,17 +31,12 @@ namespace GUI
         void EndRender() override final;
 
     private:
-        // ComPtrを利用して解放時にReleaseを呼び出すようにしている
-        // DirectX12のAPI全般で利用
-        template<typename T>
-        using ComPtr = Microsoft::WRL::ComPtr<T>;
+        DirectX12::ComPtr<IDXGISwapChain4> _swapchain;
+        DirectX12::ComPtr<ID3D12DescriptorHeap> _rtv_desc_heap;
+        DirectX12::ComPtr<ID3D12Resource> _depth_buffer;
+        DirectX12::ComPtr<ID3D12DescriptorHeap> _dsv_desc_heap;
 
-        ComPtr<IDXGISwapChain4> _swapchain;
-        ComPtr<ID3D12DescriptorHeap> _rtv_heaps;
-        ComPtr<ID3D12Resource> _depth_buffer;
-        ComPtr<ID3D12DescriptorHeap> _dsv_heap;
-
-        std::vector<ComPtr<ID3D12Resource>> _back_buffers;
+        std::vector<DirectX12::ComPtr<ID3D12Resource>> _back_buffers;
 
         D3D12_RESOURCE_BARRIER _barrier_desc;
     };

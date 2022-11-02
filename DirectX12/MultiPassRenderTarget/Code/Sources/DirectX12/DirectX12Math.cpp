@@ -11,7 +11,7 @@ namespace DirectX12
     /// <param name="in_up"></param>
     /// <param name="in_right"></param>
     /// <returns></returns>
-    DirectX::XMMATRIX LockAtMatrixByZAxis(
+    static DirectX::XMMATRIX LockAtMatrixByZAxis(
         const DirectX::XMVECTOR& in_lockat,
         const DirectX::XMFLOAT3& in_up,
         const DirectX::XMFLOAT3& in_right)
@@ -29,6 +29,8 @@ namespace DirectX12
         vy = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(vz, vx));
 
         // 計算して出来た回転座標軸のyとz軸が同じ方向だったらrightベクトルを使って再計算する
+        // TODO: 浮動小数点であるから == で比較すると0.99999が判定できないので危険(0.999999は実数上だと1.0なので)
+        // 判定は修正が必要する
         if (std::abs(DirectX::XMVector3Dot(vy, vz).m128_f32[0]) == 1.0f)
         {
             // 回転の座標軸の仮のx軸

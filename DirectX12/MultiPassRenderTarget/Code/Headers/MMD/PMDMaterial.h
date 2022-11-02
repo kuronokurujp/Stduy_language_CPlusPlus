@@ -42,6 +42,7 @@ namespace PMD
         // マテリアルデータ
         struct MaterialData
         {
+            // メッシュに割り当てたマテリアルのインデックスの数
             UINT32 indices_num;
             MaterialForHlsl basic;
             AdditionalMaterial additional;
@@ -51,10 +52,10 @@ namespace PMD
         struct MaterialTexture
         {
             // これ配列にした方が良かったかも
-            DirectX12::Context::ComPtr<ID3D12Resource> tex;
-            DirectX12::Context::ComPtr<ID3D12Resource> sph;
-            DirectX12::Context::ComPtr<ID3D12Resource> spa;
-            DirectX12::Context::ComPtr<ID3D12Resource> toon;
+            DirectX12::ComPtr<ID3D12Resource> tex;
+            DirectX12::ComPtr<ID3D12Resource> sph;
+            DirectX12::ComPtr<ID3D12Resource> spa;
+            DirectX12::ComPtr<ID3D12Resource> toon;
         };
 
         static const UINT c_pmd_model_texture_num = 4;

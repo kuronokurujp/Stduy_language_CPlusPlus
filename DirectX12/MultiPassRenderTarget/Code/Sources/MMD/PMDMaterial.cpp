@@ -110,7 +110,7 @@ namespace PMD
 
             // マテリアルバッファを作成
             {
-                DirectX12::Context::ComPtr<ID3D12Resource> p_material_buff;
+                DirectX12::ComPtr<ID3D12Resource> p_material_buff;
                 // 定数バッファありきで一旦考えてる
                 // 定数バッファはデータ一塊が256byteになっている。
                 // 定数バッファを使う場合は256byteのアライメントにしないと動かない作りにしている
@@ -310,7 +310,6 @@ namespace PMD
                         // ディスクリプタヒープのハンドルにビュー作成
                         in_context->dev->CreateConstantBufferView(&cbv_desc, heap_handle);
                     }
-                    // このディスクリプタヒープに対してはリソース一つのみ
                 }
             }
 
@@ -346,7 +345,6 @@ namespace PMD
 
                         in_context->dev->CreateConstantBufferView(&cbv_desc, heap_handle);
                     }
-                    // このディスクリプタヒープに対してはリソース一つのみ
                 }
             }
 
@@ -411,7 +409,7 @@ namespace PMD
                 }
 
                 // ルートシグネチャ作成
-                DirectX12::Context::ComPtr<ID3D12RootSignature> p_root_sig = nullptr;
+                DirectX12::ComPtr<ID3D12RootSignature> p_root_sig = nullptr;
                 {
                     // ルートシグネチャー(ディスクリプタテーブルをまとめたもの)を作る
                     D3D12_ROOT_PARAMETER root_params[3] = {};
