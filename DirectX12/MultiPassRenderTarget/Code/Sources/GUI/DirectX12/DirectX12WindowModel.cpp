@@ -1,5 +1,7 @@
 ﻿#include "GUI/DirectX12/DirectX12WindowModel.h"
 
+#include "DirectX12/DirectX12RednerTarget.h"
+
 #include <assert.h>
 
 namespace GUI
@@ -31,7 +33,7 @@ namespace GUI
         // レンダリングクリア値を作成
         {
             float cls_clr[4] = { 1.0, 1.0, 1.0, 1.0 };
-            this->_clear_color = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R8G8B8A8_UNORM, cls_clr);
+            this->_clear_color = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, cls_clr);
         }
     }
 
@@ -42,5 +44,48 @@ namespace GUI
     void DirectX12WindowModel::EnableUpdate(const bool in_flag)
     {
         this->_update_flag = in_flag;
+    }
+
+    /// <summary>
+    /// TODO: ポストプロセス用のレンダーターゲットを生成
+    /// </summary>
+    void DirectX12WindowModel::CreatePostProcessRenderTarget(
+        const DirectX12::ComPtr<ID3D12DescriptorHeap> in_src_rtv_desc_heap,
+        const DirectX12::ComPtr<ID3D12DescriptorHeap> in_src_dsv_desc_heap,
+        const DirectX12::ComPtr<ID3D12Resource> in_src_back_buff)
+    {
+        if (this->_post_process_render_target)
+            return;
+        if (!in_src_back_buff.Get())
+            return;
+        if (!in_src_dsv_desc_heap.Get())
+            return;
+        if (!in_src_rtv_desc_heap.Get())
+            return;
+
+        // TODO: レンダーターゲットを作成してモデルに追加
+        this->_post_process_render_target = std::make_shared<DirectX12::RenderTarget>(
+            this->_context,
+            in_src_rtv_desc_heap,
+            in_src_dsv_desc_heap,
+            in_src_back_buff,
+            this->_clear_color);
+    }
+
+    /// <summary>
+    /// TODO: ポストプロセス用のレンダーターゲットを破棄
+    /// </summary>
+    void DirectX12WindowModel::ReleasePostProcessRenderTarget()
+    {
+        if (!this->_post_process_render_target)
+            return;
+    }
+
+    const bool DirectX12WindowModel::IsActivePostProcessRenderTarget()
+    {
+        if (this->_post_process_render_target)
+            return true;
+
+        return false;
     }
 }

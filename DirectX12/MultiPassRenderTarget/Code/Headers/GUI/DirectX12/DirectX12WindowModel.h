@@ -1,8 +1,13 @@
 ﻿#pragma once
 
 #include "DirectX12/DirectX12MiniHeader.h"
+#include "DirectX12/DirectX12Core.h"
 
 #include "GUI/MVC/WindowModelInterface.h"
+
+namespace DirectX12 {
+    class RenderTarget;
+}
 
 namespace GUI
 {
@@ -13,7 +18,7 @@ namespace GUI
     {
     public:
         // 画面クリア色データ構造
-        // TODO: もしかしたら探せば既に定義されているかもしれないので後で差し替えるかも
+        // TODO: 不要なので削除予定
         typedef union
         {
             float _color[4];
@@ -59,6 +64,25 @@ namespace GUI
         // 画面全体をクリアする色
         const CD3DX12_CLEAR_VALUE& GetClearClear() const { return this->_clear_color; }
 
+        /// <summary>
+        /// TODO: ポストプロセス用のレンダーターゲットを生成
+        /// </summary>
+        void CreatePostProcessRenderTarget(
+            const DirectX12::ComPtr<ID3D12DescriptorHeap> in_src_rtv_desc_heap,
+            const DirectX12::ComPtr<ID3D12DescriptorHeap> in_src_dsv_desc_heap,
+            const DirectX12::ComPtr<ID3D12Resource> in_src_back_buff
+        );
+        /// <summary>
+        /// TODO: ポストプロセス用のレンダーターゲットを破棄
+        /// </summary>
+        void ReleasePostProcessRenderTarget();
+
+        const bool IsActivePostProcessRenderTarget();
+
+        std::shared_ptr<DirectX12::RenderTarget> GetPostProcessRenderTarget() {
+            return this->_post_process_render_target;
+        }
+
     private:
         std::shared_ptr<DirectX12::Context> _context;
 
@@ -67,5 +91,8 @@ namespace GUI
 
         CD3DX12_CLEAR_VALUE _clear_color;
         bool _update_flag;
+
+        // ポストプロセス用のレンダーターゲット
+        std::shared_ptr<DirectX12::RenderTarget> _post_process_render_target;
     };
 }

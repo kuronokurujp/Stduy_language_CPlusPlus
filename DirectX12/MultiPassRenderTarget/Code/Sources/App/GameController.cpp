@@ -44,6 +44,11 @@ namespace App
             this->_actor_manager->AddActor(p_pmd_actor);
         }
 
+        // TODO: ポストプロセスのシステム作成
+        {
+            this->_window_ctrl->ConnectPostProcessSystem();
+        }
+
         return true;
     }
 
@@ -55,7 +60,11 @@ namespace App
 
     void GameController::Render()
     {
+        // TODO: ポストプロセス開始
+        this->_window_ctrl->BeginPostProcessSystem();
         this->_actor_manager->Render();
+        // TODO: ポストプロセス終了
+        this->_window_ctrl->EndPostProcessSystem();
     }
 
     void GameController::End()
@@ -64,5 +73,7 @@ namespace App
         this->_actor_manager.release();
 
         this->_pmd_render_factor->Terminate();
+
+        this->_window_ctrl->BreakPostProcessSystem();
     }
 }
