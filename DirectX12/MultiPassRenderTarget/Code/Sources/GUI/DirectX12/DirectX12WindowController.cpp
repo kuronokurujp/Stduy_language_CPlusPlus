@@ -109,7 +109,12 @@ namespace GUI
         auto context = this->_model->Context();
         auto render_target = this->_model->GetPostProcessRenderTarget();
 
-        render_target->BeginWrite(context->cmd_list, this->_view->GetDSVDescHeap(), this->_model->GetClearClear());
+        render_target->BeginWrite(
+            context->cmd_list,
+            this->_view->GetDSVDescHeap(),
+            this->_model->GetClearClear(),
+            this->_model->GetViewPort(),
+            this->_model->GetScissorRect());
     }
 
     void DirectX12WindowController::EndPostProcessSystem()

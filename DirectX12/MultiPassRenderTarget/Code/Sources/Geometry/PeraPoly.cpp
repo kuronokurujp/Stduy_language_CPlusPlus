@@ -127,12 +127,27 @@ namespace Geometry
                     gps_desc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
                 }
 
+                D3D12_DESCRIPTOR_RANGE range = {};
+                {
+                    // t
+                    range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+                    range.BaseShaderRegister = 0;
+                    range.NumDescriptors = 1;
+                }
+
+                D3D12_ROOT_PARAMETER rp = {};
+                rp.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+                rp.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+                rp.DescriptorTable.pDescriptorRanges = &range;
+                rp.DescriptorTable.NumDescriptorRanges = 1;
+
                 CD3DX12_ROOT_SIGNATURE_DESC rs_desc = {};
                 {
                     D3D12_STATIC_SAMPLER_DESC sampler = CD3DX12_STATIC_SAMPLER_DESC(0);
                     rs_desc.pStaticSamplers = &sampler;
-                    rs_desc.NumParameters = 0;
-                    rs_desc.NumStaticSamplers = 0;
+                    rs_desc.pParameters = &rp;
+                    rs_desc.NumParameters = 1;
+                    rs_desc.NumStaticSamplers = 1;
                     rs_desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
                     DirectX12::ComPtr<ID3DBlob> error;
@@ -157,10 +172,18 @@ namespace Geometry
         return ret;
     }
 
-    void PeraPoly::Render(std::shared_ptr<DirectX12::Context> in_context)
+    void PeraPoly::Render(std::shared_ptr<DirectX12::Context> in_context, DirectX12::ComPtr<ID3D12DescriptorHeap> in_srv_heap)
     {
         // TODO: パイプラインとルートシグネチャをコマンドに投げる
         in_context->cmd_list->SetGraphicsRootSignature(in_context->_root_sig_map[this->_sig_key.c_str()].Get());
+        {
+            auto cmd_list = in_context->cmd_list;
+            cmd_list->SetDescriptorHeaps(1, in_srv_heap.GetAddressOf());
+
+            auto handle = in_srv_heap->GetGPUDescriptorHandleForHeapStart();
+            cmd_list->SetGraphicsRootDescriptorTable(0, handle);
+        }
+
         in_context->cmd_list->SetPipelineState(in_context->_pipeline_state_map[this->_gps_key.c_str()].Get());
         this->_mesh->InsertCmdToCmdPipeline(in_context, D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
         // TODO: マテリアルの描画

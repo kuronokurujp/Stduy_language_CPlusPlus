@@ -469,6 +469,8 @@ namespace DirectX12
             D3D12_GRAPHICS_PIPELINE_STATE_DESC gpipeline = in_gpipeline;
 
             // ルートシグネチャーを設定
+            // MEMO: グラフィックパイプラインはルートシグネチャを設定しないとだめなのか？
+            // コマンドリストにルートシグネチャを設定してその後にグラフィックパイプラインを設定しているからコマンドリストの設定のみで対応できそうな？
             gpipeline.pRootSignature = in_p_context->_root_sig_map[in_use_root_sig_key.c_str()].Get();
             assert(gpipeline.pRootSignature != nullptr);
 

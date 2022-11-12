@@ -23,7 +23,9 @@ namespace DirectX12
         void BeginWrite(
             ComPtr<ID3D12GraphicsCommandList> in_cmd_list,
             DirectX12::ComPtr<ID3D12DescriptorHeap> in_dsv_heap,
-            const D3D12_CLEAR_VALUE in_clear_value);
+            const D3D12_CLEAR_VALUE in_clear_value,
+            const CD3DX12_VIEWPORT& in_viewport,
+            const D3D12_RECT& in_ssissor_rect);
         void EndWrite(ComPtr<ID3D12GraphicsCommandList> in_cmd_list);
 
         void Render(

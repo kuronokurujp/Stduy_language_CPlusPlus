@@ -109,7 +109,10 @@ namespace DirectX12
     void RenderTarget::BeginWrite(
         ComPtr<ID3D12GraphicsCommandList> in_cmd_list,
         DirectX12::ComPtr<ID3D12DescriptorHeap> in_dsv_heap,
-        const D3D12_CLEAR_VALUE in_clear_value)
+        const D3D12_CLEAR_VALUE in_clear_value,
+        const CD3DX12_VIEWPORT& in_viewport,
+        const D3D12_RECT& in_ssissor_rect)
+
     {
         // リソースをテクスチャからレンダーターゲットに切り替え
         {
@@ -133,6 +136,12 @@ namespace DirectX12
                 in_cmd_list->ClearDepthStencilView(dsv_heap_pointer, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
             }
         }
+
+        // TODO: ここでビューポートやシザーのコマンド設定はだめなの？
+        {
+            in_cmd_list->RSSetViewports(1, &in_viewport);//ビューポート
+            in_cmd_list->RSSetScissorRects(1, &in_ssissor_rect);//シザー(切り抜き)矩形
+        }
     }
 
     void RenderTarget::EndWrite(ComPtr<ID3D12GraphicsCommandList> in_cmd_list)
@@ -151,6 +160,6 @@ namespace DirectX12
 
     void RenderTarget::Render(std::shared_ptr<DirectX12::Context> in_context)
     {
-        this->_pera_poly->Render(in_context);
+        this->_pera_poly->Render(in_context, this->_pera_src_heap);
     }
 }

@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 
+#include "DirectX12/DirectX12MiniHeader.h"
 #include "DirectX12/DirectX12Math.h"
 
 namespace DirectX12
@@ -25,7 +26,7 @@ namespace Geometry
 
         bool Create(std::shared_ptr<DirectX12::Context> in_context);
 
-        void Render(std::shared_ptr<DirectX12::Context> in_context);
+        void Render(std::shared_ptr<DirectX12::Context> in_context, DirectX12::ComPtr<ID3D12DescriptorHeap> in_srv_heap);
 
     private:
         struct Vertex
