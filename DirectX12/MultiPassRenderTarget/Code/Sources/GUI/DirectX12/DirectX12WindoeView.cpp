@@ -221,22 +221,37 @@ namespace GUI
         // レンダーターゲットビューを設定コマンド追加
         // 参照するディスクリプタのポインターを利用してレンダーターゲットビューを設定
         auto rtv_h = this->_rtv_desc_heap->GetCPUDescriptorHandleForHeapStart();
-        auto dsv_h = this->_dsv_desc_heap->GetCPUDescriptorHandleForHeapStart();
+        rtv_h.ptr += bb_idx * context->dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+        switch (this->_render_type)
         {
-            rtv_h.ptr += bb_idx * context->dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
+        case RenderType::Normal:
+        {
+            auto dsv_h = this->_dsv_desc_heap->GetCPUDescriptorHandleForHeapStart();
+            {
+                context->cmd_list->OMSetRenderTargets(
+                    1,
+                    &rtv_h,
+                    true,
+                    // 深度バッファを作成したヒープハンドルを設定
+                    &dsv_h);
+                // 深度バッファをクリア
+                // 書き込まれた深度値をクリアしないと深度判定がうまくいかない
+                {
+                    context->cmd_list->ClearDepthStencilView(dsv_h, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+                }
+            }
+            break;
+        }
+        case RenderType::AddPostProcesss:
+        {
             context->cmd_list->OMSetRenderTargets(
                 1,
                 &rtv_h,
-                true,
-                // 深度バッファを作成したヒープハンドルを設定
-                &dsv_h);
-        }
+                false,
+                nullptr);
 
-        // 深度バッファをクリア
-        // 書き込まれた深度値をクリアしないと深度判定がうまくいかない
-        {
-            context->cmd_list->ClearDepthStencilView(dsv_h, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+            break;
+        }
         }
 
         // 設定したレンダーターゲットを色クリア
@@ -280,5 +295,12 @@ namespace GUI
         context->cmd_allocator->Reset();
         // コマンドのクローズ状態を解除
         context->cmd_list->Reset(context->cmd_allocator.Get(), nullptr);
+    }
+
+    const DirectX12::ComPtr<ID3D12Resource> DirectX12WindowView::GetBackBuffer() const
+    {
+        // バックバッファのレンダーターゲットインデックスを取得
+        auto bb_idx = this->_swapchain->GetCurrentBackBufferIndex();
+        return this->_back_buffers[bb_idx];
     }
 }

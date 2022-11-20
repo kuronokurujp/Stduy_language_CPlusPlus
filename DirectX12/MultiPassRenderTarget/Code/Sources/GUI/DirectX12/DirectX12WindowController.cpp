@@ -1,5 +1,7 @@
 ﻿#include "GUI/DirectX12/DirectX12WindowController.h"
 
+#include "DirectX12/DirectX12RednerTarget.h"
+
 namespace GUI
 {
     // 制御モデルは外部から受け取る
@@ -36,11 +38,19 @@ namespace GUI
 
     void DirectX12WindowController::BeginRender()
     {
-        this->_view->BeginRender();
+        if (!this->_model->IsActivePostProcessRenderTarget())
+            this->_view->BeginRender();
     }
 
     void DirectX12WindowController::EndRender()
     {
+        if (this->_model->IsActivePostProcessRenderTarget())
+        {
+            this->_view->BeginRender();
+            // ポストプロセス用に作成したレンダーターゲットをスクリーンに描画
+            this->_model->GetPostProcessRenderTarget()->Render(this->_model->Context());
+        }
+
         this->_view->EndRender();
 
         // 更新前にウィンドウを表示してしまうとレンダリング書き込み前の表示が1フレームだけ見えてしまう。
@@ -66,5 +76,54 @@ namespace GUI
     const WindowCommonData& DirectX12WindowController::GetWindowData()
     {
         return this->_window_common_data;
+    }
+
+    /// <summary>
+    /// ポストプロセスのシステムに接続
+    /// </summary>
+    void DirectX12WindowController::ConnectPostProcessSystem()
+    {
+        this->_model->CreatePostProcessRenderTarget(
+            this->_view->GetRTVDescHeap(),
+            this->_view->GetDSVDescHeap(),
+            this->_view->GetBackBuffer()
+        );
+
+        this->_view->SetRenderType(GUI::DirectX12WindowView::RenderType::AddPostProcesss);
+    }
+
+    /// <summary>
+    /// ポストプロセスのシステムを遮断
+    /// </summary>
+    void DirectX12WindowController::BreakPostProcessSystem()
+    {
+        this->_model->ReleasePostProcessRenderTarget();
+        this->_view->SetRenderType(GUI::DirectX12WindowView::RenderType::Normal);
+    }
+
+    void DirectX12WindowController::BeginPostProcessSystem()
+    {
+        if (!this->_model->IsActivePostProcessRenderTarget())
+            return;
+
+        auto context = this->_model->Context();
+        auto render_target = this->_model->GetPostProcessRenderTarget();
+
+        render_target->BeginWrite(
+            context->cmd_list,
+            this->_view->GetDSVDescHeap(),
+            this->_model->GetClearClear(),
+            this->_model->GetViewPort(),
+            this->_model->GetScissorRect());
+    }
+
+    void DirectX12WindowController::EndPostProcessSystem()
+    {
+        if (!this->_model->IsActivePostProcessRenderTarget())
+            return;
+
+        auto context = this->_model->Context();
+        auto render_target = this->_model->GetPostProcessRenderTarget();
+        render_target->EndWrite(context->cmd_list);
     }
 }

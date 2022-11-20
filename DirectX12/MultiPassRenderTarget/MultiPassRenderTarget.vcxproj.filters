@@ -153,12 +153,15 @@
     <ClInclude Include="Code\Headers\Animation\BaseAnimation.h" />
     <ClInclude Include="Code\Headers\MMD\VMDAnimation.h" />
     <ClInclude Include="Code\Headers\App\GameActor.h" />
+    <ClInclude Include="Code\Headers\DirectX12\DirectX12RednerTarget.h" />
+    <ClInclude Include="Code\Headers\Geometry\PeraPoly.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Shader\PMD\BasicShaderHeader.hlsli">
       <Filter>Shader\PMD</Filter>
     </None>
+    <None Include="Shader\Geometry\PeraPoly\PeraShaderHeader.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\Sources\GUI\Window\WindowView.cpp">
@@ -224,6 +227,8 @@
     <ClCompile Include="Code\Sources\Component\PMDMeshComponent.cpp" />
     <ClCompile Include="Code\Sources\Component\SkeletalMeshComponent.cpp" />
     <ClCompile Include="Code\Sources\App\GameActor.cpp" />
+    <ClCompile Include="Code\Sources\DirectX12\DirectX12RednerTarget.cpp" />
+    <ClCompile Include="Code\Sources\Geometry\PeraPoly.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\PMD\BasicVertexShader.hlsl">
@@ -232,5 +237,7 @@
     <FxCompile Include="Shader\PMD\BasicPixelShader.hlsl">
       <Filter>Shader\PMD</Filter>
     </FxCompile>
+    <FxCompile Include="Shader\Geometry\PeraPoly\PeraPixelShader.hlsl" />
+    <FxCompile Include="Shader\Geometry\PeraPoly\PeraVertexShader.hlsl" />
   </ItemGroup>
 </Project>
