@@ -36,15 +36,15 @@ namespace GUI
         std::shared_ptr<DirectX12WindowModel> GetModel() { return this->_model; }
 
         /// <summary>
-        /// TODO: ポストプロセスのシステムに接続
+        /// ポストプロセスのシステムに接続
         /// </summary>
         void ConnectPostProcessSystem();
         /// <summary>
-        /// TODO: ポストプロセスのシステムを遮断
+        /// ポストプロセスのシステムを遮断
         /// </summary>
         void BreakPostProcessSystem();
 
-        // TODO: ポストプロセスの開始・終了
+        // ポストプロセスの開始・終了
         void BeginPostProcessSystem();
         void EndPostProcessSystem();
 

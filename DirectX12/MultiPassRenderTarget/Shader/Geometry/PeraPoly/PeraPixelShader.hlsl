@@ -2,6 +2,6 @@
 
 float4 BasicPS(Output input) : SV_TARGET
 {
-    //    return float4(input.uv, 1.0f, 1.0f);
-        return tex.Sample(smp, input.uv);
+    //return 1.0 - tex.Sample(smp, input.uv);
+    return tex.Sample(smp, input.uv);
 }

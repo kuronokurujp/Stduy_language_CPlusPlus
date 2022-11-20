@@ -47,7 +47,7 @@ namespace GUI
     }
 
     /// <summary>
-    /// TODO: ポストプロセス用のレンダーターゲットを生成
+    /// ポストプロセス用のレンダーターゲットを生成
     /// </summary>
     void DirectX12WindowModel::CreatePostProcessRenderTarget(
         const DirectX12::ComPtr<ID3D12DescriptorHeap> in_src_rtv_desc_heap,
@@ -63,7 +63,7 @@ namespace GUI
         if (!in_src_rtv_desc_heap.Get())
             return;
 
-        // TODO: レンダーターゲットを作成してモデルに追加
+        // レンダーターゲットを作成してモデルに追加
         this->_post_process_render_target = std::make_shared<DirectX12::RenderTarget>(
             this->_context,
             in_src_rtv_desc_heap,
@@ -73,7 +73,7 @@ namespace GUI
     }
 
     /// <summary>
-    /// TODO: ポストプロセス用のレンダーターゲットを破棄
+    /// ポストプロセス用のレンダーターゲットを破棄
     /// </summary>
     void DirectX12WindowModel::ReleasePostProcessRenderTarget()
     {

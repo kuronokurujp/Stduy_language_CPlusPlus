@@ -85,7 +85,7 @@ namespace Geometry
             }
         }
 
-        // TODO: パイプラインとルートシグネチャを作成
+        // パイプラインとルートシグネチャを作成
         {
             // 頂点シェーダーのための準備
             D3D12_GRAPHICS_PIPELINE_STATE_DESC gps_desc = {};
@@ -174,7 +174,7 @@ namespace Geometry
 
     void PeraPoly::Render(std::shared_ptr<DirectX12::Context> in_context, DirectX12::ComPtr<ID3D12DescriptorHeap> in_srv_heap)
     {
-        // TODO: パイプラインとルートシグネチャをコマンドに投げる
+        // パイプラインとルートシグネチャをコマンドに投げる
         in_context->cmd_list->SetGraphicsRootSignature(in_context->_root_sig_map[this->_sig_key.c_str()].Get());
         {
             auto cmd_list = in_context->cmd_list;
@@ -186,7 +186,7 @@ namespace Geometry
 
         in_context->cmd_list->SetPipelineState(in_context->_pipeline_state_map[this->_gps_key.c_str()].Get());
         this->_mesh->InsertCmdToCmdPipeline(in_context, D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-        // TODO: マテリアルの描画
+        // マテリアルの描画
         in_context->cmd_list->DrawInstanced(4, 1, 0, 0);
     }
 }

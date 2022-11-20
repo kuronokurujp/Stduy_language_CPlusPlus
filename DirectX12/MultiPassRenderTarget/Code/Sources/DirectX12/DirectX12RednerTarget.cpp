@@ -50,7 +50,7 @@ namespace DirectX12
                 &local_heap_desc,
                 IID_PPV_ARGS(this->_pera_rtv_heap.ReleaseAndGetAddressOf())
             );
-            // TODO: エラー処理を入れる
+            // エラー処理を入れる
             _ASSERTE(SUCCEEDED(result));
 
             rtv_desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
@@ -79,7 +79,7 @@ namespace DirectX12
                 &local_heap_desc,
                 IID_PPV_ARGS(this->_pera_src_heap.ReleaseAndGetAddressOf())
             );
-            // TODO: エラー処理を入れる
+            // エラー処理を入れる
             _ASSERTE(SUCCEEDED(result));
 
             srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
@@ -137,7 +137,7 @@ namespace DirectX12
             }
         }
 
-        // TODO: ここでビューポートやシザーのコマンド設定はだめなの？
+        // ビューポートやシザーのコマンド設定
         {
             in_cmd_list->RSSetViewports(1, &in_viewport);//ビューポート
             in_cmd_list->RSSetScissorRects(1, &in_ssissor_rect);//シザー(切り抜き)矩形

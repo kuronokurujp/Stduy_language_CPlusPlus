@@ -17,17 +17,6 @@ namespace GUI
     class DirectX12WindowModel : public WindowModelInterface
     {
     public:
-        // 画面クリア色データ構造
-        // TODO: 不要なので削除予定
-        typedef union
-        {
-            float _color[4];
-            struct
-            {
-                float r, g, b, a;
-            } rgba;
-        } ClearColorRGB;
-
         /// <summary>
         /// 作成したDirectX12のコンテキストを渡して初期化
         /// </summary>
@@ -65,7 +54,7 @@ namespace GUI
         const CD3DX12_CLEAR_VALUE& GetClearClear() const { return this->_clear_color; }
 
         /// <summary>
-        /// TODO: ポストプロセス用のレンダーターゲットを生成
+        /// ポストプロセス用のレンダーターゲットを生成
         /// </summary>
         void CreatePostProcessRenderTarget(
             const DirectX12::ComPtr<ID3D12DescriptorHeap> in_src_rtv_desc_heap,
@@ -73,7 +62,7 @@ namespace GUI
             const DirectX12::ComPtr<ID3D12Resource> in_src_back_buff
         );
         /// <summary>
-        /// TODO: ポストプロセス用のレンダーターゲットを破棄
+        /// ポストプロセス用のレンダーターゲットを破棄
         /// </summary>
         void ReleasePostProcessRenderTarget();
 

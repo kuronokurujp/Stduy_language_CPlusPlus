@@ -60,10 +60,10 @@ namespace App
 
     void GameController::Render()
     {
-        // TODO: ポストプロセス開始
+        // ポストプロセス開始
         this->_window_ctrl->BeginPostProcessSystem();
         this->_actor_manager->Render();
-        // TODO: ポストプロセス終了
+        // ポストプロセス終了
         this->_window_ctrl->EndPostProcessSystem();
     }
 

@@ -47,7 +47,7 @@ namespace GUI
         if (this->_model->IsActivePostProcessRenderTarget())
         {
             this->_view->BeginRender();
-            // TODO: ポストプロセス用に作成したレンダーターゲットをスクリーンに描画
+            // ポストプロセス用に作成したレンダーターゲットをスクリーンに描画
             this->_model->GetPostProcessRenderTarget()->Render(this->_model->Context());
         }
 
@@ -79,7 +79,7 @@ namespace GUI
     }
 
     /// <summary>
-    /// TODO: ポストプロセスのシステムに接続
+    /// ポストプロセスのシステムに接続
     /// </summary>
     void DirectX12WindowController::ConnectPostProcessSystem()
     {
@@ -93,7 +93,7 @@ namespace GUI
     }
 
     /// <summary>
-    /// TODO: ポストプロセスのシステムを遮断
+    /// ポストプロセスのシステムを遮断
     /// </summary>
     void DirectX12WindowController::BreakPostProcessSystem()
     {
