@@ -1,0 +1,8 @@
+# 共通設定
+[config]
+current_dir="Locate"
+
+# 各言語のテキスト情報
+# 日本語の各テキストグループ
+[text.jp.group.default]
+json="JP/Text.json"

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\Tests\Catch.hpp" />
+    <ClInclude Include="..\..\..\..\Tests\Memory\TestMemory.hpp">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Tests\Math\TestRandom.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Tests\Time\TestFPS.h">
+      <Filter>Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Tests\Task\TestTask.hpp">
+      <Filter>Task</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Tests\Common\TestArray.hpp">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Tests\Common\TestString.hpp">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Tests\Common\TestMacro.hpp">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Tests\Common\TestCMap.hpp">
+      <Filter>Common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\Tests\TestMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Memory">
+      <UniqueIdentifier>{3b7621de-19ca-4df0-8c72-1a13e58b2907}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{28c60730-f498-4aba-91f0-8304afd1ec95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Time">
+      <UniqueIdentifier>{b4445beb-02ae-44c5-bbb5-4aa4647d5bff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Task">
+      <UniqueIdentifier>{1c89a0cf-4df5-4331-b35f-46c83703bdb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{807046f1-7046-4c18-a5db-b7406b932d09}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\.editorconfig" />
+    <None Include="..\..\..\..\Tests\README.md" />
+  </ItemGroup>
+</Project>
