@@ -2,7 +2,7 @@
 
 
 #include "Core/Core.h"
-#include <string.h>
+// #include <string.h>
 
 namespace Core
 {
@@ -32,7 +32,10 @@ namespace Core
             // 文字列の文字数
             Uint32 Length();
 
-            const Char* Str() const { return this->_pBuff; }
+            inline const Char* Str() const { return this->_pBuff; }
+            // TODO: 大文字 / 小文字にする
+            void ToLower() { E_STR_LOWER(this->_pBuff); }
+            void ToUpper() { E_STR_UPPER(this->_pBuff); }
 
             FixStringBase& operator= (const Char* in_pStr) { this->Copy(in_pStr); return *this; }
             FixStringBase& operator= (const FixStringBase &r) { this->Copy(r.Str()); return *this; }
@@ -79,7 +82,21 @@ namespace Core
             FixString() : FixStringBase(_fixBuff, SIZE) {}
             FixString(const Char* in_pStr) : FixStringBase(_fixBuff, SIZE) { FixStringBase::operator=(in_pStr); }
             FixString(const FixString<SIZE> &r) : FixStringBase(_fixBuff, SIZE) { *this = r; }
-            
+
+#ifdef _WIN
+            FixString(const char* in_pStr) : FixStringBase(_fixBuff, SIZE)
+            {
+                static Char w[SIZE] = {};
+
+                // mbstowcsでビルドエラーが出た
+                // 以下のサイトを参考にして対応
+                // https://stackoverflow.com/questions/22450423/how-to-use-crt-secure-no-warnings
+                std::mbstowcs(&w[0], in_pStr, SIZE);
+
+                FixStringBase::operator=(w);
+            }
+#endif
+
             FixString<SIZE>& operator=(const FixString<SIZE> &r)
             {
                 E_STR_CPY_S(this->_fixBuff, SIZE, r._fixBuff, E_STR_LEN(r._fixBuff));

@@ -47,7 +47,9 @@ namespace Core
                     : _pNode(pNode)
                 {
                 }
-                
+
+                const Bool IsValid() { return this->_pNode != NULL; }
+
                 // ペアポインタ参照
                 Pair* operator ->()
                 {
@@ -128,7 +130,41 @@ namespace Core
                 this->_tail._pPrev = &this->_head;
                 this->_tail._pNext = NULL;
             }
-            
+
+            // TODO: コピーのコンストラクタ必要
+            // ディープコピーにする
+            FixMap(const FixMap& other)
+                : _pRoot(NULL)
+                , _nodeNum(0)
+            {
+                // 線形アクセス用のリストを初期化
+                this->_head._pPrev = NULL;
+                this->_head._pNext = &this->_tail;
+                this->_tail._pPrev = &this->_head;
+                this->_tail._pNext = NULL;
+
+                this->_DeepCopy(&other);
+            }
+
+            FixMap(const FixMap&& other) = delete;
+
+            FixMap& operator =(FixMap&& other) = delete;
+            FixMap& operator =(const FixMap&& other) = delete;
+
+            // TODO: コピー処理を作る
+            // ディープコピーにする
+            FixMap& operator =(FixMap& other)
+            {
+                this->_DeepCopy(&other);
+                return *this;
+            }
+
+            FixMap& operator =(const FixMap& other)
+            {
+                this->_DeepCopy(&other);
+                return *this;
+            }
+
             // デストラクタ
             ~FixMap()
             {
@@ -153,6 +189,7 @@ namespace Core
             /// <param name="rKey">キー指定</param>
             /// <param name="rData">キーと紐づいたデータ</param>
             /// <returns>失敗したら終端イテレータ / 追加成功なら追加データのイテレータ</returns>
+
             Iterator Add(const KEY &rKey, const DATA &rData)
             {
                 return this->_Add(rKey, &rData);
@@ -167,13 +204,13 @@ namespace Core
             {
                 // ツリーが空なら終端を返す
                 if (this->Empty())
-                    return this->GetEnd();
+                    return this->End();
 
                 NODE* pNode = this->_Find(this->_pRoot, rKey);
                 if (pNode == NULL)
                 {
                     // 見つからなかった
-                    return this->GetEnd();
+                    return this->End();
                 }
                 else
                 {
@@ -190,7 +227,7 @@ namespace Core
             const Bool Erase(Iterator it)
             {
                 // 終端ノードは消させない
-                if (it == this->GetEnd())
+                if (it == this->End())
                     return FALSE;
                 
                 // ツリーを辿って削除 &再構築
@@ -222,14 +259,14 @@ namespace Core
             /// <summary>
             /// 要素数を返す
             /// </summary>
-            const Uint32 GetSize() const { return this->_nodeNum; }
+            const Uint32 Size() const { return this->_nodeNum; }
             
             /// <summary>
             /// 先頭イテレーターを取得
             /// データが空なら終端イテレーターを取得
             /// </summary>
             /// <returns></returns>
-            Iterator GetBegin()
+            Iterator Begin()
             {
                 return Iterator(this->_head._pNext);
             }
@@ -238,7 +275,7 @@ namespace Core
             /// 終端イテレーター取得
             /// </summary>
             /// <returns></returns>
-            Iterator GetEnd()
+            Iterator End()
             {
                 return Iterator(&this->_tail);
             }
@@ -252,7 +289,7 @@ namespace Core
             DATA& operator [](const KEY &rKey)
             {
                 Iterator it = this->Find(rKey);
-                if (it == this->GetEnd())
+                if (it == this->End())
                 {
                     // 無ければ追加する
                     // データ未確定なのでNULL
@@ -277,7 +314,7 @@ namespace Core
 
                 return pNode;
             }
-            
+
             /// <summary>
             /// ノード破棄
             /// </summary>
@@ -290,10 +327,10 @@ namespace Core
 #ifdef _HOBBY_ENGINE_DEBUG
         public:
             // ツリーの正当性チェック
-            const Bool CheckValid(const Uint32 node_num)
+            const Bool CheckValidByDebug(const Uint32 node_num)
             {
                 Uint32 checked_count = 0;
-                Bool bResult = this->CheckNode(_pRoot, &checked_count);
+                Bool bResult = this->CheckNodeByDebug(_pRoot, &checked_count);
                 if (bResult && node_num == checked_count)
                     return TRUE;
 
@@ -301,7 +338,7 @@ namespace Core
             }
             
             // ノードの正当性チェック
-            const Bool CheckNode(NODE* pNode, Uint32* pCheckedCount)
+            const Bool CheckNodeByDebug(NODE* pNode, Uint32* pCheckedCount)
             {
                 // 終端なのでOK
                 if (pNode == NULL)
@@ -316,11 +353,11 @@ namespace Core
                     return FALSE;
 
                 // 自分の左ノードをチェック
-                if (pNode->_pLeft && this->CheckNode(pNode->_pLeft, pCheckedCount) == FALSE)
+                if (pNode->_pLeft && this->CheckNodeByDebug(pNode->_pLeft, pCheckedCount) == FALSE)
                     return FALSE;
                 
                 // 自分の右ノードをチェック
-                if (pNode->_pRight && this->CheckNode(pNode->_pRight, pCheckedCount) == FALSE)
+                if (pNode->_pRight && this->CheckNodeByDebug(pNode->_pRight, pCheckedCount) == FALSE)
                     return FALSE;
 
                 // 有効ノード数をカウント
@@ -335,7 +372,7 @@ namespace Core
             {
                 // 赤黒木色定義
                 enum COLOR { RED, BLACK };
-                
+
                 // ツリー用
                 struct NODE* _pLeft = NULL;
                 struct NODE* _pRight = NULL;
@@ -401,12 +438,13 @@ namespace Core
                 // 赤ノードを作る
                 NODE *pNode = this->_NewNode();
                 if (pNode == NULL)
-                    return this->GetEnd();
+                    return this->End();
 
                 pNode->_pair._key = rKey;
                 if (pData)
                 {
                     // 添え字アクセスで作る場合はデータが無い
+                    // コピーして渡す
                     pNode->_pair._data = *pData;
                 }
 
@@ -585,7 +623,19 @@ namespace Core
                 // 自分自身を削除する
                 this->_DeleteNode(pNode);
             }
-            
+
+            /// <summary>
+            /// TODO: ディープコピー処理
+            /// </summary>
+            /// <param name="other"></param>
+            void _DeepCopy(const FixMap* other)
+            {
+                for (const NODE* p = other->_head._pNext; (p != &other->_tail) && (p != NULL); p = p->_pNext)
+                {
+                    this->Add(p->_pair._key, p->_pair._data);
+                }
+            }
+
             // ツリーの左回転
             NODE* _RotateLeft(NODE* pNode)
             {

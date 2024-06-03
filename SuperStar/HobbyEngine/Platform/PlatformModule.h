@@ -18,6 +18,7 @@ namespace Platform
 {
     // 前方宣言
     class InputSystemInterface;
+    class FileSystemInterface;
 
     /// <summary>
     /// プラットフォームの時間インターフェイス
@@ -64,9 +65,23 @@ namespace Platform
 
         virtual const Bool Update(const Float32 in_deltaTime) override { return FALSE; }
 
+        /// <summary>
+        /// 時間システム
+        /// </summary>
+        /// <returns></returns>
         virtual TimeSystemInterface* Time() = 0;
-        // 入力システムを取得
+
+        /// <summary>
+        /// 入力システム
+        /// </summary>
+        /// <returns></returns>
         virtual InputSystemInterface* Input() = 0;
+
+        /// <summary>
+        /// ファイルシステム
+        /// </summary>
+        /// <returns></returns>
+        virtual FileSystemInterface* File() = 0;
 
         // 描画
         virtual void BeginRender(void* in_pCmdArray) = 0;

@@ -132,7 +132,7 @@ namespace Core
         Common::Handle freeHandle = in_hTask;
 
         // ハンドルを返却する + メモリから削除するかしないか
-        this->Free(freeHandle, pTask->_bAutoDelete);
+        this->_Free(freeHandle, pTask->_bAutoDelete);
     }
 
     void TaskManager::RemoveGroup(Sint32 in_groupId)

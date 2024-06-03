@@ -25,7 +25,7 @@ namespace Actor
     /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
     void Component::Init(const Bool in_bAutoDelete)
     {
-        E_LOG(E_STR_TEXT("初期化したコンポーネントは(%s)"), GetRTTI().GetName().Str());
+        E_LOG_LINE(E_STR_TEXT("初期化したコンポーネントは(%s)"), GetRTTI().GetName().Str());
 
         Core::Task::Init(in_bAutoDelete);
 

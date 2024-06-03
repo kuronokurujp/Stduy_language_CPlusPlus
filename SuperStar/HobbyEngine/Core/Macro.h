@@ -15,20 +15,34 @@
 // リリース時には無効化
 #ifdef _WIN
 
-#include <windows.h>
+#include <Windows.h>
 
 // 呼び出し元の変数名とかぶらないようようにめちゃくちゃな変数名にしている
+// ログ出力(改行なし)
 #define E_LOG( str, ... ) \
 { \
         static Char c_32ga311BB[256] = {}; \
         _snwprintf_s(c_32ga311BB, 256, 256, str, __VA_ARGS__); \
+\
         OutputDebugString(c_32ga311BB); \
+}
+
+// ログ出力(改行をする)
+#define E_LOG_LINE( str, ... ) \
+{ \
+        static Char c_32ga311BBt[256] = {}; \
+        _snwprintf_s(c_32ga311BBt, 256, 256, str, __VA_ARGS__); \
+\
+        OutputDebugString(c_32ga311BBt); \
         OutputDebugString(L"\n"); \
 }
 
 #else
 
+// ログ出力(改行なし)
 #define E_LOG(s, ...) printf(s, __VA_ARGS__)
+// ログ出力(改行をする)
+#define E_LOG_LINE(s, ...) printf(s, __VA_ARGS__); printf("\n")
 
 #endif
 

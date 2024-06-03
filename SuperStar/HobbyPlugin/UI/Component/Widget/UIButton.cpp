@@ -56,7 +56,7 @@ namespace UI
             // TODO: ボタンにタッチしたらコールバックを呼ぶ
             if (in_rTouch.IsTouchInRect(rect))
             {
-                E_LOG(E_STR_TEXT("Button Pressed"));
+                E_LOG_LINE(E_STR_TEXT("Button Pressed"));
                 this->_pushHandler->OnPush();
             }
         }

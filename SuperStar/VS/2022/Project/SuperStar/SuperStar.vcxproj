@@ -110,7 +110,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_HOBBY_ENGINE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_HOBBY_ENGINE;
+
+_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -123,6 +125,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\HobbyPlugin\DxLib\ThirdParty\DxLib_VC\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Pathcch.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>$(ProjectDir)..\..\..\..\HobbyEngine\Tool\MoveDir.bat  $(ProjectDir)..\..\..\..\Game\Res\Assets $(MSBuildProjectDirectory)\..\..\..\..\Bin\$(Platform)\$(Configuration)\Assets</Command>
@@ -134,7 +137,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions);_HOBBY_ENGINE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions);_HOBBY_ENGINE;
+
+_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -149,6 +154,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(DXLIB);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Pathcch.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -162,6 +168,7 @@
     <ClCompile Include="..\..\..\..\Game\Program\Src\Level\Title\TitleLevel.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Common\FixString.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Common\RTTI.cpp" />
+    <ClCompile Include="..\..\..\..\HobbyEngine\Core\File\Path.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Math\Random.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Math\Vector3.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Memory\Memory.cpp" />
@@ -172,6 +179,9 @@
     <ClCompile Include="..\..\..\..\HobbyEngine\Engine.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Module\Module.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Platform\PlatformInput.cpp" />
+    <ClCompile Include="..\..\..\..\HobbyPlugin\AssetManager\AssetDataBase.cpp" />
+    <ClCompile Include="..\..\..\..\HobbyPlugin\AssetManager\AssetManagerModule.cpp" />
+    <ClCompile Include="..\..\..\..\HobbyPlugin\DxLib\DXLibFile.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\DxLib\DXLibInput.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\DxLib\DXLibTime.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\DxLib\DXLibModule.cpp" />
@@ -203,6 +213,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Game\Program\Inc\Level\Title\TitleLevel.h" />
     <ClInclude Include="..\..\..\..\HobbyEngine\Core\Common\FixMap.h" />
+    <ClInclude Include="..\..\..\..\HobbyEngine\Core\File\Path.h" />
     <ClInclude Include="..\..\..\..\HobbyEngine\Core\Str.h" />
     <ClInclude Include="..\..\..\..\HobbyEngine\Core\Common\FixArray.h" />
     <ClInclude Include="..\..\..\..\HobbyEngine\Core\Common\FixString.h" />
@@ -229,12 +240,16 @@
     <ClInclude Include="..\..\..\..\HobbyEngine\GameMain.h" />
     <ClInclude Include="..\..\..\..\HobbyEngine\MiniEngine.h" />
     <ClInclude Include="..\..\..\..\HobbyEngine\Module\Module.h" />
+    <ClInclude Include="..\..\..\..\HobbyEngine\Platform\PlatformFile.h" />
     <ClInclude Include="..\..\..\..\HobbyEngine\Platform\PlatformInput.h" />
     <ClInclude Include="..\..\..\..\HobbyEngine\Platform\PlatformModule.h" />
-    <ClInclude Include="..\..\..\..\HobbyEngine\ThirdParty\nlohmann\json.hpp" />
-    <ClInclude Include="..\..\..\..\HobbyEngine\ThirdParty\nlohmann\json_fwd.hpp" />
-    <ClInclude Include="..\..\..\..\HobbyEngine\ThirdParty\tomlplusplus\toml.hpp" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\Actor\ActorInterface.h" />
+    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\AssetDataBase.h" />
+    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\AssetManagerModule.h" />
+    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\nlohmann\json.hpp" />
+    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\nlohmann\json_fwd.hpp" />
+    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\tomlplusplus\toml.hpp" />
+    <ClInclude Include="..\..\..\..\HobbyPlugin\DxLib\DXLibFile.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\DxLib\DXLibInput.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\DxLib\DXLibTime.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\DxLib\DXLibModule.h" />
@@ -277,6 +292,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\..\HobbyEngine\ThirdPartyNotices.txt" />
+    <Text Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdPartyNotices.txt" />
     <Text Include="..\..\..\..\HobbyPlugin\DxLib\ThirdPartyNotices.txt" />
     <Text Include="..\..\..\..\LICENSE.txt" />
   </ItemGroup>

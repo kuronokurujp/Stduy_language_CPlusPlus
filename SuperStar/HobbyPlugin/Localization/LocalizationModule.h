@@ -1,25 +1,43 @@
 ﻿#pragma once
 
-#include "MiniEngine.h"
+#include "HobbyEngine/MiniEngine.h"
+#include "HobbyEngine/Core/Common/FixMap.h"
+#include "HobbyEngine/Core/File/Path.h"
+#include "HobbyEngine/Module/Module.h"
 
-#include "Module/Module.h"
+// 依存モジュール
+#include "HobbyPlugin/AssetManager/AssetManagerModule.h"
 
 namespace Localization
 {
     /// <summary>
-    /// レベル用の追加モジュール
+    /// ローカライズのシステムアセットデータ
+    /// </summary>
+    class SystemAssetData final : public AssetManager::AssetDataBase
+    {
+    };
+
+    /// <summary>
+    /// 言語のテキストなどのアセットデータ
+    /// </summary>
+    class LocateAssetData final : public AssetManager::AssetDataBase
+    {
+    };
+
+    /// <summary>
+    /// 多言語対応のモジュール
     /// </summary>
     class LocalizationModule final : public Module::ModuleBase<LocalizationModule>
     {
     public:
         /// <summary>
-        /// TODO: モジュール初期化
+        /// モジュール初期化
         /// </summary>
         /// <returns></returns>
         const Bool Init() final override;
 
         /// <summary>
-        /// TODO: モジュール終了
+        /// モジュール終了
         /// </summary>
         /// <returns></returns>
         const Bool End() final override;
@@ -30,16 +48,43 @@ namespace Localization
         // バイナリファイル版も用意する
         const Bool LoadSystemFile(const Core::Common::FixString128& in_rFilePath);
         // TODO: ローカライズ設定データをアンロード
-        const Bool UnloadFile();
+        const Bool UnloadSystemFile();
 
         // TODO: ローカライズデータをロード
-        const Bool LoadTextGroup(const Core::Common::FixString128& in_rGroupName);
+        const Bool LoadTextAll(const Core::Common::FixString128&);
         // TODO: ローカライズデータをアンロード
-        const Bool UnloadTextGroup(const Core::Common::FixString128& in_rGroupName);
+        const Bool UnloadTextAll(const Core::Common::FixString128&);
 
         // TODO: ローカライズテキストを取得
-        Core::Common::FixString1024 Text(const Core::Common::FixString128& in_rGropuName, const Core::Common::FixString128 in_key);
+        Core::Common::FixString1024 Text(
+            const Core::Common::FixString128& in_rLocateName,
+            const Core::Common::FixString128& in_rGropuName,
+            const Core::Common::FixString128& in_rKey);
         
         // TODO: ローカライズテキストを置換フォーマット指定で取得
+
+    private:
+        /// <summary>
+        /// 言語のデータ
+        /// </summary>
+        struct LocateData
+        {
+        public:
+            LocateData() {}
+
+            LocateData(const Core::File::Path& in_textFileJsonPath)
+            {
+                this->_textFilePath = in_textFileJsonPath;
+            }
+
+            Core::File::Path _textFilePath;
+        };
+
+        /// <summary>
+        /// 各言語毎のデータ
+        /// </summary>
+        Core::Common::FixMap<
+            Core::Common::FixString128, Core::Common::FixMap<
+                Core::Common::FixString128, LocateData, 32>, 32> _locateDataMap;
     };
 }

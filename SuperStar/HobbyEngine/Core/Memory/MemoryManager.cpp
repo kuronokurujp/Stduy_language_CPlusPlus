@@ -817,16 +817,16 @@ namespace Core
             BlockHeader* pLargestFreeBlock = NULL;
 
             // ページ情報の表示
-            E_LOG(E_STR_TEXT("============================================\n"));
-            E_LOG(E_STR_TEXT("page[%d]\n"), in_page);
-            E_LOG(E_STR_TEXT("============================================\n"));
+            E_LOG_LINE(E_STR_TEXT("============================================"));
+            E_LOG_LINE(E_STR_TEXT("page[%d]"), in_page);
+            E_LOG_LINE(E_STR_TEXT("============================================"));
 #ifdef _X64
-            E_LOG(E_STR_TEXT("TopAddr    :0llx%8.8llx\n"), reinterpret_cast<Ptr>(this->_memoryPageInfoArray[in_page]._pTopAddr));
+            E_LOG_LINE(E_STR_TEXT("TopAddr    :0llx%8.8llx"), reinterpret_cast<Ptr>(this->_memoryPageInfoArray[in_page]._pTopAddr));
 #else
-            E_LOG(E_STR_TEXT("TopAddr    :0lx%8.8lx\n"), reinterpret_cast<Ptr>(this->_memoryPageInfoArray[in_page]._pTopAddr));
+            E_LOG_LINE(E_STR_TEXT("TopAddr    :0lx%8.8lx"), reinterpret_cast<Ptr>(this->_memoryPageInfoArray[in_page]._pTopAddr));
 #endif
-            E_LOG(E_STR_TEXT("Size       :0lx%8.8lx\n"), this->_memoryPageInfoArray[in_page]._size);
-            E_LOG(E_STR_TEXT("--------------------------------------------\n"));
+            E_LOG_LINE(E_STR_TEXT("Size       :0lx%8.8lx"), this->_memoryPageInfoArray[in_page]._size);
+            E_LOG_LINE(E_STR_TEXT("--------------------------------------------"));
 
             // チェックする
             this->CheckMemoryBlockByPage(in_page);
@@ -840,7 +840,7 @@ namespace Core
                 {
                     Ptr blockAddr = reinterpret_cast<Ptr>(pUsedMemoryBlock);
 #ifdef _X64
-                    E_LOG(E_STR_TEXT("0llx%8.8llx: 0x%8.8x (0x%8.8x) [%d] {%d}: %s(%d)\n"),
+                    E_LOG_LINE(E_STR_TEXT("0llx%8.8llx: 0x%8.8x (0x%8.8x) [%d] {%d}: %s(%d)"),
                         blockAddr + this->_GetMemoryBlockHeaderSize(),
                         pUsedMemoryBlock->_allocateSize,
                         pUsedMemoryBlock->_size,
@@ -850,7 +850,7 @@ namespace Core
                         pUsedMemoryBlock->_fileName,
                         pUsedMemoryBlock->_line);
 #else
-                    E_LOG(E_STR_TEXT("0x%8.8x: 0x%8.8x (0x%8.8x) [%d] {%d}: %s(%d)\n"),
+                    E_LOG_LINE(E_STR_TEXT("0x%8.8x: 0x%8.8x (0x%8.8x) [%d] {%d}: %s(%d)"),
                         blockAddr + this->_GetMemoryBlockHeaderSize(),
                         pUsedMemoryBlock->_allocateSize,
                         pUsedMemoryBlock->_size,
@@ -872,27 +872,27 @@ namespace Core
                 pUsedMemoryBlock = pUsedMemoryBlock->_pNext;
             }
 
-            E_LOG(E_STR_TEXT("\n"));
-            E_LOG(E_STR_TEXT("usedCount: %d\n"), usedCount);
-            E_LOG(E_STR_TEXT("usedTotal: 0x%8.8x\n"), usedTotal);
+            E_LOG_LINE(E_STR_TEXT(""));
+            E_LOG_LINE(E_STR_TEXT("usedCount: %d"), usedCount);
+            E_LOG_LINE(E_STR_TEXT("usedTotal: 0x%8.8x"), usedTotal);
 
             if (pLargestUsedBlock != NULL)
             {
                 Ptr blockAddr = reinterpret_cast<Ptr>(pLargestFreeBlock);
 #ifdef _X64
-                E_LOG(E_STR_TEXT("maxUsed: 0llx%8.8llx 0x%8.8x (0x%8.8x)\n"),
+                E_LOG_LINE(E_STR_TEXT("maxUsed: 0llx%8.8llx 0x%8.8x (0x%8.8x)"),
                     blockAddr + this->_GetMemoryBlockHeaderSize(),
                     pLargestUsedBlock->_allocateSize,
                     pLargestUsedBlock->_size);
 #else
-                E_LOG(E_STR_TEXT("maxUsed: 0x%8.8x 0x%8.8x (0x%8.8x)\n"),
+                E_LOG_LINE(E_STR_TEXT("maxUsed: 0x%8.8x 0x%8.8x (0x%8.8x)"),
                     blockAddr + this->_GetMemoryBlockHeaderSize(),
                     pLargestUsedBlock->_allocateSize,
                     pLargestUsedBlock->_size);
 #endif
             }
 
-            E_LOG(E_STR_TEXT("-------------------------------------------\n"));
+            E_LOG_LINE(E_STR_TEXT("-------------------------------------------"));
 
             // 開き領域の表示
             BlockHeader* pFreeMemoryBlock = this->_memoryPageInfoArray[in_page]._pMemoryBlockTop;
@@ -903,12 +903,12 @@ namespace Core
                 {
                     Ptr blockAddr = reinterpret_cast<Ptr>(pFreeMemoryBlock);
 #ifdef _X64
-                    E_LOG(E_STR_TEXT("0llx%8.8llx:0x%8.8x (0x%8.8x)\n"),
+                    E_LOG_LINE(E_STR_TEXT("0llx%8.8llx:0x%8.8x (0x%8.8x)"),
                         (blockAddr + this->_GetMemoryBlockHeaderSize()),
                         pFreeMemoryBlock->_allocateSize,
                         pFreeMemoryBlock->_size);
 #else
-                    E_LOG(E_STR_TEXT("0x%8.8x:0x%8.8x (0x%8.8x)\n"),
+                    E_LOG_LINE(E_STR_TEXT("0x%8.8x:0x%8.8x (0x%8.8x)"),
                         (blockAddr + this->_GetMemoryBlockHeaderSize()),
                         pFreeMemoryBlock->_allocateSize,
                         pFreeMemoryBlock->_size);
@@ -925,16 +925,16 @@ namespace Core
                 pFreeMemoryBlock = pFreeMemoryBlock->_pNext;
             }
 
-            E_LOG(E_STR_TEXT("\n"));
-            E_LOG(E_STR_TEXT("freeCount: %d\n"), freeCount);
-            E_LOG(E_STR_TEXT("freeTotal: 0x%8.8x\n"), freeTotal);
+            E_LOG_LINE(E_STR_TEXT(""));
+            E_LOG_LINE(E_STR_TEXT("freeCount: %d"), freeCount);
+            E_LOG_LINE(E_STR_TEXT("freeTotal: 0x%8.8x"), freeTotal);
 
             if (pLargestFreeBlock != NULL)
             {
-                E_LOG(E_STR_TEXT("maxFree: 0x%8.8x\n"), pLargestFreeBlock->_allocateSize);
+                E_LOG_LINE(E_STR_TEXT("maxFree: 0x%8.8x"), pLargestFreeBlock->_allocateSize);
             }
 
-            E_LOG(E_STR_TEXT("============================================\n"));
+            E_LOG_LINE(E_STR_TEXT("============================================"));
         }
 
         /// <summary>

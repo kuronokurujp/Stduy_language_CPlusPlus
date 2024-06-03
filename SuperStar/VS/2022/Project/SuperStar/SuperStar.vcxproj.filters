@@ -124,11 +124,20 @@
     <Filter Include="HobbyEngine\Tool">
       <UniqueIdentifier>{8f719613-a69c-495b-94da-340cfafc99b6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="HobbyEngine\ThirdParty\tomlplusplus">
-      <UniqueIdentifier>{0b6093ae-2ea6-4e6d-8634-3b8763184e15}</UniqueIdentifier>
+    <Filter Include="HobbyEngine\Core\File">
+      <UniqueIdentifier>{74a1dd15-81c7-4766-bfeb-a517c60ebd16}</UniqueIdentifier>
     </Filter>
-    <Filter Include="HobbyEngine\ThirdParty\nlohmann">
-      <UniqueIdentifier>{e8713dd7-96d0-4eaa-a3ef-e436ea118c10}</UniqueIdentifier>
+    <Filter Include="HobbyPlugin\AssetManager">
+      <UniqueIdentifier>{8fe0568d-11b2-4d9f-88bb-a2b7e9fbe79f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HobbyPlugin\AssetManager\ThirdParty">
+      <UniqueIdentifier>{eecd0ee5-62e7-49b7-b713-fa4f1670dd8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HobbyPlugin\AssetManager\ThirdParty\nlohmann">
+      <UniqueIdentifier>{6c11849a-d2cf-4708-a24e-6dc53a848738}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HobbyPlugin\AssetManager\ThirdParty\tomlplusplus">
+      <UniqueIdentifier>{4aeb8054-f25f-4a0e-9d95-43a554d094e4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -253,6 +262,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\HobbyPlugin\Localization\LocalizationModule.cpp">
       <Filter>HobbyPlugin\Localization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\HobbyEngine\Core\File\Path.cpp">
+      <Filter>HobbyEngine\Core\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\HobbyPlugin\DxLib\DXLibFile.cpp">
+      <Filter>HobbyPlugin\DxLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\HobbyPlugin\AssetManager\AssetManagerModule.cpp">
+      <Filter>HobbyPlugin\AssetManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\HobbyPlugin\AssetManager\AssetDataBase.cpp">
+      <Filter>HobbyPlugin\AssetManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -434,14 +455,29 @@
     <ClInclude Include="..\..\..\..\HobbyPlugin\Localization\LocalizationModule.h">
       <Filter>HobbyPlugin\Localization</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\HobbyEngine\ThirdParty\tomlplusplus\toml.hpp">
-      <Filter>HobbyEngine\ThirdParty\tomlplusplus</Filter>
+    <ClInclude Include="..\..\..\..\HobbyEngine\Core\File\Path.h">
+      <Filter>HobbyEngine\Core\File</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\HobbyEngine\ThirdParty\nlohmann\json.hpp">
-      <Filter>HobbyEngine\ThirdParty\nlohmann</Filter>
+    <ClInclude Include="..\..\..\..\HobbyEngine\Platform\PlatformFile.h">
+      <Filter>HobbyEngine\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\HobbyEngine\ThirdParty\nlohmann\json_fwd.hpp">
-      <Filter>HobbyEngine\ThirdParty\nlohmann</Filter>
+    <ClInclude Include="..\..\..\..\HobbyPlugin\DxLib\DXLibFile.h">
+      <Filter>HobbyPlugin\DxLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\AssetManagerModule.h">
+      <Filter>HobbyPlugin\AssetManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\AssetDataBase.h">
+      <Filter>HobbyPlugin\AssetManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\tomlplusplus\toml.hpp">
+      <Filter>HobbyPlugin\AssetManager\ThirdParty\tomlplusplus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\nlohmann\json.hpp">
+      <Filter>HobbyPlugin\AssetManager\ThirdParty\nlohmann</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\nlohmann\json_fwd.hpp">
+      <Filter>HobbyPlugin\AssetManager\ThirdParty\nlohmann</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -471,6 +507,9 @@
     </Text>
     <Text Include="..\..\..\..\HobbyPlugin\DxLib\ThirdPartyNotices.txt">
       <Filter>HobbyPlugin\DxLib</Filter>
+    </Text>
+    <Text Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdPartyNotices.txt">
+      <Filter>HobbyPlugin\AssetManager</Filter>
     </Text>
   </ItemGroup>
 </Project>

@@ -11,6 +11,7 @@
 #include "HobbyPlugin/UI/UIModule.h"
 #include "HobbyPlugin/Level/LevelModule.h"
 #include "HobbyPlugin/Actor/ActorModule.h"
+#include "HobbyPlugin/AssetManager/AssetManagerModule.h"
 #include "HobbyPlugin/Localization/LocalizationModule.h"
 
 #define MAX_LOADSTRING 100
@@ -101,6 +102,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
         HOBBY_ENGINE.ModuleManager().Add<Actor::ActorModule>();
         HOBBY_ENGINE.ModuleManager().Add<Level::LevelModule>();
         HOBBY_ENGINE.ModuleManager().Add<Localization::LocalizationModule>();
+        HOBBY_ENGINE.ModuleManager().Add<AssetManager::AssetManagerModule>();
     }
 
     const Bool bInitRet = HOBBY_ENGINE.Init();
@@ -127,7 +129,7 @@ void EndInstance(HINSTANCE hInstance)
 
 const Bool AppEntryGameMain::Start(const Bool in_bDebug)
 {
-    E_LOG(E_STR_TEXT("game start"));
+    E_LOG_LINE(E_STR_TEXT("game start"));
     // TODO: ゲームのみで利用するライブラリを初期化
     //		LuaStateManager::Init();
     Localization::LocalizationModule::I().LoadSystemFile(E_STR_TEXT("Locate/System.toml"));
@@ -180,7 +182,7 @@ const Bool AppEntryGameMain::Update(const Float32 in_deltaTime)
 
 const Bool AppEntryGameMain::End()
 {
-    E_LOG(E_STR_TEXT("game end"));
+    E_LOG_LINE(E_STR_TEXT("game end"));
     /*
     LuaStateManager::Final();
     SAFE_DELETE( mp_parent );

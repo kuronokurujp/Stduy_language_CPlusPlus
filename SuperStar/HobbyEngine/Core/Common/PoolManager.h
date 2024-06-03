@@ -79,7 +79,7 @@ namespace Core
             //std::tuple<T*, Handle> _Alloc()
             // Sのクラスは必ずTを継承したクラスでないといけない
             template<class S>
-            AllocData Alloc()
+            AllocData _Alloc()
             {
                 AllocData allocData;
 
@@ -153,7 +153,7 @@ namespace Core
             /// 割り当てデータを解放
             /// </summary>
             /// <param name="handle"></param>
-            void Free(const Handle& in_handle, const Bool in_bCache)
+            void _Free(const Handle& in_handle, const Bool in_bCache)
             {
                 if (in_handle.Null())
                     return;

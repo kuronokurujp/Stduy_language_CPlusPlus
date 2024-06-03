@@ -57,7 +57,7 @@ TEST_CASE("FixMap Test")
             testmap.Add(strKey.Str(), pDataArray[ii]);
         }
         // 時間の報告
-        E_LOG("add ctime=%f sec\n", (double)(clock() - ctime) / CLOCKS_PER_SEC);
+        E_LOG_LINE("add ctime=%f sec", (double)(clock() - ctime) / CLOCKS_PER_SEC);
     }
     
     // 空じゃなくなったかチェック
@@ -66,9 +66,9 @@ TEST_CASE("FixMap Test")
     // ノードの正当性チェック
     {
         ctime = clock();
-        Bool bResult = testmap.CheckValid(ARRAY_NUM);
+        Bool bResult = testmap.CheckValidByDebug(ARRAY_NUM);
         CHECK(bResult);
-        E_LOG("check ctime=%f sec\n", (double)(clock() - ctime) / CLOCKS_PER_SEC);
+        E_LOG_LINE("check ctime=%f sec", (double)(clock() - ctime) / CLOCKS_PER_SEC);
     }
 
     // 検索
@@ -81,11 +81,11 @@ TEST_CASE("FixMap Test")
 
             // 検索
             BASICMAP::Iterator it = testmap.Find(strKey.Str());
-            CHECK(it != testmap.GetEnd());
+            CHECK(it != testmap.End());
             CHECK(it->_key == strKey);
             CHECK(it->_data == ii);
         }
-        E_LOG("find ctime=%f sec\n", (double)(clock() - ctime) / CLOCKS_PER_SEC);
+        E_LOG_LINE("find ctime=%f sec", (double)(clock() - ctime) / CLOCKS_PER_SEC);
     }
     
     // イテレータテスト
@@ -99,7 +99,7 @@ TEST_CASE("FixMap Test")
         }
         
         ctime = clock();
-        for (BASICMAP::Iterator it=testmap.GetBegin(); it!=testmap.GetEnd(); ++it)
+        for (BASICMAP::Iterator it=testmap.Begin(); it!=testmap.End(); ++it)
         {
             CHECK((0 <= it->_data && it->_data < ARRAY_NUM));
             CHECK((pCheckArray[it->_data] == FALSE));
@@ -112,7 +112,7 @@ TEST_CASE("FixMap Test")
 
         // イテレータの数はノードの数と一致しているか？
         CHECK(checked_count == ARRAY_NUM);
-        E_LOG("iterator ctime=%f sec\n", (double)(clock() - ctime) / CLOCKS_PER_SEC);
+        E_LOG_LINE("iterator ctime=%f sec", (double)(clock() - ctime) / CLOCKS_PER_SEC);
 
         E_SAFE_DELETE_ARRAY(pCheckArray);
     }
@@ -132,7 +132,7 @@ TEST_CASE("FixMap Test")
             CHECK(bResult);
         }
 
-        E_LOG("iterator ctime=%f sec\n", (double)(clock() - ctime) / CLOCKS_PER_SEC);
+        E_LOG_LINE("iterator ctime=%f sec", (double)(clock() - ctime) / CLOCKS_PER_SEC);
     }
 
     // 全て削除が終わったので、空かどうかチェック
@@ -145,7 +145,7 @@ TEST_CASE("FixMap Test")
     CHECK(testmap["one"] == 1);
     CHECK(testmap["two"] == 2);
     CHECK(testmap["three"] == 3);
-    CHECK(testmap.GetSize() == 3);
+    CHECK(testmap.Size() == 3);
     
     // 添え字で書き換え
     testmap["one"] = 10;
@@ -155,7 +155,7 @@ TEST_CASE("FixMap Test")
     CHECK(testmap["two"] == 20);
     CHECK(testmap["three"] == 30);
     // 数は変わっていないはず
-    CHECK(testmap.GetSize() == 3);
+    CHECK(testmap.Size() == 3);
 
     // クリア関数のテスト
     testmap.Clear();
@@ -165,3 +165,40 @@ TEST_CASE("FixMap Test")
     E_SAFE_DELETE_ARRAY(pDataArray);
 }
 
+
+TEST_CASE("FixMap Copy")
+{
+    BASICMAP srcmap;
+
+    struct TEST_DATA
+    {
+        const Char* pKey = 0;
+        Sint32 num = 0;
+    };
+    static const TEST_DATA s_aArray[] =
+    {
+        { E_STR_TEXT("test1"), 10 },
+        { E_STR_TEXT("test2"), 20 },
+        { E_STR_TEXT("test3"), 30 },
+        { E_STR_TEXT("test4"), 40 },
+        { E_STR_TEXT("test5"), 50 },
+        { E_STR_TEXT("test6"), 60 },
+    };
+
+    for (Uint32 i = 0; i < E_ARRAY_NUM(s_aArray); ++i)
+    {
+        srcmap.Add(s_aArray[i].pKey, s_aArray[i].num);
+    }
+
+    BASICMAP dstmap = srcmap;
+    CHECK(dstmap.Size() == E_ARRAY_NUM(s_aArray));
+
+    for (Uint32 i = 0; i < E_ARRAY_NUM(s_aArray); ++i)
+    {
+        auto iter = dstmap.Find(s_aArray[i].pKey);
+        CHECK(iter.IsValid());
+        CHECK(iter->_data == s_aArray[i].num);
+
+        E_LOG_LINE(E_STR_TEXT("key(%s) / data(%d)"), iter->_key.Str(), iter->_data);
+    }
+}

@@ -63,7 +63,7 @@ namespace Core
             E_ASSERT(in_groupId < this->_groupNum);
 
             // 利用するタスクを割り当て
-            BasePoolManager::AllocData resAlloc = this->Alloc<T>();
+            BasePoolManager::AllocData resAlloc = this->_Alloc<T>();
 
             Task* pTask = this->_SetupTask(&resAlloc, in_bAutoDelete);
             this->_Attach(pTask, in_groupId);

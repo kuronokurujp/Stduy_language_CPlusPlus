@@ -1,23 +1,29 @@
 ﻿#pragma once
 
+// プラットフォームモジュールを使ってDxLibのプラットフォームモジュールを作成
 #include "Platform/PlatformModule.h"
 
+// DxLibのシステム一覧
 #include "DXLibTime.h"
 #include "DXLibInput.h"
+#include "DxLibFile.h"
 
 namespace DXLib
 {
+    /// <summary>
+    /// DxLibプラットフォームが利用できるモジュール
+    /// </summary>
     class DxLibModule final : public Platform::PlatformModule
     {
     public:
         /// <summary>
-        /// TODO: モジュール初期化
+        /// モジュール初期化
         /// </summary>
         /// <returns></returns>
         const Bool Init() override final;
 
         /// <summary>
-        /// TODO: モジュール終了
+        /// モジュール終了
         /// </summary>
         /// <returns></returns>
         const Bool End() override final;
@@ -29,17 +35,25 @@ namespace DXLib
         const bool Update(const Float32 in_deltaTime) override final;
         const bool AfterUpdate(const Float32 in_deltaTime) override final;
 
-        // 時間システム
-        Platform::TimeSystemInterface* Time() override final {
-            return &this->_time;
-        }
+        /// <summary>
+        /// 時間システム
+        /// </summary>
+        /// <returns></returns>
+        Platform::TimeSystemInterface* Time() override final { return &this->_time; }
 
-        // 入力システム
-        Platform::InputSystemInterface* Input() override final {
-          return &this->_input;
-        }
+        /// <summary>
+        /// 入力システム
+        /// </summary>
+        /// <returns></returns>
+        Platform::InputSystemInterface* Input() override final { return &this->_input; }
 
-        // TODO: 描画
+        /// <summary>
+        /// ファイルシステム
+        /// </summary>
+        /// <returns></returns>
+        Platform::FileSystemInterface* File() override final { return &this->_file; }
+
+        // 描画
         void BeginRender(void* in_pCmdBuff) override final;
         void Redner(void* in_pCmdBuff) override final;
         void EndRender(void* in_pCmdBuff) override final;
@@ -47,5 +61,6 @@ namespace DXLib
     private:
         TimeSystem _time;
         InputSystem _input;
+        FileSystem _file;
     };
 }
