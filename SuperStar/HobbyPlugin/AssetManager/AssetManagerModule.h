@@ -47,7 +47,7 @@ namespace AssetManager
                 return p._handle;
             }
 
-            this->_Free(p._handle);
+            this->_Free(p._handle, TRUE);
             return Core::Common::Handle();
         }
 

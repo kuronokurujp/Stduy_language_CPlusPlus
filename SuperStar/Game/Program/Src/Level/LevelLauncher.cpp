@@ -4,7 +4,7 @@
 // デバッグ用なのでリリース版には含めない
 #ifdef _HOBBY_ENGINE_DEBUG
 
-#include "Level/Debug/LevelDebugMain.h"
+#include "Level/LevelLauncher.h"
 
 #include "Core/Math/Math.h"
 #include "Core/Common/FixMap.h"
@@ -33,7 +33,7 @@ namespace Level
     typedef Core::Common::FixMap<Core::Common::FixString16, _DEBUG_LIST_ITEM_ST, 128> ST_SEQ_MAP;
     ST_SEQ_MAP s_seqMap;
 
-    const Bool DebugMain::Begin()
+    const Bool LevelLauncher::Begin()
     {
         const Bool bRet = Level::Node::Begin();
         E_ASSERT(bRet);
@@ -115,7 +115,7 @@ namespace Level
         return TRUE;
     }
 
-    const Bool DebugMain::End()
+    const Bool LevelLauncher::End()
     {
         const Bool bRet = Level::Node::End();
         E_ASSERT(bRet);
@@ -123,12 +123,12 @@ namespace Level
         return TRUE;
     }
 
-    void DebugMain::Update(const Float32 in_dt, const Core::TaskData* in_pData)
+    void LevelLauncher::Update(const Float32 in_dt, const Core::TaskData* in_pData)
     {
         Level::Node::Update(in_dt, in_pData);
     }
 
-    void DebugMain::_MoveLevel(const Char* in_pStateName)
+    void LevelLauncher::_MoveLevel(const Char* in_pStateName)
     {
         auto it = s_seqMap.Find(in_pStateName);
         if (it == s_seqMap.End())

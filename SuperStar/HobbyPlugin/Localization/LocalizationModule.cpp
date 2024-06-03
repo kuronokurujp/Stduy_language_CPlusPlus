@@ -104,7 +104,7 @@ namespace Localization
         for (auto groupIter = iter->_data.Begin(); groupIter != end; ++groupIter)
         {
             // TODO: jsonファイルかチェック
-            LocateText a = AssetManager.Load<LocateText>("jp","test");
+            // LocateText a = AssetManager.Load<LocateText>("jp","test");
 
             //std::ifstream f( "example.json");
             //json data = json::parse(f);

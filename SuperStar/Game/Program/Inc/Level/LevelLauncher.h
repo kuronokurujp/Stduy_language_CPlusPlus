@@ -10,12 +10,12 @@ namespace Level
     /// <summary>
     /// デバッグメインレベル
     /// </summary>
-    class DebugMain : public Level::Node
+    class LevelLauncher : public Level::Node
     {
-        E_CLASS_COPY_CONSTRUCT_NG(DebugMain)
+        E_CLASS_COPY_CONSTRUCT_NG(LevelLauncher)
 
     public:
-        DebugMain() : Level::Node() {}
+        LevelLauncher() : Level::Node() {}
         const Bool Begin() override final;
         const Bool End() override final;
 

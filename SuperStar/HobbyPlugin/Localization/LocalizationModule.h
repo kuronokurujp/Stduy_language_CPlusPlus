@@ -7,20 +7,21 @@
 
 // 依存モジュール
 #include "HobbyPlugin/AssetManager/AssetManagerModule.h"
+#include "HobbyPlugin/AssetManager/AssetDataBase.h"
 
 namespace Localization
 {
     /// <summary>
     /// ローカライズのシステムアセットデータ
     /// </summary>
-    class SystemAssetData final : public AssetManager::AssetDataBase
+    class SystemAssetData final : public AssetManager::AssetDataToml
     {
     };
 
     /// <summary>
     /// 言語のテキストなどのアセットデータ
     /// </summary>
-    class LocateAssetData final : public AssetManager::AssetDataBase
+    class LocateAssetData final : public AssetManager::AssetDataJson
     {
     };
 

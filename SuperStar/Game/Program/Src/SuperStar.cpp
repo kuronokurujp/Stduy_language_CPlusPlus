@@ -121,7 +121,7 @@ void EndInstance(HINSTANCE hInstance)
 #ifdef _HOBBY_ENGINE_DEBUG
 
 // 最初に実行するレベルをインクルード
-#include "Level/Debug/LevelDebugMain.h"
+#include "Level/LevelLauncher.h"
 
 #else
 // #include "sequence/title/TitleSeq.h"
@@ -139,7 +139,7 @@ const Bool AppEntryGameMain::Start(const Bool in_bDebug)
     {
         // デバッグレベルを開始
         //HOBBY_ENGINE.StartLevel<Level::DebugMain>();
-        HOBBY_ENGINE.GetLevelModule().GetManager()->StartLevel<Level::DebugMain>();
+        HOBBY_ENGINE.GetLevelModule().GetManager()->StartLevel<Level::LevelLauncher>();
     }
 #endif
 

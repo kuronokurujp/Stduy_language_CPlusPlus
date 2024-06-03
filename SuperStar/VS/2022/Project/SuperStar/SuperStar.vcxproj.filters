@@ -18,9 +18,6 @@
     <Filter Include="Game\Src\Level">
       <UniqueIdentifier>{cbdf1aa1-d2c0-4249-a7f0-dbfcb83fcff3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\Inc\Level\Debug">
-      <UniqueIdentifier>{abc415d4-9289-4008-ad85-47ff284cb2ee}</UniqueIdentifier>
-    </Filter>
     <Filter Include="HobbyEngine">
       <UniqueIdentifier>{86683737-2c7a-4ba8-9a62-cb8693233b29}</UniqueIdentifier>
     </Filter>
@@ -93,9 +90,6 @@
     <Filter Include="Game\Src\Level\Title">
       <UniqueIdentifier>{1e18a6d6-6cd9-421c-91b5-01c33e02f369}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\Src\Level\Debug">
-      <UniqueIdentifier>{63f17655-7374-4622-a930-c4413c947170}</UniqueIdentifier>
-    </Filter>
     <Filter Include="HobbyEngine\ThirdParty">
       <UniqueIdentifier>{3ad5c073-8397-425f-acd9-785fd2c9735a}</UniqueIdentifier>
     </Filter>
@@ -138,6 +132,18 @@
     </Filter>
     <Filter Include="HobbyPlugin\AssetManager\ThirdParty\tomlplusplus">
       <UniqueIdentifier>{4aeb8054-f25f-4a0e-9d95-43a554d094e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Inc\Sandbox">
+      <UniqueIdentifier>{d86343ed-a3d4-4287-869b-50e4f0c1446f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Src\Sandbox">
+      <UniqueIdentifier>{3531b95c-6022-48db-9ac8-f196ffb13ac4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Inc\Sandbox\Level">
+      <UniqueIdentifier>{477cc8cc-fbfb-4a78-b63a-0be2649726f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Src\Sandbox\Level">
+      <UniqueIdentifier>{b29b798f-e3b9-4272-a9c0-3c675d23548c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -254,9 +260,6 @@
     <ClCompile Include="..\..\..\..\HobbyPlugin\UI\Component\Input\UIInputInterface.cpp">
       <Filter>HobbyPlugin\UI\Component\Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Game\Program\Src\Level\Debug\LevelDebugMain.cpp">
-      <Filter>Game\Src\Level\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\Game\Program\Src\Level\Title\TitleLevel.cpp">
       <Filter>Game\Src\Level\Title</Filter>
     </ClCompile>
@@ -274,6 +277,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\HobbyPlugin\AssetManager\AssetDataBase.cpp">
       <Filter>HobbyPlugin\AssetManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Game\Program\Src\Level\LevelLauncher.cpp">
+      <Filter>Game\Src\Level</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -337,9 +343,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\HobbyEngine\Core\Common\PoolManager.h">
       <Filter>HobbyEngine\Core\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Game\Program\Inc\Level\Debug\LevelDebugMain.h">
-      <Filter>Game\Inc\Level\Debug</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\HobbyEngine\Core\Common\FixArray.h">
       <Filter>HobbyEngine\Core\Common</Filter>
@@ -478,6 +481,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\nlohmann\json_fwd.hpp">
       <Filter>HobbyPlugin\AssetManager\ThirdParty\nlohmann</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Game\Program\Inc\Level\LevelLauncher.h">
+      <Filter>Game\Inc\Level</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

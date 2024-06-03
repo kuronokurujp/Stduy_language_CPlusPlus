@@ -165,6 +165,7 @@ _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     <Image Include="SuperStar.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\Game\Program\Src\Level\LevelLauncher.cpp" />
     <ClCompile Include="..\..\..\..\Game\Program\Src\Level\Title\TitleLevel.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Common\FixString.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Common\RTTI.cpp" />
@@ -199,7 +200,6 @@ _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     <ClCompile Include="..\..\..\..\HobbyPlugin\UI\Component\Widget\UIWidget.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\UI\UIModule.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\UI\Widget.cpp" />
-    <ClCompile Include="..\..\..\..\Game\Program\Src\Level\Debug\LevelDebugMain.cpp" />
     <ClCompile Include="..\..\..\..\Game\Program\Src\SuperStar.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\Actor\Actor.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\Actor\ActorManager.cpp" />
@@ -211,6 +211,7 @@ _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\Game\Program\Inc\Level\LevelLauncher.h" />
     <ClInclude Include="..\..\..\..\Game\Program\Inc\Level\Title\TitleLevel.h" />
     <ClInclude Include="..\..\..\..\HobbyEngine\Core\Common\FixMap.h" />
     <ClInclude Include="..\..\..\..\HobbyEngine\Core\File\Path.h" />
@@ -270,7 +271,6 @@ _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     <ClInclude Include="..\..\..\..\HobbyPlugin\UI\UIModule.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\UI\Widget.h" />
     <ClInclude Include="..\..\..\..\Game\Program\Inc\framework.h" />
-    <ClInclude Include="..\..\..\..\Game\Program\Inc\Level\Debug\LevelDebugMain.h" />
     <ClInclude Include="..\..\..\..\Game\Program\Inc\Resource.h" />
     <ClInclude Include="..\..\..\..\Game\Program\Inc\SuperStar.h" />
     <ClInclude Include="..\..\..\..\Game\Program\Inc\targetver.h" />
