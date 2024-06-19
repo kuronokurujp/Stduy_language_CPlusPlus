@@ -8,7 +8,7 @@
 
 namespace UI
 {
-    GENERATED_CLASS_BODY(UITextComponent, UIWidgetComponent)
+    GENERATED_CLASS_BODY(UITextComponent, UIWidgetComponent);
 
     void UITextComponent::Update(const Float32 in_deltaTime)
     {

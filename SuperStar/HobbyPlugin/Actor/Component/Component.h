@@ -17,8 +17,8 @@ namespace Actor
     /// </summary>
     class Component : public Core::Task
     {
-        E_CLASS_COPY_CONSTRUCT_NG(Component)
-        GENERATED_CLASS_BASE_BODY_HEADER()
+        E_CLASS_COPY_CONSTRUCT_NG(Component);
+        GENERATED_CLASS_BASE_BODY_HEADER();
 
     public:
         Component();
@@ -29,7 +29,7 @@ namespace Actor
         /// 登録に必要な情報を設定
         /// </summary>
         /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
-        virtual void Init(const Bool in_bAutoDelete) override;
+        virtual void Init(const Bool in_bReleaseMem) override;
 
         /// <summary>
         /// コンポーネントのオーターアクターを設定

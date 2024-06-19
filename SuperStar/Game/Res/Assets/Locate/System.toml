@@ -4,10 +4,14 @@ current_dir="Locate"
 
 # 各言語のテキスト情報
 # 日本語の各テキストグループ
-[locate.jp.default]
+[locate.JP.default]
 json="Text.json"
+# デバッグ用のテキスト
+# TODO: リリースの場合はロードしないようにする
+[locate.JP.debug]
+json="Debug.json"
 
 # (Test)英語の各テキストグループ
-[locate.en.default]
+[locate.EN.default]
 json="Text.json"
 

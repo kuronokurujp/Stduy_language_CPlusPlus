@@ -9,7 +9,8 @@ namespace UI
     /// </summary>
     class UIInputTouchComponent : public UIInputIComponentInterface
     {
-        GENERATED_CLASS_BODY_HEADER()
+        GENERATED_CLASS_BODY_HEADER();
+
     public:
         /// <summary>
         /// Processes the input.

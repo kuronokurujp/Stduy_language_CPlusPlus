@@ -2,7 +2,7 @@
 
 namespace UI
 {
-    GENERATED_CLASS_BODY(UIWidgetComponent, Actor::Component)
+    GENERATED_CLASS_BODY(UIWidgetComponent, Actor::Component);
 
     void UIWidgetComponent::Init(const Bool in_bAutoDelete)
     {

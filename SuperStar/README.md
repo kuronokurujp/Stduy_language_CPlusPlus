@@ -20,19 +20,11 @@ VisualStdio 2022 | 17.8.6
 ## 注意点
 - gitの無視ファイルにDebugディレクトリを指定しているのでDディレクトリ名にDebugを使ってはいけない
 
-## メモ
-- VS2022のエディター動作が重い
-- VS2022のデバッグモード起動して終了すると例外エラーが出る事がある
-- VS2022のコードファイルの文字コードはUTF-8にしないと警告 / エラーが出る
-
-## 参考
-- [VisualStudioのプリコンパイル設定](https://usagi.hatenablog.jp/entry/2019/12/08/073000)
-    - プロジェクトへ強制インクルードする方法を取る事でコードでインクルードする必要がない
-- [VisualStudioでのGoogleTestを使った単体テスト方法](https://learn.microsoft.com/ja-jp/visualstudio/test/writing-unit-tests-for-c-cpp?view=vs-2022)
-    - テストするコードは*.hのみではなく*.cppもインクルードする
-    - 最初は別プロジェクト参照してobjを含めてテストしようと思ったが,うまくいかなった
-- [Catch2というシングルヘッダーで単体テストできるOSSをVSに導入](https://qiita.com/AngelCase/items/019a8a208608fe9e3161)
-- [Catch2の導入方法](https://engineering.nature.global/entry/blog-fes-2022-catch2)
-    - curlコマンドでCatch2のヘッダーファイル取得する方法があったが, githubページに[download](https://github.com/catchorg/Catch2/tree/v2.x?tab=readme-ov-file)があったので,ここから取得するのがいい
-- [VisualStudioのコードファイル文字コードをUTF-8のBOM付きにする](https://gothlab.org/warning-c4819/)
+# 利用ライブラリ一覧
+Name | Version
+--- | ---
+[Catch2](https://github.com/catchorg/Catch2) | v2.13.10
+[DxLib](https://dxlib.xsrv.jp/) | Ver 3.24d
+[tomlplusplus](https://github.com/marzer/tomlplusplus?tab=readme-ov-file) | V3.4.0
+[simdjson](https://github.com/simdjson/simdjson) | v3.9.4
 

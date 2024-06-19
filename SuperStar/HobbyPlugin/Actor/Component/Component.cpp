@@ -4,11 +4,8 @@
 
 namespace Actor
 {
-    GENERATED_CLASS_BASE_BODY(Component)
+    GENERATED_CLASS_BASE_BODY(Component);
 
-    /// <summary>
-    /// Finalizes an instance of the <see cref="Component"/> class.
-    /// </summary>
     Component::Component() : Task()
     {
         this->_Clear();

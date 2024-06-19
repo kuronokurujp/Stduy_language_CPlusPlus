@@ -12,12 +12,6 @@ namespace Core
 {
     namespace Common
     {
-        FixStringBase::FixStringBase()
-        {
-            static Char	s_InitialBuff[] = E_STR_TEXT("test");
-            this->_Init(s_InitialBuff, 0);
-        }
-
         FixStringBase::FixStringBase(Char* in_pBuff, Uint32 in_size)
         {
             this->_Init(in_pBuff, in_size);
@@ -29,10 +23,7 @@ namespace Core
 
             this->_pBuff = in_pBuff;
             this->_size = in_size;
-            this->_pBuff[0] = '\0';
-#ifdef _WIN
-        
-#endif
+            this->_pBuff[0] = E_STR_TEXT('\0');
         }
 
         FixStringBase& FixStringBase::Replace(const Char* in_pOld, const Char* in_pNew)
@@ -63,7 +54,7 @@ namespace Core
                 if (static_cast<Uint32>(pSrcStr - this->_pBuff) >= this->_size)
                     break;
 
-            } while (*pSrcStr != '\0');
+            } while (*pSrcStr != E_STR_TEXT('\0'));
 
             return *this;
         }
@@ -71,7 +62,7 @@ namespace Core
         FixStringBase& FixStringBase::Insert(Uint32 in_index, const Char* in_pInsertStr)
         {
             Char* pBuffEnd = this->_pBuff + this->_size - 1;
-            Uint32 originLen = this->Size();
+            Uint32 originLen = this->Length();
             Uint32 insertLen = ((!in_pInsertStr) ? 1 : static_cast<Uint32>(E_STR_LEN(in_pInsertStr)));
 
             // 後ろに追加して終わり
@@ -96,9 +87,9 @@ namespace Core
 
                     pDst -= cutLen;
                     pSrcTail -= cutLen;
-                    *pSrcTail = '\0';
+                    *pSrcTail = E_STR_TEXT('\0');
                 }
-                E_ASSERT(*pSrcTail == '\0');
+                E_ASSERT(*pSrcTail == E_STR_TEXT('\0'));
                 
                 // コピーする
                 for (pSrc = pSrcTail; pSrc >= pSrcTop; --pSrc, --pDst)
@@ -126,10 +117,10 @@ namespace Core
 
         FixStringBase& FixStringBase::Remove(Uint32 in_index, Uint32 in_count)
         {
-            Uint32 fullLen = this->Size();
-            Char *pDst = this->_pBuff + ((in_index > fullLen) ? fullLen : in_index);
-            const Char *pSrc = this->_pBuff + (((in_index + in_count) > fullLen) ? fullLen : (in_index + in_count));
-            const Char *pSrcEnd = this->_pBuff + fullLen;
+            Uint32 size = this->Size();
+            Char *pDst = this->_pBuff + ((in_index > size) ? size : in_index);
+            const Char *pSrc = this->_pBuff + (((in_index + in_count) > size) ? size : (in_index + in_count));
+            const Char *pSrcEnd = this->_pBuff + size;
 
             while (pSrc <= pSrcEnd)
                 *pDst++ = *pSrc++;
@@ -164,7 +155,7 @@ namespace Core
 
         Sint32 FixStringBase::Find(const Char* in_pStr, Uint32 in_start) const
         {
-            const Uint32 len = this->Size();
+            const Uint32 len = this->Length();
             if (len <= in_start)
                 return -1;
 
@@ -175,10 +166,10 @@ namespace Core
             return static_cast<Sint32>(pFind - this->_pBuff);
         }
 
-        Uint32 FixStringBase::Length()
+        const Uint32 FixStringBase::Length() const
         {
 #ifdef _WIN
-            return this->Size();
+            return static_cast<Uint32>(E_STR_LEN(this->_pBuff));
 #else
             Uint32 size = this->Size();
             Uint32 len = 0;
@@ -188,6 +179,10 @@ namespace Core
             while (i < size)
             {
                 Uint8 c = static_cast<Uint8>(this->_pBuff[i]);
+                // 終端があれば終了する
+                if (c == 0x00)
+                    break;
+
                 // UTF8のコード表を見ると1byteが1文字とか2byteが1文字とかある
                 // https://seiai.ed.jp/sys/text/java/utf8table.html
                 // 1byteが1文字
@@ -222,12 +217,12 @@ namespace Core
             return (in_pStr && (E_STR_CMP(this->_pBuff, in_pStr) == 0));
         }
 
-        FixStringBase& FixStringBase::Copy(const Char* in_pStr)
+        FixStringBase& FixStringBase::_Copy(const Char* in_pStr, const Uint32 in_strLen)
         {
             if (in_pStr && this->_size > 0)
             {
-                E_STR_CPY_S(this->_pBuff, this->_size, in_pStr, this->_size - 1);
-                this->_pBuff[this->_size - 1] = '\0';
+                ::memset(this->_pBuff, '\0', this->_size * sizeof(Char));
+                E_STR_CPY_S(this->_pBuff, this->_size, in_pStr, in_strLen);
             }
             else
             {
@@ -237,30 +232,30 @@ namespace Core
             return *this;
         }
 
-        FixStringBase& FixStringBase::Add(const Char* in_pStr)
+        FixStringBase& FixStringBase::_Add(const Char* in_pStr)
         {
             if (in_pStr && this->_size > 0)
             {
-                Uint32 len = this->Size();
+                Uint32 len = this->Length();
                 Uint32 catLen = this->_size - len - 1;
 
                 if (catLen > 0)
                 {
                     E_STR_CPY_S(this->_pBuff + len, this->_size - len, in_pStr, catLen);
+                    this->_pBuff[this->_size - 1] = '\0';
                 }
-                this->_pBuff[_size - 1] = '\0';
             }
             else
             {
-                Empty();
+                this->Empty();
             }
 
             return *this;
         }
 
-        FixStringBase& FixStringBase::Add(Char c)
+        FixStringBase& FixStringBase::_Add(Char c)
         {
-            Uint32 len = this->Size();
+            Uint32 len = this->Length();
 
             if (len + 1 < this->_size)
             {
@@ -270,20 +265,6 @@ namespace Core
 
             return *this;
         }
-
-#ifdef _WIN
-        void ByteToWideChar(Char* out_wides, const Byte in_bytes[], const Uint32 in_wideSize)
-        {
-            MultiByteToWideChar(CP_ACP, 0, in_bytes, -1, out_wides, in_wideSize);
-        }
-
-        Char* ByteToWideCharByTemp(const Byte in_bytes[])
-        {
-            static Char c[256] = {};
-            ByteToWideChar(c, in_bytes, 256);
-            return c;
-        }
-#endif
     }
 }
 

@@ -7,7 +7,6 @@
 
 // 外部モジュール一覧
 #include "HobbyPlugin/DxLib/DXLibModule.h"
-#include "HobbyPlugin/Render/RenderModule.h"
 #include "HobbyPlugin/UI/UIModule.h"
 #include "HobbyPlugin/Level/LevelModule.h"
 #include "HobbyPlugin/Actor/ActorModule.h"
@@ -27,8 +26,8 @@ static WCHAR szTitle[MAX_LOADSTRING];
 // メイン ウィンドウ クラス名
 static WCHAR szWindowClass[MAX_LOADSTRING];
 
-// ゲームエントリーを宣言してエンジンに登録
-static AppEntryGameMain entry;
+// ゲームエンジンに登録するアプリインスタンス
+static AppEntryGameMain s_app;
 
 // このコード モジュールに含まれる関数の宣言を転送します:
 static BOOL InitInstance(HINSTANCE, int);
@@ -46,12 +45,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_SUPERSTAR, szWindowClass, MAX_LOADSTRING);
 
+    // エンジン起動
+    CREATE_HOBBY_ENGINE;
+
     // アプリケーション初期化の実行:
     if (!InitInstance(hInstance, nCmdShow))
         return FALSE;
 
-    // エンジン起動
-    entry.Start(HOBBY_ENGINE.IsDebugMode());
+    // エンジンに設定したアプリを開始
+    s_app.Start(HOBBY_ENGINE.IsDebugMode());
 
     // ゲームループ
     while(1)
@@ -65,7 +67,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         const Float32 d = HOBBY_ENGINE.GetDeltaTimeSec();
 
         // アプリメイン
-        if (entry.Update(d) == FALSE)
+        if (s_app.Update(d) == FALSE)
             break;
 
         if (HOBBY_ENGINE.MainUpdateLoop(d) == FALSE)
@@ -75,7 +77,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             break;
     }
 
-    entry.End();
+    s_app.End();
 
     EndInstance(hInstance);
 
@@ -87,23 +89,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     // グローバル変数にインスタンス ハンドルを格納する
     hInst = hInstance;
 
-    // TODO: DxLibプラットフォーム特有の設定をする
-    START_HOBBY_ENGINE
-
     const Bool bPreInitRet = HOBBY_ENGINE.PreInit();
     E_ASSERT(bPreInitRet && "事前初期化に失敗");
-
-    // TODO: 必要な外部モジュールを追加
-    {
-        DXLib::DxLibModule* pDxLibModule = HOBBY_ENGINE.ModuleManager().Add<DXLib::DxLibModule>();
-
-        HOBBY_ENGINE.ModuleManager().Add<Render::RenderModule>();
-        HOBBY_ENGINE.ModuleManager().Add<UI::UIModule>();
-        HOBBY_ENGINE.ModuleManager().Add<Actor::ActorModule>();
-        HOBBY_ENGINE.ModuleManager().Add<Level::LevelModule>();
-        HOBBY_ENGINE.ModuleManager().Add<Localization::LocalizationModule>();
-        HOBBY_ENGINE.ModuleManager().Add<AssetManager::AssetManagerModule>();
-    }
 
     const Bool bInitRet = HOBBY_ENGINE.Init();
     E_ASSERT(bInitRet && "初期化に失敗");
@@ -114,6 +101,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 void EndInstance(HINSTANCE hInstance)
 {
     HOBBY_ENGINE.End();
+
+    RELEASE_HOBBY_ENGINE;
 }
 
 // アプリの起動エントリークラス
@@ -130,15 +119,17 @@ void EndInstance(HINSTANCE hInstance)
 const Bool AppEntryGameMain::Start(const Bool in_bDebug)
 {
     E_LOG_LINE(E_STR_TEXT("game start"));
+
     // TODO: ゲームのみで利用するライブラリを初期化
     //		LuaStateManager::Init();
-    Localization::LocalizationModule::I().LoadSystemFile(E_STR_TEXT("Locate/System.toml"));
+
+    HOBBY_LOCALIZATION_MODULE.LoadSystemFile(E_STR_TEXT("Locate/System.toml"));
+    HOBBY_LOCALIZATION_MODULE.LoadTextAll(E_STR_TEXT("JP"));
 
 #ifdef _HOBBY_ENGINE_DEBUG
     if (in_bDebug)
     {
         // デバッグレベルを開始
-        //HOBBY_ENGINE.StartLevel<Level::DebugMain>();
         HOBBY_ENGINE.GetLevelModule().GetManager()->StartLevel<Level::LevelLauncher>();
     }
 #endif

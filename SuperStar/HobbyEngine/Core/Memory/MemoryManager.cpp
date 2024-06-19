@@ -33,19 +33,18 @@ namespace Core
             // とり方は各プラットフォームによって変えること
             // とりあえず4バイトアラインにしたい．
             // TODO: プラットフォーム用のヒープ取得に切り替え
-            this->_pHeapTop = _aligned_malloc(in_useHeapSize, MINIMUM_ALIGN_SIZE);
-
+            this->_pHeapTop = ::_aligned_malloc(in_useHeapSize, MINIMUM_ALIGN_SIZE);
             if (this->_pHeapTop == NULL)
             {
                 //	取れなかった．
                 E_ASSERT(0 && "取得に失敗．");
-                return(FALSE);
+                return FALSE;
             }
 
             this->_heapSize = in_useHeapSize;
 
             //	ページ情報初期化．
-            memset(this->_memoryPageInfoArray, 0, sizeof(this->_memoryPageInfoArray));
+            ::memset(this->_memoryPageInfoArray, 0, sizeof(this->_memoryPageInfoArray));
 
             return TRUE;
         }
@@ -63,13 +62,13 @@ namespace Core
 
             // 解放する
             // TODO: プラットフォームのヒープ解放に切り替える
-            _aligned_free(this->_pHeapTop);
+            ::_aligned_free(this->_pHeapTop);
 
             // 痕跡を消す
             this->_pHeapTop = NULL;
             this->_heapSize = 0;
 
-            memset(this->_memoryPageInfoArray, 0, sizeof(this->_memoryPageInfoArray));
+            ::memset(this->_memoryPageInfoArray, 0, sizeof(this->_memoryPageInfoArray));
 
             return TRUE;
         }
@@ -108,23 +107,23 @@ namespace Core
             // while (tempSetupInfo->_page != INVALID_MEMORY_PAGE)
             for (Uint32 i = 0; i < in_num; ++i)
             {
-                PageSetupInfo* tempSetupInfo = &in_pSetupInfoArray[i];
+                const PageSetupInfo* pTempSetupInfo = &in_pSetupInfoArray[i];
 
                 // サイズが大きすぎる場合
-                if (heapOffset + tempSetupInfo->_size > _heapSize)
+                if (heapOffset + pTempSetupInfo->_size > _heapSize)
                 {
                     E_ASSERT(0 && "サイズが大きすぎる．");
                     return FALSE;
                 }
 
-                if (this->_InitMemoryPage(tempSetupInfo->_page, heapOffset, tempSetupInfo->_size) == FALSE)
+                if (this->_InitMemoryPage(pTempSetupInfo->_page, heapOffset, pTempSetupInfo->_size) == FALSE)
                 {
                     E_ASSERT(0 && "メモリページの初期化に失敗．");
                     return FALSE;
                 }
 
                 // 作成ページのサイズ分はヒープを作ったので空いているヒープアドレスにする
-                heapOffset += tempSetupInfo->_size;
+                heapOffset += pTempSetupInfo->_size;
                 //tempSetupInfo++;
             }
 
@@ -840,13 +839,12 @@ namespace Core
                 {
                     Ptr blockAddr = reinterpret_cast<Ptr>(pUsedMemoryBlock);
 #ifdef _X64
-                    E_LOG_LINE(E_STR_TEXT("0llx%8.8llx: 0x%8.8x (0x%8.8x) [%d] {%d}: %s(%d)"),
+                    E_LOG_LINE(E_STR_TEXT("0llx%8.8llx: 0x%8.8x (0x%8.8x) [%d] {%d}: %hs(%d)"),
                         blockAddr + this->_GetMemoryBlockHeaderSize(),
                         pUsedMemoryBlock->_allocateSize,
                         pUsedMemoryBlock->_size,
                         pUsedMemoryBlock->_paddingSize,
                         pUsedMemoryBlock->_alignSize,
-                        // TODO: wide文字に変換が必要
                         pUsedMemoryBlock->_fileName,
                         pUsedMemoryBlock->_line);
 #else

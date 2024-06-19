@@ -2,5 +2,5 @@
 
 namespace UI
 {
-    GENERATED_CLASS_BODY(UIInputIComponentInterface, Actor::Component)
+    GENERATED_CLASS_BODY(UIInputIComponentInterface, Actor::Component);
 }

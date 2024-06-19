@@ -5,6 +5,12 @@
 
 #include "Module/Module.h"
 
+// モジュールのヘッダーファイルは全てインクルードする
+#include "ActorInterface.h"
+#include "ActorManager.h"
+#include "Actor.h"
+#include "Component/Component.h"
+
 namespace Actor
 {
     /// <summary>
@@ -14,15 +20,19 @@ namespace Actor
     {
     public:
         /// <summary>
-        /// TODO: モジュール初期化
+        /// モジュール初期化
         /// </summary>
         /// <returns></returns>
         const Bool Init() final override;
 
         /// <summary>
-        /// TODO: モジュール終了
+        /// モジュール終了
         /// </summary>
         /// <returns></returns>
         const Bool End() final override;
     };
 }
+
+MODULE_GENRATE_DECLARATION(Actor::ActorModule, Actor);
+
+

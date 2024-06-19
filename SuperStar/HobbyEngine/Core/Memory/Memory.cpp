@@ -124,11 +124,11 @@ void* operator new(std::size_t in_size)
         Core::Memory::Manager::ALLOCATE_LOCATE_LAST,
         __FILE__, __LINE__));
 #else
-    return (HOBBY_ENGINE.GetMemManager().AllocateMemory(
+    return (Core::Memory::Manager::I().AllocateMemory(
         memSize,
         0,
         Core::Memory::Manager::MINIMUM_ALIGN_SIZE,
-        Core::Memory::Manager::ALLOCATE_LOCATE_TOP);
+        Core::Memory::Manager::ALLOCATE_LOCATE_TOP));
 #endif
 }
 
@@ -145,11 +145,11 @@ void* operator new[](std::size_t in_size)
         Core::Memory::Manager::ALLOCATE_LOCATE_LAST,
         __FILE__, __LINE__));
 #else
-    return (HOBBY_ENGINE.GetMemManager().AllocateMemory(
+    return (Core::Memory::Manager::I().AllocateMemory(
         memSize,
         0,
         Core::Memory::Manager::MINIMUM_ALIGN_SIZE,
-        Core::Memory::Manager::ALLOCATE_LOCATE_TOP);
+        Core::Memory::Manager::ALLOCATE_LOCATE_TOP));
 #endif
 }
 

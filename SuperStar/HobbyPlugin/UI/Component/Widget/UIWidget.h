@@ -13,8 +13,8 @@ namespace UI
     /// </summary>
     class UIWidgetComponent : public Actor::Component
     {
-        E_CLASS_COPY_CONSTRUCT_NG(UIWidgetComponent)
-        GENERATED_CLASS_BODY_HEADER()
+        E_CLASS_COPY_CONSTRUCT_NG(UIWidgetComponent);
+        GENERATED_CLASS_BODY_HEADER();
 
     public:
         UIWidgetComponent() : Actor::Component() { this->_Clear(); }
@@ -24,7 +24,7 @@ namespace UI
         /// 登録に必要な情報を設定
         /// </summary>
         /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
-        virtual void Init(const Bool in_bAutoDelete = TRUE) override;
+        virtual void Init(const Bool in_bReleaseMem = TRUE) override;
 
         virtual void OnTouch(const Platform::TouchInput& in_rTouch) {}
         virtual void OnKey(const Platform::KeyboardInput& in_rKeyboard) {}

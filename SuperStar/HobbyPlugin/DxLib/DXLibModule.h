@@ -4,6 +4,7 @@
 #include "Platform/PlatformModule.h"
 
 // DxLibのシステム一覧
+// モジュールのヘッダーファイルは全てインクルードする
 #include "DXLibTime.h"
 #include "DXLibInput.h"
 #include "DxLibFile.h"
@@ -64,3 +65,5 @@ namespace DXLib
         FileSystem _file;
     };
 }
+
+MODULE_GENRATE_DECLARATION(DXLib::DxLibModule, DxLib);

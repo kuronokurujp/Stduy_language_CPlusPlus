@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <memory>
+
 #include "Core/Core.h"
 #include "Core/Common/Handle.h"
 
@@ -9,9 +11,8 @@
 #include "HobbyPlugin/Actor/ActorModule.h"
 #include "HobbyEngine/Platform/PlatformModule.h"
 
+// モジュールのヘッダーファイルは全てインクルードする
 #include "LevelManager.h"
-
-#include <memory>
 
 namespace Level
 {
@@ -24,13 +25,13 @@ namespace Level
     {
     public:
         /// <summary>
-        /// TODO: モジュール初期化
+        /// モジュール初期化
         /// </summary>
         /// <returns></returns>
         const Bool Init() final override;
 
         /// <summary>
-        /// TODO: モジュール終了
+        /// モジュール終了
         /// </summary>
         /// <returns></returns>
         const Bool End() final override;
@@ -43,3 +44,5 @@ namespace Level
         std::shared_ptr<Manager> _pLevelManager = NULL;
     };
 }
+
+MODULE_GENRATE_DECLARATION(Level::LevelModule, Level);

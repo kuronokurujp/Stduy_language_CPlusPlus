@@ -9,7 +9,7 @@
 
 namespace UI
 {
-    GENERATED_CLASS_BODY(UIButtonComponent, UIWidgetComponent)
+    GENERATED_CLASS_BODY(UIButtonComponent, UIWidgetComponent);
 
     void UIButtonComponent::Init(const Bool in_bAutoDelete)
     {

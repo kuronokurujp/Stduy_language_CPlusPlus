@@ -31,7 +31,7 @@ namespace Core
             return FALSE;
 
         // プールのバッファ予約
-        this->Reserve(in_taskMax);
+        this->_Reserve(in_taskMax);
         
         // タスクグループを確保
         this->_pTasks = new TaskGroup[in_groupNum];
@@ -124,7 +124,7 @@ namespace Core
         pTask->End();
 
         Sint32 groupId = this->_Dettach(pTask);
-        if (groupId == NON_GROPU_ID)
+        if (groupId == Task::GROUP_NONE_ID)
             return;
 
         // タスクがメモリ削除されると,
@@ -132,7 +132,8 @@ namespace Core
         Common::Handle freeHandle = in_hTask;
 
         // ハンドルを返却する + メモリから削除するかしないか
-        this->_Free(freeHandle, pTask->_bAutoDelete);
+        const bool bCache = pTask->_bReleaseMem == FALSE;
+        this->_Free(freeHandle, bCache);
     }
 
     void TaskManager::RemoveGroup(Sint32 in_groupId)
@@ -184,15 +185,9 @@ namespace Core
             Task* pNextTask = pTask->_pNext;
             {
                 // 一旦グループから削除する
-                // 削除がするがメモリ解放はしてはいけないので自動解放をOFFにする
-                Bool bOldAutoDelete = pTask->_bAutoDelete;
-
-                // pTask->_bAutoDelete = FALSE;
-                // this->Remove(pTask->GetHandle());
                 this->_Dettach(pTask);
 
                 // 別のグループに付け替える
-                // pTask->_bAutoDelete = bOldAutoDelete;
                 this->_Attach(pTask, in_targetGroupId);
             }
             
@@ -245,12 +240,12 @@ namespace Core
         return pGroup->_count;
     }
 
-    Task* TaskManager::_SetupTask(BasePoolManager::AllocData* out_pData, const Bool in_bAutoDelete)
+    Task* TaskManager::_SetupTask(BasePoolManager::AllocData* out_pData, const Bool in_bReleaseMem)
     {
         E_ASSERT(out_pData != NULL);
         Task* pTask = out_pData->_pItem;
 
-        pTask->Init(in_bAutoDelete);
+        pTask->Init(in_bReleaseMem);
         pTask->_hSelf = out_pData->_handle;
 
         return pTask;
@@ -261,7 +256,7 @@ namespace Core
     /// </summary>
     const Bool TaskManager::_Attach(Task* in_pTask, const Sint32 in_groupId)
     {
-        E_ASSERT(NON_GROPU_ID < in_groupId);
+        E_ASSERT(Task::GROUP_NONE_ID < in_groupId);
         E_ASSERT(in_groupId < this->_groupNum);
         
         E_ASSERT((in_pTask != NULL) && "タスクに割り当ている数がいっぱいで割り当てに失敗");

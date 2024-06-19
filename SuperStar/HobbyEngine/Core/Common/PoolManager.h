@@ -31,15 +31,9 @@ namespace Core
                 Handle _handle;
             };
 
-            /// <summary>
-            /// プールのバッファ予約
-            /// プールするためのデータバッファ数を指定して確保
-            /// 利用前に必ず実行
-            /// </summary>
-            /// <param name="in_max"></param>
-            void Reserve(const Uint32 in_max)
+            virtual ~BasePoolManager()
             {
-                this->_cacheDatas.reserve(in_max);
+                this->_Release();
             }
 
             /// <summary>
@@ -48,7 +42,10 @@ namespace Core
             /// <returns></returns>
             const Uint32 UseCount() const
             {
-                return static_cast<Uint32>(this->_userSlot.size());
+                if (this->_pUserSlot == NULL)
+                    return 0;
+
+                return static_cast<Uint32>(this->_pUserSlot->size());
             }
 
             /// <summary>
@@ -57,7 +54,16 @@ namespace Core
             /// <returns></returns>
             const Uint32 Max() const
             {
-                return static_cast<Uint32>(this->_cacheDatas.capacity());
+                return static_cast<Uint32>(this->_pCacheDatas->capacity());
+            }
+
+            /// <summary>
+            /// キャッシュしたデータが現在いくつか
+            /// </summary>
+            /// <returns></returns>
+            const Uint32 CacheCount() const
+            {
+                return static_cast<Uint32>(this->_pCacheDatas->size());
             }
 
             const bool Empty() const
@@ -66,34 +72,70 @@ namespace Core
             }
 
             // 現在利用しているデータリストを取得
-            const std::list<AllocData>& GetUserDataList() const { return this->_userSlot; }
+            const std::list<AllocData>& GetUserDataList() const
+            {
+                E_ASSERT(this->_pUserSlot);
+                return *this->_pUserSlot;
+            }
 
         protected:
             static const Uint32 NON_MAGIC_NUMBER = 0;
+
+            /// <summary>
+            /// プールのバッファ予約
+            /// プールするためのデータバッファ数を指定して確保
+            /// 継承したクラスが必ず実行
+            /// </summary>
+            /// <param name="in_max"></param>
+            void _Reserve(const Uint32 in_max)
+            {
+                if (this->_pCacheDatas == NULL)
+                    this->_pCacheDatas = std::make_unique<std::vector<T*>>();
+
+                if (this->_pUserSlot == NULL)
+                    this->_pUserSlot = std::make_unique<std::list<AllocData>>();
+
+                this->_pCacheDatas->reserve(in_max);
+            }
+
+            void _Release()
+            {
+                if (this->_pCacheDatas)
+                    this->_pCacheDatas.release();
+
+                if (this->_pUserSlot)
+                    this->_pUserSlot.release();
+            }
 
             /// <summary>
             /// プールしているデータの中で利用できるデータ枠を取得
             /// 利用するデータとそのデータを紐づけたハンドルを返す
             /// </summary>
             /// <returns></returns>
-            //std::tuple<T*, Handle> _Alloc()
-            // Sのクラスは必ずTを継承したクラスでないといけない
             template<class S>
             AllocData _Alloc()
             {
+                static_assert(std::is_base_of<T, S>::value, "SクラスはTクラスを継承していない");
+
+                E_ASSERT(this->_pCacheDatas);
+                E_ASSERT(this->_pUserSlot);
+
                 AllocData allocData;
+                E_ASSERT(0 < this->_pCacheDatas->capacity());
 
                 // 割り当てられなかったら空の枠を返す
-                if (this->UseCount() >= this->_cacheDatas.capacity())
+                if (this->UseCount() >= this->_pCacheDatas->capacity())
+                {
+                    E_ASSERT(FALSE && "オブジェクトを割り当てる数が足りない");
                     return allocData;
+                }
 
                 Handle handle;
 
-                // TODO: 失敗した場合に必ずエラーになるインデックス値を設定
                 Bool bNewSlot = FALSE;
                 S* object = NULL;
 
-                if (this->_cacheDatas.empty())
+                if (this->_pCacheDatas->empty())
                 {
                     bNewSlot = TRUE;
                 }
@@ -101,10 +143,10 @@ namespace Core
                 {
                     Bool bFreeSlot = FALSE;
 
-                    // TODO: フリー領域にあるのがSクラスかどうかチェックしてあればそれを使う, なければ新規作成する
+                    // フリー領域にあるのがSクラスかどうかチェックしてあればそれを使う, なければ新規作成する
                     // すでに生成したTクラスのインスタンスを再利用
                     Uint32 chkIndex = 0;
-                    for (auto b = this->_cacheDatas.begin(); b != this->_cacheDatas.end(); ++b)
+                    for (auto b = this->_pCacheDatas->begin(); b != this->_pCacheDatas->end(); ++b)
                     {
                         // 再利用可能なデータかチェック
                         object = dynamic_cast<S*>(*b);
@@ -114,7 +156,7 @@ namespace Core
                             bFreeSlot = TRUE;
 
                             // キャッシュデータを利用したのでキャッシュリストから外す
-                            this->_cacheDatas.erase(b);
+                            this->_pCacheDatas->erase(b);
                             handle.Init(chkIndex);
 
                             break;
@@ -144,7 +186,7 @@ namespace Core
                 allocData._pItem = object;
 
                 // 利用リストに追加
-                this->_userSlot.push_back(allocData);
+                this->_pUserSlot->push_back(allocData);
 
                 return allocData;
             } 
@@ -155,17 +197,16 @@ namespace Core
             /// <param name="handle"></param>
             void _Free(const Handle& in_handle, const Bool in_bCache)
             {
-                if (in_handle.Null())
-                    return;
+                E_ASSERT(in_handle.Null() == FALSE && "解放するデータがないとだめ");
 
                 T* pRemoveObj = NULL;
-                for (auto it = this->_userSlot.begin(); it != this->_userSlot.end(); ++it)
+                for (auto it = this->_pUserSlot->begin(); it != this->_pUserSlot->end(); ++it)
                 {
                     if (it->_handle.Magic() == in_handle.Magic())
                     {
                         pRemoveObj = it->_pItem;
                         // 利用リストから外す
-                        this->_userSlot.erase(it);
+                        this->_pUserSlot->erase(it);
 
                         break;
                     }
@@ -175,7 +216,7 @@ namespace Core
                 if (in_bCache)
                 {
                     // メモリ確保した要素をキャッシュして使いまわす
-                    this->_cacheDatas.push_back(pRemoveObj);
+                    this->_pCacheDatas->push_back(pRemoveObj);
                 }
                 else
                 {
@@ -190,7 +231,7 @@ namespace Core
                 if (in_handle.Null())
                     return NULL;
 
-                for (auto it = this->_userSlot.begin(); it != this->_userSlot.end(); ++it)
+                for (auto it = this->_pUserSlot->begin(); it != this->_pUserSlot->end(); ++it)
                 {
                     if (it->_handle.Magic() == in_handle.Magic())
                     {
@@ -210,10 +251,10 @@ namespace Core
 
         private:
             // 利用中のデータスロット
-            std::list<AllocData> _userSlot;
+            std::unique_ptr<std::list<AllocData>> _pUserSlot = NULL;
 
             // 再利用するキャッシュデータリスト 
-            std::vector<T*> _cacheDatas;
+            std::unique_ptr<std::vector<T*>> _pCacheDatas = NULL;
             Uint32 _indexCount = 0;
         };
 

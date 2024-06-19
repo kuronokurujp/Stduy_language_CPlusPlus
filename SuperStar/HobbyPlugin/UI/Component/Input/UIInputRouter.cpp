@@ -4,7 +4,7 @@
 
 namespace UI
 {
-    GENERATED_CLASS_BODY(UIInputRouterComponent, UIInputIComponentInterface)
+    GENERATED_CLASS_BODY(UIInputRouterComponent, UIInputIComponentInterface);
 
     void UIInputRouterComponent::AddTerminal(UIInputIComponentInterface* in_pTerminal)
     {

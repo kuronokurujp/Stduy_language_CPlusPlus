@@ -26,6 +26,12 @@
     <ClInclude Include="..\..\..\..\Tests\Common\TestCMap.hpp">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\Tests\HobbyEngine\TestEngine.hpp">
+      <Filter>HobbyEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Tests\HobbyPlugin\TestActorPlugin.hpp">
+      <Filter>HobbyPlugin</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Tests\TestMain.cpp" />
@@ -45,6 +51,12 @@
     </Filter>
     <Filter Include="Common">
       <UniqueIdentifier>{807046f1-7046-4c18-a5db-b7406b932d09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HobbyEngine">
+      <UniqueIdentifier>{e6547a21-9982-4a1b-b639-963482d5b90b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HobbyPlugin">
+      <UniqueIdentifier>{66403715-4c95-41a9-9374-90a84776f18e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

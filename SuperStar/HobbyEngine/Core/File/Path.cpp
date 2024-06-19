@@ -8,6 +8,11 @@ namespace Core
 {
     namespace File
     {
+        void Path::operator=(const Path& in_path)
+        {
+            this->_path = in_path._path;
+        }
+
         Path& Path::operator+=(const Path& in_path)
         {
 #ifdef _WIN

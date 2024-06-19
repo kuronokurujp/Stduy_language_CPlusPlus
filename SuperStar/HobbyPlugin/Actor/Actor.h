@@ -50,7 +50,7 @@ namespace Actor
     class Object : public Core::Task 
     {
         // E_CLASS_DEFAULT_CONSTRUCT_NG(Object);
-        E_CLASS_COPY_CONSTRUCT_NG(Object)
+        E_CLASS_COPY_CONSTRUCT_NG(Object);
 
     public:
         /// <summary>
@@ -66,7 +66,7 @@ namespace Actor
         enum ETaskUpdateId
         {
             // 入力更新
-            ETaskUpdateId_Input = Task::s_idNone + 1,
+            ETaskUpdateId_Input = Task::NONE_ID + 1,
             // オブジェクト更新
             ETaskUpdateId_Object,
         };
@@ -205,9 +205,7 @@ namespace Actor
         */
 
         /// <summary>
-        /// TODO: 型指定したコンポーネントを取得.
-        /// コンポーネントは重複設定しない前提.
-        /// コンポーネントのハンドル指定版
+        /// 取得コンポーネント(ハンドル)
         /// </summary>
         /// <returns></returns>
         template <class T>
@@ -265,7 +263,7 @@ namespace Actor
         void OutputChildComponents(Core::Common::FastFixArray<Component*, 128>& out_comArray, const Core::Common::RTTI& in_rtti);
 
         /// <summary>
-        /// TODO: RTTIから目的のコンポーネントを取得
+        /// RTTIから目的のコンポーネントを取得
         /// </summary>
         Component* GetComponent(const Core::Common::RTTI& in_rtti);
 

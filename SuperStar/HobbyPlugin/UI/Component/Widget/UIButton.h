@@ -58,8 +58,8 @@ namespace UI
     /// </summary>
     class UIButtonComponent : public UIWidgetComponent
     {
-        E_CLASS_COPY_CONSTRUCT_NG(UIButtonComponent)
-        GENERATED_CLASS_BODY_HEADER()
+        E_CLASS_COPY_CONSTRUCT_NG(UIButtonComponent);
+        GENERATED_CLASS_BODY_HEADER();
 
     public:
         UIButtonComponent() : UIWidgetComponent() { this->_Clear(); }

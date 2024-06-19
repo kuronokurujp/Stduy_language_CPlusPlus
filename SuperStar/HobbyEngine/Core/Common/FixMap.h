@@ -43,12 +43,9 @@ namespace Core
             class Iterator
             {
             public:
-                Iterator(NODE* pNode)
-                    : _pNode(pNode)
-                {
-                }
+                Iterator(NODE* pNode) : _pNode(pNode) {}
 
-                const Bool IsValid() { return this->_pNode != NULL; }
+                inline const Bool IsValid() const E_NOEXCEPT { return this->_pNode != NULL; }
 
                 // ペアポインタ参照
                 Pair* operator ->()
@@ -93,7 +90,7 @@ namespace Core
                 }
                 
                 // 比較
-                bool operator ==(const Iterator &rhs) const
+                bool operator ==(const Iterator &rhs) const E_NOEXCEPT 
                 {
                     return this->_pNode == rhs._pNode;
                 }
@@ -120,29 +117,16 @@ namespace Core
         
         public:
             // コンストラクタ
-            FixMap()
-                : _pRoot(NULL)
-                , _nodeNum(0)
+            FixMap() : _itTail(&this->_tail)
             {
-                // 線形アクセス用のリストを初期化
-                this->_head._pPrev = NULL;
-                this->_head._pNext = &this->_tail;
-                this->_tail._pPrev = &this->_head;
-                this->_tail._pNext = NULL;
+                this->_Init();
             }
 
-            // TODO: コピーのコンストラクタ必要
+            // コピーのコンストラクタ
             // ディープコピーにする
-            FixMap(const FixMap& other)
-                : _pRoot(NULL)
-                , _nodeNum(0)
+            FixMap(const FixMap& other) : _itTail(&this->_tail)
             {
-                // 線形アクセス用のリストを初期化
-                this->_head._pPrev = NULL;
-                this->_head._pNext = &this->_tail;
-                this->_tail._pPrev = &this->_head;
-                this->_tail._pNext = NULL;
-
+                this->_Init();
                 this->_DeepCopy(&other);
             }
 
@@ -151,7 +135,7 @@ namespace Core
             FixMap& operator =(FixMap&& other) = delete;
             FixMap& operator =(const FixMap&& other) = delete;
 
-            // TODO: コピー処理を作る
+            // コピー処理
             // ディープコピーにする
             FixMap& operator =(FixMap& other)
             {
@@ -189,7 +173,6 @@ namespace Core
             /// <param name="rKey">キー指定</param>
             /// <param name="rData">キーと紐づいたデータ</param>
             /// <returns>失敗したら終端イテレータ / 追加成功なら追加データのイテレータ</returns>
-
             Iterator Add(const KEY &rKey, const DATA &rData)
             {
                 return this->_Add(rKey, &rData);
@@ -220,7 +203,42 @@ namespace Core
             }
 
             /// <summary>
-            /// データ削除
+            /// 指定キーの要素があるか
+            /// </summary>
+            /// <param name="rKey"></param>
+            /// <returns></returns>
+            const Bool Contains(const KEY &rKey)
+            {
+                // ツリーが空なのでキーの要素はない
+                if (this->Empty())
+                    return FALSE;
+
+                NODE* pNode = this->_Find(this->_pRoot, rKey);
+                if (pNode == NULL)
+                    return FALSE;
+
+                return TRUE;
+            }
+
+            /// <summary>
+            /// データ削除(キー版)
+            /// </summary>
+            /// <param name="in_rKey"></param>
+            /// <returns></returns>
+            const Bool Erase(const KEY& in_rKey)
+            {
+                // ツリーを辿って削除 &再構築
+                this->_pRoot = this->_Erase(this->_pRoot, in_rKey);
+                
+                // まだツリーが存在するなら、ルートノードを黒にしておく
+                if (this->_pRoot)
+                    this->_pRoot->_color = NODE::BLACK;
+
+                return TRUE;
+            }
+
+            /// <summary>
+            /// データ削除(イテレータ版)
             /// </summary>
             /// <param name="it"></param>
             /// <returns></returns>
@@ -266,7 +284,7 @@ namespace Core
             /// データが空なら終端イテレーターを取得
             /// </summary>
             /// <returns></returns>
-            Iterator Begin()
+            Iterator Begin() const
             {
                 return Iterator(this->_head._pNext);
             }
@@ -275,11 +293,11 @@ namespace Core
             /// 終端イテレーター取得
             /// </summary>
             /// <returns></returns>
-            Iterator End()
+            Iterator End() const
             {
-                return Iterator(&this->_tail);
+                return this->_itTail;// Iterator(&this->_tail);
             }
-            
+
             /// <summary>
             /// KEYを添え字にしてデータアクセス
             /// KEYがなければそのKEYでデータを追加して参照を返す
@@ -288,16 +306,7 @@ namespace Core
             /// <returns></returns>
             DATA& operator [](const KEY &rKey)
             {
-                Iterator it = this->Find(rKey);
-                if (it == this->End())
-                {
-                    // 無ければ追加する
-                    // データ未確定なのでNULL
-                    it = this->_Add(rKey, NULL);
-                }
-                
-                // データの参照を返す
-                return it->_data;
+                return this->FindorAdd(rKey);
             }
 
         protected:
@@ -322,6 +331,20 @@ namespace Core
             virtual void _DestoryNode(const Core::Common::Handle& in_handle)
             {
                 this->_poolObject.Free(in_handle);
+            }
+
+            inline DATA& FindorAdd(const KEY &rKey)
+            {
+                Iterator it = this->Find(rKey);
+                if (it == this->End())
+                {
+                    // 無ければ追加する
+                    // データ未確定なのでNULL
+                    it = this->_Add(rKey, NULL);
+                }
+                
+                // データの参照を返す
+                return it->_data;
             }
 
 #ifdef _HOBBY_ENGINE_DEBUG
@@ -422,13 +445,16 @@ namespace Core
                 pNode->_pNext->_pPrev = pNode->_pPrev;
                 pNode->_pPrev->_pNext = pNode->_pNext;
 
-                Core::Common::Handle handle = pNode->handle;
-
 #ifdef _HOBBY_ENGINE_DEBUG
                 // わざと0xCCで埋める
-                ::memset(pNode, 0xCC, sizeof(NODE));
+                //::memset(pNode, 0xCC, sizeof(NODE));
+                pNode->_pLeft = NULL;
+                pNode->_pNext = NULL;
+                pNode->_pPrev = NULL;
+                pNode->_pRight = NULL;
+                pNode->_color = 0;
 #endif
-                this->_DestoryNode(handle);
+                this->_DestoryNode(pNode->handle);
                 --this->_nodeNum;
             }
             
@@ -441,7 +467,7 @@ namespace Core
                     return this->End();
 
                 pNode->_pair._key = rKey;
-                if (pData)
+                if (pData != NULL)
                 {
                     // 添え字アクセスで作る場合はデータが無い
                     // コピーして渡す
@@ -457,7 +483,7 @@ namespace Core
             }
             
             /// <summary>
-            /// ノードを挿入
+            /// ノードを末尾位置へ挿入
             /// 末尾ノードに挿入するので再帰処理で末尾ノードを探索
             /// </summary>
             /// <param name="pNode"></param>
@@ -625,139 +651,168 @@ namespace Core
             }
 
             /// <summary>
-            /// TODO: ディープコピー処理
+            /// ディープコピー処理
             /// </summary>
             /// <param name="other"></param>
-            void _DeepCopy(const FixMap* other)
+            void _DeepCopy(const FixMap* in_pOther)
             {
-                for (const NODE* p = other->_head._pNext; (p != &other->_tail) && (p != NULL); p = p->_pNext)
+                E_ASSERT(in_pOther);
+                for (const NODE* p = in_pOther->_head._pNext; (p != &in_pOther->_tail) && (p != NULL); p = p->_pNext)
                 {
                     this->Add(p->_pair._key, p->_pair._data);
                 }
             }
 
             // ツリーの左回転
-            NODE* _RotateLeft(NODE* pNode)
+            NODE* _RotateLeft(NODE* in_pNode)
             {
-                NODE* pNewParent = pNode->_pRight;
-                pNode->_pRight = pNewParent->_pLeft;
-                pNewParent->_pLeft = pNode;
+                E_ASSERT(in_pNode);
+
+                NODE* pNewParent = in_pNode->_pRight;
+                in_pNode->_pRight = pNewParent->_pLeft;
+                pNewParent->_pLeft = in_pNode;
                 
-                pNewParent->_color = pNode->_color;
-                pNode->_color = NODE::RED;
+                pNewParent->_color = in_pNode->_color;
+                in_pNode->_color = NODE::RED;
                 
                 return pNewParent;
             }
             
             // ツリーの右回転
-            NODE* _RotateRight(NODE* pNode)
+            NODE* _RotateRight(NODE* in_pNode)
             {
-                NODE* pNewParent = pNode->_pLeft;
-                pNode->_pLeft = pNewParent->_pRight;
-                pNewParent->_pRight = pNode;
+                E_ASSERT(in_pNode);
+
+                NODE* pNewParent = in_pNode->_pLeft;
+                in_pNode->_pLeft = pNewParent->_pRight;
+                pNewParent->_pRight = in_pNode;
                 
-                pNewParent->_color = pNode->_color;
-                pNode->_color = NODE::RED;
+                pNewParent->_color = in_pNode->_color;
+                in_pNode->_color = NODE::RED;
                 
                 return pNewParent;
             }
             
             // 自分とその子供の色の反転
-            void _FlipColors(NODE* pNode)
+            void _FlipColors(NODE* in_pNode)
             {
+                E_ASSERT(in_pNode);
+
                 // 0と1を切り替え
-                pNode->_color ^= 1;
-                pNode->_pLeft->_color ^= 1;
-                pNode->_pRight->_color ^= 1;
+                in_pNode->_color ^= 1;
+                in_pNode->_pLeft->_color ^= 1;
+                in_pNode->_pRight->_color ^= 1;
             }
             
             // 左に赤ノードを移動
-            NODE* _MoveRedLeft(NODE* pNode)
+            NODE* _MoveRedLeft(NODE* in_pNode)
             {
-                this->_FlipColors(pNode);
+                E_ASSERT(in_pNode);
 
-                if (this->_IsRed(pNode->_pRight->_pLeft))
+                this->_FlipColors(in_pNode);
+
+                if (this->_IsRed(in_pNode->_pRight->_pLeft))
                 {
-                    pNode->_pRight = this->_RotateRight(pNode->_pRight);
-                    pNode = this->_RotateLeft(pNode);
-                    this->_FlipColors(pNode);
+                    in_pNode->_pRight = this->_RotateRight(in_pNode->_pRight);
+                    in_pNode = this->_RotateLeft(in_pNode);
+                    this->_FlipColors(in_pNode);
                 }
                 
-                return pNode;
+                return in_pNode;
             }
             
             // 右に赤ノードを移動
-            NODE* _MoveRedRight(NODE* pNode)
+            NODE* _MoveRedRight(NODE* in_pNode)
             {
-                this->_FlipColors(pNode);
+                E_ASSERT(in_pNode);
+
+                this->_FlipColors(in_pNode);
                 
-                if (this->_IsRed(pNode->_pLeft->_pLeft))
+                if (this->_IsRed(in_pNode->_pLeft->_pLeft))
                 {
-                    pNode = this->_RotateRight(pNode);
-                    this->_FlipColors(pNode);
+                    in_pNode = this->_RotateRight(in_pNode);
+                    this->_FlipColors(in_pNode);
                 }
                 
-                return pNode;
+                return in_pNode;
             }
             
             // 最も小さいキーとなるノードを探す
-            NODE* _FindMinNode(NODE* pNode)
+            NODE* _FindMinNode(NODE* in_pNode)
             {
-                if (pNode->_pLeft == NULL)
+                E_ASSERT(in_pNode);
+
+                if (in_pNode->_pLeft == NULL)
                 {
-                    return pNode;
+                    return in_pNode;
                 }
                 else
                 {
-                    return this->_FindMinNode(pNode->_pLeft);
+                    return this->_FindMinNode(in_pNode->_pLeft);
                 }
             }
             
             // 最も小さいキーとなるノードを外す
-            NODE* _RemoveMinNode(NODE* pNode)
+            NODE* _RemoveMinNode(NODE* in_pNode)
             {
-                if (pNode->_pLeft == NULL)
+                E_ASSERT(in_pNode);
+
+                if (in_pNode->_pLeft == NULL)
                     return NULL;
                 
                 // 左ノードが黒なら赤に変える
-                if ((this->_IsRed(pNode->_pLeft) == FALSE) && (this->_IsRed(pNode->_pLeft->_pLeft) == FALSE))
+                if ((this->_IsRed(in_pNode->_pLeft) == FALSE) && (this->_IsRed(in_pNode->_pLeft->_pLeft) == FALSE))
                 {
-                    pNode = this->_MoveRedLeft(pNode);
+                    in_pNode = this->_MoveRedLeft(in_pNode);
                 }
 
-                pNode->_pLeft = this->_RemoveMinNode(pNode->_pLeft);
-                return this->_Fixup(pNode);
+                in_pNode->_pLeft = this->_RemoveMinNode(in_pNode->_pLeft);
+                return this->_Fixup(in_pNode);
             }
             
             // ノードの平衡化
-            NODE* _Fixup(NODE* pNode)
+            NODE* _Fixup(NODE* in_pNode)
             {
-                if (this->_IsRed(pNode->_pRight))
+                E_ASSERT(in_pNode);
+
+                if (this->_IsRed(in_pNode->_pRight))
                 {
-                    pNode = this->_RotateLeft(pNode);
+                    in_pNode = this->_RotateLeft(in_pNode);
                 }
 
-                if (this->_IsRed(pNode->_pLeft) && this->_IsRed(pNode->_pLeft->_pLeft))
+                E_ASSERT(in_pNode);
+                if (this->_IsRed(in_pNode->_pLeft) && this->_IsRed(in_pNode->_pLeft->_pLeft))
                 {
-                    pNode = this->_RotateRight(pNode);
+                    in_pNode = this->_RotateRight(in_pNode);
                 }
 
-                if (this->_IsRed(pNode->_pLeft) && this->_IsRed(pNode->_pRight))
+                E_ASSERT(in_pNode);
+                if (this->_IsRed(in_pNode->_pLeft) && this->_IsRed(in_pNode->_pRight))
                 {
-                    this->_FlipColors(pNode);
+                    this->_FlipColors(in_pNode);
                 }
 
-                return pNode;
+                return in_pNode;
             }
             
             // ノードが赤かどうか
-            const Bool _IsRed(NODE* pNode)
+            const Bool _IsRed(NODE* in_pNode)
             {
-                if (pNode)
-                    return (pNode->_color == NODE::RED);
+                if (in_pNode)
+                    return (in_pNode->_color == NODE::RED);
 
                 // 成立しないのでFALSEを返す
                 return FALSE;
+            }
+
+            inline void _Init()
+            {
+                // 線形アクセス用のリストを初期化
+                this->_pRoot = NULL;
+                this->_head._pPrev = NULL;
+                this->_head._pNext = &this->_tail;
+                this->_tail._pPrev = &this->_head;
+                this->_tail._pNext = NULL;
             }
 
         private:
@@ -766,6 +821,8 @@ namespace Core
             // 線形アクセス用
             NODE _head;
             NODE _tail;
+
+            Iterator _itTail;
 
             Uint32 _nodeNum = 0;
             Core::Common::FixPoolManager<NODE, SIZE> _poolObject;

@@ -24,6 +24,8 @@
     <ClInclude Include="..\..\..\..\Tests\Common\TestCMap.hpp" />
     <ClInclude Include="..\..\..\..\Tests\Common\TestMacro.hpp" />
     <ClInclude Include="..\..\..\..\Tests\Common\TestString.hpp" />
+    <ClInclude Include="..\..\..\..\Tests\HobbyEngine\TestEngine.hpp" />
+    <ClInclude Include="..\..\..\..\Tests\HobbyPlugin\TestActorPlugin.hpp" />
     <ClInclude Include="..\..\..\..\Tests\Math\TestRandom.hpp" />
     <ClInclude Include="..\..\..\..\Tests\Memory\TestMemory.hpp" />
     <ClInclude Include="..\..\..\..\Tests\Task\TestTask.hpp" />
@@ -89,7 +91,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)..\..\..\..\Tests;$(ProjectDir)..\..\..\..\HobbyEngine;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\..\Tests;$(ProjectDir)..\..\..\..\HobbyEngine;$(ProjectDir)..\..\..\..\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(ProjectDir)..\..\..\..\Tests;$(ProjectDir)..\..\..\..\Engine;$(IncludePath)</IncludePath>

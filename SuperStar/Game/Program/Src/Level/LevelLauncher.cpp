@@ -16,6 +16,8 @@
 
 // 描画モジュール
 #include "HobbyPlugin/Render/RenderType.h"
+// ローカライズモジュール
+#include "HobbyPlugin/Localization/LocalizationModule.h"
 
 // TODO: デバッグ画面を表示してレベルを切り替える
 
@@ -43,28 +45,28 @@ namespace Level
             s_seqMap.Add(
                 E_STR_TEXT("C_TitleSeq"),
                 {
-                    E_STR_TEXT("タイトル"),
+                    E_STR_TEXT("TitleLevelName"),
                     Core::Math::Vector3(100.0f, 50.0f, 0.0f),
                     Core::Math::Rect2(0, 0, 300, 50)
                 });
             s_seqMap.Add(
                 E_STR_TEXT("C_PlaySeq"),
                 {
-                    E_STR_TEXT("プレイ"),
+                    E_STR_TEXT("MainGameLevelName"),
                     Core::Math::Vector3(100.0f, 100.0f + 10.0f, 0.0f),
                     Core::Math::Rect2(0, 0, 300, 50)
                 });
             s_seqMap.Add(
                 E_STR_TEXT("C_SpriteDebugSeq"),
                 {
-                    E_STR_TEXT("スプライトテスト"),
+                    E_STR_TEXT("SpriteTestLevelName"),
                     Core::Math::Vector3(100.0f, 150.0f + 20.0f, 0.0f),
                     Core::Math::Rect2(0, 0, 300, 50)
                 });
             s_seqMap.Add(
                 E_STR_TEXT("C_BossDebugSeq"),
                 {
-                    E_STR_TEXT("ボステスト"),
+                    E_STR_TEXT("BossTestLevelName"),
                     Core::Math::Vector3(100.0f, 200.0f + 30.0f, 0.0f),
                     Core::Math::Rect2(0, 0, 300, 50)
                 });
@@ -81,7 +83,8 @@ namespace Level
                 UI::UIModule::I().NewButtonAndText(
                     it->_key.Str(),
                     ++sortNo,
-                    it->_data.pName,
+                    HOBBY_LOCALIZATION_MODULE.Text(E_STR_TEXT("JP"), E_STR_TEXT("debug"), it->_data.pName),
+                    //it->_data.pName,
                     it->_data.rect, Render::WhiteColor.c,
                     it->_data.rect.Pos(),
                     Render::BlackColor.c);

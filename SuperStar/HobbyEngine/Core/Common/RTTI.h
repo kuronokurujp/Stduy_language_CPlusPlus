@@ -12,8 +12,8 @@ namespace Core
         /// </summary>
         class RTTI
         {
-            E_CLASS_DEFAULT_CONSTRUCT_NG(RTTI)
-            E_CLASS_COPY_CONSTRUCT_NG(RTTI)
+            E_CLASS_DEFAULT_CONSTRUCT_NG(RTTI);
+            E_CLASS_COPY_CONSTRUCT_NG(RTTI);
 
         public:
             RTTI(const Char* in_className) :

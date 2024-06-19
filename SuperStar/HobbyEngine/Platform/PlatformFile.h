@@ -1,5 +1,10 @@
 ﻿#pragma once
 
+#include "MiniEngine.h"
+
+#include "Core/File/Path.h"
+#include "Core/Common/Handle.h"
+
 // プラットフォームのファイルシステムインターフェイス
 
 namespace Platform
@@ -26,5 +31,11 @@ namespace Platform
     /// </summary>
     class FileSystemInterface
     {
+    public:
+        virtual const Core::Common::Handle FileOpen(const Core::File::Path& in_rPath) = 0;
+        virtual const Bool FileClose(const Core::Common::Handle& in_rHandle) = 0;
+        virtual const Bool FileRead(const Core::Common::Handle& in_rHandle, void* out_pBuff, const Sint32 in_size) = 0;
+
+        virtual const Sint32 FileSize(const Core::Common::Handle& in_rHandle) = 0;
     };
 }

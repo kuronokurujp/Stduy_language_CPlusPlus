@@ -1,0 +1,46 @@
+{
+    "TitleLevelName": {
+        "font": "",
+        "size": 10,
+        "color": 0,
+        "items": {
+            "0": {
+                "type": 0,
+                "text": "タイトル"
+            }
+        }
+    },
+    "MainGameLevelName": {
+        "font": "",
+        "size": 10,
+        "color": 0,
+        "items": {
+            "0": {
+                "type": 0,
+                "text": "プレイ"
+            }
+        }
+    },
+    "SpriteTestLevelName": {
+        "font": "",
+        "size": 10,
+        "color": 0,
+        "items": {
+            "0": {
+                "type": 0,
+                "text": "スプライトテスト"
+            }
+        }
+    },
+    "BossTestLevelName": {
+        "font": "",
+        "size": 10,
+        "color": 0,
+        "items": {
+            "0": {
+                "type": 0,
+                "text": "ボステスト"
+            }
+        }
+    }
+}

@@ -7,7 +7,7 @@
 
 namespace UI
 {
-    GENERATED_CLASS_BODY(UIInputTouchComponent, UIInputIComponentInterface)
+    GENERATED_CLASS_BODY(UIInputTouchComponent, UIInputIComponentInterface);
 
     void UIInputTouchComponent::ProcessInput(Platform::InputSystemInterface* in_pInput)
     {

@@ -14,8 +14,7 @@ namespace Core
         /// </summary>
         class Manager : public Common::Singleton<Manager>
         {
-            // コピーコンストラクタを封印
-            E_CLASS_COPY_CONSTRUCT_NG(Manager)
+            E_CLASS_COPY_CONSTRUCT_NG(Manager);
 
         public:
             Manager();
@@ -337,3 +336,6 @@ namespace Core
         };
     }
 }
+
+// メモリ管理のアクセスマクロ
+#define HOBBY_MEM_MANGER Core::Memory::Manager::I()

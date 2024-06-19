@@ -13,6 +13,13 @@ namespace Core
         {
         public:
             Handle() { this->Clear(); }
+            // 値をコピーする
+            Handle(Handle& in_rHandle) { this->_handle = in_rHandle._handle; }
+            Handle(const Handle& in_rHandle) { this->_handle = in_rHandle._handle; }
+
+            // ムーブセマンティクス
+            // コピーと同じにする
+            Handle(Handle&& r) { this->_handle = r._handle; }
 
             /// <summary>
             /// 初期化
@@ -28,9 +35,9 @@ namespace Core
                 // TODO: GUIDの方がいいのだろうか？
                 // 24時間で1年中稼働するシステムなら対応が必要
                 static Uint32 s_magicNumber = 0;
-                E_LOOPER(++s_magicNumber, 1, MAX_MAGIC);
-                // マジックナンバーが枯渇してループしたのを検知するためにチェック機能を追加
-                E_ASSERT(0 < s_magicNumber);
+                ++s_magicNumber;
+                // マジックナンバーが枯渇しているかチェック
+                E_ASSERT(s_magicNumber < MAX_MAGIC);
 
                 // インデックスとマジックナンバーを割り当て
                 this->_handleField._index = in_index;
@@ -64,18 +71,23 @@ namespace Core
                 this->_handle = r._handle;
             }
 
+            void operator=(Handle && r)
+            {
+                this->_handle = r._handle;
+            }
+
         private:
             enum
             {
                 // インデックスとマジックナンバーの使用ビットフィールドサイズ
-                // 今のところ合計32bitまで使用可能
-                SIZE_INDEX_BIT = 16,
-                SIZE_MAGIC_BIT = 16,
-                
+                // 今のところ合計64bitまで使用可能
+                SIZE_INDEX_BIT = 32,
+                SIZE_MAGIC_BIT = 32,
+
                 // インデックスとマジックナンバーの最大値
                 // ハンドルを扱うことが出来る最大数
-                MAX_INDEX = (1 << SIZE_INDEX_BIT) - 1,
-                MAX_MAGIC = (1 << SIZE_MAGIC_BIT) - 1,
+                MAX_INDEX = (1LL << SIZE_INDEX_BIT) - 1,
+                MAX_MAGIC = (1LL << SIZE_MAGIC_BIT) - 1,
             };
 
             /// <summary>

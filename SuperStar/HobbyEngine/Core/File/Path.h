@@ -3,7 +3,7 @@
 #include "Core/Core.h"
 #include "Core/Common/FixString.h"
 
-// TODO: ファイルのパス制御ができる
+// ファイルのパス制御ができる
 namespace Core
 {
     namespace File
@@ -22,9 +22,11 @@ namespace Core
             Path(const char* in_pPath) : _path(in_pPath) {}
 #endif
 
+            void operator=(const Path& in_path);
             Path& operator+=(const Path& in_path);
 
-            const Char* Str() { return this->_path.Str(); }
+            inline const Char* Str() const { return this->_path.Str(); }
+            inline const Bool IsEmpty() const { return this->_path.IsEmpty(); }
 
         private:
             Core::Common::FixString256 _path;

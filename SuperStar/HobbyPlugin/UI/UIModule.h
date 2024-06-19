@@ -16,7 +16,15 @@
 #include "HobbyEngine/Platform/PlatformModule.h"
 
 // 外部モジュール
-#include "HobbyPlugin/Actor/Actor.h"
+#include "HobbyPlugin/Actor/ActorModule.h"
+
+// モジュールのヘッダーファイルは全てインクルードする
+#include "Widget.h"
+#include "Component/Input/UIInputRouter.h"
+#include "Component/Input/UIInputTerminalTouch.h"
+#include "Component/Widget/UIButton.h"
+#include "Component/Widget/UILayer.h"
+#include "Component/Widget/UIText.h"
 
 namespace UI
 {
@@ -27,22 +35,22 @@ namespace UI
     {
     public:
         /// <summary>
-        /// TODO: UIのモジュール初期化
+        /// UIのモジュール初期化
         /// </summary>
         /// <returns></returns>
         const Bool Init() final override;
 
         /// <summary>
-        /// TODO: UIのモジュール終了
+        /// UIのモジュール終了
         /// </summary>
         /// <returns></returns>
         const Bool End() final override;
 
-        // TODO: UIのLayerを作成する
-        // TODO: 描画ソート機能は未実装
+        // UIのLayerを作成する
+        // 描画ソート機能は未実装
         Core::Common::Handle NewLayer(const Core::Common::FixString128 in_name, const Uint32 in_sort);
 
-        // TODO: UIのテキスト付のButtonを作成する
+        // UIのテキスト付のButtonを作成する
         Core::Common::Handle NewButtonAndText(
             const Core::Common::FixString128 in_name,
             const Uint32 in_sort,
@@ -54,10 +62,10 @@ namespace UI
         // TODO: 描画ソート機能は未実装
         Core::Common::Handle NewWidget(const Core::Common::FixString128 in_name, const Uint32 in_sort);
 
-        // TODO: 親Widgetに子Widgetを追加
+        // 親Widgetに子Widgetを追加
         const Bool AddChildWidget(Core::Common::Handle in_hParent, Core::Common::Handle in_hWidget);
 
-        // TODO: Widgetにコンポーネント追加
+        // Widgetにコンポーネント追加
         template<class T>
         Core::Common::Handle AddComponent(Core::Common::Handle in_hWidget, const Sint32 in_updateOrder)
         {
@@ -67,8 +75,10 @@ namespace UI
 #endif
             E_ASSERT(pActor);
 
-            // TODO: アクターにコンポーネント追加
+            // アクターにコンポーネント追加
             return pActor->AddComponent<T>(in_updateOrder);
         }
     };
 }
+
+MODULE_GENRATE_DECLARATION(UI::UIModule, UI);

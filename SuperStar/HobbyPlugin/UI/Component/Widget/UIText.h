@@ -12,7 +12,7 @@ namespace UI
     /// </summary>
     class UITextComponent : public UIWidgetComponent
     {
-        GENERATED_CLASS_BODY_HEADER()
+        GENERATED_CLASS_BODY_HEADER();
 
     public:
         UITextComponent() : UIWidgetComponent() { this->_Clear(); }

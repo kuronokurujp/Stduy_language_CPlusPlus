@@ -168,7 +168,6 @@ namespace Actor
         }
 
         this->_components.erase(iter);
-        // todo メモリ開放するかどうか
         */
 
         return TRUE;

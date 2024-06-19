@@ -10,7 +10,8 @@ namespace UI
     /// </summary>
     class UILayerComponent : public UIWidgetComponent
     {
-        GENERATED_CLASS_BODY_HEADER()
+        GENERATED_CLASS_BODY_HEADER();
+
     public:
         /// <summary>
         /// コンポーネントの更新

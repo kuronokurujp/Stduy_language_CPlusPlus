@@ -7,6 +7,9 @@
 
 #include "HobbyEngine/Module/Module.h"
 
+// モジュールのヘッダーファイルは全てインクルードする
+#include "AssetDataBase.h"
+
 namespace AssetManager
 {
     // 前方宣言
@@ -15,7 +18,8 @@ namespace AssetManager
     /// <summary>
     /// エンジンのアセット対応のモジュール
     /// </summary>
-    class AssetManagerModule final : public Module::ModuleBase<AssetManagerModule>, Core::Common::BasePoolManager<AssetDataBase>
+    class AssetManagerModule final :
+        public Module::ModuleBase<AssetManagerModule>, Core::Common::BasePoolManager<AssetDataBase>
     {
     public:
         /// <summary>
@@ -33,8 +37,13 @@ namespace AssetManager
         const Bool Update(const Float32 in_deltaTime) final override;
 
         template<class T>
-        const Core::Common::Handle Load(const Char* in_pName, Core::File::Path in_rFilePath)
+        typename std::enable_if<std::is_base_of<AssetDataBase, T>::value, const Core::Common::Handle>::type
+        Load(const Char* in_pName, const Core::File::Path& in_rFilePath)
         {
+            E_ASSERT(in_rFilePath.IsEmpty() == FALSE);
+            E_ASSERT(in_pName);
+            // TODO: 名前が重複した時はどうするかは考える
+
             // インスタンスを確保
             auto p = this->_Alloc<T>();
 
@@ -51,7 +60,20 @@ namespace AssetManager
             return Core::Common::Handle();
         }
 
+        void Unload(const Core::Common::Handle&);
+
+        template<class T>
+        typename std::enable_if<std::is_base_of<AssetDataBase, T>::value, T&>::type
+        GetAsset(const Core::Common::Handle& in_rHandle)
+        {
+            T* p = reinterpret_cast<T*>(this->_Ref(in_rHandle));
+            E_ASSERT(p && "ロードしたアセットデータがない");
+            return *p;
+        }
+
     private:
         const Bool _Load(AssetDataBase* out_pAssetData);
     };
 }
+
+MODULE_GENRATE_DECLARATION(AssetManager::AssetManagerModule, AssetManager);

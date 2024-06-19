@@ -8,6 +8,11 @@
 
 #include "Module/Module.h"
 
+// テスト実行用にcppファイルが必要
+#ifdef CATCH_CONFIG_MAIN
+#include "Module/Module.cpp"
+#endif
+
 // エンジン標準利用のモジュール一覧
 #include "HobbyPlugin/Level/LevelModule.h"
 
@@ -126,12 +131,15 @@ private:
     Module::ModuleManager* _pModuleManager = NULL;
 };
 
-// エンジン利用
-#define START_HOBBY_ENGINE static Engine s_engine;
-
 // エンジン参照マクロ
 #define HOBBY_ENGINE Engine::I()
 
+// エンジン作成
+#define CREATE_HOBBY_ENGINE static Engine s_engine
+// エンジン解放
+#define RELEASE_HOBBY_ENGINE Engine::I().Reset()
+
 // カレントレベル参照マクロ
 #define HOBBY_CURRENT_LEVEL (*HOBBY_ENGINE.GetLevelModule().GetManager()->CurrentLevel())
+
 

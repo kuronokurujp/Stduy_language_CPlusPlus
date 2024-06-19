@@ -27,13 +27,13 @@ namespace Level
     /// </summary>
     class Node : public Core::Task
     {
-       E_CLASS_COPY_CONSTRUCT_NG(Node)
+       E_CLASS_COPY_CONSTRUCT_NG(Node);
 
     public:
         enum ETaskUpdateId
         {
             // 入力更新
-            ETaskUpdateId_Input = Task::s_idNone + 1,
+            ETaskUpdateId_Input = Task::NONE_ID + 1,
             // Actor更新
             ETaskUpdateId_Actor,
         };
@@ -45,7 +45,7 @@ namespace Level
         /// 登録に必要な情報を設定
         /// </summary>
         /// <param name="bAutoDelete">TRUEだとタスク破棄と同時にタ
-        virtual void Init(const Bool in_bAutoDelete) override;
+        virtual void Init(const Bool in_bReleaseMem) override;
 
         /// <summary>
         /// タスク開始
@@ -115,7 +115,7 @@ namespace Level
     /// </summary>
     class Manager
     {
-        E_CLASS_COPY_CONSTRUCT_NG(Manager)
+        E_CLASS_COPY_CONSTRUCT_NG(Manager);
 
     public:
         Manager() {}

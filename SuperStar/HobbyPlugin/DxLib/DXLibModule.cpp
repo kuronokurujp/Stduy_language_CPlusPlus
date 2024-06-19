@@ -5,6 +5,8 @@
 // 依存モジュール一覧
 #include "HobbyPlugin/Render/RenderModule.h"
 
+MODULE_GENRATE_DEFINITION(DXLib::DxLibModule, DxLib);
+
 namespace DXLib
 {
     const Bool DxLibModule::Init()

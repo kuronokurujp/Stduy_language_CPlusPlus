@@ -2,10 +2,12 @@
 
 #include "Core/Memory/Memory.h"
 
+MODULE_GENRATE_DEFINITION(Actor::ActorModule, Actor);
+
 namespace Actor
 {
     /// <summary>
-    /// TODO: モジュール初期化
+    /// モジュール初期化
     /// </summary>
     /// <returns></returns>
     const Bool ActorModule::Init()
@@ -14,7 +16,7 @@ namespace Actor
     }
 
     /// <summary>
-    /// TODO: モジュール終了
+    /// モジュール終了
     /// </summary>
     /// <returns></returns>
     const Bool ActorModule::End()

@@ -287,5 +287,100 @@ namespace Core
         // タスクシステムが終了しているので解放されているか
         CHECK(manager.UseCount() == 0);
     }
+
+    TEST_CASE("Task Create or Delete")
+    {
+        /// <summary>
+        /// タスクグループ一覧
+        /// </summary>
+        enum
+        {
+            GROUP_SYSTEM,
+            GROUP_PLAYER,
+            GROUP_NUM
+        };
+
+        // テスト用のタスクたち
+        class EffectTask : public Task
+        {
+        public:
+            EffectTask() : Task() {}
+            
+            void Update(const Float32 dt)
+            {
+                this->_time += dt;
+                E_LOG("F");
+                
+                // 3秒経過したら自動的に死ぬ
+                if (this->_time >= 3000.0f)
+                    this->Kill();
+            }
+
+        private:
+            Float32 _time = 0.0f;
+        };
+
+        class ObjectTask : public Task
+        {
+        public:
+            ObjectTask() : Task() {}
+            
+            void Update(const Float32 dt)
+            {
+                this->_time += dt;
+                E_LOG("P");
+                
+                // 1/30の確率でエフェクトを発生させる
+                if (rand() % 30 == 0)
+                    new EffectTask();
+            }
+            
+        private:
+            Float32 _time = 0.0f;
+        };
+
+        static TaskManager manager;
+        static const Uint32 taskNum = 32;
+
+        // タスクシステムの初期化
+        CHECK(manager.Init(taskNum, GROUP_NUM));
+         // タスクの確保数が意図通りか
+        CHECK(manager.Max() == taskNum);
+        // タスクの利用数が意図通りか
+        CHECK(manager.UseCount() == 0);
+           
+        // タスクを起動する
+        // 削除した時にメモリから解放
+        auto h1 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
+        CHECK(!h1.Null());
+        auto h2 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
+        CHECK(!h2.Null());
+        auto h3 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, FALSE);
+        CHECK(!h3.Null());
+
+        // タスクの利用数が意図通りか
+        CHECK(manager.UseCount() == 3);
+
+        manager.Remove(h1);
+        CHECK(manager.UseCount() == 2);
+        CHECK(manager.GetTask(h1) == NULL);
+        CHECK(manager.CacheCount() == 0);
+
+        manager.Remove(h3);
+        CHECK(manager.CacheCount() == 1);
+        CHECK(manager.UseCount() == 1);
+
+        auto h4 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
+        CHECK(!h4.Null());
+        CHECK(manager.CacheCount() == 0);
+        // タスクの利用数が意図通りか
+        CHECK(manager.UseCount() == 2);
+
+        // タスクシステムの終了
+        manager.End();
+
+        // タスクシステムが終了しているので解放されているか
+        CHECK(manager.UseCount() == 0);
+    }
 }
 

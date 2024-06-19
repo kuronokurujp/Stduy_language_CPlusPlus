@@ -4,7 +4,7 @@
 
 namespace UI
 {
-    GENERATED_CLASS_BODY(UILayerComponent, UIWidgetComponent)
+    GENERATED_CLASS_BODY(UILayerComponent, UIWidgetComponent);
 
     /// <summary>
     /// コンポーネントの更新

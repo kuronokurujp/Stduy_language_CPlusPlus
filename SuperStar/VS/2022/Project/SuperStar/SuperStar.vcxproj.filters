@@ -127,9 +127,6 @@
     <Filter Include="HobbyPlugin\AssetManager\ThirdParty">
       <UniqueIdentifier>{eecd0ee5-62e7-49b7-b713-fa4f1670dd8d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="HobbyPlugin\AssetManager\ThirdParty\nlohmann">
-      <UniqueIdentifier>{6c11849a-d2cf-4708-a24e-6dc53a848738}</UniqueIdentifier>
-    </Filter>
     <Filter Include="HobbyPlugin\AssetManager\ThirdParty\tomlplusplus">
       <UniqueIdentifier>{4aeb8054-f25f-4a0e-9d95-43a554d094e4}</UniqueIdentifier>
     </Filter>
@@ -144,6 +141,9 @@
     </Filter>
     <Filter Include="Game\Src\Sandbox\Level">
       <UniqueIdentifier>{b29b798f-e3b9-4272-a9c0-3c675d23548c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HobbyPlugin\AssetManager\ThirdParty\simidjson">
+      <UniqueIdentifier>{851593d2-a16f-422c-b079-9faf2ff9a249}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -280,6 +280,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\Game\Program\Src\Level\LevelLauncher.cpp">
       <Filter>Game\Src\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\simidjson\simdjson.cpp">
+      <Filter>HobbyPlugin\AssetManager\ThirdParty\simidjson</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -476,20 +479,16 @@
     <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\tomlplusplus\toml.hpp">
       <Filter>HobbyPlugin\AssetManager\ThirdParty\tomlplusplus</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\nlohmann\json.hpp">
-      <Filter>HobbyPlugin\AssetManager\ThirdParty\nlohmann</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\nlohmann\json_fwd.hpp">
-      <Filter>HobbyPlugin\AssetManager\ThirdParty\nlohmann</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\Game\Program\Inc\Level\LevelLauncher.h">
       <Filter>Game\Inc\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\simidjson\simdjson.h">
+      <Filter>HobbyPlugin\AssetManager\ThirdParty\simidjson</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\.editorconfig" />
     <None Include="..\..\..\..\README.md" />
-    <None Include="..\..\..\..\ThirdParty.md" />
     <None Include="..\..\..\..\Game\README.md">
       <Filter>Game</Filter>
     </None>
@@ -505,6 +504,10 @@
     <None Include="..\..\..\..\Game\Res\Assets\Locate\JP\Text.json">
       <Filter>Game\Res\Assets\Locate\JP</Filter>
     </None>
+    <None Include="..\..\..\..\Game\Res\Assets\Locate\JP\Debug.json">
+      <Filter>Game\Res\Assets\Locate\JP</Filter>
+    </None>
+    <None Include="..\..\..\..\MEMO.md" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\..\LICENSE.txt" />

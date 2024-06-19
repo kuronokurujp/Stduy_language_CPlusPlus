@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <type_traits>
+
 // 環境依存型のマクロ
 #include "Core/Config.h"
 // 型定義

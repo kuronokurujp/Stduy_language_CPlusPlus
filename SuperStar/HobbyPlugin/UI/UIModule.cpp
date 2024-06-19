@@ -11,6 +11,8 @@
 
 #include "Core/Memory/Memory.h"
 
+MODULE_GENRATE_DEFINITION(UI::UIModule, UI);
+
 namespace UI
 {
     /// <summary>
@@ -73,7 +75,7 @@ namespace UI
         if (pWidget == NULL)
             return handle;
 
-        // TODO: ボタンコンポーネント追加と設定
+        // ボタンコンポーネント追加と設定
         auto hButton = this->AddComponent<UI::UIButtonComponent>(handle, in_sort);
         {
             UI::UIButtonComponent* pButton = pWidget->GetComponent<UI::UIButtonComponent>(hButton);
@@ -81,7 +83,7 @@ namespace UI
             pButton->SetColor(in_btnColor);
         }
 
-        // TODO: ボタンの上に表示するテキストコンポーネント追加と設定
+        // ボタンの上に表示するテキストコンポーネント追加と設定
         auto hText = this->AddComponent<UI::UITextComponent>(handle, in_sort + 1);
         {
             UI::UITextComponent* pText = pWidget->GetComponent<UI::UITextComponent>(hText);
@@ -110,7 +112,7 @@ namespace UI
         if (pWidget == NULL)
             return E_EMPTY_HANDLE;
 
-        // TODO: Widgetの初期設定
+        // Widgetの初期設定
         pWidget->SetName(in_name);
 
         return handle;

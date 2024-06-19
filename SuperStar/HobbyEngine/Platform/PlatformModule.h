@@ -40,13 +40,13 @@ namespace Platform
     {
     public:
         /// <summary>
-        /// TODO: モジュール初期化
+        /// モジュール初期化
         /// </summary>
         /// <returns></returns>
         virtual const Bool Init() override { return FALSE; }
 
         /// <summary>
-        /// TODO: モジュール終了
+        /// モジュール終了
         /// </summary>
         /// <returns></returns>
         virtual const Bool End() override { return FALSE; }

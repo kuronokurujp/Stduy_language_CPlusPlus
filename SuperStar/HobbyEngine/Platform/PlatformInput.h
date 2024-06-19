@@ -7,7 +7,7 @@
 
 namespace Platform
 {
-    // TODO: キーボードの各キーコード
+    // キーボードの各キーコード
     enum EKeyboard
     {
         // バックスペースキー

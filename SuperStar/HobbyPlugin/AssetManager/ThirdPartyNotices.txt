@@ -30,24 +30,25 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 
 ---------------------------------------------------------
 
-nlohmann-json
+simdjson v3.9.4
 
-https://github.com/nlohmann/json?tab=readme-ov-file
+https://github.com/simdjson/simdjson
 
-The class is licensed under the MIT License:
+Apache-2.0 license
 
-Copyright © 2013-2022 Niels Lohmann
+This code is made available under the Apache License 2.0.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Under Windows, we build some tools using the windows/dirent_portable.h file (which is outside our library code): it
+is under the liberal (business-friendly) MIT license.
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+For compilers that do not support C++17, we bundle the string-view library which is published under the Boost
+license. Like the Apache license, the Boost license is a permissive license allowing commercial redistribution.
 
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+For efficient number serialization, we bundle Florian Loitsch's implementation of the Grisu2 algorithm for binary to
+decimal floating-point numbers. The implementation was slightly modified by JSON for Modern C++ library. Both
+Florian Loitsch's implementation and JSON for Modern C++ are provided under the MIT license.
 
-The class contains the UTF-8 Decoder from Bjoern Hoehrmann which is licensed under the MIT License (see above). Copyright © 2008-2009 Björn Hoehrmann bjoern@hoehrmann.de
+For runtime dispatching, we use some code from the PyTorch project licensed under 3-clause BSD.
 
-The class contains a slightly modified version of the Grisu2 algorithm from Florian Loitsch which is licensed under the MIT License (see above). Copyright © 2009 Florian Loitsch
+---------------------------------------------------------
 
-The class contains a copy of Hedley from Evan Nemerson which is licensed as CC0-1.0.
-
-The class contains parts of Google Abseil which is licensed under the Apache 2.0 License.

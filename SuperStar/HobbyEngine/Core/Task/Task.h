@@ -27,10 +27,11 @@ namespace Core
         // タスクマネージャには非公開メンバを操作させる
         friend class TaskManager;
 
-        E_CLASS_COPY_CONSTRUCT_NG(Task)
+        E_CLASS_COPY_CONSTRUCT_NG(Task);
 
     public:
-        static const Uint32 s_idNone = 0;
+        static const Uint32 NONE_ID = 0;
+        static const Sint32 GROUP_NONE_ID = -1;
 
         // タスクは生成したインスタンスが再利用されるのでコンストラクタで初期化はできない
         Task() { this->_Clear(); }
@@ -39,7 +40,6 @@ namespace Core
         /// タスク利用した設定をした最初に実行
         /// 登録に必要な情報を設定
         /// </summary>
-        /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
         virtual void Init(const Bool in_bAutoDelete);
         
         /// <summary>
@@ -55,7 +55,7 @@ namespace Core
         /// <summary>
         /// 更新用で継承先が実装しないとだめ
         /// </summary>
-        virtual void Update(const Float32 in_dt, const TaskData*) {}
+        virtual void Update(const Float32 in_dt, const TaskData*) { E_ASSERT(FALSE && "継承クラスは必ず実装"); }
 
         /// <summary>
         /// タスク破棄
@@ -70,20 +70,23 @@ namespace Core
             this->_bStart = TRUE;
             this->_bKill = FALSE;
 
-            this->_groupId = -1;
+            this->_groupId = Task::GROUP_NONE_ID;
             this->_pPrev = NULL;
             this->_pNext = NULL;
-            this->_bAutoDelete = FALSE;
+            this->_bReleaseMem = FALSE;
         }
+
     protected:
-        TaskManager* _pManager;
+        TaskManager* _pManager = NULL;
 
     private:
-        Sint32 _groupId = -1;
+        Sint32 _groupId = Task::GROUP_NONE_ID;
         Common::Handle _hSelf;
         Bool _bStart = TRUE;
         Bool _bKill = FALSE;
-        Bool _bAutoDelete = FALSE;
+        // タスクを解放した時にメモリからも解放するか
+        // 解放しない場合はキャッシュして使いまわすことになる
+        Bool _bReleaseMem = FALSE;
         
         Task* _pPrev = NULL;
         Task* _pNext = NULL;

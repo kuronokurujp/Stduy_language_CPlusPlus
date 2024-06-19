@@ -1,29 +1,33 @@
 ﻿#pragma once
 
 #include "Module/Module.h"
+
+// モジュールのヘッダーファイルは全てインクルードする
+#include "RenderType.h"
 #include "CommandBuffer.h"
+#include "Command/Command.h"
 
 namespace Render
 {
     /// <summary>
-    /// 描画の追加モジュール
+    /// 描画モジュール
     /// </summary>
     class RenderModule final : public Module::ModuleBase<RenderModule>
     {
     public:
         /// <summary>
-        /// TODO: モジュール初期化
+        /// モジュール初期化
         /// </summary>
         /// <returns></returns>
         const Bool Init() final override;
 
         /// <summary>
-        /// TODO: モジュール終了
+        /// モジュール終了
         /// </summary>
         /// <returns></returns>
         const Bool End() final override;
 
-        // TODO: 描画コマンド命令を用意
+        // 描画コマンドを追加
         const Bool AddCmd(const Command&& in_cmd);
 
         /// <summary>
@@ -41,3 +45,5 @@ namespace Render
         CommandBuffer _comBuff;
     };
 }
+
+MODULE_GENRATE_DECLARATION(Render::RenderModule, Render);

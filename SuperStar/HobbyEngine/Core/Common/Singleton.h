@@ -16,6 +16,9 @@ namespace Core
         template <typename T>
         class Singleton
         {
+            E_CLASS_COPY_CONSTRUCT_NG(Singleton);
+            E_CLASS_MOVE_CONSTRUCT_NG(Singleton);
+
         public:
             Singleton()
             {
@@ -23,16 +26,12 @@ namespace Core
                 _pInstance = static_cast<T*>(this);
             }
 
-            Singleton(const Singleton& singleton)
-            {
-                //	コピーコンストラクタは使用禁止
-                E_STATIC_ASSERT(0);
-            };
-
             ~Singleton()
             {
-                E_ASSERT(_pInstance && "インスタンス二重破棄");
-                _pInstance = NULL;
+                if (_pInstance == NULL)
+                    E_PG_LOG_LINE(E_STR_TEXT("インスタンス二重破棄"));
+                else
+                    _pInstance = NULL;
             }
 
             /// <summary>
@@ -52,6 +51,15 @@ namespace Core
             static const Bool Have()
             {
                 return (_pInstance != NULL);
+            }
+
+            /// <summary>
+            /// シングルトン対象から解放
+            /// </summary>
+            static void Reset()
+            {
+                E_ASSERT(_pInstance);
+                _pInstance = NULL;
             }
 
         private:

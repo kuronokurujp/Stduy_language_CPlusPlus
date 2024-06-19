@@ -23,3 +23,29 @@
 // メモリ処理のテストコード
 #include "Memory/TestMemory.hpp"
 
+// プラグインのテストするためにプラグインのインクルードは特殊
+// インクルードしたらプラグインを使える状態になる
+// 使える状態にした後にエンジンを起動
+#include "HobbyPlugin/Actor/ActorModule.h"
+#include "HobbyPlugin/Actor/ActorModule.cpp"
+
+// エンジン本体のテストコード
+#include "HobbyEngine/TestEngine.hpp"
+
+TEST_CASE("Plugin Test")
+{
+    // エンジン起動
+    CREATE_HOBBY_ENGINE;
+
+    HOBBY_ENGINE.PreInit();
+    HOBBY_ENGINE.Init();
+
+    // エンジンのプラグインのテストコード
+    #include "HobbyPlugin/TestActorPlugin.hpp"
+
+    HOBBY_ENGINE.End();
+
+    RELEASE_HOBBY_ENGINE;
+}
+
+

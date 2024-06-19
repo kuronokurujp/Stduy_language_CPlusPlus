@@ -3,6 +3,8 @@
 #include "Core/Memory/Memory.h"
 #include "LevelManager.h"
 
+MODULE_GENRATE_DEFINITION(Level::LevelModule, Level);
+
 namespace Level
 {
     /// <summary>

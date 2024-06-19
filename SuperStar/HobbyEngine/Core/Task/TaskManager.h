@@ -14,9 +14,9 @@ namespace Core
     /// タスク管理
     /// プールデータクラスを継承してタスク個数を固定にしている
     /// </summary>
-    class TaskManager : public Common::BasePoolManager<Task>
+    class TaskManager final : public Common::BasePoolManager<Task>
     {
-        E_CLASS_COPY_CONSTRUCT_NG(TaskManager)
+        E_CLASS_COPY_CONSTRUCT_NG(TaskManager);
 
     public:
         // タスクマネージャが使用するフラグ
@@ -24,7 +24,7 @@ namespace Core
         static const Uint32 FLAG_PAUSE = 0x00000001;
 
         // グループの未使用ID値
-        static const Sint32 NON_GROPU_ID = -1;
+        //static const Sint32 NON_GROPU_ID = -1;
 
     public:
         TaskManager() : BasePoolManager() {}
@@ -58,14 +58,16 @@ namespace Core
         /// <param name="in_groupId">追加するグループID</param>
         /// <returns></returns>
         template<class T>
-        Common::Handle CreateAndAdd(const Sint32 in_groupId, const Bool in_bAutoDelete)
+        Common::Handle CreateAndAdd(const Sint32 in_groupId, const Bool in_bReleaseMem)
         {
+            static_assert(std::is_base_of<Task, T>::value, "TクラスはTaskクラスを継承していない");
+
             E_ASSERT(in_groupId < this->_groupNum);
 
             // 利用するタスクを割り当て
             BasePoolManager::AllocData resAlloc = this->_Alloc<T>();
 
-            Task* pTask = this->_SetupTask(&resAlloc, in_bAutoDelete);
+            Task* pTask = this->_SetupTask(&resAlloc, in_bReleaseMem);
             this->_Attach(pTask, in_groupId);
 
             return resAlloc._handle;
@@ -104,6 +106,8 @@ namespace Core
         template<class T>
         T* GetTask(const Common::Handle& in_hTask)
         {
+            static_assert(std::is_base_of<Task, T>::value, "TクラスはTaskクラスを継承していない");
+
             Task* pTask = this->GetTask(in_hTask);
             return reinterpret_cast<T*>(pTask);
         }
@@ -157,7 +161,7 @@ namespace Core
         /// 生成したタスクのセットアップ
         /// </summary>
         /// <param name="out_pData"></param>
-        Task* _SetupTask(BasePoolManager::AllocData* out_pData, const Bool in_bAutoDelete);
+        Task* _SetupTask(BasePoolManager::AllocData* out_pData, const Bool in_bReleaseMem);
 
         /// <summary>
         /// タスク追加する

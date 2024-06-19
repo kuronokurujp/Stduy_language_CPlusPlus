@@ -1,9 +1,13 @@
-[
-    {
-        "key":"test",
-        "array": {
-            "type": 0,
-            "text": "tarou"
-        },
+{
+    "test": {
+        "font": "",
+        "size": 10,
+        "color": 0,
+        "items": {
+            "0": {
+                "type": 0,
+                "text": "test"
+            }
+        }
     }
-]
+}

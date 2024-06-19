@@ -1,9 +1,11 @@
 ﻿#include "RenderModule.h"
 
+MODULE_GENRATE_DEFINITION(Render::RenderModule, Render);
+
 namespace Render
 {
     /// <summary>
-    /// TODO: モジュール初期化
+    /// モジュール初期化
     /// </summary>
     /// <returns></returns>
     const Bool RenderModule::Init()
@@ -12,7 +14,7 @@ namespace Render
     }
 
     /// <summary>
-    /// TODO: モジュール終了
+    /// モジュール終了
     /// </summary>
     /// <returns></returns>
     const Bool RenderModule::End()
@@ -20,10 +22,9 @@ namespace Render
         return TRUE;
     }
 
-    // TODO: 描画コマンド命令を用意
     const Bool RenderModule::AddCmd(const Command&& in_cmd)
     {
-        // TODO: コマンドをコピー
+        // コマンドをコピー
         this->_comBuff.PushBack(in_cmd);
 
         return TRUE;
