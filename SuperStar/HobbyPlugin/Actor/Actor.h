@@ -1,18 +1,14 @@
 ﻿#pragma once
 
-#include "MiniEngine.h"
-
-#include "Core/Task/TaskManager.h"
-#include "Core/Task/Task.h"
-
+#include "ActorInterface.h"
+#include "Component/component.h"
 #include "Core/Common/FixArray.h"
 #include "Core/Common/FixString.h"
 #include "Core/Common/Handle.h"
-
 #include "Core/Math/Vector3.h"
-
-#include "ActorInterface.h"
-#include "Component/component.h"
+#include "Core/Task/Task.h"
+#include "Core/Task/TaskManager.h"
+#include "MiniEngine.h"
 
 /*
 // 配列管理「vector」クラスをインクルード
@@ -20,12 +16,11 @@
 // nullptr定義するためのインクルード
 #include <stdio.h>
 // #include <typeinfo.h>
-#include "common.h"
-
-#include "Math/math.h"
-#include "Math/vector2.h"
-#include "Math/matrix4.h"
 #include "Math/Quaternion.h"
+#include "Math/math.h"
+#include "Math/matrix4.h"
+#include "Math/vector2.h"
+#include "common.h"
 
 // 前方宣言
 class Renderer;
@@ -47,7 +42,7 @@ namespace Actor
     /// <summary>
     /// ゲームアクター
     /// </summary>
-    class Object : public Core::Task 
+    class Object : public Core::Task
     {
         // E_CLASS_DEFAULT_CONSTRUCT_NG(Object);
         E_CLASS_COPY_CONSTRUCT_NG(Object);
@@ -121,7 +116,7 @@ namespace Actor
         /// Adds the component.
         /// </summary>
         /// <returns></returns>
-        template<class T>
+        template <class T>
         Core::Common::Handle AddComponent(const Sint32 in_updateOrder)
         {
             // TODO: アクターの準備が整う前に呼ばれるケースもある
@@ -132,7 +127,7 @@ namespace Actor
             // TODO: 更新優先準備による追加処理を指定が必要
             // コンポーネントは確保したメモリを使いまわす
             Core::Common::Handle handle = this->_components.CreateAndAdd<T>(in_updateOrder, FALSE);
-            Component* pComp = this->_components.GetTask<Component>(handle);
+            Component* pComp            = this->_components.GetTask<Component>(handle);
 
             // コンポーネントを付けた自身を設定
             pComp->SetOwner(this);
@@ -155,20 +150,18 @@ namespace Actor
         /// <summary>
         /// 親アクターがあればその親アクターのコンポーネントを取得
         /// </summary>
-        template<class T>
+        template <class T>
         T* GetParentComponent()
         {
             // 親アクターがないなら即終了
-            if (this->_parentActorHandle.Null())
-                return NULL;
+            if (this->_parentActorHandle.Null()) return NULL;
 
             // 親アクターに目的のコンポーネント取得
             Object* pParentObj = this->_pDataAccess->Get(this->_parentActorHandle);
             E_ASSERT(pParentObj != NULL);
 
             T* pFindComp = pParentObj->GetComponent<T>();
-            if (pFindComp != NULL)
-                return pFindComp;
+            if (pFindComp != NULL) return pFindComp;
 
             // なければ親アクターの更に親アクターに目的コンポーネントがあるかチェック
             // 再帰処理をしている
@@ -217,50 +210,50 @@ namespace Actor
             return p;
         }
 
+        /*
+                /// <summary>
+                /// TODO: アクター自身, 子アクターに設定しているコンポーネントを全て出力
+                /// アクターの階層構造が深くなると再帰処理が多くなるので注意
+                /// </summary>
+                template<class T>
+                void OutputChildComponents(Core::Common::FastFixArray<T*, 128>& out_comArray)
+                {
+                    T* c = this->GetComponent<T>();
+                    if (c != NULL)
+                        out_comArray.PushBack(c);
 
-/*
+                    // TODO: 子アクターがあれば再帰処理する
+                    for (Uint32 i = 0; i < this->_childObjects.Size(); ++i)
+                    {
+                        this->_childObjects[i]->OutputChildComponents(out_comArray);
+                    }
+                }
+
+                /// <summary>
+                /// TODO: 型指定したコンポーネントを取得.
+                /// コンポーネントは重複設定しない前提.
+                /// </summary>
+                /// <returns></returns>
+                template <class T>
+                T* GetComponent()
+                {
+                    auto& list = this->_components.GetUserDataList();
+                    for (auto itr = list.begin(); itr != list.end(); ++itr)
+                    {
+                        T* target = reinterpret_cast<T*>(*itr);
+                        if (target != NULL)
+                            return target;
+                    }
+                    return NULL;
+                }
+        */
+
         /// <summary>
         /// TODO: アクター自身, 子アクターに設定しているコンポーネントを全て出力
         /// アクターの階層構造が深くなると再帰処理が多くなるので注意
         /// </summary>
-        template<class T>
-        void OutputChildComponents(Core::Common::FastFixArray<T*, 128>& out_comArray)
-        {
-            T* c = this->GetComponent<T>();
-            if (c != NULL)
-                out_comArray.PushBack(c);
-
-            // TODO: 子アクターがあれば再帰処理する
-            for (Uint32 i = 0; i < this->_childObjects.Size(); ++i)
-            {
-                this->_childObjects[i]->OutputChildComponents(out_comArray);
-            }
-        }
-
-        /// <summary>
-        /// TODO: 型指定したコンポーネントを取得.
-        /// コンポーネントは重複設定しない前提.
-        /// </summary>
-        /// <returns></returns>
-        template <class T>
-        T* GetComponent()
-        {
-            auto& list = this->_components.GetUserDataList();
-            for (auto itr = list.begin(); itr != list.end(); ++itr)
-            {
-                T* target = reinterpret_cast<T*>(*itr);
-                if (target != NULL)
-                    return target;
-            }
-            return NULL;
-        }
-*/
-
-        /// <summary>
-        /// TODO: アクター自身, 子アクターに設定しているコンポーネントを全て出力
-        /// アクターの階層構造が深くなると再帰処理が多くなるので注意
-        /// </summary>
-        void OutputChildComponents(Core::Common::FastFixArray<Component*, 128>& out_comArray, const Core::Common::RTTI& in_rtti);
+        void OutputChildComponents(Core::Common::FastFixArray<Component*, 128>& out_comArray,
+                                   const Core::Common::RTTI& in_rtti);
 
         /// <summary>
         /// RTTIから目的のコンポーネントを取得
@@ -382,7 +375,6 @@ namespace Actor
         virtual void _ProcessInput(const Float32, Platform::InputSystemInterface*) {}
 
     private:
-
         // Actorの状態
         EState state = EState_Active;
 
@@ -401,7 +393,7 @@ namespace Actor
 
         // Actorにつけるコンポーネントリスト
         // ポインターにしているのはポインターからリストの要素を削除するため
-        //std::vector<Component*> _components;
+        // std::vector<Component*> _components;
         Core::Common::FastFixArray<Actor::Object*, 512> _childObjects;
 
         Core::TaskManager _components;
@@ -414,6 +406,4 @@ namespace Actor
         // オブジェクト名
         Core::Common::FixString128 _name;
     };
-}
-
-
+}  // namespace Actor

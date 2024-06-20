@@ -29,20 +29,20 @@ namespace Actor
         this->_Clear();
     }
 
-    void Component::TransformLocalToWorldPos2D(
-        Core::Math::Vector2* out_pPos, const Core::Math::Vector2& in_offsetPos)
+    void Component::TransformLocalToWorldPos2D(Core::Math::Vector2* out_pPos,
+                                               const Core::Math::Vector2& in_offsetPos)
     {
         E_ASSERT(out_pPos != NULL);
 
         const Core::Math::Vector3& pos = this->_pOwner->GetWorldPos();
-        out_pPos->x = pos.x;
-        out_pPos->y = pos.y;
+        out_pPos->x                    = pos.x;
+        out_pPos->y                    = pos.y;
 
         (*out_pPos) += in_offsetPos;
     }
 
-    void Component::TransformLocalToWorldRect2D(
-        Core::Math::Rect2* out_pRect, const Core::Math::Rect2& in_offsetRect)
+    void Component::TransformLocalToWorldRect2D(Core::Math::Rect2* out_pRect,
+                                                const Core::Math::Rect2& in_offsetRect)
     {
         E_ASSERT(out_pRect != NULL);
 
@@ -51,5 +51,4 @@ namespace Actor
         const Core::Math::Vector3& pos = this->_pOwner->GetWorldPos();
         (*out_pRect) += Core::Math::Vector2(pos.x, pos.y);
     }
-}
-
+}  // namespace Actor

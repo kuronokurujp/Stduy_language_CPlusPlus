@@ -29,4 +29,4 @@ namespace Render
 
         return TRUE;
     }
-}
+}  // namespace Render

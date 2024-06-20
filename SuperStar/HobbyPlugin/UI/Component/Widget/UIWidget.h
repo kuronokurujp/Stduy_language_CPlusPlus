@@ -1,9 +1,8 @@
 ﻿#pragma once
 
-#include "Platform/PlatformInput.h"
 #include "Core/Math/Math.h"
-
 #include "HobbyPlugin/Actor/Component/Component.h"
+#include "Platform/PlatformInput.h"
 
 namespace UI
 {
@@ -45,4 +44,4 @@ namespace UI
         Core::Math::Rect2 _rect;
         Uint32 _color = 0;
     };
-}
+}  // namespace UI

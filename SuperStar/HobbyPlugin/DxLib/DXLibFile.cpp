@@ -2,7 +2,8 @@
 
 #include "DxLib.h"
 
-namespace DxLib {
+namespace DxLib
+{
 
     TextFileRead::TextFileRead()
     {
@@ -23,7 +24,6 @@ namespace DxLib {
 
         // TODO: テキストをロード
 
-
         this->_bOpen = TRUE;
         return FALSE;
     }
@@ -36,8 +36,7 @@ namespace DxLib {
     const Core::Common::Handle FileSystem::FileOpen(const Core::File::Path& in_rPath)
     {
         auto handle = FileRead_open(in_rPath.Str(), FALSE);
-        if (handle == 0)
-            return Core::Common::Handle();
+        if (handle == 0) return Core::Common::Handle();
 
         Core::Common::Handle fileHandle;
         fileHandle.Init(handle);
@@ -46,7 +45,8 @@ namespace DxLib {
         return fileHandle;
     }
 
-    const Bool FileSystem::FileRead(const Core::Common::Handle& in_rHandle, void* out_pBuff, const Sint32 in_size)
+    const Bool FileSystem::FileRead(const Core::Common::Handle& in_rHandle, void* out_pBuff,
+                                    const Sint32 in_size)
     {
         E_ASSERT(in_rHandle.Null() == FALSE && "ファイルのハンドルがない");
         E_ASSERT(out_pBuff != NULL && "ファイルの読み込みのバッファの先頭アドレスがない");
@@ -71,13 +71,11 @@ namespace DxLib {
 
     const Bool FileSystem::FileClose(const Core::Common::Handle& in_rHandle)
     {
-        if (in_rHandle.Null())
-            return FALSE;
+        if (in_rHandle.Null()) return FALSE;
 
         this->_fileHandleMap.Erase(in_rHandle.Magic());
-        if (FileRead_close(in_rHandle.Index()) != 0)
-            return FALSE;
+        if (FileRead_close(in_rHandle.Index()) != 0) return FALSE;
 
         return TRUE;
     }
-}
+}  // namespace DxLib

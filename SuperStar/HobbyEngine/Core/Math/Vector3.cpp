@@ -1,4 +1,5 @@
 ﻿#include "Vector3.h"
+
 #include <math.h>
 
 namespace Core
@@ -8,8 +9,8 @@ namespace Core
         Vector3 Vector3::Unit_X = Vector3(1.0f, 0.0f, 0.0f);
         Vector3 Vector3::Unit_Y = Vector3(0.0f, 1.0f, 0.0f);
         Vector3 Vector3::Unit_Z = Vector3(0.0f, 0.0f, 1.0f);
-        Vector3 Vector3::Zero = Vector3();
-        Vector3 Vector3::One = Vector3(1.0f, 1.0f, 1.0f);
+        Vector3 Vector3::Zero   = Vector3();
+        Vector3 Vector3::One    = Vector3(1.0f, 1.0f, 1.0f);
 
         Vector3::Vector3(const Sint32 aX, const Sint32 aY, const Sint32 aZ)
         {
@@ -121,15 +122,11 @@ namespace Core
         }
 
         // ２次元補間を行う
-        void Vector3::SetInterporation(
-            const Vector3& a,
-            const Vector3& ab,
-            const Vector3& ac,
-            Float32 u,
-            Float32 v)
+        void Vector3::SetInterporation(const Vector3& a, const Vector3& ab, const Vector3& ac,
+                                       Float32 u, Float32 v)
         {
-            this->SetMadd(ab, u, a);	// a + u(b - a)
-            this->Madd(ac, v);	// a + u(b - a) + v(c - a)
+            this->SetMadd(ab, u, a);  // a + u(b - a)
+            this->Madd(ac, v);        // a + u(b - a) + v(c - a)
         }
 
         //	正規化
@@ -167,22 +164,22 @@ namespace Core
         // 比較などで利用できる
         Float32 Vector3::GetLengthSquared(const Vector3& in_rV)
         {
-            return	(in_rV.x * in_rV.x + in_rV.y * in_rV.y * in_rV.z * in_rV.z);
+            return (in_rV.x * in_rV.x + in_rV.y * in_rV.y * in_rV.z * in_rV.z);
         }
 
         //	大きさ取得
         Float32 Vector3::GetVector3Mag(const Vector3& in_v)
         {
-            return	static_cast<Float32>(sqrt(GetLengthSquared(in_v)));
+            return static_cast<Float32>(sqrt(GetLengthSquared(in_v)));
         }
 
         //	距離取得
         Float32 Vector3::GetVector3Distance(const Vector3& in_v, const Vector3& in_v2)
         {
-            Vector3	size;
+            Vector3 size;
             size.SetSub(in_v2, in_v);
 
             return (GetVector3Mag(size));
         }
-    }
-}
+    }  // namespace Math
+}  // namespace Core

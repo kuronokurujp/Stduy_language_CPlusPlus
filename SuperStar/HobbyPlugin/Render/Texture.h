@@ -10,32 +10,32 @@
 class Texture
 {
 public:
-	Texture() { this->_Clear(); }
-	~Texture() { this->Unload(); }
+    Texture() { this->_Clear(); }
+    ~Texture() { this->Unload(); }
 
-	bool Load(const std::string& in_rFileName);
-	void Unload();
+    bool Load(const std::string& in_rFileName);
+    void Unload();
 
-	void SetActive();
+    void SetActive();
 
-	int GetWidth() { return this->width; }
-	int GetHeight() { return this->height; }
+    int GetWidth() { return this->width; }
+    int GetHeight() { return this->height; }
 
-	std::string& GetName() { return this->fileName; }
+    std::string& GetName() { return this->fileName; }
 
-	unsigned int GetTextureID() { return this->textureID; }
+    unsigned int GetTextureID() { return this->textureID; }
 
 private:
-	unsigned int textureID;
-	int width, height;
-	std::string fileName;
+    unsigned int textureID;
+    int width, height;
+    std::string fileName;
 
-	auto _Clear() -> void
-	{
-		this->width = this->height = 0;
-		this->textureID = 0;
-		this->fileName = "";
-	}
+    auto _Clear() -> void
+    {
+        this->width = this->height = 0;
+        this->textureID            = 0;
+        this->fileName             = "";
+    }
 };
 
-#endif // __TEXTURE_H__
+#endif  // __TEXTURE_H__

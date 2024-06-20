@@ -1,9 +1,9 @@
 /**
  *	@file 	PlaySeq.h
- *	@brief	
+ *	@brief
  *	@author	yuto uchida
  *	@data   2011-02-17
- *	@note 
+ *	@note
  *
  */
 #ifndef __PlaySeq_H__
@@ -13,14 +13,14 @@
 
 namespace MainSeq
 {
-	class C_PlaySeq : public I_MainSeq
-	{
-	public:
-		C_PlaySeq();
-		~C_PlaySeq();
+    class C_PlaySeq : public I_MainSeq
+    {
+    public:
+        C_PlaySeq();
+        ~C_PlaySeq();
 
-		I_MainSeq* update( C_Parent* ip_parent );
-	};
-} // namespace MainSeq
+        I_MainSeq* update(C_Parent* ip_parent);
+    };
+}  // namespace MainSeq
 
-#endif // __PlaySeq_H__
+#endif  // __PlaySeq_H__

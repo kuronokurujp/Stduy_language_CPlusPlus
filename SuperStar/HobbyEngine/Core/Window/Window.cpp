@@ -1,56 +1,49 @@
-﻿#include "gameWindow.h"
-#include "gameFrameInterface.h"
+﻿#include <GL/glew.h>
 
-#include "gameSystemInterface.h"
-#include "Component/spriteComponent.h"
 #include "Actor/actor.h"
+#include "Component/spriteComponent.h"
+#include "gameFrameInterface.h"
+#include "gameSystemInterface.h"
+#include "gameWindow.h"
 #include "renderer.h"
-
-#include <GL/glew.h>
 
 /// <summary>
 /// Initializes the specified in r window cofing data.
 /// </summary>
 /// <param name="in_rWindowCofingData">The in r window cofing data.</param>
 /// <returns></returns>
-bool GameWindow::Initalize(
-	const WindowConfigData& in_rWindowCofingData,
-	IInterface_GameSystemInterface* in_pInterfaecGameSystem)
+bool GameWindow::Initalize(const WindowConfigData& in_rWindowCofingData,
+                           IInterface_GameSystemInterface* in_pInterfaecGameSystem)
 {
-	SDL_assert((in_pInterfaecGameSystem != nullptr));
+    SDL_assert((in_pInterfaecGameSystem != nullptr));
 
-	SDL_memcpy(&this->configData, &in_rWindowCofingData, sizeof(this->configData));
+    SDL_memcpy(&this->configData, &in_rWindowCofingData, sizeof(this->configData));
 
-	this->pGame = in_pInterfaecGameSystem;
+    this->pGame = in_pInterfaecGameSystem;
 
-	this->pRenderer = new Renderer();
-	this->pRenderer->Initalize(this->configData.w, this->configData.h);
+    this->pRenderer = new Renderer();
+    this->pRenderer->Initalize(this->configData.w, this->configData.h);
 
-	// windowを作成
-	// openglを扱うようにする
-	this->pWindow = SDL_CreateWindow(
-		this->configData.pTitle,
-		this->configData.x,
-		this->configData.y,
-		this->configData.w,
-		this->configData.h,
-		SDL_WINDOW_OPENGL
-	);
+    // windowを作成
+    // openglを扱うようにする
+    this->pWindow =
+        SDL_CreateWindow(this->configData.pTitle, this->configData.x, this->configData.y,
+                         this->configData.w, this->configData.h, SDL_WINDOW_OPENGL);
 
-	if (this->pWindow == nullptr)
-	{
-		SDL_Log("Falide to create window: %s", SDL_GetError());
-		return false;
-	}
+    if (this->pWindow == nullptr)
+    {
+        SDL_Log("Falide to create window: %s", SDL_GetError());
+        return false;
+    }
 
-	if (!this->pRenderer->CreateContext(this->pWindow))
-	{
-		return false;
-	}
+    if (!this->pRenderer->CreateContext(this->pWindow))
+    {
+        return false;
+    }
 
-	this->closeFlag = false;
+    this->closeFlag = false;
 
-	return true;
+    return true;
 }
 
 /// <summary>
@@ -58,36 +51,35 @@ bool GameWindow::Initalize(
 /// </summary>
 void GameWindow::Shutdown()
 {
-	// 登録したActorはすべて削除
-	{
-		this->DeleteAllActorsAndMemFree(this->pendingActors,
-			[](Actor * /*in_pActor*/) { return true; });
+    // 登録したActorはすべて削除
+    {
+        this->DeleteAllActorsAndMemFree(this->pendingActors,
+                                        [](Actor* /*in_pActor*/) { return true; });
 
-		this->DeleteAllActorsAndMemFree(this->actors,
-			[](Actor * /*in_pActor*/) { return true; });
-	}
+        this->DeleteAllActorsAndMemFree(this->actors, [](Actor* /*in_pActor*/) { return true; });
+    }
 
-	if (this->pFrame != nullptr)
-	{
-		this->pFrame->Shutdown(*this);
-		this->pFrame = nullptr;
-	}
+    if (this->pFrame != nullptr)
+    {
+        this->pFrame->Shutdown(*this);
+        this->pFrame = nullptr;
+    }
 
-	if (this->pRenderer != nullptr)
-	{
-		this->pRenderer->Shutdown();
-		SAFETY_MEM_RELEASE(this->pRenderer);
-	}
+    if (this->pRenderer != nullptr)
+    {
+        this->pRenderer->Shutdown();
+        SAFETY_MEM_RELEASE(this->pRenderer);
+    }
 
-	if (this->pWindow != nullptr)
-	{
-		SDL_DestroyWindow(this->pWindow);
-		this->pWindow = nullptr;
-	}
-	else
-	{
-		SDL_Log("Unable to shutdown SDK to Unable to create window");
-	}
+    if (this->pWindow != nullptr)
+    {
+        SDL_DestroyWindow(this->pWindow);
+        this->pWindow = nullptr;
+    }
+    else
+    {
+        SDL_Log("Unable to shutdown SDK to Unable to create window");
+    }
 }
 
 /// <summary>
@@ -96,12 +88,12 @@ void GameWindow::Shutdown()
 /// <returns></returns>
 bool GameWindow::Load()
 {
-	if (!this->pRenderer->Load())
-	{
-		return false;
-	}
+    if (!this->pRenderer->Load())
+    {
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 /// <summary>
@@ -111,30 +103,31 @@ bool GameWindow::Load()
 /// <param name="in_pGameFrame">The in p game frame.</param>
 /// <param name="in_bResetFrame">The in b reset frame.</param>
 /// <returns></returns>
-const bool GameWindow::AttachFrame(class IInterface_GameFrame* in_pGameFrame, const bool in_bResetFrame)
+const bool GameWindow::AttachFrame(class IInterface_GameFrame* in_pGameFrame,
+                                   const bool in_bResetFrame)
 {
-	SDL_assert(in_pGameFrame != nullptr);
-	if (this->pFrame != nullptr)
-	{
-		this->DetachFrame();
-	}
+    SDL_assert(in_pGameFrame != nullptr);
+    if (this->pFrame != nullptr)
+    {
+        this->DetachFrame();
+    }
 
-	// ゲームフレームをアタッチして初期化
-	this->pFrame = in_pGameFrame;
-	if (in_bResetFrame)
-	{
-		if (this->pFrame->Initialize(*this) == false)
-		{
-			return false;
-		}
-	}
-	else
-	{
-		// todo アタッチはするが初期化しないケースの対応がある
-		SDL_assert(false);
-	}
+    // ゲームフレームをアタッチして初期化
+    this->pFrame = in_pGameFrame;
+    if (in_bResetFrame)
+    {
+        if (this->pFrame->Initialize(*this) == false)
+        {
+            return false;
+        }
+    }
+    else
+    {
+        // todo アタッチはするが初期化しないケースの対応がある
+        SDL_assert(false);
+    }
 
-	return true;
+    return true;
 }
 
 /// <summary>
@@ -143,10 +136,10 @@ const bool GameWindow::AttachFrame(class IInterface_GameFrame* in_pGameFrame, co
 /// <returns></returns>
 void GameWindow::DetachFrame()
 {
-	SDL_assert(this->pFrame != nullptr);
+    SDL_assert(this->pFrame != nullptr);
 
-	this->pFrame->Shutdown(*this);
-	SAFETY_MEM_RELEASE(this->pFrame);
+    this->pFrame->Shutdown(*this);
+    SAFETY_MEM_RELEASE(this->pFrame);
 }
 
 /// <summary>
@@ -155,47 +148,48 @@ void GameWindow::DetachFrame()
 /// <param name="in_deltaTime">The in delta time.</param>
 void GameWindow::Update(float in_deltaTime)
 {
-	if (this->pFrame == nullptr)
-	{
-		return;
-	}
+    if (this->pFrame == nullptr)
+    {
+        return;
+    }
 
-	this->pFrame->Update(*this, in_deltaTime);
+    this->pFrame->Update(*this, in_deltaTime);
 
-	// Actorの制御
-	this->updatingActors = true;
-	{
-		for (auto actor : this->actors)
-		{
-			actor->Update(in_deltaTime);
-		}
+    // Actorの制御
+    this->updatingActors = true;
+    {
+        for (auto actor : this->actors)
+        {
+            actor->Update(in_deltaTime);
+        }
 
-		// コリジョン処理(コリジョンしてActor追加が起きてもpendingするように)
-		this->_Colision();
-	}
-	this->updatingActors = false;
+        // コリジョン処理(コリジョンしてActor追加が起きてもpendingするように)
+        this->_Colision();
+    }
+    this->updatingActors = false;
 
-	// キャッシュに登録しているActorを更新用のリストに移行する
-	for (auto pending : this->pendingActors)
-	{
-		// 更新する前に座標更新
-		pending->ComputeWorldTransform();
-		this->actors.emplace_back(pending);
-	}
-	this->pendingActors.clear();
+    // キャッシュに登録しているActorを更新用のリストに移行する
+    for (auto pending : this->pendingActors)
+    {
+        // 更新する前に座標更新
+        pending->ComputeWorldTransform();
+        this->actors.emplace_back(pending);
+    }
+    this->pendingActors.clear();
 
-	// Actorを削除するかチェック
-	{
-		this->DeleteAllActorsAndMemFree(this->actors, [](Actor *in_pValidateActor)
-		{
-			if (in_pValidateActor->GetState() == Actor::EState_Dead)
-			{
-				return true;
-			}
+    // Actorを削除するかチェック
+    {
+        this->DeleteAllActorsAndMemFree(this->actors,
+                                        [](Actor* in_pValidateActor)
+                                        {
+                                            if (in_pValidateActor->GetState() == Actor::EState_Dead)
+                                            {
+                                                return true;
+                                            }
 
-			return false;
-		});
-	}
+                                            return false;
+                                        });
+    }
 }
 
 /// <summary>
@@ -203,18 +197,18 @@ void GameWindow::Update(float in_deltaTime)
 /// </summary>
 void GameWindow::GenerateOutput()
 {
-	this->pRenderer->BeginDraw(this->configData.screenColor);
+    this->pRenderer->BeginDraw(this->configData.screenColor);
 
-	{
-		this->pRenderer->Draw();
+    {
+        this->pRenderer->Draw();
 
-		if (this->pFrame != nullptr)
-		{
-			this->pFrame->Draw(*this);
-		}
-	}
+        if (this->pFrame != nullptr)
+        {
+            this->pFrame->Draw(*this);
+        }
+    }
 
-	this->pRenderer->EndDraw(this->pWindow);
+    this->pRenderer->EndDraw(this->pWindow);
 }
 
 /// <summary>
@@ -223,7 +217,7 @@ void GameWindow::GenerateOutput()
 /// <param name="in_rect">The in rect.</param>
 void GameWindow::RenderFillRect(const SDL_Rect& /*in_rect*/)
 {
-	//	SDL_RenderFillRect(this->pRenderer, &in_rect);
+    //	SDL_RenderFillRect(this->pRenderer, &in_rect);
 }
 
 /// <summary>
@@ -232,17 +226,17 @@ void GameWindow::RenderFillRect(const SDL_Rect& /*in_rect*/)
 /// <param name="in_pState">State of the in p.</param>
 void GameWindow::SetKeyboardState(const Uint8* in_pState, SDL_Event in_eventData)
 {
-	// アクターにキーボード入力結果を渡す
-	this->updatingActors = true;
-	{
-		for (auto actor : this->actors)
-		{
-			actor->ProcessInput(in_pState);
-		}
-	}
-	this->updatingActors = false;
+    // アクターにキーボード入力結果を渡す
+    this->updatingActors = true;
+    {
+        for (auto actor : this->actors)
+        {
+            actor->ProcessInput(in_pState);
+        }
+    }
+    this->updatingActors = false;
 
-	this->input.SetKeyboardState(in_pState, in_eventData);
+    this->input.SetKeyboardState(in_pState, in_eventData);
 }
 
 /// <summary>
@@ -250,7 +244,7 @@ void GameWindow::SetKeyboardState(const Uint8* in_pState, SDL_Event in_eventData
 /// </summary>
 void GameWindow::Close()
 {
-	this->closeFlag = true;
+    this->closeFlag = true;
 }
 
 /// <summary>

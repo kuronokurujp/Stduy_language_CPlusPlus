@@ -25,5 +25,5 @@ namespace Core
 #endif
             return *this;
         }
-    }
-}
+    }  // namespace File
+}  // namespace Core

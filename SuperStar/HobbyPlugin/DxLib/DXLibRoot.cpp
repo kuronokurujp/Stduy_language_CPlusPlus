@@ -1,4 +1,5 @@
 ﻿#include "DXLibRoot.h"
+
 #include "DxLib.h"
 
 namespace DXLib
@@ -17,7 +18,7 @@ namespace DXLib
             }
             else
             {
-            // デバッグ時のみログファイルを出す
+                // デバッグ時のみログファイルを出す
 #ifdef _DEBUG
                 SetOutApplicationLogValidFlag(TRUE);
 #else
@@ -72,4 +73,4 @@ namespace DXLib
         ScreenFlip();
         return TRUE;
     }
-}
+}  // namespace DXLib

@@ -1,17 +1,17 @@
 ﻿// アプリのエントリーポイント
 
-#include "framework.h"
 #include "SuperStar.h"
 
 #include "Engine.h"
+#include "framework.h"
 
 // 外部モジュール一覧
-#include "HobbyPlugin/DxLib/DXLibModule.h"
-#include "HobbyPlugin/UI/UIModule.h"
-#include "HobbyPlugin/Level/LevelModule.h"
 #include "HobbyPlugin/Actor/ActorModule.h"
 #include "HobbyPlugin/AssetManager/AssetManagerModule.h"
+#include "HobbyPlugin/DxLib/DXLibModule.h"
+#include "HobbyPlugin/Level/LevelModule.h"
 #include "HobbyPlugin/Localization/LocalizationModule.h"
+#include "HobbyPlugin/UI/UIModule.h"
 
 #define MAX_LOADSTRING 100
 
@@ -33,10 +33,8 @@ static AppEntryGameMain s_app;
 static BOOL InitInstance(HINSTANCE, int);
 static void EndInstance(HINSTANCE hInstance);
 
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-    _In_opt_ HINSTANCE hPrevInstance,
-    _In_ LPWSTR    lpCmdLine,
-    _In_ int       nCmdShow)
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
+                      _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
@@ -49,32 +47,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     CREATE_HOBBY_ENGINE;
 
     // アプリケーション初期化の実行:
-    if (!InitInstance(hInstance, nCmdShow))
-        return FALSE;
+    if (!InitInstance(hInstance, nCmdShow)) return FALSE;
 
     // エンジンに設定したアプリを開始
     s_app.Start(HOBBY_ENGINE.IsDebugMode());
 
     // ゲームループ
-    while(1)
+    while (1)
     {
-        if (HOBBY_ENGINE.BeforUpdateLoop() == FALSE)
-            break;
+        if (HOBBY_ENGINE.BeforUpdateLoop() == FALSE) break;
 
-        if (HOBBY_ENGINE.WaitFrameLoop() == FALSE)
-            break;
+        if (HOBBY_ENGINE.WaitFrameLoop() == FALSE) break;
 
         const Float32 d = HOBBY_ENGINE.GetDeltaTimeSec();
 
         // アプリメイン
-        if (s_app.Update(d) == FALSE)
-            break;
+        if (s_app.Update(d) == FALSE) break;
 
-        if (HOBBY_ENGINE.MainUpdateLoop(d) == FALSE)
-            break;
+        if (HOBBY_ENGINE.MainUpdateLoop(d) == FALSE) break;
 
-        if (HOBBY_ENGINE.AfterUpdateLoop(d) == FALSE)
-            break;
+        if (HOBBY_ENGINE.AfterUpdateLoop(d) == FALSE) break;
     }
 
     s_app.End();
@@ -139,32 +131,32 @@ const Bool AppEntryGameMain::Start(const Bool in_bDebug)
 
 const Bool AppEntryGameMain::Update(const Float32 in_deltaTime)
 {
-    //E_LOG(E_STR_TEXT("game update"));
-        /*
-        if( mp_parent->update() == false )
-        {
-            return false;
-        }
+    // E_LOG(E_STR_TEXT("game update"));
+    /*
+    if( mp_parent->update() == false )
+    {
+        return false;
+    }
 #ifdef	_DEBUG
-        if( isButtonTriggerOn( 'w' ) )
-        {
-            //	デバッグ画面に強制的に戻る
-            SAFE_DELETE( mp_parent );
-            mp_parent = new MainSeq::C_Parent( new MainSeq::C_DebugSeq() );
-        }
+    if( isButtonTriggerOn( 'w' ) )
+    {
+        //	デバッグ画面に強制的に戻る
+        SAFE_DELETE( mp_parent );
+        mp_parent = new MainSeq::C_Parent( new MainSeq::C_DebugSeq() );
+    }
 
-        if( isButtonTriggerOn( 't' ) )
+    if( isButtonTriggerOn( 't' ) )
+    {
+        const bool bEnable	= LuaStateManager::IsDebugEnable();
+        if( bEnable )
         {
-            const bool bEnable	= LuaStateManager::IsDebugEnable();
-            if( bEnable )
-            {
-                LuaStateManager::SetDebugEnable( false );
-            }
-            else
-            {
-                LuaStateManager::SetDebugEnable( true );
-            }
+            LuaStateManager::SetDebugEnable( false );
         }
+        else
+        {
+            LuaStateManager::SetDebugEnable( true );
+        }
+    }
 #endif
 */
 
@@ -181,4 +173,3 @@ const Bool AppEntryGameMain::End()
 
     return TRUE;
 }
-

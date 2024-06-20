@@ -20,5 +20,4 @@ namespace Core
         // 死亡フラグを付ける
         _bKill = TRUE;
     }
-}
-
+}  // namespace Core

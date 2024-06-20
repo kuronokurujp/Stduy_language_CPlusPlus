@@ -51,6 +51,5 @@ namespace Core
             return v;
         }
         */
-    }
-}
-
+    }  // namespace Math
+}  // namespace Core

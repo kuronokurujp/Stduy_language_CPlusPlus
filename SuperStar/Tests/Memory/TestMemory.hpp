@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Core/Memory/MemoryManager.h"
 #include "Core/Memory/MemoryManager.cpp"
+#include "Core/Memory/MemoryManager.h"
 
 // シングルトンなので一つしかインスタンスが作れない
 static Core::Memory::Manager s_memoryManager;
@@ -26,18 +26,14 @@ TEST_CASE("Memory SetupMemory")
     // ページ確保テスト
     {
         // メモリサイズのイニシャライズ
-        Core::Memory::Manager::PageSetupInfo memoryPageSetupInfoArray[] = 
-        {
+        Core::Memory::Manager::PageSetupInfo memoryPageSetupInfoArray[] = {
             // 複数ページのサイズ
-            { 0, 3 * 1024 * 1024 },
-            { 1, 4 * 1024 * 1024 },
-            { 2, 2 * 1024 * 1024 },
-            { 3, 2 * 1024 * 1024 },
-            { 4, 2 * 1024 * 1024 },
-            { 5, 3 * 1024 * 1024 },
+            {0, 3 * 1024 * 1024}, {1, 4 * 1024 * 1024}, {2, 2 * 1024 * 1024},
+            {3, 2 * 1024 * 1024}, {4, 2 * 1024 * 1024}, {5, 3 * 1024 * 1024},
         };
 
-        CHECK(s_memoryManager.SetupMemoryPage(memoryPageSetupInfoArray, E_ARRAY_NUM(memoryPageSetupInfoArray)));
+        CHECK(s_memoryManager.SetupMemoryPage(memoryPageSetupInfoArray,
+                                              E_ARRAY_NUM(memoryPageSetupInfoArray)));
         CHECK(s_memoryManager.CheckAllMemoryBlock());
     }
 
@@ -56,15 +52,10 @@ TEST_CASE("Memory Allocate And Free")
     Uint8 pageMax = 0;
     {
         // メモリサイズのイニシャライズ
-        Core::Memory::Manager::PageSetupInfo memoryPageSetupInfoArray[] = 
-        {
+        Core::Memory::Manager::PageSetupInfo memoryPageSetupInfoArray[] = {
             // 複数ページのサイズ
-            { 0, 3 * 1024 * 1024 },
-            { 1, 4 * 1024 * 1024 },
-            { 2, 2 * 1024 * 1024 },
-            { 3, 2 * 1024 * 1024 },
-            { 4, 2 * 1024 * 1024 },
-            { 5, 3 * 1024 * 1024 },
+            {0, 3 * 1024 * 1024}, {1, 4 * 1024 * 1024}, {2, 2 * 1024 * 1024},
+            {3, 2 * 1024 * 1024}, {4, 2 * 1024 * 1024}, {5, 3 * 1024 * 1024},
         };
 
         pageMax = E_ARRAY_NUM(memoryPageSetupInfoArray);
@@ -77,9 +68,11 @@ TEST_CASE("Memory Allocate And Free")
     for (Uint32 i = 0; i < 100; ++i)
     {
         Uint8 page = i % pageMax;
-        
+
         // メモリの前確保がうまくいっているか
-        Uint8* pPtr = static_cast<Uint8*>(s_memoryManager.ALLOCATE_MEMORY(0x10000, page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE));
+        Uint8* pPtr = static_cast<Uint8*>(
+            s_memoryManager.ALLOCATE_MEMORY(0x10000, page,
+                                            Core::Memory::Manager::MINIMUM_ALIGN_SIZE));
         CHECK(pPtr);
         {
             *pPtr = static_cast<Uint8>(i);
@@ -87,7 +80,9 @@ TEST_CASE("Memory Allocate And Free")
         }
 
         // メモリの後確保がうまくいっているか
-        Uint32* pPtr2 = static_cast<Uint32*>(s_memoryManager.ALLOCATE_MEMORY_LAST(1000, 1, Core::Memory::Manager::MINIMUM_ALIGN_SIZE));
+        Uint32* pPtr2 = static_cast<Uint32*>(
+            s_memoryManager.ALLOCATE_MEMORY_LAST(1000, 1,
+                                                 Core::Memory::Manager::MINIMUM_ALIGN_SIZE));
         CHECK(pPtr2);
         {
             *pPtr2 = i + 1234;
@@ -101,4 +96,3 @@ TEST_CASE("Memory Allocate And Free")
 
     CHECK(s_memoryManager.End());
 }
-

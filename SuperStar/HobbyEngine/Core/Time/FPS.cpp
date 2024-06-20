@@ -1,4 +1,5 @@
 ﻿#include "FPS.h"
+
 #include "Platform/PlatformModule.h"
 
 namespace Core
@@ -13,7 +14,8 @@ namespace Core
         const Bool FPS::UpdateWait(const Uint32 in_waitMSec)
         {
             // 前フレームからin_waitMSec経ったら処理に進める
-            if (in_waitMSec < (this->_pTimeInterface->NowMSec() - this->_previousTime[FPS::_timeAvgMax - 1]))
+            if (in_waitMSec <
+                (this->_pTimeInterface->NowMSec() - this->_previousTime[FPS::_timeAvgMax - 1]))
                 return FALSE;
 
             // 帰ってくる時間の単位はmsec
@@ -38,11 +40,10 @@ namespace Core
         const Float32 FPS::GetDeltaTimeMSec() const
         {
             const Float32 oldMSec = static_cast<Float32>(this->_previousTime[FPS::_timeAvgMax - 1]);
-            if (oldMSec <= 0.0f)
-                return 0.0f;
+            if (oldMSec <= 0.0f) return 0.0f;
 
             const Float32 nowMSec = static_cast<Float32>(this->_pTimeInterface->NowMSec());
-            float deltaTime = nowMSec - oldMSec;
+            float deltaTime       = nowMSec - oldMSec;
 
             return deltaTime;
         }
@@ -50,16 +51,14 @@ namespace Core
         const Float32 FPS::GetDeltaTimeSec() const
         {
             Float32 deletaTime = this->GetDeltaTimeMSec();
-            if (deletaTime <= 0.0f)
-                return 0.0f;
+            if (deletaTime <= 0.0f) return 0.0f;
 
             // 秒に変換
             deletaTime /= 1000.0f;
             // 定数以上値になったら補正する
-            if (deletaTime > 0.05f)
-                deletaTime = 0.05f;
+            if (deletaTime > 0.05f) deletaTime = 0.05f;
 
             return deletaTime;
         }
-    }
-}
+    }  // namespace Time
+}  // namespace Core

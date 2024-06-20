@@ -1,9 +1,9 @@
 /**
  *	@file 	WorldMapSeq.h
- *	@brief	
+ *	@brief
  *	@author	yuto uchida
  *	@data   2011-02-17
- *	@note 
+ *	@note
  *
  */
 #ifndef __WorldMapSeq_H__
@@ -13,14 +13,14 @@
 
 namespace MainSeq
 {
-	class C_WorldMapSeq : public I_MainSeq
-	{
-	public:
-		C_WorldMapSeq();
-		~C_WorldMapSeq();
+    class C_WorldMapSeq : public I_MainSeq
+    {
+    public:
+        C_WorldMapSeq();
+        ~C_WorldMapSeq();
 
-		I_MainSeq* update( C_Parent* ip_parent );
-	};
-} // namespace MainSeq
+        I_MainSeq* update(C_Parent* ip_parent);
+    };
+}  // namespace MainSeq
 
-#endif // __WorldMapSeq_H__
+#endif  // __WorldMapSeq_H__

@@ -2,7 +2,6 @@
 
 #include "Core/Common/FixString.h"
 #include "Core/Math/Vector2.h"
-
 #include "UIWidget.h"
 
 namespace UI
@@ -43,12 +42,9 @@ namespace UI
         void SetText(const Char* in_pText) { this->_str = in_pText; }
 
     private:
-        void _Clear()
-        {
-            this->_str.Empty();
-        }
+        void _Clear() { this->_str.Empty(); }
 
     private:
         Core::Common::FixString1024 _str;
     };
-}
+}  // namespace UI

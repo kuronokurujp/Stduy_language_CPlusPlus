@@ -53,14 +53,14 @@ namespace AssetManager
         for (Uint32 i = 0; i < in_count; ++i)
         {
             node = node.at_path(in_pArgs[i]);
-            if (node == FALSE)
-                return Node();
+            if (node == FALSE) return Node();
         }
 
         return Node(node);
     }
 
-    const Bool AssetDataToml::Node::_OutputNodeMap(TOML_NODE_MAP_TYPE* out, const Char* in_pArgs[], const Uint32 in_count)
+    const Bool AssetDataToml::Node::_OutputNodeMap(TOML_NODE_MAP_TYPE* out, const Char* in_pArgs[],
+                                                   const Uint32 in_count)
     {
         E_ASSERT(out && "出力するポインターがNULL");
         E_ASSERT(0 < in_count);
@@ -68,17 +68,14 @@ namespace AssetManager
         toml::node_view<toml::node> node = this->_node;
         for (Uint32 i = 0; i < in_count; ++i)
         {
-            if (E_STR_CMP(in_pArgs[i], E_STR_EMPTY) == 0)
-                break;
+            if (E_STR_CMP(in_pArgs[i], E_STR_EMPTY) == 0) break;
 
             node = node.at_path(in_pArgs[i]);
-            if (node == FALSE)
-                return FALSE;
+            if (node == FALSE) return FALSE;
         }
 
         // 指定したノードの中に複数のノードがあれば設定する
-        if (node.is_table() == FALSE)
-            return FALSE;
+        if (node.is_table() == FALSE) return FALSE;
 
         auto table = node.as_table();
         for (auto it = table->begin(); it != table->end(); ++it)
@@ -101,9 +98,9 @@ namespace AssetManager
             try
             {
                 // 開いたファイルのデータサイズを取得して読み込むメモリを確保
-                Sint32 size = in_rFileSystem.FileSize(this->_fileHandle);
+                Sint32 size    = in_rFileSystem.FileSize(this->_fileHandle);
                 Sint32 memSize = size + 1;
-                pReadTmpBuff = new Byte[memSize];
+                pReadTmpBuff   = new Byte[memSize];
                 ::memset(pReadTmpBuff, '\0', memSize);
 
                 // ファイルの読み込み
@@ -113,13 +110,14 @@ namespace AssetManager
                     // 展開時にjsonを展開するためのメモリ確保をする
                     pReadTmpBuff[size] = '\n';
                     simdjson::validate_utf8(pReadTmpBuff, memSize);
-                    this->_json = std::make_unique<simdjson::padded_string>(pReadTmpBuff, size);
+                    this->_json   = std::make_unique<simdjson::padded_string>(pReadTmpBuff, size);
                     this->_parser = std::make_unique<simdjson::ondemand::parser>(size * 2);
                     {
                         auto resultCode = this->_parser->iterate(*this->_json).get(this->_doc);
                         if (resultCode != simdjson::error_code::SUCCESS)
                         {
-                            E_PG_LOG_LINE(E_STR_TEXT("%ls ファイルエラー: %d"), this->_path.Str(), resultCode);
+                            E_PG_LOG_LINE(E_STR_TEXT("%ls ファイルエラー: %d"), this->_path.Str(),
+                                          resultCode);
                             E_LOG_LINE(E_STR_TEXT("エラーのjson内容"));
                             E_LOG_LINE(E_STR_TEXT("%hs"), pReadTmpBuff);
 
@@ -134,7 +132,8 @@ namespace AssetManager
             }
             catch (const simdjson::simdjson_error& e)
             {
-                E_PG_LOG_LINE(E_STR_TEXT("{%ls}ファイルの扱いに失敗: %hs"), this->_path.Str(), e.what());
+                E_PG_LOG_LINE(E_STR_TEXT("{%ls}ファイルの扱いに失敗: %hs"), this->_path.Str(),
+                              e.what());
                 bRet = FALSE;
             }
             // jsonに展開した時のメモリを利用するので読み込んだメモリを解放
@@ -143,8 +142,7 @@ namespace AssetManager
         // ファイルを閉じる
         in_rFileSystem.FileClose(this->_fileHandle);
 
-        if (bRet == FALSE)
-            return FALSE;
+        if (bRet == FALSE) return FALSE;
 
         return TRUE;
     }
@@ -156,8 +154,8 @@ namespace AssetManager
         this->_parser.release();
     }
 
-    const Bool AssetDataJson::_OutputValue(
-        simdjson::fallback::ondemand::value* out, const Sint32 in_count, const Char* values[])
+    const Bool AssetDataJson::_OutputValue(simdjson::fallback::ondemand::value* out,
+                                           const Sint32 in_count, const Char* values[])
     {
         E_ASSERT(out);
         E_ASSERT(0 < in_count);
@@ -190,4 +188,4 @@ namespace AssetManager
 
         return FALSE;
     }
-}
+}  // namespace AssetManager

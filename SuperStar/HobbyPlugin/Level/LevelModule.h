@@ -2,14 +2,13 @@
 
 #include <memory>
 
-#include "Core/Core.h"
 #include "Core/Common/Handle.h"
-
+#include "Core/Core.h"
 #include "Module/Module.h"
 
 // 依存モジュール
-#include "HobbyPlugin/Actor/ActorModule.h"
 #include "HobbyEngine/Platform/PlatformModule.h"
+#include "HobbyPlugin/Actor/ActorModule.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
 #include "LevelManager.h"
@@ -43,6 +42,6 @@ namespace Level
     private:
         std::shared_ptr<Manager> _pLevelManager = NULL;
     };
-}
+}  // namespace Level
 
 MODULE_GENRATE_DECLARATION(Level::LevelModule, Level);

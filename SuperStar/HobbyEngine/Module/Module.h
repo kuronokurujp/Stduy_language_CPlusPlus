@@ -1,9 +1,9 @@
 ﻿#pragma once
 
-#include "Core/Core.h"
+#include "Core/Common/FixArray.h"
 #include "Core/Common/Handle.h"
 #include "Core/Common/Singleton.h"
-#include "Core/Common/FixArray.h"
+#include "Core/Core.h"
 
 namespace Module
 {
@@ -61,7 +61,7 @@ namespace Module
         /// </summary>
         /// <returns></returns>
         virtual const Bool Init() = 0;
-        virtual const Bool End() = 0;
+        virtual const Bool End()  = 0;
 
         virtual const Bool Update(const Float32 in_deltaTime) = 0;
     };
@@ -69,7 +69,7 @@ namespace Module
     /// <summary>
     /// 外部モジュールの基本クラス
     /// </summary>
-    template<class T>
+    template <class T>
     class ModuleBase : public Core::Common::Singleton<T>, public ModuleInterface
     {
         E_CLASS_COPY_CONSTRUCT_NG(ModuleBase);
@@ -87,29 +87,29 @@ namespace Module
 
         virtual const Bool Update(const Float32 in_deltaTime) override { return FALSE; }
     };
-}
+}  // namespace Module
 
 // モジュール宣言マクロ
 // モジュールのhファイルの末尾に宣言する
 // _name_にはModuleBaseクラスを継承したクラス名,
 // namespace内でこのマクロは使ってはいけない
 #define MODULE_GENRATE_DECLARATION(_type_, _name_) \
-extern _type_ s_global_module_ ## _name_; \
-extern _type_& Module ## _name_()
+    extern _type_ s_global_module_##_name_;        \
+    extern _type_& Module##_name_()
 
 // モジュール定義マクロ
 // モジュールのcppファイルの先頭につける
 #define MODULE_GENRATE_DEFINITION(_type_, _name_) \
-_type_& Module ## _name_() { return s_global_module_ ## _name_; } \
-static _type_ s_global_module_ ## _name_
+    _type_& Module##_name_()                      \
+    {                                             \
+        return s_global_module_##_name_;          \
+    }                                             \
+    static _type_ s_global_module_##_name_
 
 // モジュール管理の定義マクロ
 // モジュール管理を使う前に呼び出す
-#define MODULE_MANAGER_DEFINITION \
+#define MODULE_MANAGER_DEFINITION               \
     if (Module::ModuleManager::Have() == FALSE) \
-    { \
-        static Module::ModuleManager manager; \
-    } \
-
-
-
+    {                                           \
+        static Module::ModuleManager manager;   \
+    }

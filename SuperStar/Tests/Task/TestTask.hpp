@@ -4,11 +4,10 @@
 #include <chrono>
 #include <ctime>
 
-#include "Core/Task/TaskManager.h"
-#include "Core/Task/Task.h"
-
-#include "Core/Task/TaskManager.cpp"
 #include "Core/Task/Task.cpp"
+#include "Core/Task/Task.h"
+#include "Core/Task/TaskManager.cpp"
+#include "Core/Task/TaskManager.h"
 
 namespace Core
 {
@@ -19,7 +18,7 @@ namespace Core
 
         // タスクシステムの初期化
         CHECK(manager.Init(taskNum, 3));
-            
+
         // タスクの確保数が意図通りか
         CHECK(manager.Max() == taskNum);
 
@@ -42,7 +41,7 @@ namespace Core
             GROUP_ENEMY,
             GROUP_EFFECT,
             GROUP_POST,
-            
+
             GROUP_NUM
         };
 
@@ -56,10 +55,9 @@ namespace Core
             {
                 this->_time += in_dt;
                 E_LOG("F");
-                
+
                 // 3秒経過したら自動的に死ぬ
-                if (this->_time >= 3000.0f)
-                    this->Kill();
+                if (this->_time >= 3000.0f) this->Kill();
             }
 
         private:
@@ -70,18 +68,17 @@ namespace Core
         {
         public:
             ObjectTask() : Task() {}
-            
+
             virtual void Update(const Float32 in_dt, const TaskData* in_pData) override
             {
                 this->_time += in_dt;
                 E_LOG("P");
-                
+
                 // 1/30の確率でエフェクトを発生させる
                 // TODO: これだけエラーになる
-                if (rand() % 30 == 0)
-                    this->_pManager->CreateAndAdd<EffectTask>(GROUP_SYSTEM, TRUE);
+                if (rand() % 30 == 0) this->_pManager->CreateAndAdd<EffectTask>(GROUP_SYSTEM, TRUE);
             }
-            
+
         private:
             Float32 _time = 0.0f;
         };
@@ -90,7 +87,7 @@ namespace Core
         {
         public:
             EnemyTask() : ObjectTask() {}
-            
+
             void Update(const Float32 in_dt, const TaskData* in_pData) override final
             {
                 this->_time += in_dt;
@@ -105,7 +102,6 @@ namespace Core
         {
         public:
             DummySystemTask() {}
-            
 
             void Update(const Float32 in_dt, const TaskData* in_pData) override final
             {
@@ -122,11 +118,11 @@ namespace Core
 
         // タスクシステムの初期化
         CHECK(manager.Init(taskNum, GROUP_NUM));
-         // タスクの確保数が意図通りか
+        // タスクの確保数が意図通りか
         CHECK(manager.Max() == taskNum);
         // タスクの利用数が意図通りか
         CHECK(manager.UseCount() == 0);
-           
+
         // システムタスクを起動する
         {
             auto h01 = manager.CreateAndAdd<DummySystemTask>(GROUP_SYSTEM, TRUE);
@@ -151,15 +147,16 @@ namespace Core
         CHECK(manager.UseCount() == 8);
         {
             // 擬似ゲームループ
-            const Sint32	FPS = 60;
-            Float32			msec_one_frame = 1000.0f / FPS;
-            Float32			end_time = 10 * 1000.0f;	// 10秒
-            Float32			delta_time = 0.0f, boot_time = 0.0f;
+            const Sint32 FPS       = 60;
+            Float32 msec_one_frame = 1000.0f / FPS;
+            Float32 end_time       = 10 * 1000.0f;  // 10秒
+            Float32 delta_time = 0.0f, boot_time = 0.0f;
 
             while (boot_time < end_time)
             {
-                Sint64 beginTimeMSec =
-                  std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+                Sint64 beginTimeMSec = std::chrono::duration_cast<std::chrono::milliseconds>(
+                                           std::chrono::system_clock::now().time_since_epoch())
+                                           .count();
 
                 boot_time += delta_time;
 
@@ -171,16 +168,16 @@ namespace Core
                 // フレーム更新間隔まで待つ
                 do
                 {
-                    Sint64 nowTimeMSec =
-                      std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+                    Sint64 nowTimeMSec = std::chrono::duration_cast<std::chrono::milliseconds>(
+                                             std::chrono::system_clock::now().time_since_epoch())
+                                             .count();
 
                     delta_time = static_cast<Float32>(nowTimeMSec - beginTimeMSec);
-                }
-                while (delta_time < msec_one_frame);
+                } while (delta_time < msec_one_frame);
 
                 // 設定したタスクが取得できるか
                 {
-                    ObjectTask	*pPlayer = dynamic_cast<ObjectTask*>(manager.GetTask(hPlayer));
+                    ObjectTask* pPlayer = dynamic_cast<ObjectTask*>(manager.GetTask(hPlayer));
                     CHECK(pPlayer != NULL);
                 }
             }
@@ -194,7 +191,7 @@ namespace Core
 
         // タスクシステムが終了しているので取得が失敗しているか
         {
-            ObjectTask	*pPlayer = dynamic_cast<ObjectTask*>(manager.GetTask(hPlayer));
+            ObjectTask* pPlayer = dynamic_cast<ObjectTask*>(manager.GetTask(hPlayer));
             CHECK(pPlayer == NULL);
         }
     }
@@ -215,15 +212,14 @@ namespace Core
         {
         public:
             EffectTask() : Task() {}
-            
+
             void Update(const Float32 dt)
             {
                 this->_time += dt;
                 E_LOG("F");
-                
+
                 // 3秒経過したら自動的に死ぬ
-                if (this->_time >= 3000.0f)
-                    this->Kill();
+                if (this->_time >= 3000.0f) this->Kill();
             }
 
         private:
@@ -234,17 +230,16 @@ namespace Core
         {
         public:
             ObjectTask() : Task() {}
-            
+
             void Update(const Float32 dt)
             {
                 this->_time += dt;
                 E_LOG("P");
-                
+
                 // 1/30の確率でエフェクトを発生させる
-                if (rand() % 30 == 0)
-                    new EffectTask();
+                if (rand() % 30 == 0) new EffectTask();
             }
-            
+
         private:
             Float32 _time = 0.0f;
         };
@@ -254,11 +249,11 @@ namespace Core
 
         // タスクシステムの初期化
         CHECK(manager.Init(taskNum, GROUP_NUM));
-         // タスクの確保数が意図通りか
+        // タスクの確保数が意図通りか
         CHECK(manager.Max() == taskNum);
         // タスクの利用数が意図通りか
         CHECK(manager.UseCount() == 0);
-           
+
         // タスクを起動する
         manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
         manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
@@ -305,15 +300,14 @@ namespace Core
         {
         public:
             EffectTask() : Task() {}
-            
+
             void Update(const Float32 dt)
             {
                 this->_time += dt;
                 E_LOG("F");
-                
+
                 // 3秒経過したら自動的に死ぬ
-                if (this->_time >= 3000.0f)
-                    this->Kill();
+                if (this->_time >= 3000.0f) this->Kill();
             }
 
         private:
@@ -324,17 +318,16 @@ namespace Core
         {
         public:
             ObjectTask() : Task() {}
-            
+
             void Update(const Float32 dt)
             {
                 this->_time += dt;
                 E_LOG("P");
-                
+
                 // 1/30の確率でエフェクトを発生させる
-                if (rand() % 30 == 0)
-                    new EffectTask();
+                if (rand() % 30 == 0) new EffectTask();
             }
-            
+
         private:
             Float32 _time = 0.0f;
         };
@@ -344,11 +337,11 @@ namespace Core
 
         // タスクシステムの初期化
         CHECK(manager.Init(taskNum, GROUP_NUM));
-         // タスクの確保数が意図通りか
+        // タスクの確保数が意図通りか
         CHECK(manager.Max() == taskNum);
         // タスクの利用数が意図通りか
         CHECK(manager.UseCount() == 0);
-           
+
         // タスクを起動する
         // 削除した時にメモリから解放
         auto h1 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
@@ -382,5 +375,4 @@ namespace Core
         // タスクシステムが終了しているので解放されているか
         CHECK(manager.UseCount() == 0);
     }
-}
-
+}  // namespace Core

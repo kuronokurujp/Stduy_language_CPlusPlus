@@ -21,4 +21,4 @@ namespace DXLib
     {
         DxLib::SleepThread(static_cast<int>(in_ms));
     }
-}
+}  // namespace DXLib

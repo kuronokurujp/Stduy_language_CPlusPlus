@@ -51,4 +51,4 @@ namespace Module
 
         return TRUE;
     }
-}
+}  // namespace Module

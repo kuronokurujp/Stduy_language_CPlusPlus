@@ -1,9 +1,9 @@
 /**
  *	@file 	D:/ProgramStady/Game/bom_panic/source/title/seq_sample/src/sequence/GameInterface.h
- *	@brief	
+ *	@brief
  *	@author	yuto uchida
  *	@data   2011-02-17
- *	@note 
+ *	@note
  *
  */
 #ifndef __GameInterface_H__
@@ -11,18 +11,18 @@
 
 namespace MainSeq
 {
-	class C_Parent;
+    class C_Parent;
 
-	// ゲームシーケンスのインターフェイス
-	class I_MainSeq
-	{
-	public:
-		I_MainSeq() {}
-		virtual ~I_MainSeq() {}
-	
-		virtual I_MainSeq*	update( C_Parent* ip_parent ) = 0;
-	};
+    // ゲームシーケンスのインターフェイス
+    class I_MainSeq
+    {
+    public:
+        I_MainSeq() {}
+        virtual ~I_MainSeq() {}
 
-} // MainSeq
+        virtual I_MainSeq* update(C_Parent* ip_parent) = 0;
+    };
 
-#endif // __GameInterface_H__
+}  // namespace MainSeq
+
+#endif  // __GameInterface_H__

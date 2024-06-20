@@ -1,9 +1,9 @@
 /**
  *	@file 	SpriteDebugSeq.h
- *	@brief	
+ *	@brief
  *	@author	yuto uchida
  *	@data   2011-02-17
- *	@note 
+ *	@note
  *
  */
 #ifndef __SPRITE_DEBUG_SEQ_H__
@@ -13,14 +13,14 @@
 
 namespace MainSeq
 {
-	class C_SpriteDebugSeq : public I_MainSeq
-	{
-	public:
-		C_SpriteDebugSeq();
-		~C_SpriteDebugSeq();
+    class C_SpriteDebugSeq : public I_MainSeq
+    {
+    public:
+        C_SpriteDebugSeq();
+        ~C_SpriteDebugSeq();
 
-		I_MainSeq* update( C_Parent* ip_parent );
-	};
-} // namespace MainSeq
+        I_MainSeq* update(C_Parent* ip_parent);
+    };
+}  // namespace MainSeq
 
-#endif // __SPRITE_DEBUG_SEQ_H__
+#endif  // __SPRITE_DEBUG_SEQ_H__

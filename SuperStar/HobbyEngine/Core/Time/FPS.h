@@ -35,8 +35,8 @@ namespace Core
             const Float32 GetDeltaTimeMSec() const;
 
         private:
-            static const Uint32 _timeAvgMax = 10;
-            Uint32 _previousTime[_timeAvgMax] = { 0 };
+            static const Uint32 _timeAvgMax   = 10;
+            Uint32 _previousTime[_timeAvgMax] = {0};
             Uint32 _frameRate;
 
             /// <summary>
@@ -44,5 +44,5 @@ namespace Core
             /// </summary>
             Platform::TimeSystemInterface* _pTimeInterface;
         };
-    }
-}
+    }  // namespace Time
+}  // namespace Core

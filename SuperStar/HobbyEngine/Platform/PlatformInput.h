@@ -2,8 +2,8 @@
 
 // プラットフォームのインプットシステムインターフェイス
 #include "Core/Core.h"
-#include "Core/Type.h"
 #include "Core/Math/Math.h"
+#include "Core/Type.h"
 
 namespace Platform
 {
@@ -199,7 +199,7 @@ namespace Platform
         EKeyboard_Y,
         // Ｚキー
         EKeyboard_Z,
-        // ０キー 
+        // ０キー
         EKeyboard_0,
         // １キー
         EKeyboard_1,
@@ -240,10 +240,10 @@ namespace Platform
     /// </summary>
     enum EInputMouseType
     {
-        EInputMouseType_Left = 0x01,
-        EInputMouseType_Right = 0x02,
+        EInputMouseType_Left   = 0x01,
+        EInputMouseType_Right  = 0x02,
         EInputMouseType_Middle = 0x04,
-        EInputMouseType_All = 0xff,
+        EInputMouseType_All    = 0xff,
     };
 
     /// <summary>
@@ -255,7 +255,10 @@ namespace Platform
         /// <summary>
         /// 指定キーを押しているか
         /// </summary>
-        const Bool GetKeyValue(const EKeyboard in_keyCode) const { return (this->_currState[in_keyCode] != EInputState_NONE); }
+        const Bool GetKeyValue(const EKeyboard in_keyCode) const
+        {
+            return (this->_currState[in_keyCode] != EInputState_NONE);
+        }
 
         /// <summary>
         /// 指定キーの入力状態
@@ -303,14 +306,14 @@ namespace Platform
     class InputSystemInterface
     {
     public:
-        virtual void Init() = 0;
+        virtual void Init()                                   = 0;
         virtual void BeforeUpdate(const Float32 in_deltaTime) = 0;
-        virtual void Update(const Float32 in_deltaTime) = 0;
-        virtual void AfterUpdate(const Float32 in_deltaTime) = 0;
+        virtual void Update(const Float32 in_deltaTime)       = 0;
+        virtual void AfterUpdate(const Float32 in_deltaTime)  = 0;
 
         const InputState& GetState() const { return this->_state; }
 
     protected:
         InputState _state;
     };
-}
+}  // namespace Platform

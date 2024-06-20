@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Core/Common/FixString.h"
 #include "Core/Common/FixString.cpp"
+#include "Core/Common/FixString.h"
 
 TEST_CASE("FixString Use")
 {
@@ -10,7 +10,7 @@ TEST_CASE("FixString Use")
     CHECK_FALSE(str.IsEmpty());
 
     // 意図したテキストが存在するか
-    CHECK(str  == E_STR_TEXT("test"));
+    CHECK(str == E_STR_TEXT("test"));
 
     // 文字数が意図通りか
     CHECK(str.Length() == 4);
@@ -29,4 +29,3 @@ TEST_CASE("FixString Use")
     // 文字位置判定が意図通りか
     CHECK(str2.Find(E_STR_TEXT("日")) == 0);
 }
-

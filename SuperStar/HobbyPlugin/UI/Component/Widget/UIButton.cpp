@@ -1,7 +1,6 @@
 ﻿#include "UIButton.h"
 
 #include "Core/Math/Vector3.h"
-
 #include "HobbyPlugin/Actor/Actor.h"
 
 // 依存するモジュール一覧
@@ -43,12 +42,13 @@ namespace UI
         this->TransformLocalToWorldRect2D(&rect, this->_rect);
 
         // TODO: 描画コマンドを追加
-        Render::Cmd2DRect(rect, { this->_color });
+        Render::Cmd2DRect(rect, {this->_color});
     }
 
-    void UIButtonComponent::OnTouch(const Platform::TouchInput& in_rTouch) 
+    void UIButtonComponent::OnTouch(const Platform::TouchInput& in_rTouch)
     {
-        if (in_rTouch.GetTouchState(Platform::EInputMouseType_All) == Platform::EInputState::EInputState_PRESSED)
+        if (in_rTouch.GetTouchState(Platform::EInputMouseType_All) ==
+            Platform::EInputState::EInputState_PRESSED)
         {
             Core::Math::Rect2 rect;
             this->TransformLocalToWorldRect2D(&rect, this->_rect);
@@ -61,4 +61,4 @@ namespace UI
             }
         }
     }
-}
+}  // namespace UI

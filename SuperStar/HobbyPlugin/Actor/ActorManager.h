@@ -1,12 +1,10 @@
 ﻿#pragma once
 
-#include "MiniEngine.h"
-
-#include "Core/Task/TaskManager.h"
-#include "Core/Common/Handle.h"
-
 #include "Actor.h"
 #include "ActorInterface.h"
+#include "Core/Common/Handle.h"
+#include "Core/Task/TaskManager.h"
+#include "MiniEngine.h"
 
 // 前方宣言
 namespace Platform
@@ -42,7 +40,7 @@ namespace Actor
         /// </summary>
         /// <param name="in_pActor">The in p actor.</param>
         /// <returns></returns>
-        template<class T>
+        template <class T>
         Core::Common::Handle Add()
         {
             Core::Common::Handle handle;
@@ -69,7 +67,7 @@ namespace Actor
         /// </summary>
         /// <param name="in_pActor">The in p actor.</param>
         /// <returns></returns>
-        //void RemoveActor(Actor *in_pActor);
+        // void RemoveActor(Actor *in_pActor);
         void Remove(const Core::Common::Handle&) override final;
 
         /// <summary>
@@ -150,4 +148,4 @@ namespace Actor
         }
         */
     };
-}
+}  // namespace Actor

@@ -27,5 +27,4 @@ namespace Level
         /// </summary>
         void _MoveLevel(const Char* in_pLevelName);
     };
-} 
-
+}  // namespace Level

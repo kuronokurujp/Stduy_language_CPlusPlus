@@ -3,19 +3,19 @@
 
 namespace Math
 {
-	class Matrix3
-	{
-	public:
-		float mat[3][3];
+    class Matrix3
+    {
+    public:
+        float mat[3][3];
 
-		Matrix3();
+        Matrix3();
 
-		/// <summary>
-		/// 行列式を取得.
-		/// </summary>
-		/// <returns></returns>
-		float GetDet();
-	};
-}
+        /// <summary>
+        /// 行列式を取得.
+        /// </summary>
+        /// <returns></returns>
+        float GetDet();
+    };
+}  // namespace Math
 
-#endif // __MATH__MATRIX3_H__
+#endif  // __MATH__MATRIX3_H__

@@ -1,11 +1,9 @@
 ﻿#pragma once
 
-#include "MiniEngine.h"
-
-#include "Core/Common/Singleton.h"
-#include "Core/Common/Handle.h"
 #include "Core/Common/FixArray.h"
-
+#include "Core/Common/Handle.h"
+#include "Core/Common/Singleton.h"
+#include "MiniEngine.h"
 #include "Module/Module.h"
 
 // テスト実行用にcppファイルが必要
@@ -23,7 +21,7 @@ namespace Core
     {
         class FPS;
     }
-}
+}  // namespace Core
 
 /// <summary>
 /// ゲームエンジン本体
@@ -98,7 +96,6 @@ public:
         return FALSE;
     }
 
-
     /// <summary>
     /// １フレームの差分時間を秒で取得
     /// </summary>
@@ -119,7 +116,7 @@ private:
 
 private:
     Bool _bPreInit = FALSE;
-    Bool _bInit = FALSE;
+    Bool _bInit    = FALSE;
 
     // メモリ管理
     Core::Memory::Manager _memoryManager;
@@ -141,5 +138,3 @@ private:
 
 // カレントレベル参照マクロ
 #define HOBBY_CURRENT_LEVEL (*HOBBY_ENGINE.GetLevelModule().GetManager()->CurrentLevel())
-
-

@@ -1,7 +1,8 @@
 ﻿#pragma once
 
-#include "Core/Core.h"
 #include <memory>
+
+#include "Core/Core.h"
 
 namespace Core
 {
@@ -12,20 +13,20 @@ namespace Core
         /// 削除すると配列の要素とインデックスの結びつけが変わるのでインデックスは保有していはいけない
         /// </summary>
         /// <typeparam name="TYPE"></typeparam>
-        template<class TYPE>
+        template <class TYPE>
         class FastFixArrayBase
         {
         public:
-            FastFixArrayBase(TYPE* in_pArray, Uint32 in_size) : _pDataArray(in_pArray), _max(in_size) {}
+            FastFixArrayBase(TYPE* in_pArray, Uint32 in_size)
+                : _pDataArray(in_pArray), _max(in_size)
+            {
+            }
 
             inline const Uint32 Max() const E_NOEXCEPT { return this->_max; }
             inline const Uint32 Size() const E_NOEXCEPT { return this->_num; }
             inline const Uint32 IsEmpty() const E_NOEXCEPT { return (this->_num <= 0); }
 
-            void Empty()
-            {
-                this->_num = 0;
-            }
+            void Empty() { this->_num = 0; }
 
             void PushBack(const TYPE in_data)
             {
@@ -36,8 +37,7 @@ namespace Core
             TYPE PopBack() E_NOEXCEPT
             {
                 Sint32 i = this->_num;
-                if (this->_num > 0)
-                    this->_num--;
+                if (this->_num > 0) this->_num--;
 
                 i = E_MAX(i, 0);
                 return this->_pDataArray[i];
@@ -96,7 +96,7 @@ namespace Core
                 E_ASSERT(0 < this->_num);
                 return &this->_pDataArray[in_index];
             }
-            
+
         private:
             TYPE* _pDataArray;
             Uint32 _num = 0;
@@ -109,7 +109,7 @@ namespace Core
         /// </summary>
         /// <typeparam name="TYPE"></typeparam>
         /// <typeparam name="SIZE"></typeparam>
-        template<class TYPE, Uint32 SIZE>
+        template <class TYPE, Uint32 SIZE>
         class FastFixArray : public FastFixArrayBase<TYPE>
         {
         public:
@@ -118,5 +118,5 @@ namespace Core
         private:
             TYPE _dataArray[SIZE];
         };
-    }
-}
+    }  // namespace Common
+}  // namespace Core

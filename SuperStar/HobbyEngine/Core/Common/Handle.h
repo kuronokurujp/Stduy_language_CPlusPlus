@@ -30,7 +30,7 @@ namespace Core
             {
                 E_ASSERT(this->Null());
                 E_ASSERT(in_index <= MAX_INDEX);
-                
+
                 // マジックナンバーを割り当てる数を作成
                 // TODO: GUIDの方がいいのだろうか？
                 // 24時間で1年中稼働するシステムなら対応が必要
@@ -44,37 +44,22 @@ namespace Core
                 this->_handleField._magic = s_magicNumber;
             }
 
-            void Clear()
-            {
-                this->_handle = 0;
-            }
+            void Clear() { this->_handle = 0; }
 
             inline const Uint32 Index() const { return this->_handleField._index; }
-            inline const Uint32	Magic() const { return this->_handleField._magic; }
+            inline const Uint32 Magic() const { return this->_handleField._magic; }
             inline const Bool Null() const { return (this->_handle == 0); }
 
-            operator const Uint64 () const { return this->_handle; }
+            operator const Uint64() const { return this->_handle; }
 
             // ハンドルオペレーター
-            inline const Bool operator!=(Handle& r)
-            {
-                return (this->_handle != r._handle);
-            }
+            inline const Bool operator!=(Handle& r) { return (this->_handle != r._handle); }
 
-            inline const Bool operator==(Handle& r)
-            {
-                return (this->_handle == r._handle);
-            }
+            inline const Bool operator==(Handle& r) { return (this->_handle == r._handle); }
 
-            void operator=(const Handle& r)
-            {
-                this->_handle = r._handle;
-            }
+            void operator=(const Handle& r) { this->_handle = r._handle; }
 
-            void operator=(Handle && r)
-            {
-                this->_handle = r._handle;
-            }
+            void operator=(Handle&& r) { this->_handle = r._handle; }
 
         private:
             enum
@@ -98,19 +83,18 @@ namespace Core
                 struct
                 {
                     // インデックス
-                    Uint32 _index:SIZE_INDEX_BIT;
+                    Uint32 _index : SIZE_INDEX_BIT;
                     // マジックナンバー
-                    Uint32 _magic:SIZE_MAGIC_BIT;
+                    Uint32 _magic : SIZE_MAGIC_BIT;
                 } _handleField;
 
                 Uint64 _handle = 0;
             };
         };
-    }
-}
+    }  // namespace Common
+}  // namespace Core
 
 // 空ハンドル
 // ハンドルを戻り値とする処理で失敗した時の戻り値に利用
 static const Core::Common::Handle s_emptyHandle;
 #define E_EMPTY_HANDLE s_emptyHandle;
-

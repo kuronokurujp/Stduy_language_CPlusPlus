@@ -17,4 +17,4 @@ namespace UI
         /// </summary>
         virtual void ProcessInput(Platform::InputSystemInterface*) override;
     };
-}
+}  // namespace UI

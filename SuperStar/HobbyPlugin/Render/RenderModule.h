@@ -3,9 +3,9 @@
 #include "Module/Module.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
-#include "RenderType.h"
-#include "CommandBuffer.h"
 #include "Command/Command.h"
+#include "CommandBuffer.h"
+#include "RenderType.h"
 
 namespace Render
 {
@@ -44,6 +44,6 @@ namespace Render
     private:
         CommandBuffer _comBuff;
     };
-}
+}  // namespace Render
 
 MODULE_GENRATE_DECLARATION(Render::RenderModule, Render);

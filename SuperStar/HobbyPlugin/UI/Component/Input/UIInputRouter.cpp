@@ -31,4 +31,4 @@ namespace UI
             pTerminal->ProcessInput(in_pInput);
         }
     }
-}
+}  // namespace UI

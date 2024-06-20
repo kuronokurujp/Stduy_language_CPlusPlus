@@ -1,9 +1,8 @@
 ﻿#include "AssetManagerModule.h"
 
 // 依存モジュール
-#include "HobbyEngine/Platform/PlatformModule.h"
-
 #include "AssetDataBase.h"
+#include "HobbyEngine/Platform/PlatformModule.h"
 
 MODULE_GENRATE_DEFINITION(AssetManager::AssetManagerModule, AssetManager);
 
@@ -39,15 +38,12 @@ namespace AssetManager
 
     void AssetManagerModule::Unload(const Core::Common::Handle& in_rHandle)
     {
-        if (in_rHandle.Null())
-            return;
+        if (in_rHandle.Null()) return;
 
-        if (this->Empty())
-            return;
+        if (this->Empty()) return;
 
         AssetDataBase* p = this->_Ref(in_rHandle);
-        if (p == NULL)
-            return;
+        if (p == NULL) return;
 
         p->_Unload();
     }
@@ -62,5 +58,4 @@ namespace AssetManager
 
         return TRUE;
     }
-}
-
+}  // namespace AssetManager

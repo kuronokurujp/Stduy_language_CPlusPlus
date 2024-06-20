@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "HobbyEngine/Core/Common/FixArray.h"
-
 #include "UIInputInterface.h"
 
 namespace UI
@@ -27,4 +26,4 @@ namespace UI
     private:
         Core::Common::FastFixArray<UIInputIComponentInterface*, 512> _terminals;
     };
-}
+}  // namespace UI

@@ -13,5 +13,4 @@ namespace DXLib
         const Uint32 NowMSec() override final;
         void SleepMSec(const Uint32 in_ms) override final;
     };
-}
-
+}  // namespace DXLib

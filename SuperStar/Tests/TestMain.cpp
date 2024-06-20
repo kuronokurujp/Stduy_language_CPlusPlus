@@ -2,7 +2,7 @@
 #define CATCH_CONFIG_MAIN
 #define _HOBBY_ENGINE_DEBUG
 
-#include "Catch.hpp"
+#include "ThirdParty/Catch.hpp"
 
 // マクロテストコード
 #include "Common/TestMacro.hpp"
@@ -26,8 +26,8 @@
 // プラグインのテストするためにプラグインのインクルードは特殊
 // インクルードしたらプラグインを使える状態になる
 // 使える状態にした後にエンジンを起動
-#include "HobbyPlugin/Actor/ActorModule.h"
 #include "HobbyPlugin/Actor/ActorModule.cpp"
+#include "HobbyPlugin/Actor/ActorModule.h"
 
 // エンジン本体のテストコード
 #include "HobbyEngine/TestEngine.hpp"
@@ -40,12 +40,10 @@ TEST_CASE("Plugin Test")
     HOBBY_ENGINE.PreInit();
     HOBBY_ENGINE.Init();
 
-    // エンジンのプラグインのテストコード
-    #include "HobbyPlugin/TestActorPlugin.hpp"
+// エンジンのプラグインのテストコード
+#include "HobbyPlugin/TestActorPlugin.hpp"
 
     HOBBY_ENGINE.End();
 
     RELEASE_HOBBY_ENGINE;
 }
-
-

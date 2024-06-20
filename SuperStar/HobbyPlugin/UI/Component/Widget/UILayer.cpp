@@ -14,4 +14,4 @@ namespace UI
     void UILayerComponent::Update(const Float32 in_deltaTime)
     {
     }
-}
+}  // namespace UI

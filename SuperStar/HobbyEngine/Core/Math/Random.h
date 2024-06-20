@@ -45,7 +45,7 @@ namespace Core
             /// <param name="in_min"></param>
             /// <param name="in_max"></param>
             /// <returns></returns>
-            template<typename T>
+            template <typename T>
             const T Range(const T in_min, const T in_max)
             {
                 std::uniform_real_distribution<T> dist(in_min, in_max);
@@ -63,5 +63,5 @@ namespace Core
         private:
             std::mt19937 _generator;
         };
-    }
-}
+    }  // namespace Math
+}  // namespace Core

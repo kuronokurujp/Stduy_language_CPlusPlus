@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Core/Type.h"
 #include "Core/Config.h"
+#include "Core/Type.h"
 
 #ifdef _HOBBY_ENGINE_DEBUG
 
@@ -25,33 +25,37 @@
 
 // 文字列のローカル変数を利用するのでwhile文で囲っている
 // ログ出力(改行なし)
-#define E_LOG(format, ...) do \
-{ \
-        Char c[E_LOG_MSG_SIZE] = {}; \
+#define E_LOG(format, ...)                                                    \
+    do                                                                        \
+    {                                                                         \
+        Char c[E_LOG_MSG_SIZE] = {};                                          \
         _snwprintf_s(c, E_LOG_MSG_SIZE, E_LOG_MSG_SIZE, format, __VA_ARGS__); \
-        OutputDebugString(c); \
-} while(0)
+        OutputDebugString(c);                                                 \
+    } while (0)
 
 // ログ出力(改行をする)
-#define E_LOG_LINE(format, ...) do \
-{ \
-        Char c[E_LOG_MSG_SIZE] = {}; \
+#define E_LOG_LINE(format, ...)                                               \
+    do                                                                        \
+    {                                                                         \
+        Char c[E_LOG_MSG_SIZE] = {};                                          \
         _snwprintf_s(c, E_LOG_MSG_SIZE, E_LOG_MSG_SIZE, format, __VA_ARGS__); \
-        OutputDebugString(c); \
-        OutputDebugString(L"\n"); \
-} while(0)
+        OutputDebugString(c);                                                 \
+        OutputDebugString(L"\n");                                             \
+    } while (0)
 
 // プログラムが把握する情報を付与したログ出力
 // ファイルパスが長く長文になる可能性があるのでログサイズ2倍の文字列サイズを確保
-#define E_PG_LOG_LINE(format, ...) do \
-{ \
-        Char c[E_LOG_MSG_SIZE] = {}; \
-        _snwprintf_s(c, E_LOG_MSG_SIZE, E_LOG_MSG_SIZE, format, __VA_ARGS__); \
-        Char c2[E_LOG_MSG_SIZE * 2] = {}; \
-        _snwprintf_s(c2, E_LOG_MSG_SIZE * 2, E_LOG_MSG_SIZE * 2, L"%ls:%d %ls", __FILEW__, __LINE__, c); \
-        OutputDebugString(c2); \
-        OutputDebugString(L"\n"); \
-} while(0)
+#define E_PG_LOG_LINE(format, ...)                                                         \
+    do                                                                                     \
+    {                                                                                      \
+        Char c[E_LOG_MSG_SIZE] = {};                                                       \
+        _snwprintf_s(c, E_LOG_MSG_SIZE, E_LOG_MSG_SIZE, format, __VA_ARGS__);              \
+        Char c2[E_LOG_MSG_SIZE * 2] = {};                                                  \
+        _snwprintf_s(c2, E_LOG_MSG_SIZE * 2, E_LOG_MSG_SIZE * 2, L"%ls:%d %ls", __FILEW__, \
+                     __LINE__, c);                                                         \
+        OutputDebugString(c2);                                                             \
+        OutputDebugString(L"\n");                                                          \
+    } while (0)
 
 #else
 
@@ -61,18 +65,22 @@
 // ログ出力(改行なし)
 #define E_LOG(s, ...) printf(s, __VA_ARGS__)
 // ログ出力(改行をする)
-#define E_LOG_LINE(s, ...) printf(s, __VA_ARGS__); printf("\n")
+#define E_LOG_LINE(s, ...)  \
+    printf(s, __VA_ARGS__); \
+    printf("\n")
 
 // プログラムが把握する情報を付与したログ出力
 // ファイルパスが長く長文になる可能性があるのでログサイズ2倍の文字列サイズを確保
-#define E_PG_LOG_LINE(format, ...) do \
-{ \
-        Char c[E_LOG_MSG_SIZE] = {}; \
-        _snprintf_s(c, E_LOG_MSG_SIZE, E_LOG_MSG_SIZE, format, __VA_ARGS__); \
-        Char c2[E_LOG_MSG_SIZE * 2] = {}; \
-        _snprintf_s(c2, E_LOG_MSG_SIZE * 2, E_LOG_MSG_SIZE * 2, "%s:%d %s\n", E_FILE, __LINE__, c); \
-        printf(c2); \
-} while(0)
+#define E_PG_LOG_LINE(format, ...)                                                              \
+    do                                                                                          \
+    {                                                                                           \
+        Char c[E_LOG_MSG_SIZE] = {};                                                            \
+        _snprintf_s(c, E_LOG_MSG_SIZE, E_LOG_MSG_SIZE, format, __VA_ARGS__);                    \
+        Char c2[E_LOG_MSG_SIZE * 2] = {};                                                       \
+        _snprintf_s(c2, E_LOG_MSG_SIZE * 2, E_LOG_MSG_SIZE * 2, "%s:%d %s\n", E_FILE, __LINE__, \
+                    c);                                                                         \
+        printf(c2);                                                                             \
+    } while (0)
 
 #endif
 
@@ -112,21 +120,32 @@
 // コンパイル時のアサート
 // exprがFALSEになると, コンパイル時にエラー
 // コンパイル時に値を決定出来ない式には使えない
-#define E_STATIC_ASSERT(_expr_) { Sint8 static_assert_error[(_expr_) ? 1 : 0]; (void)static_assert_error; }
+#define E_STATIC_ASSERT(_expr_)                      \
+    {                                                \
+        Sint8 static_assert_error[(_expr_) ? 1 : 0]; \
+        (void)static_assert_error;                   \
+    }
 
 // デフォルトコンストラクタを封印
 #define E_CLASS_DEFAULT_CONSTRUCT_NG(_x_) \
-private: _x_() = delete
+private:                                  \
+    _x_() = delete
 
 // コピーコンストラクタを封印
 #define E_CLASS_COPY_CONSTRUCT_NG(_x_) \
-private: _x_(const _x_ &) = delete; \
-private: _x_ &operator=(const _x_ &) = delete
+private:                               \
+    _x_(const _x_&) = delete;          \
+                                       \
+private:                               \
+    _x_& operator=(const _x_&) = delete
 
 // セマンティクスコンストラクターと演算子を封印
 #define E_CLASS_MOVE_CONSTRUCT_NG(_x_) \
-private: _x_(_x_ &&) = delete; \
-private: _x_ &operator=(_x_ &&) = delete
+private:                               \
+    _x_(_x_&&) = delete;               \
+                                       \
+private:                               \
+    _x_& operator=(_x_&&) = delete
 
 // 値のmin/maxマクロ
 // 上限値の制御
@@ -136,14 +155,13 @@ private: _x_ &operator=(_x_ &&) = delete
 
 // 値のループマクロ
 #define E_LOOPER(__src__, __min__, __max__) \
-  ((__src__) > (__max__) ? (__min__) : ((__src__) < (__min__) ? (__max__) : (__src__)))
+    ((__src__) > (__max__) ? (__min__) : ((__src__) < (__min__) ? (__max__) : (__src__)))
 
 // 値をmin/max内で丸めるマクロ
 #define E_CLAMP(__src__, __min__, __max__) \
-  ((__src__) > (__max__) ? (__max__) : ((__src__) < (__min__) ? (__min__) : (__src__)))
+    ((__src__) > (__max__) ? (__max__) : ((__src__) < (__min__) ? (__min__) : (__src__)))
 
 // 例外を作らないキーワード
 // クラスのメソッドで絶対に例外が起きない処理ではつける
 // 例外をつけないコードをコンパイラが生成して最適化になる
 #define E_NOEXCEPT noexcept
-

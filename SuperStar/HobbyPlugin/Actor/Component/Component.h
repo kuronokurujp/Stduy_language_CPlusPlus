@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include "MiniEngine.h"
-#include "Core/Task/Task.h"
-#include "Core/Math/Rect2.h"
-
 #include <iostream>
+
+#include "Core/Math/Rect2.h"
+#include "Core/Task/Task.h"
+#include "MiniEngine.h"
 
 namespace Actor
 {
@@ -60,9 +60,7 @@ namespace Actor
         /// TaskDataは使わないので省略した更新メソッドを継承してもらう
         /// </summary>
         /// <param name="in_deltaTime">The in delta time.</param>
-        void Update(
-            const Float32 in_deltaTime,
-            const Core::TaskData* in_pData) override final
+        void Update(const Float32 in_deltaTime, const Core::TaskData* in_pData) override final
         {
             this->Update(in_deltaTime);
         }
@@ -74,18 +72,20 @@ namespace Actor
         const int GetUpdateOrder() const { return this->_updateOrder; }
 
         // 座標変換一覧
-        void TransformLocalToWorldPos2D(Core::Math::Vector2* out_pPos, const Core::Math::Vector2& in_offsetPos);
-        void TransformLocalToWorldRect2D(Core::Math::Rect2* out_pRect, const Core::Math::Rect2& in_offsetRect);
+        void TransformLocalToWorldPos2D(Core::Math::Vector2* out_pPos,
+                                        const Core::Math::Vector2& in_offsetPos);
+        void TransformLocalToWorldRect2D(Core::Math::Rect2* out_pRect,
+                                         const Core::Math::Rect2& in_offsetRect);
 
     private:
         void _Clear()
         {
-            this->_pOwner = NULL;
+            this->_pOwner      = NULL;
             this->_updateOrder = 0;
         }
 
     protected:
-        Object* _pOwner = NULL;
+        Object* _pOwner     = NULL;
         Sint32 _updateOrder = 0;
     };
-}
+}  // namespace Actor

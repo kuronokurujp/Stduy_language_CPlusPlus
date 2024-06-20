@@ -281,6 +281,7 @@ _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\.clang-format" />
     <None Include="..\..\..\..\.editorconfig" />
     <None Include="..\..\..\..\Game\Res\Assets\Locate\JP\Debug.json" />
     <None Include="..\..\..\..\Game\Res\Assets\Locate\JP\Text.json" />

@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Core/Core.h"
 #include "Core/Common/FixString.h"
+#include "Core/Core.h"
 
 // ファイルのパス制御ができる
 namespace Core
@@ -31,6 +31,5 @@ namespace Core
         private:
             Core::Common::FixString256 _path;
         };
-    }
-}
-
+    }  // namespace File
+}  // namespace Core

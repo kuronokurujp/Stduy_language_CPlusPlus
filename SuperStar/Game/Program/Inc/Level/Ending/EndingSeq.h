@@ -1,9 +1,9 @@
 /**
  *	@file 	EndingSeq.h
- *	@brief	
+ *	@brief
  *	@author	yuto uchida
  *	@data   2011-02-17
- *	@note 
+ *	@note
  *
  */
 #ifndef __EndingSeq_H__
@@ -13,14 +13,14 @@
 
 namespace MainSeq
 {
-	class C_EndingSeq : public I_MainSeq
-	{
-	public:
-		C_EndingSeq();
-		~C_EndingSeq();
+    class C_EndingSeq : public I_MainSeq
+    {
+    public:
+        C_EndingSeq();
+        ~C_EndingSeq();
 
-		I_MainSeq* update( C_Parent* ip_parent );
-	};
-} // namespace MainSeq
+        I_MainSeq* update(C_Parent* ip_parent);
+    };
+}  // namespace MainSeq
 
-#endif // __EndingSeq_H__
+#endif  // __EndingSeq_H__

@@ -1,8 +1,7 @@
 ﻿#pragma once
 
-#include "resource.h"
-
 #include "GameMain.h"
+#include "resource.h"
 
 /// <summary>
 /// アプリのゲームメインのエントリー
@@ -33,5 +32,4 @@ public:
     /// </summary>
     /// <returns></returns>
     const Bool End() override final;
-
 };

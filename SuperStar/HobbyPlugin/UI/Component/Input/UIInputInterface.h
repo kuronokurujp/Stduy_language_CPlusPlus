@@ -18,4 +18,4 @@ namespace UI
         /// </summary>
         virtual void ProcessInput(Platform::InputSystemInterface*) = 0;
     };
-}
+}  // namespace UI

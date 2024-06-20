@@ -3,7 +3,7 @@
  *	@brief	ゲーム全体のシーケンス管理
  *	@author	yuto uchida
  *	@data   2011-02-17
- *	@note 
+ *	@note
  *
  */
 #ifndef __GameParent_H__
@@ -11,22 +11,22 @@
 
 namespace MainSeq
 {
-	class I_MainSeq;
+    class I_MainSeq;
 
-	class C_Parent
-	{
-	public:
-		C_Parent( I_MainSeq* ip_FirstSeq );
-		~C_Parent();
+    class C_Parent
+    {
+    public:
+        C_Parent(I_MainSeq* ip_FirstSeq);
+        ~C_Parent();
 
-		/*
-			@brief	シーケンス更新
-		*/
-		bool update();
+        /*
+                @brief	シーケンス更新
+        */
+        bool update();
 
-	private:
-		I_MainSeq*	mp_seq;
-	};
-}
+    private:
+        I_MainSeq* mp_seq;
+    };
+}  // namespace MainSeq
 
-#endif // __GameParent_H__
+#endif  // __GameParent_H__

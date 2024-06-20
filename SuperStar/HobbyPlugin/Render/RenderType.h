@@ -19,6 +19,6 @@ namespace Render
     };
 
     // 色のデータ一式
-    static const Color WhiteColor { 0xffffffff };
-    static const Color BlackColor{ 0x000000ff };
-}
+    static const Color WhiteColor{0xffffffff};
+    static const Color BlackColor{0x000000ff};
+}  // namespace Render

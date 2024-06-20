@@ -28,19 +28,14 @@ namespace Level
 
         // 入力更新
         {
-            Core::TaskData taskData
-            {
-                Node::ETaskUpdateId_Input,
-                reinterpret_cast<void*>(in_pInput)
-            };
+            Core::TaskData taskData{Node::ETaskUpdateId_Input, reinterpret_cast<void*>(in_pInput)};
 
             this->_taskManager.UpdateAll(in_dt, &taskData);
         }
 
         // アクター更新
         {
-            Core::TaskData taskData
-            {
+            Core::TaskData taskData{
                 Node::ETaskUpdateId_Actor,
                 NULL,
             };
@@ -60,7 +55,7 @@ namespace Level
     const Bool Node::Begin()
     {
         Actor::ActorManager* pActorManager = E_NEW(Actor::ActorManager, 0);
-        this->_pActorManager = std::shared_ptr<Actor::ActorManager>(pActorManager);
+        this->_pActorManager               = std::shared_ptr<Actor::ActorManager>(pActorManager);
         if (this->_pActorManager->Init() == FALSE)
         {
             E_ASSERT(FALSE && "レベルノードのアクター管理の初期化が失敗");
@@ -89,7 +84,8 @@ namespace Level
             // TODO: 入力送信
             case Node::ETaskUpdateId_Input:
             {
-                Platform::InputSystemInterface* pInput = reinterpret_cast<Platform::InputSystemInterface*>(in_pData->pData);
+                Platform::InputSystemInterface* pInput =
+                    reinterpret_cast<Platform::InputSystemInterface*>(in_pData->pData);
                 E_ASSERT(pInput != NULL);
 
                 this->_pActorManager->ProcessInput(in_dt, pInput);
@@ -125,8 +121,7 @@ namespace Level
     // TODO: レベルに追加されたアクターを削除
     void Node::RemoveActor(const Core::Common::Handle& in_hActor)
     {
-        if (in_hActor.Null())
-            return;
+        if (in_hActor.Null()) return;
 
         this->_pActorManager->Remove(in_hActor);
     }
@@ -137,13 +132,14 @@ namespace Level
         return this->_pActorManager->Get(in_hActor);
     }
 
-    const Bool Node::AddParentActor(const Core::Common::Handle& in_hActor, const Core::Common::Handle in_hParentActor)
+    const Bool Node::AddParentActor(const Core::Common::Handle& in_hActor,
+                                    const Core::Common::Handle in_hParentActor)
     {
         E_ASSERT(in_hActor.Null() == FALSE);
         E_ASSERT(in_hParentActor.Null() == FALSE);
 
         Actor::Object* pActor = this->GetActor(in_hActor);
-        const Bool bRet = pActor->SetParentActor(in_hParentActor);
+        const Bool bRet       = pActor->SetParentActor(in_hParentActor);
         if (bRet)
         {
             Actor::Object* pParentActor = this->GetActor(in_hParentActor);
@@ -157,5 +153,4 @@ namespace Level
     {
         return this->_pActorManager.get();
     }
-}
-
+}  // namespace Level

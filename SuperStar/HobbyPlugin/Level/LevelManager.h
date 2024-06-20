@@ -1,13 +1,12 @@
 ﻿#pragma once
 
-#include "MiniEngine.h"
-#include "Core/Task/TaskManager.h"
-#include "Core/Task/Task.h"
-#include "Core/Common/FixArray.h"
-
-#include "HobbyPlugin/Actor/ActorManager.h"
-
 #include <memory>
+
+#include "Core/Common/FixArray.h"
+#include "Core/Task/Task.h"
+#include "Core/Task/TaskManager.h"
+#include "HobbyPlugin/Actor/ActorManager.h"
+#include "MiniEngine.h"
 
 // 前方宣言
 namespace Platform
@@ -27,7 +26,7 @@ namespace Level
     /// </summary>
     class Node : public Core::Task
     {
-       E_CLASS_COPY_CONSTRUCT_NG(Node);
+        E_CLASS_COPY_CONSTRUCT_NG(Node);
 
     public:
         enum ETaskUpdateId
@@ -71,7 +70,7 @@ namespace Level
         /// <summary>
         /// レベルにアクターを追加
         /// </summary>
-        template<class T>
+        template <class T>
         Core::Common::Handle AddActor()
         {
             Core::Common::Handle handle = this->_pActorManager->Add<T>();
@@ -93,7 +92,8 @@ namespace Level
         /// <summary>
         /// アクターに親アクターを追加
         /// </summary>
-        const Bool AddParentActor(const Core::Common::Handle& in_hActor, const Core::Common::Handle in_hParentActor);
+        const Bool AddParentActor(const Core::Common::Handle& in_hActor,
+                                  const Core::Common::Handle in_hParentActor);
 
         Actor::ActorManagerlnterface* GetActorManagerDataAccess();
 
@@ -143,13 +143,12 @@ namespace Level
         /// 起動するレベルを設定
         /// </summary>
         /// <param name="in_pNode"></param>
-        template<class T>
+        template <class T>
         const Bool StartLevel()
         {
             // レベルのノードは使いまわさない
             Core::Common::Handle handle = this->_taskManager.CreateAndAdd<T>(0, TRUE);
-            if (handle.Null())
-                return FALSE;
+            if (handle.Null()) return FALSE;
 
             this->_hCurrentLevel = handle;
 
@@ -175,5 +174,4 @@ namespace Level
         Core::Common::Handle _hCurrentLevel;
     };
 
-
-}
+}  // namespace Level

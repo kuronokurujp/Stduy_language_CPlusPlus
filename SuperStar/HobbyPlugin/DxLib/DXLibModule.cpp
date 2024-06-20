@@ -111,38 +111,33 @@ namespace DXLib
             // TODO: コマンドに応じた描画処理をする
             switch (cmd->type)
             {
-            // TODO: 矩形を描画
-            case Render::CMD_TYPE_2D_RECT:
-            {
-                Render::ComRect2D* pRect2D = &cmd->data.rect2D;
+                // TODO: 矩形を描画
+                case Render::CMD_TYPE_2D_RECT:
+                {
+                    Render::ComRect2D* pRect2D = &cmd->data.rect2D;
 
-                Uint32 cr = GetColor(pRect2D->color.c32.r, pRect2D->color.c32.g, pRect2D->color.c32.b);
-                DrawBox(
-                    static_cast<int>(pRect2D->leftX),
-                    static_cast<int>(pRect2D->leftY),
-                    static_cast<int>(pRect2D->rightX),
-                    static_cast<int>(pRect2D->rightY),
-                    cr,
-                    TRUE);
-                break;
-            }
-            // TODO: 2Dテキストを描画
-            case Render::CMD_TYPE_2D_TEXT:
-            {
-                Render::ComText2D* pText2D = &cmd->data.text2D;
+                    Uint32 cr =
+                        GetColor(pRect2D->color.c32.r, pRect2D->color.c32.g, pRect2D->color.c32.b);
+                    DrawBox(static_cast<int>(pRect2D->leftX), static_cast<int>(pRect2D->leftY),
+                            static_cast<int>(pRect2D->rightX), static_cast<int>(pRect2D->rightY),
+                            cr, TRUE);
+                    break;
+                }
+                // TODO: 2Dテキストを描画
+                case Render::CMD_TYPE_2D_TEXT:
+                {
+                    Render::ComText2D* pText2D = &cmd->data.text2D;
 
-                Uint32 cr = GetColor(pText2D->color.c32.r, pText2D->color.c32.g, pText2D->color.c32.b);
-                Core::Common::FixString1024 str(pText2D->chars);
+                    Uint32 cr =
+                        GetColor(pText2D->color.c32.r, pText2D->color.c32.g, pText2D->color.c32.b);
+                    Core::Common::FixString1024 str(pText2D->chars);
 
-                DrawString(
-                    static_cast<int>(pText2D->x),
-                    static_cast<int>(pText2D->y),
-                    pText2D->chars,
-                    cr);
-                break;
-            }
-            default:
-                E_ASSERT(0 && "存在しないコマンド");
+                    DrawString(static_cast<int>(pText2D->x), static_cast<int>(pText2D->y),
+                               pText2D->chars, cr);
+                    break;
+                }
+                default:
+                    E_ASSERT(0 && "存在しないコマンド");
             }
         }
     }
@@ -152,5 +147,4 @@ namespace DXLib
         Render::CommandBuffer* pCmdBuff = reinterpret_cast<Render::CommandBuffer*>(in_pCmdBuff);
         E_ASSERT(pCmdBuff);
     }
-}
-
+}  // namespace DXLib

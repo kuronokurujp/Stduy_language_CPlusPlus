@@ -1,4 +1,5 @@
 ﻿#include "ActorManager.h"
+
 #include "Actor.h"
 
 namespace Actor
@@ -20,7 +21,7 @@ namespace Actor
     /// <param name="in_pActor">The in p actor.</param>
     /// <returns></returns>
     // auto ActorManager::RemoveActor(Actor *in_pActor) -> void
-    void ActorManager::Remove(const Core::Common::Handle &in_hActor)
+    void ActorManager::Remove(const Core::Common::Handle& in_hActor)
     {
         E_ASSERT((in_hActor.Null() == FALSE) && "アクターを破棄するハンドルがない");
 
@@ -38,7 +39,7 @@ namespace Actor
     /// </summary>
     /// <param name="in_pActor">The in p actor.</param>
     /// <returns></returns>
-    const Bool ActorManager::IsActor(const Core::Common::Handle &in_hActor)
+    const Bool ActorManager::IsActor(const Core::Common::Handle& in_hActor)
     {
         E_ASSERT((in_hActor.Null() == FALSE) && "チェックするアクターがない");
         return (this->_taskManager.GetTask(in_hActor) != NULL);
@@ -72,11 +73,8 @@ namespace Actor
     /// </summary>
     void ActorManager::ProcessInput(const Float32 in_dt, Platform::InputSystemInterface* in_pInput)
     {
-        Core::TaskData taskData
-        {
-            Actor::Object::ETaskUpdateId_Input,
-            reinterpret_cast<void*>(in_pInput)
-        };
+        Core::TaskData taskData{Actor::Object::ETaskUpdateId_Input,
+                                reinterpret_cast<void*>(in_pInput)};
 
         {
             const Uint32 max = this->_taskManager.GetMaxGroup();
@@ -93,11 +91,7 @@ namespace Actor
         this->_bUpdatingActors = TRUE;
 
         {
-            Core::TaskData taskData
-            {
-                Actor::Object::ETaskUpdateId_Object,
-                NULL
-            };
+            Core::TaskData taskData{Actor::Object::ETaskUpdateId_Object, NULL};
 
             const Uint32 max = this->_taskManager.GetMaxGroup();
             for (Uint32 i = 1; i < max; ++i)
@@ -113,52 +107,52 @@ namespace Actor
         // 保留グループに設定したタスクを更新グループに移動
         this->_taskManager.MoveGroupAll(0, 1);
     }
-/*
-    /// <summary>
-    /// Gets the actors.
-    /// </summary>
-    /// <returns></returns>
-    auto ActorManager::GetActors() -> const std::vector<class Actor *>
-    {
-        return this->actors;
-    }
-
-    /// <summary>
-    /// Deletes the actors.
-    /// </summary>
-    /// <param name="in_rActors">The in r actors.</param>
-    /// <param name="pValidate">The p validate.</param>
-    /// <returns></returns>
-    void ActorManager::DeleteAllActorsAndMemFree(std::vector<Actor *> &in_rActors, bool(*pValidate)(Actor *))
-    {
-        // 削除リストに登録する
-        // 破棄するとリスト項目を外す処理が発生するのでループのリストが壊れるのを防ぐため
-        std::vector<Actor *> deletes;
-        for (auto actor : in_rActors)
+    /*
+        /// <summary>
+        /// Gets the actors.
+        /// </summary>
+        /// <returns></returns>
+        auto ActorManager::GetActors() -> const std::vector<class Actor *>
         {
-            if (pValidate == nullptr)
+            return this->actors;
+        }
+
+        /// <summary>
+        /// Deletes the actors.
+        /// </summary>
+        /// <param name="in_rActors">The in r actors.</param>
+        /// <param name="pValidate">The p validate.</param>
+        /// <returns></returns>
+        void ActorManager::DeleteAllActorsAndMemFree(std::vector<Actor *> &in_rActors,
+       bool(*pValidate)(Actor *))
+        {
+            // 削除リストに登録する
+            // 破棄するとリスト項目を外す処理が発生するのでループのリストが壊れるのを防ぐため
+            std::vector<Actor *> deletes;
+            for (auto actor : in_rActors)
             {
-                deletes.emplace_back(actor);
+                if (pValidate == nullptr)
+                {
+                    deletes.emplace_back(actor);
+                }
+                else if (pValidate(actor))
+                {
+                    deletes.emplace_back(actor);
+                }
             }
-            else if (pValidate(actor))
+
+            for (auto actor = deletes.begin(); actor != deletes.end(); ++actor)
             {
-                deletes.emplace_back(actor);
+                // リストを外す処理はいらない
+                // Actor自身が破棄時にリストから外しているから
+                SAFETY_MEM_RELEASE(*actor);
             }
         }
 
-        for (auto actor = deletes.begin(); actor != deletes.end(); ++actor)
+        void ActorManager::DeleteAllActorsAndMemFree()
         {
-            // リストを外す処理はいらない
-            // Actor自身が破棄時にリストから外しているから
-            SAFETY_MEM_RELEASE(*actor);
+            this->DeleteAllActorsAndMemFree(this->pendingActors, nullptr);
+            this->DeleteAllActorsAndMemFree(this->actors, nullptr);
         }
-    }
-
-    void ActorManager::DeleteAllActorsAndMemFree()
-    {
-        this->DeleteAllActorsAndMemFree(this->pendingActors, nullptr);
-        this->DeleteAllActorsAndMemFree(this->actors, nullptr);
-    }
-    */
-}
-
+        */
+}  // namespace Actor

@@ -1,15 +1,12 @@
 ﻿#include "UIModule.h"
 
-#include "Widget.h"
-
-#include "Component/Widget/UILayer.h"
-#include "Component/Widget/UIButton.h"
-#include "Component/Widget/UIText.h"
-
 #include "Component/Input/UIInputRouter.h"
 #include "Component/Input/UIInputTerminalTouch.h"
-
+#include "Component/Widget/UIButton.h"
+#include "Component/Widget/UILayer.h"
+#include "Component/Widget/UIText.h"
 #include "Core/Memory/Memory.h"
+#include "Widget.h"
 
 MODULE_GENRATE_DEFINITION(UI::UIModule, UI);
 
@@ -33,9 +30,8 @@ namespace UI
         return TRUE;
     }
 
-    Core::Common::Handle UIModule::NewLayer(
-        const Core::Common::FixString128 in_name,
-        const Uint32 in_sort)
+    Core::Common::Handle UIModule::NewLayer(const Core::Common::FixString128 in_name,
+                                            const Uint32 in_sort)
     {
         Core::Common::Handle handle = this->NewWidget(in_name, in_sort);
 
@@ -58,12 +54,12 @@ namespace UI
         return handle;
     }
 
-    Core::Common::Handle UIModule::NewButtonAndText(
-        const Core::Common::FixString128 in_name,
-        const Uint32 in_sort,
-        const Char* in_pText,
-        const Core::Math::Rect2& in_rBtnRect, const Uint32 in_btnColor,
-        const Core::Math::Vector2& in_textPos, const Uint32 in_textColor)
+    Core::Common::Handle UIModule::NewButtonAndText(const Core::Common::FixString128 in_name,
+                                                    const Uint32 in_sort, const Char* in_pText,
+                                                    const Core::Math::Rect2& in_rBtnRect,
+                                                    const Uint32 in_btnColor,
+                                                    const Core::Math::Vector2& in_textPos,
+                                                    const Uint32 in_textColor)
     {
         Core::Common::Handle handle = this->NewWidget(in_name, in_sort);
         E_ASSERT(handle.Null() == FALSE);
@@ -72,8 +68,7 @@ namespace UI
 #ifdef _HOBBY_ENGINE
         pWidget = HOBBY_CURRENT_LEVEL.GetActor(handle);
 #endif
-        if (pWidget == NULL)
-            return handle;
+        if (pWidget == NULL) return handle;
 
         // ボタンコンポーネント追加と設定
         auto hButton = this->AddComponent<UI::UIButtonComponent>(handle, in_sort);
@@ -98,7 +93,8 @@ namespace UI
         return handle;
     }
 
-    Core::Common::Handle UIModule::NewWidget(const Core::Common::FixString128 in_name, const Uint32 in_sort)
+    Core::Common::Handle UIModule::NewWidget(const Core::Common::FixString128 in_name,
+                                             const Uint32 in_sort)
     {
         Core::Common::Handle handle;
 
@@ -109,8 +105,7 @@ namespace UI
 
         pWidget = HOBBY_CURRENT_LEVEL.GetActor(handle);
 #endif
-        if (pWidget == NULL)
-            return E_EMPTY_HANDLE;
+        if (pWidget == NULL) return E_EMPTY_HANDLE;
 
         // Widgetの初期設定
         pWidget->SetName(in_name);
@@ -118,7 +113,8 @@ namespace UI
         return handle;
     }
 
-    const Bool UIModule::AddChildWidget(Core::Common::Handle in_hParent, Core::Common::Handle in_hWidget)
+    const Bool UIModule::AddChildWidget(Core::Common::Handle in_hParent,
+                                        Core::Common::Handle in_hWidget)
     {
 #ifdef _HOBBY_ENGINE
         return HOBBY_CURRENT_LEVEL.AddParentActor(in_hWidget, in_hParent);
@@ -126,4 +122,4 @@ namespace UI
         return FALSE;
 #endif
     }
-}
+}  // namespace UI

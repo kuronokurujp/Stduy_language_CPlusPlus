@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Engine.h"
 #include "Engine.cpp"
+#include "Engine.h"
 
 /// <summary>
 /// 初期化と終了が成功するか
@@ -25,4 +25,3 @@ TEST_CASE("Engine Init to End")
     // エンジン終了
     RELEASE_HOBBY_ENGINE;
 }
-

@@ -6,8 +6,9 @@
  */
 #pragma once
 
-#include "Core/Core.h"
 #include <math.h>
+
+#include "Core/Core.h"
 
 namespace Core
 {
@@ -97,10 +98,7 @@ namespace Core
             /// </summary>
             /// <param name="in_value">The in value.</param>
             /// <returns></returns>
-            inline void Set(const Float32 in_value)
-            {
-                this->x = this->y = in_value;
-            }
+            inline void Set(const Float32 in_value) { this->x = this->y = in_value; }
 
             /// <summary>
             /// ベクトル型で設定
@@ -120,15 +118,11 @@ namespace Core
             /// <param name="ac">The ac.</param>
             /// <param name="u">The u.</param>
             /// <param name="v">The v.</param>
-            void SetInterporation(
-                const Vector2& a,
-                const Vector2& ab,
-                const Vector2& ac,
-                Float32 u,
-                Float32 v)
+            void SetInterporation(const Vector2& a, const Vector2& ab, const Vector2& ac, Float32 u,
+                                  Float32 v)
             {
-                this->SetMadd(ab, u, a);	// a + u(b - a)
-                this->Madd(ac, v);	// a + u(b - a) + v(c - a)
+                this->SetMadd(ab, u, a);  // a + u(b - a)
+                this->Madd(ac, v);        // a + u(b - a) + v(c - a)
             }
 
             /// <summary>
@@ -136,10 +130,10 @@ namespace Core
             /// </summary>
             void Normalize()
             {
-                float	magSq = this->x * this->x + this->y * this->y;
+                float magSq = this->x * this->x + this->y * this->y;
                 if (magSq > 0.f)
                 {
-                    float	newOverMag = 1.0f / sqrtf(magSq);
+                    float newOverMag = 1.0f / sqrtf(magSq);
                     this->x *= newOverMag;
                     this->y *= newOverMag;
                 }
@@ -209,7 +203,7 @@ namespace Core
             // 比較などで利用できる
             static inline float GetLengthSquared(const Vector2& in_rV)
             {
-                return	(in_rV.x * in_rV.x + in_rV.y * in_rV.y);
+                return (in_rV.x * in_rV.x + in_rV.y * in_rV.y);
             }
 
             /// <summary>
@@ -220,25 +214,25 @@ namespace Core
             /// <returns></returns>
             static inline float GetDistanceSquared(const Vector2& in_v, const Vector2& in_v2)
             {
-                Vector2	size;
+                Vector2 size;
                 size.SetSub(in_v2, in_v);
 
-                return	GetLengthSquared(size);
+                return GetLengthSquared(size);
             }
 
             //	ベクトルの大きさ取得
             static inline float GetLength(const Vector2& in_v)
             {
-                return	sqrtf(GetLengthSquared(in_v));
+                return sqrtf(GetLengthSquared(in_v));
             }
 
             //	2つのベクトルの距離取得
             static inline float GetDistance(const Vector2& in_v, const Vector2& in_v2)
             {
-                Vector2	size;
+                Vector2 size;
                 size.SetSub(in_v2, in_v);
 
-                return	GetLength(size);
+                return GetLength(size);
             }
 
             /// <summary>
@@ -259,7 +253,8 @@ namespace Core
             /// <param name="in_nv">The in nv.</param>
             /// <param name="in_v2">The in v2.</param>
             /// <returns></returns>
-            static inline void OutputRefection(Vector2* out_pRefection, const Vector2& in_nv, const Vector2& in_v2)
+            static inline void OutputRefection(Vector2* out_pRefection, const Vector2& in_nv,
+                                               const Vector2& in_v2)
             {
                 Vector2 flipV(-in_v2.x, -in_v2.y);
                 const float dot = 2 * Dot(in_nv, flipV);
@@ -272,7 +267,5 @@ namespace Core
             Float32 x = 0.0f;
             Float32 y = 0.0f;
         };
-    }
-}
-
-
+    }  // namespace Math
+}  // namespace Core

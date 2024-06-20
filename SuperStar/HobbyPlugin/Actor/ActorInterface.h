@@ -1,8 +1,7 @@
 ﻿#pragma once
 
-#include "MiniEngine.h"
-
 #include "Core/Common/Handle.h"
+#include "MiniEngine.h"
 
 namespace Actor
 {
@@ -36,4 +35,4 @@ namespace Actor
         /// <returns></returns>
         virtual void Remove(const Core::Common::Handle&) = 0;
     };
-}
+}  // namespace Actor

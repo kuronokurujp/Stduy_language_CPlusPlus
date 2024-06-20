@@ -1,10 +1,9 @@
 ﻿#pragma once
 
-#include "HobbyEngine/MiniEngine.h"
 #include "HobbyEngine/Core/Common/Handle.h"
 #include "HobbyEngine/Core/Common/PoolManager.h"
 #include "HobbyEngine/Core/File/Path.h"
-
+#include "HobbyEngine/MiniEngine.h"
 #include "HobbyEngine/Module/Module.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
@@ -18,8 +17,8 @@ namespace AssetManager
     /// <summary>
     /// エンジンのアセット対応のモジュール
     /// </summary>
-    class AssetManagerModule final :
-        public Module::ModuleBase<AssetManagerModule>, Core::Common::BasePoolManager<AssetDataBase>
+    class AssetManagerModule final : public Module::ModuleBase<AssetManagerModule>,
+                                     Core::Common::BasePoolManager<AssetDataBase>
     {
     public:
         /// <summary>
@@ -36,8 +35,9 @@ namespace AssetManager
 
         const Bool Update(const Float32 in_deltaTime) final override;
 
-        template<class T>
-        typename std::enable_if<std::is_base_of<AssetDataBase, T>::value, const Core::Common::Handle>::type
+        template <class T>
+        typename std::enable_if<std::is_base_of<AssetDataBase, T>::value,
+                                const Core::Common::Handle>::type
         Load(const Char* in_pName, const Core::File::Path& in_rFilePath)
         {
             E_ASSERT(in_rFilePath.IsEmpty() == FALSE);
@@ -62,9 +62,9 @@ namespace AssetManager
 
         void Unload(const Core::Common::Handle&);
 
-        template<class T>
-        typename std::enable_if<std::is_base_of<AssetDataBase, T>::value, T&>::type
-        GetAsset(const Core::Common::Handle& in_rHandle)
+        template <class T>
+        typename std::enable_if<std::is_base_of<AssetDataBase, T>::value, T&>::type GetAsset(
+            const Core::Common::Handle& in_rHandle)
         {
             T* p = reinterpret_cast<T*>(this->_Ref(in_rHandle));
             E_ASSERT(p && "ロードしたアセットデータがない");
@@ -74,6 +74,6 @@ namespace AssetManager
     private:
         const Bool _Load(AssetDataBase* out_pAssetData);
     };
-}
+}  // namespace AssetManager
 
 MODULE_GENRATE_DECLARATION(AssetManager::AssetManagerModule, AssetManager);

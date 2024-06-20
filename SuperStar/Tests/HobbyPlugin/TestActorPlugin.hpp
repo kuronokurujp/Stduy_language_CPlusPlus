@@ -7,4 +7,3 @@ SECTION("HobbyPlugin Actor Init to End")
 {
     // TODO: モジュールテスト
 }
-

@@ -9,13 +9,12 @@ namespace Core
             const RTTI* pCompare = this;
             while (pCompare != NULL)
             {
-                if (pCompare == &in_rtti)
-                    return TRUE;
+                if (pCompare == &in_rtti) return TRUE;
 
                 pCompare = pCompare->_pBaseRTTI;
             }
 
             return FALSE;
         }
-    }
-}
+    }  // namespace Common
+}  // namespace Core

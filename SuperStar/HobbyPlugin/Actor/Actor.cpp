@@ -1,12 +1,11 @@
 ﻿#include "Actor.h"
-#include "ActorManager.h"
 
+#include "ActorManager.h"
 #include "Component/component.h"
 
 /*
-#include "renderer.h"
-
 #include "SDL/SDL_assert.h"
+#include "renderer.h"
 */
 
 namespace Actor
@@ -65,8 +64,7 @@ namespace Actor
     /// </summary>
     void Object::Update(const Float32 in_dt, const Core::TaskData* in_pData)
     {
-        if (this->state != EState_Active)
-            return;
+        if (this->state != EState_Active) return;
 
         switch (in_pData->id)
         {
@@ -75,7 +73,8 @@ namespace Actor
             {
                 E_ASSERT(in_pData->pData != NULL);
                 {
-                    Platform::InputSystemInterface* pInput = reinterpret_cast<Platform::InputSystemInterface*>(in_pData->pData);
+                    Platform::InputSystemInterface* pInput =
+                        reinterpret_cast<Platform::InputSystemInterface*>(in_pData->pData);
                     E_ASSERT(pInput != NULL);
 
                     // TODO: 入力送信する
@@ -88,27 +87,26 @@ namespace Actor
             case Object::ETaskUpdateId_Object:
             {
                 // 座標更新
-        //        this->ComputeWorldTransform();
+                //        this->ComputeWorldTransform();
 
                 // コンポーネント更新
                 this->_components.UpdateAll(in_dt, in_pData);
 
                 // コンポーネント内で更新した座標を含めて更新
-        //        this->ComputeWorldTransform();
+                //        this->ComputeWorldTransform();
 
                 // コンポーネントがすべて更新してから実行
                 // コンポーネントの結果が同フレーム取れる
                 this->UpdateActor(in_dt);
 
                 // Actor内で更新した座標を含めて更新
-        //        this->ComputeWorldTransform();
+                //        this->ComputeWorldTransform();
 
                 // TODO: 存在しない親アクターがあるかチェックして整理
                 if (this->_parentActorHandle.Null() == FALSE)
                 {
                     Object* pParentActor = this->_pDataAccess->Get(this->_parentActorHandle);
-                    if (pParentActor == NULL)
-                        this->_parentActorHandle.Clear();
+                    if (pParentActor == NULL) this->_parentActorHandle.Clear();
                 }
 
                 break;
@@ -199,11 +197,11 @@ namespace Actor
     /// TODO: アクター自身, 子アクターに設定しているコンポーネントを全て出力
     /// アクターの階層構造が深くなると再帰処理が多くなるので注意
     /// </summary>
-    void Object::OutputChildComponents(Core::Common::FastFixArray<Component*, 128>& out_comArray, const Core::Common::RTTI& in_rtti)
+    void Object::OutputChildComponents(Core::Common::FastFixArray<Component*, 128>& out_comArray,
+                                       const Core::Common::RTTI& in_rtti)
     {
         Component* c = this->GetComponent(in_rtti);
-        if (c != NULL)
-            out_comArray.PushBack(c);
+        if (c != NULL) out_comArray.PushBack(c);
 
         // TODO: 子アクターがあれば再帰処理する
         for (Uint32 i = 0; i < this->_childObjects.Size(); ++i)
@@ -218,8 +216,7 @@ namespace Actor
         for (auto itr = list.begin(); itr != list.end(); ++itr)
         {
             Component* target = reinterpret_cast<Component*>(itr->_pItem);
-            if (target->GetRTTI().DerivesFrom(in_rtti))
-                return target;
+            if (target->GetRTTI().DerivesFrom(in_rtti)) return target;
         }
 
         return NULL;
@@ -237,8 +234,7 @@ namespace Actor
         while (handle.Null() == FALSE)
         {
             Object* pParentActor = this->_pDataAccess->Get(handle);
-            if (pParentActor == NULL)
-                break;
+            if (pParentActor == NULL) break;
 
             pos += pParentActor->GetWorldPos();
 
@@ -331,5 +327,4 @@ namespace Actor
         this->worldTransform.Mul(Math::Matrix4::CreateTranslation(this->position));
     }
 #endif
-}
-
+}  // namespace Actor

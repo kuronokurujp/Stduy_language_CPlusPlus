@@ -19,7 +19,7 @@ namespace Core
             explicit Vector3(const Vector2& in_rVec2) : x(in_rVec2.x), y(in_rVec2.y), z(0.0f) {}
 
             // 整数設定
-            explicit	Vector3(Sint32 aX, Sint32 aY, Sint32 aZ);
+            explicit Vector3(Sint32 aX, Sint32 aY, Sint32 aZ);
 
             // 値設定
             void Set(const Float32 in_x, const Float32 in_y, const Float32 in_z);
@@ -44,21 +44,18 @@ namespace Core
             void SetMul(const Vector3& a, const Vector3& b);
 
             // ２次元補間を行う
-            void SetInterporation(const Vector3& a,
-                const Vector3& ab,
-                const Vector3& ac,
-                Float32 u,
-                Float32 v);
+            void SetInterporation(const Vector3& a, const Vector3& ab, const Vector3& ac, Float32 u,
+                                  Float32 v);
 
             //	正規化
             void Normalize();
 
             // 演算定義
-            void operator+=(const Vector3& a);	// 足し算
-            void operator-=(const Vector3& a);	// 引き算
-            void operator=(const Vector3& a);	// コピー
-            void operator*=(const Vector3& a);	// 掛け算
-            void operator/=(const Vector3& a);	// 割り算
+            void operator+=(const Vector3& a);  // 足し算
+            void operator-=(const Vector3& a);  // 引き算
+            void operator=(const Vector3& a);   // コピー
+            void operator*=(const Vector3& a);  // 掛け算
+            void operator/=(const Vector3& a);  // 割り算
 
             /// <summary>
             /// Operator*s the specified scale.
@@ -87,10 +84,7 @@ namespace Core
             /// ベクトル要素をfloatポインタで返す.
             /// </summary>
             /// <returns></returns>
-            const Float32* GetAsFloatPtr()
-            {
-                return reinterpret_cast<Float32*>(&this->x);
-            }
+            const Float32* GetAsFloatPtr() { return reinterpret_cast<Float32*>(&this->x); }
 
             // 頻繁にアクセスする変数にはprivate指定にはしない
             Float32 x = 0.0f;
@@ -121,6 +115,5 @@ namespace Core
             // 距離取得
             static float GetVector3Distance(const Vector3& in_v, const Vector3& in_v2);
         };
-    }
-}
-
+    }  // namespace Math
+}  // namespace Core

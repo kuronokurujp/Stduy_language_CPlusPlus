@@ -67,5 +67,4 @@ namespace Platform
     {
         return in_rect.InSidePoint(this->GetWorldPos());
     }
-}
-
+}  // namespace Platform

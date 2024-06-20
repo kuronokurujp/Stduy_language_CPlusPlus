@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\Tests\Catch.hpp" />
     <ClInclude Include="..\..\..\..\Tests\Common\TestArray.hpp" />
     <ClInclude Include="..\..\..\..\Tests\Common\TestCMap.hpp" />
     <ClInclude Include="..\..\..\..\Tests\Common\TestMacro.hpp" />
@@ -29,12 +28,14 @@
     <ClInclude Include="..\..\..\..\Tests\Math\TestRandom.hpp" />
     <ClInclude Include="..\..\..\..\Tests\Memory\TestMemory.hpp" />
     <ClInclude Include="..\..\..\..\Tests\Task\TestTask.hpp" />
+    <ClInclude Include="..\..\..\..\Tests\ThirdParty\Catch.hpp" />
     <ClInclude Include="..\..\..\..\Tests\Time\TestFPS.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Tests\TestMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\.clang-format" />
     <None Include="..\..\..\..\.editorconfig" />
     <None Include="..\..\..\..\Tests\README.md" />
   </ItemGroup>

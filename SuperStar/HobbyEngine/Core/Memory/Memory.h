@@ -8,37 +8,39 @@
 // これはメモリ確保を繰り返してメモリが断片化して求めたサイズのメモリ確保ができない場合の対策
 // メモリ確保する上で前後どちらで確保するのかをルールで決めるのがいい
 
-#include "Core/Core.h"
-#include "Core/Memory/MemoryManager.h"
-
 #include <memory>
 #include <new>
+
+#include "Core/Core.h"
+#include "Core/Memory/MemoryManager.h"
 
 #ifdef _HOBBY_ENGINE_DEBUG
 
 // newのオーバーロード
-void* operator new(
-    size_t in_size, Uint8 in_page, Uint8 in_alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TYPE in_locateType, const Byte* in_pFile, Uint32 in_line);
+void* operator new(size_t in_size, Uint8 in_page, Uint8 in_alignSize,
+                   Core::Memory::Manager::ALLOCATE_LOCATE_TYPE in_locateType, const Byte* in_pFile,
+                   Uint32 in_line);
 
 #else
 
 // newのオーバーロード
-void* operator new(
-    size_t in_size, Uint8 in_page, Uint8 in_alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TYPE in_locateType);
+void* operator new(size_t in_size, Uint8 in_page, Uint8 in_alignSize,
+                   Core::Memory::Manager::ALLOCATE_LOCATE_TYPE in_locateType);
 
 #endif
 
 #ifdef _HOBBY_ENGINE_DEBUG
 
 // new[]のオーバーロード
-void* operator new[](
-    size_t in_size, Uint8 in_page, Uint8 in_alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TYPE in_locateType, const Byte* in_pFile, Uint32 in_line);
+void* operator new[](size_t in_size, Uint8 in_page, Uint8 in_alignSize,
+                     Core::Memory::Manager::ALLOCATE_LOCATE_TYPE in_locateType,
+                     const Byte* in_pFile, Uint32 in_line);
 
 #else
 
 // new[]のオーバーロード
-void* operator new[](
-    size_t in_size, Uint8 in_page, Uint8 in_alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TYPE in_locateType);
+void* operator new[](size_t in_size, Uint8 in_page, Uint8 in_alignSize,
+                     Core::Memory::Manager::ALLOCATE_LOCATE_TYPE in_locateType);
 
 #endif
 
@@ -69,40 +71,44 @@ void* operator new[](std::size_t in_size) throw(std::bad_alloc);
 // NEWマクロ
 // メモリアライメント設定版
 // 通常はこちらを利用
-#define E_NEW(type, page) \
-    new(page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, Core::Memory::Manager::ALLOCATE_LOCATE_TOP, __FILE__, __LINE__)(type)
+#define E_NEW(type, page)                                 \
+    new (page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, \
+         Core::Memory::Manager::ALLOCATE_LOCATE_TOP, __FILE__, __LINE__)(type)
 
 // NEWの配列マクロ
 // メモリアライメント設定版
 // 通常はこちらを利用
-#define E_NEW_ARRAY(type, num, page) \
-    new(page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, Core::Memory::Manager::ALLOCATE_LOCATE_TOP, __FILE__, __LINE__)(type[ num ])
+#define E_NEW_ARRAY(type, num, page)                      \
+    new (page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, \
+         Core::Memory::Manager::ALLOCATE_LOCATE_TOP, __FILE__, __LINE__)(type[num])
 
 // NEWマクロ
 // メモリアライメント指定(アライメントはMINIMUM_ALIGN_SIZEの倍数)
 // 細かなメモリ確保で使用
 // アライメント指定を間違えるとバグになるので蔵人向け
 #define E_NEW_ALIENT(type, page, alignSize) \
-    new(page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TOP, __FILE__, __LINE__)(type)
+    new (page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TOP, __FILE__, __LINE__)(type)
 
 // NEW配列マクロ
 // メモリアライメント指定(アライメントはMINIMUM_ALIGN_SIZEの倍数)
 // 細かなメモリ確保で使用
 // アライメント指定を間違えるとバグになるので蔵人向け
 #define E_NEW_ARRAY_ALIENT(type, num, page, alignSize) \
-    new(page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TOP, __FILE__, __LINE__)(type[ num ])
+    new (page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TOP, __FILE__, __LINE__)(type[num])
 
 // NEWマクロ
 // メモリをページの後ろから確保する
 // アライメント設定版
-#define E_NEW_LAST(type, page) \
-    new(page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, Core::Memory::Manager::ALLOCATE_LOCATE_LAST, __FILE__, __LINE__)(type)
+#define E_NEW_LAST(type, page)                            \
+    new (page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, \
+         Core::Memory::Manager::ALLOCATE_LOCATE_LAST, __FILE__, __LINE__)(type)
 
 // NEW配列のマクロ
 // メモリをページの後ろから確保する
 // アライメント設定版
-#define E_NEW_ARRAY_LAST( type, num, page ) \
-    new(page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, Core::Memory::Manager::ALLOCATE_LOCATE_LAST, __FILE__, __LINE__)(type[num])
+#define E_NEW_ARRAY_LAST(type, num, page)                 \
+    new (page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, \
+         Core::Memory::Manager::ALLOCATE_LOCATE_LAST, __FILE__, __LINE__)(type[num])
 
 // NEWマクロ
 // メモリをページの後ろから確保する
@@ -110,56 +116,60 @@ void* operator new[](std::size_t in_size) throw(std::bad_alloc);
 // 細かなメモリ確保で使用
 // アライメント指定を間違えるとバグになるので蔵人向け
 #define E_NEW_LAST_ALIENT(type, page, alignSize) \
-    new(page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_LAST, __FILE__, __LINE__)(type)
-
+    new (page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_LAST, __FILE__, __LINE__)(type)
 
 // NEW配列マクロ
 // メモリをページの後ろから確保する
 // メモリアライメント指定(アライメントはMINIMUM_ALIGN_SIZEの倍数)
 // 細かなメモリ確保で使用
 // アライメント指定を間違えるとバグになるので蔵人向け
-#define E_NEW_ARRAY_LAST_ALIENT(type, num, page, alignSize) \
-    new(page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_LAST, __FILE__, __LINE__)(type[ num ])
+#define E_NEW_ARRAY_LAST_ALIENT(type, num, page, alignSize)                      \
+    new (page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_LAST, __FILE__, \
+         __LINE__)(type[num])
 
 #else
 
 // NEWマクロ
 // メモリアライメント設定版
 // 通常はこちらを利用
-#define E_NEW(type, page) \
-    new(page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, Core::Memory::Manager::ALLOCATE_LOCATE_TOP)(type)
+#define E_NEW(type, page)                                 \
+    new (page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, \
+         Core::Memory::Manager::ALLOCATE_LOCATE_TOP)(type)
 
 // NEWの配列マクロ
 // メモリアライメント設定版
 // 通常はこちらを利用
-#define E_NEW_ARRAY(type, num, page) \
-    new(page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, Core::Memory::Manager::ALLOCATE_LOCATE_TOP)(type[ num ])
+#define E_NEW_ARRAY(type, num, page)                      \
+    new (page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, \
+         Core::Memory::Manager::ALLOCATE_LOCATE_TOP)(type[num])
 
 // NEWマクロ
 // メモリアライメント指定(アライメントはMINIMUM_ALIGN_SIZEの倍数)
 // 細かなメモリ確保で使用
 // アライメント指定を間違えるとバグになるので蔵人向け
 #define E_NEW_ALIENT(type, page, alignSize) \
-    new(page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TOP)(type)
+    new (page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TOP)(type)
 
 // NEW配列マクロ
 // メモリアライメント指定(アライメントはMINIMUM_ALIGN_SIZEの倍数)
 // 細かなメモリ確保で使用
 // アライメント指定を間違えるとバグになるので蔵人向け
 #define E_NEW_ARRAY_ALIENT(type, num, page, alignSize) \
-    new( page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TOP)(type[ num ])
+    new (page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TOP)(type[num])
 
 // NEWマクロ
 // メモリをページの後ろから確保する
 // アライメント設定版
-#define E_NEW_LAST(type, page) /\
-    new(page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, Core::Memory::Manager::ALLOCATE_LOCATE_LAST)(type)
+#define E_NEW_LAST(type, page)                              \
+    / new (page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, \
+           Core::Memory::Manager::ALLOCATE_LOCATE_LAST)(type)
 
 // NEW配列のマクロ
 // メモリをページの後ろから確保する
 // アライメント設定版
-#define E_NEW_ARRAY_LAST(type, num, page) \
-    new(page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, Core::Memory::Manager::ALLOCATE_LOCATE_LAST)(type[num])
+#define E_NEW_ARRAY_LAST(type, num, page)                 \
+    new (page, Core::Memory::Manager::MINIMUM_ALIGN_SIZE, \
+         Core::Memory::Manager::ALLOCATE_LOCATE_LAST)(type[num])
 
 // NEWマクロ
 // メモリをページの後ろから確保する
@@ -167,7 +177,7 @@ void* operator new[](std::size_t in_size) throw(std::bad_alloc);
 // 細かなメモリ確保で使用
 // アライメント指定を間違えるとバグになるので蔵人向け
 #define E_NEW_LAST_ALIENT(type, page, alignSize) \
-    new(page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_LAST)(type)
+    new (page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_LAST)(type)
 
 // NEW配列マクロ
 // メモリをページの後ろから確保する
@@ -175,23 +185,36 @@ void* operator new[](std::size_t in_size) throw(std::bad_alloc);
 // 細かなメモリ確保で使用
 // アライメント指定を間違えるとバグになるので蔵人向け
 #define E_NEW_ARRAY_LAST_ALIENT(type, num, page, alignSize) \
-    new(page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_LAST)(type[num])
+    new (page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_LAST)(type[num])
 
 #endif
 
 // deleteのマクロ
 // NEWで確保したメモリ解放で使用
-#define	E_DELETE(pPtr) delete(pPtr)
+#define E_DELETE(pPtr) delete (pPtr)
 
 // 配列のdeleteマクロ
 // NEW_ARRAYで確保したメモリを解放に使用
-#define	E_DELETE_ARRAY(pPtr) delete[](pPtr)
+#define E_DELETE_ARRAY(pPtr) delete[] (pPtr)
 
 // deleteを安全する実行するためのマクロ
 // ポインターチェックをしてすでに解放済みの場合でもエラーにはならないようにしている
-#define E_SAFE_DELETE(pPtr) { if(pPtr) { delete(pPtr); (pPtr) = NULL; } }
+#define E_SAFE_DELETE(pPtr) \
+    {                       \
+        if (pPtr)           \
+        {                   \
+            delete (pPtr);  \
+            (pPtr) = NULL;  \
+        }                   \
+    }
 
 // 確保した配列メモリをdeleteで安全する実行するためのマクロ
 // ポインターチェックをしてすでに解放済みの場合でもエラーにはならないようにしている
-#define E_SAFE_DELETE_ARRAY(pPtr) { if(pPtr) { delete[](pPtr); (pPtr) = NULL; } }
-
+#define E_SAFE_DELETE_ARRAY(pPtr) \
+    {                             \
+        if (pPtr)                 \
+        {                         \
+            delete[] (pPtr);      \
+            (pPtr) = NULL;        \
+        }                         \
+    }

@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include "MiniEngine.h"
-#include "Core/Common/PoolManager.h"
 #include "Core/Common/FixArray.h"
+#include "Core/Common/PoolManager.h"
+#include "MiniEngine.h"
 
 namespace Core
 {
@@ -24,12 +24,12 @@ namespace Core
         static const Uint32 FLAG_PAUSE = 0x00000001;
 
         // グループの未使用ID値
-        //static const Sint32 NON_GROPU_ID = -1;
+        // static const Sint32 NON_GROPU_ID = -1;
 
     public:
         TaskManager() : BasePoolManager() {}
         ~TaskManager();
-        
+
         /// <summary>
         /// 初期化
         /// 利用前に必ず呼び出す
@@ -38,26 +38,26 @@ namespace Core
         /// <param name="in_groupNum">グループ数</param>
         /// <returns></returns>
         const Bool Init(const Uint32 in_taskMax, const Sint32 in_groupNum);
-        
+
         void End();
-        
+
         /// <summary>
         /// 全タスク更新
         /// </summary>
         void UpdateAll(const Float32 in_dt, const TaskData*);
-        
+
         /// <summary>
         /// 指定グループを更新
         /// </summary>
         void UpdateGroup(const Sint32 in_groupId, const Float32 in_dt, const TaskData*);
-        
+
         /// <summary>
         /// タスク作成して追加する
         /// 結果はハンドルで返す
         /// </summary>
         /// <param name="in_groupId">追加するグループID</param>
         /// <returns></returns>
-        template<class T>
+        template <class T>
         Common::Handle CreateAndAdd(const Sint32 in_groupId, const Bool in_bReleaseMem)
         {
             static_assert(std::is_base_of<Task, T>::value, "TクラスはTaskクラスを継承していない");
@@ -72,13 +72,13 @@ namespace Core
 
             return resAlloc._handle;
         }
-        
+
         /// <summary>
         /// タスクの削除
         /// </summary>
         /// <param name="in_hTask">Addで取得したハンドルを渡す</param>
         void Remove(const Common::Handle& in_hTask);
-        
+
         /// <summary>
         /// グループ丸ごとタスクを削除
         /// </summary>
@@ -95,15 +95,15 @@ namespace Core
         /// </summary>
         /// <param name="in_groupId"></param>
         const Bool MoveGroupAll(const Sint32 in_orgGroupId, const Sint32 in_targetGroupId);
-        
+
         /// <summary>
         /// タスクアドレスをハンドルから取得
         /// </summary>
         /// <param name="hTask"></param>
         /// <returns></returns>
         Task* GetTask(const Common::Handle& in_hTask);
- 
-        template<class T>
+
+        template <class T>
         T* GetTask(const Common::Handle& in_hTask)
         {
             static_assert(std::is_base_of<Task, T>::value, "TクラスはTaskクラスを継承していない");
@@ -118,14 +118,14 @@ namespace Core
         /// <param name="in_groupId"></param>
         /// <param name="in_flags">論理和としてセットするフラグ</param>
         void EnableFlag(const Sint32 in_groupId, const Uint32 in_flags);
-        
+
         /// <summary>
         /// 論理和を使ったフラグの消去
         /// </summary>
         /// <param name="groupId"></param>
         /// <param name="flags">論理和で消去するフラグ</param>
         void DisableFlag(const Sint32 in_groupId, const Uint32 flags);
-        
+
         const Uint32 Flag(const Sint32 in_groupId) const;
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace Core
             /// 設定しているタスク数
             /// </summary>
             Uint32 _count = 0;
-            
+
             TaskGroup();
             ~TaskGroup();
         };
@@ -174,8 +174,7 @@ namespace Core
         const Sint32 _Dettach(Task* in_pTask);
 
     private:
-        TaskGroup *_pTasks = NULL;
-        Sint32 _groupNum = 0;
+        TaskGroup* _pTasks = NULL;
+        Sint32 _groupNum   = 0;
     };
-};
-
+};  // namespace Core

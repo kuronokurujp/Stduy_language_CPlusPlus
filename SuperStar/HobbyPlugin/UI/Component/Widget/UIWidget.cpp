@@ -14,4 +14,4 @@ namespace UI
     {
         this->_rect = in_pos;
     }
-}
+}  // namespace UI

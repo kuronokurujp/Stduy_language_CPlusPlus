@@ -508,6 +508,7 @@
       <Filter>Game\Res\Assets\Locate\JP</Filter>
     </None>
     <None Include="..\..\..\..\MEMO.md" />
+    <None Include="..\..\..\..\.clang-format" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\..\LICENSE.txt" />

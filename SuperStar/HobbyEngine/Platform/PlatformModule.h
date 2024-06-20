@@ -1,8 +1,7 @@
 ﻿#pragma once
 
-#include "Core/Core.h"
 #include "Core/Common/FixArray.h"
-
+#include "Core/Core.h"
 #include "Module/Module.h"
 
 // 前方宣言
@@ -12,7 +11,7 @@ namespace Core
     {
         class Manager;
     }
-}
+}  // namespace Core
 
 namespace Platform
 {
@@ -26,7 +25,7 @@ namespace Platform
     class TimeSystemInterface
     {
     public:
-        virtual const Uint32  NowMSec() = 0;
+        virtual const Uint32 NowMSec()             = 0;
         virtual void SleepMSec(const Uint32 in_ms) = 0;
     };
 
@@ -85,7 +84,7 @@ namespace Platform
 
         // 描画
         virtual void BeginRender(void* in_pCmdArray) = 0;
-        virtual void Redner(void* in_pCmdArray) = 0;
-        virtual void EndRender(void* in_pCmdArray) = 0;
+        virtual void Redner(void* in_pCmdArray)      = 0;
+        virtual void EndRender(void* in_pCmdArray)   = 0;
     };
-}
+}  // namespace Platform

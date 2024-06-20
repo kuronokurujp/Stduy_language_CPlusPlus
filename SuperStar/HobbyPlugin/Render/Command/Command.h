@@ -1,12 +1,10 @@
 ﻿#pragma once
 
-#include "Core/Core.h"
-
-#include "Core/Common/FixString.h"
-#include "Core/Math/Vector2.h"
-#include "Core/Math/Rect2.h"
-
 #include "../RenderType.h"
+#include "Core/Common/FixString.h"
+#include "Core/Core.h"
+#include "Core/Math/Rect2.h"
+#include "Core/Math/Vector2.h"
 
 namespace Render
 {
@@ -30,10 +28,8 @@ namespace Render
         Char chars[128];
     };
 
-    extern void Cmd2DText(
-        const Core::Math::Vector2& in_pos,
-        const Core::Common::FixStringBase& in_str,
-        const Color in_color);
+    extern void Cmd2DText(const Core::Math::Vector2& in_pos,
+                          const Core::Common::FixStringBase& in_str, const Color in_color);
 
     /// <summary>
     /// 2D画面に矩形を表示
@@ -49,9 +45,7 @@ namespace Render
         Color color;
     };
 
-    extern void Cmd2DRect(
-        const Core::Math::Rect2& in_rect,
-        const Color in_color);
+    extern void Cmd2DRect(const Core::Math::Rect2& in_rect, const Color in_color);
 
     /// <summary>
     /// 描画コマンド
@@ -60,7 +54,7 @@ namespace Render
     struct Command
     {
         Uint32 type = 0;
-        union 
+        union
         {
             // バッファ
             Uint64 work[128] = {};
@@ -71,10 +65,10 @@ namespace Render
         } data;
     };
 
-    template<typename T>
+    template <typename T>
     T* Cast(Command* in_pCom)
     {
         // TODO: キャストしたデータサイズがCommand型のを超えていないか
         return reinterpret_cast<T>(in_pCom);
     }
-}
+}  // namespace Render

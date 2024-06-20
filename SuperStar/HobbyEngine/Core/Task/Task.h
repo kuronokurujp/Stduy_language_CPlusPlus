@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "MiniEngine.h"
 #include "Core/Common/Handle.h"
+#include "MiniEngine.h"
 
 namespace Core
 {
@@ -15,7 +15,7 @@ namespace Core
     struct TaskData
     {
     public:
-        Uint32 id = 0;
+        Uint32 id   = 0;
         void* pData = NULL;
     };
 
@@ -30,7 +30,7 @@ namespace Core
         E_CLASS_COPY_CONSTRUCT_NG(Task);
 
     public:
-        static const Uint32 NONE_ID = 0;
+        static const Uint32 NONE_ID       = 0;
         static const Sint32 GROUP_NONE_ID = -1;
 
         // タスクは生成したインスタンスが再利用されるのでコンストラクタで初期化はできない
@@ -41,7 +41,7 @@ namespace Core
         /// 登録に必要な情報を設定
         /// </summary>
         virtual void Init(const Bool in_bAutoDelete);
-        
+
         /// <summary>
         /// タスク開始
         /// </summary>
@@ -55,24 +55,27 @@ namespace Core
         /// <summary>
         /// 更新用で継承先が実装しないとだめ
         /// </summary>
-        virtual void Update(const Float32 in_dt, const TaskData*) { E_ASSERT(FALSE && "継承クラスは必ず実装"); }
+        virtual void Update(const Float32 in_dt, const TaskData*)
+        {
+            E_ASSERT(FALSE && "継承クラスは必ず実装");
+        }
 
         /// <summary>
         /// タスク破棄
         /// </summary>
         void Kill();
-        
+
         const Common::Handle& GetHandle() const { return _hSelf; }
 
     private:
         void _Clear()
         {
             this->_bStart = TRUE;
-            this->_bKill = FALSE;
+            this->_bKill  = FALSE;
 
-            this->_groupId = Task::GROUP_NONE_ID;
-            this->_pPrev = NULL;
-            this->_pNext = NULL;
+            this->_groupId     = Task::GROUP_NONE_ID;
+            this->_pPrev       = NULL;
+            this->_pNext       = NULL;
             this->_bReleaseMem = FALSE;
         }
 
@@ -83,11 +86,11 @@ namespace Core
         Sint32 _groupId = Task::GROUP_NONE_ID;
         Common::Handle _hSelf;
         Bool _bStart = TRUE;
-        Bool _bKill = FALSE;
+        Bool _bKill  = FALSE;
         // タスクを解放した時にメモリからも解放するか
         // 解放しない場合はキャッシュして使いまわすことになる
         Bool _bReleaseMem = FALSE;
-        
+
         Task* _pPrev = NULL;
         Task* _pNext = NULL;
     };
@@ -95,5 +98,4 @@ namespace Core
     // タスクデータのデフォルト
     // タスクデータの引数でデフォルト設定する場合に利用
     extern const TaskData DEFAULT_TASK_DATA;
-};
-
+};  // namespace Core

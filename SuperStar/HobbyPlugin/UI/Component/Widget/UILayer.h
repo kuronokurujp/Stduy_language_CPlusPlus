@@ -20,4 +20,4 @@ namespace UI
         /// <param name="in_deltaTime">The in delta time.</param>
         void Update(const Float32 in_deltaTime) final override;
     };
-}
+}  // namespace UI

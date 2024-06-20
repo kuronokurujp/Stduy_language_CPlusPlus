@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\Tests\Catch.hpp" />
     <ClInclude Include="..\..\..\..\Tests\Memory\TestMemory.hpp">
       <Filter>Memory</Filter>
     </ClInclude>
@@ -32,6 +31,9 @@
     <ClInclude Include="..\..\..\..\Tests\HobbyPlugin\TestActorPlugin.hpp">
       <Filter>HobbyPlugin</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\Tests\ThirdParty\Catch.hpp">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Tests\TestMain.cpp" />
@@ -58,9 +60,13 @@
     <Filter Include="HobbyPlugin">
       <UniqueIdentifier>{66403715-4c95-41a9-9374-90a84776f18e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{ece585dc-cfc9-43c3-a649-a0dc6b635ea9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\.editorconfig" />
     <None Include="..\..\..\..\Tests\README.md" />
+    <None Include="..\..\..\..\.clang-format" />
   </ItemGroup>
 </Project>

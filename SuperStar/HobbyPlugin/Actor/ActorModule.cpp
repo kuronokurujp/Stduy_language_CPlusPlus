@@ -23,4 +23,4 @@ namespace Actor
     {
         return TRUE;
     }
-}
+}  // namespace Actor

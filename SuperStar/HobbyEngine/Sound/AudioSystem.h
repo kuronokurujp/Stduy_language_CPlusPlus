@@ -6,47 +6,47 @@
 // FMODのクラス前方宣言
 namespace FMOD
 {
-	namespace Studio
-	{
-		class System;
-		class Bank;
-		class EventDescription;
-	};
+    namespace Studio
+    {
+        class System;
+        class Bank;
+        class EventDescription;
+    };  // namespace Studio
 
-	class System;
-};
+    class System;
+};  // namespace FMOD
 
 namespace Sound
 {
-	class AudioSystem
-	{
-	public:
-		AudioSystem();
+    class AudioSystem
+    {
+    public:
+        AudioSystem();
 
-		bool Initialize();
-		void Shutdown();
+        bool Initialize();
+        void Shutdown();
 
-		void Update(float in_deltaTime);
+        void Update(float in_deltaTime);
 
-		void LoadBank(const std::string& in_rName);
-		void UnloadBank(const std::string& in_rName);
-		void UnloadAllBank();
+        void LoadBank(const std::string& in_rName);
+        void UnloadBank(const std::string& in_rName);
+        void UnloadAllBank();
 
-		void PlayEvent(const std::string& in_rName);
+        void PlayEvent(const std::string& in_rName);
 
-	private:
-		void _Clear()
-		{
-			this->pSystem = nullptr;
-			this->pLowLevelSystem = nullptr;
-		}
+    private:
+        void _Clear()
+        {
+            this->pSystem         = nullptr;
+            this->pLowLevelSystem = nullptr;
+        }
 
-		FMOD::Studio::System* pSystem;
-		FMOD::System* pLowLevelSystem;
+        FMOD::Studio::System* pSystem;
+        FMOD::System* pLowLevelSystem;
 
-		std::unordered_map<std::string, FMOD::Studio::Bank*> banks;
-		std::unordered_map<std::string, FMOD::Studio::EventDescription*> events;
-	};
-}
+        std::unordered_map<std::string, FMOD::Studio::Bank*> banks;
+        std::unordered_map<std::string, FMOD::Studio::EventDescription*> events;
+    };
+}  // namespace Sound
 
-#endif // __AUDIO_SYSTEM_H__
+#endif  // __AUDIO_SYSTEM_H__

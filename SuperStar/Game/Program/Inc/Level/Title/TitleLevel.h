@@ -21,5 +21,4 @@ namespace Level
 
         void Update(const Float32 in_dt, const Core::TaskData* in_pData) override final;
     };
-}
-
+}  // namespace Level

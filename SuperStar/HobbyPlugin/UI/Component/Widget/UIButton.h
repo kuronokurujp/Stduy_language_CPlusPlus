@@ -1,13 +1,11 @@
 ﻿#pragma once
 
-#include "MiniEngine.h"
-
-#include "Core/Math/Rect2.h"
-
-#include "UIWidget.h"
-
 #include <functional>
 #include <memory>
+
+#include "Core/Math/Rect2.h"
+#include "MiniEngine.h"
+#include "UIWidget.h"
 
 namespace UI
 {
@@ -17,7 +15,7 @@ namespace UI
     class UIButtonMessageHandler
     {
     public:
-        UIButtonMessageHandler() = default;
+        UIButtonMessageHandler()          = default;
         virtual ~UIButtonMessageHandler() = default;
 
         void OnPush() { this->_OnPushInternal(); }
@@ -35,17 +33,16 @@ namespace UI
     class UIButtonMessageHandlerDefault : public UIButtonMessageHandler
     {
     public:
-        UIButtonMessageHandlerDefault(Core::Common::FixString128 in_msg, UIButtonMessageHandlerImpOnPush in_func) :
-            _onPush(in_func),
-            _msg(in_msg) {}
+        UIButtonMessageHandlerDefault(Core::Common::FixString128 in_msg,
+                                      UIButtonMessageHandlerImpOnPush in_func)
+            : _onPush(in_func), _msg(in_msg)
+        {
+        }
 
         virtual ~UIButtonMessageHandlerDefault() = default;
 
     protected:
-        void _OnPushInternal() override final
-        {
-            this->_onPush(this->_msg);
-        }
+        void _OnPushInternal() override final { this->_onPush(this->_msg); }
 
     private:
         UIButtonMessageHandlerImpOnPush _onPush;
@@ -100,12 +97,9 @@ namespace UI
         virtual void OnTouch(const Platform::TouchInput& in_rTouch) override;
 
     private:
-        void _Clear()
-        {
-            this->_pushHandler.release();
-        }
+        void _Clear() { this->_pushHandler.release(); }
 
     private:
         std::unique_ptr<UIButtonMessageHandler> _pushHandler;
     };
-}
+}  // namespace UI

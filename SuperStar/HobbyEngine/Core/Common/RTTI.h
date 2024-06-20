@@ -16,11 +16,12 @@ namespace Core
             E_CLASS_COPY_CONSTRUCT_NG(RTTI);
 
         public:
-            RTTI(const Char* in_className) :
-                _className(in_className), _pBaseRTTI(NULL) {}
+            RTTI(const Char* in_className) : _className(in_className), _pBaseRTTI(NULL) {}
 
-            RTTI(const Char* in_className, const RTTI& in_baseRTTI) :
-                _className(in_className), _pBaseRTTI(&in_baseRTTI) {}
+            RTTI(const Char* in_className, const RTTI& in_baseRTTI)
+                : _className(in_className), _pBaseRTTI(&in_baseRTTI)
+            {
+            }
 
             const FixString128& GetName() const { return this->_className; }
             Bool IsExactly(const RTTI& in_rtti) const { return (this->_pBaseRTTI == &in_rtti); }
@@ -30,5 +31,5 @@ namespace Core
             const FixString128 _className;
             const RTTI* _pBaseRTTI = NULL;
         };
-    }
-}
+    }  // namespace Common
+}  // namespace Core

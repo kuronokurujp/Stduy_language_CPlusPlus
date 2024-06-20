@@ -2,21 +2,22 @@
 #define __CORE_MATH_H__
 
 #include <cmath>
-#include "Vector2.h"
+
 #include "Rect2.h"
-//#include "vector3.h"
-//#include "quaternion.h"
-//#include "matrix4.h"
+#include "Vector2.h"
+// #include "vector3.h"
+// #include "quaternion.h"
+// #include "matrix4.h"
 
 namespace Core
 {
     namespace Math
     {
         // 円周率
-        static const float PI = 3.1415926535f;
-        static const float TwoPI = 2 * PI;
-        static const float PIOver2 = PI / 2.0f;
-        static const float RADIANS_UNIT = PI / 180.0f;
+        static const float PI                  = 3.1415926535f;
+        static const float TwoPI               = 2 * PI;
+        static const float PIOver2             = PI / 2.0f;
+        static const float RADIANS_UNIT        = PI / 180.0f;
         static const float INVERT_RADIANS_UNIT = 180.0f / PI;
 
         /// <summary>
@@ -165,7 +166,7 @@ namespace Core
         /// <returns></returns>
         Matrix4 Matrix4FormQuaternion(const Quaternion& in_rQuaternion);
 #endif
-    }
-}
+    }  // namespace Math
+}  // namespace Core
 
 #endif

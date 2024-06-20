@@ -3,7 +3,6 @@
 // TODO: DXLib用の入力システム
 
 #include "DxLib.h"
-
 #include "Platform/PlatformInput.h"
 
 namespace DXLib
@@ -23,4 +22,4 @@ namespace DXLib
         Uint32 _currButton = 0;
         Uint32 _prevButton = 0;
     };
-}
+}  // namespace DXLib

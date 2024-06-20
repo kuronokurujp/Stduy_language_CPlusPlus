@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Core/Core.h"
 #include "Core/Common/Singleton.h"
+#include "Core/Core.h"
 
 namespace Core
 {
@@ -24,9 +24,9 @@ namespace Core
             // 最低アラインサイズ（ヘッダもこのアラインである必要あり）
             // X64であれば8byteなのでアライメントは8にする
 #ifdef _X64
-            static const Uint8	MINIMUM_ALIGN_SIZE = 8;
+            static const Uint8 MINIMUM_ALIGN_SIZE = 8;
 #else
-            static const Uint8	MINIMUM_ALIGN_SIZE = 4;
+            static const Uint8 MINIMUM_ALIGN_SIZE = 4;
 #endif
 
             /// <summary>
@@ -44,27 +44,33 @@ namespace Core
             };
 
 #ifdef _HOBBY_ENGINE_DEBUG
-            // メモリ確保
-            #define	ALLOCATE_MEMORY(allocateSize, page, alignSize) AllocateMemory(allocateSize, page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TOP, __FILE__, __LINE__)
+// メモリ確保
+#define ALLOCATE_MEMORY(allocateSize, page, alignSize)                                        \
+    AllocateMemory(allocateSize, page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TOP, \
+                   __FILE__, __LINE__)
 #else
             // メモリ確保
-            #define	ALLOCATE_MEMORY(allocateSize, page, alignSize) AllocateMemory( allocateSize, page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TOP )
+#define ALLOCATE_MEMORY(allocateSize, page, alignSize) \
+    AllocateMemory(allocateSize, page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_TOP)
 #endif
 
 #ifdef _HOBBY_ENGINE_DEBUG
-            // メモリ確保
-            #define	ALLOCATE_MEMORY_LAST(allocateSize, page, alignSize) AllocateMemory(allocateSize, page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_LAST, __FILE__, __LINE__ )
+// メモリ確保
+#define ALLOCATE_MEMORY_LAST(allocateSize, page, alignSize)                                    \
+    AllocateMemory(allocateSize, page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_LAST, \
+                   __FILE__, __LINE__)
 #else
             // メモリ確保
-            #define	ALLOCATE_MEMORY_LAST(allocateSize, page, alignSize) AllocateMemory(allocateSize, page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_LAST)
+#define ALLOCATE_MEMORY_LAST(allocateSize, page, alignSize) \
+    AllocateMemory(allocateSize, page, alignSize, Core::Memory::Manager::ALLOCATE_LOCATE_LAST)
 #endif
 
-            // メモリ解放
-            #define	FREE_MEMORY( pAllocateMemory ) FreeMemory( pAllocateMemory )
+// メモリ解放
+#define FREE_MEMORY(pAllocateMemory) FreeMemory(pAllocateMemory)
 
         private:
             // メモリページの最大数。アラインはこのサイズの公倍数である必要あり
-            static const Uint8	MEMORY_PAGE_MAX = 64;
+            static const Uint8 MEMORY_PAGE_MAX = 64;
 
             // 念のためアラインを１に
             // アラインが4とかになっていた場合
@@ -157,10 +163,14 @@ namespace Core
 
 #ifdef _HOBBY_ENGINE_DEBUG
             // メモリ確保
-            void* AllocateMemory(const Uint32 in_allocateSize, const Uint8 in_page, const Uint8 in_alignSize, const ALLOCATE_LOCATE_TYPE in_locateType, const Byte* in_pFile, Uint32 in_line);
+            void* AllocateMemory(const Uint32 in_allocateSize, const Uint8 in_page,
+                                 const Uint8 in_alignSize, const ALLOCATE_LOCATE_TYPE in_locateType,
+                                 const Byte* in_pFile, Uint32 in_line);
 #else
             // メモリ確保
-            void* AllocateMemory(const Uint32 in_allocateSize, const Uint8 in_page, const Uint8 in_alignSize, const ALLOCATE_LOCATE_TYPE in_locateType);
+            void* AllocateMemory(const Uint32 in_allocateSize, const Uint8 in_page,
+                                 const Uint8 in_alignSize,
+                                 const ALLOCATE_LOCATE_TYPE in_locateType);
 #endif
 
             // メモリ開放
@@ -179,10 +189,7 @@ namespace Core
             /// 利用準備ができているか
             /// </summary>
             /// <returns></returns>
-            inline const Bool _IsReady() const
-            {
-                return (this->_pHeapTop != NULL);
-            }
+            inline const Bool _IsReady() const { return (this->_pHeapTop != NULL); }
 
             /// <summary>
             /// 指定ページが初期化しているか
@@ -202,8 +209,7 @@ namespace Core
             const Bool _IsExistUsedMemoryBlock(const Uint8 in_page) const
             {
                 // ページのメモリブロック先頭にデータがなければ存在しない
-                if (this->_memoryPageInfoArray[in_page]._pMemoryBlockTop == NULL)
-                    return FALSE;
+                if (this->_memoryPageInfoArray[in_page]._pMemoryBlockTop == NULL) return FALSE;
 
                 // 最初のメモリブロックが使用中
                 if (this->_memoryPageInfoArray[in_page]._pMemoryBlockTop->_useFlag == 1)
@@ -220,10 +226,7 @@ namespace Core
             /// メモリブロックのヘッダーサイズを取得
             /// </summary>
             /// <returns></returns>
-            inline const Uint32 _GetMemoryBlockHeaderSize() const
-            {
-                return (sizeof(BlockHeader));
-            }
+            inline const Uint32 _GetMemoryBlockHeaderSize() const { return (sizeof(BlockHeader)); }
 
             /// <summary>
             /// メモリブロックのフッターサイズを取得
@@ -249,17 +252,21 @@ namespace Core
             }
 
             // メモリページの初期化
-            const Bool _InitMemoryPage(const Uint8 in_page, const Uint32 in_offset, const Uint32 in_size);
+            const Bool _InitMemoryPage(const Uint8 in_page, const Uint32 in_offset,
+                                       const Uint32 in_size);
             // 指定のメモリブロックの前にメモリブロックを連結する
-            void _AddListMemoryBlockPrev(BlockHeader* in_pMemoryBlock, BlockHeader* in_pTargetMemoryBlock);
+            void _AddListMemoryBlockPrev(BlockHeader* in_pMemoryBlock,
+                                         BlockHeader* in_pTargetMemoryBlock);
             // 指定のメモリブロックの後ろに、メモリブロックを連結する
-            void _AddListMemoryBlockNext(BlockHeader* in_pMemoryBlock, BlockHeader* in_pTargetMemoryBlock);
+            void _AddListMemoryBlockNext(BlockHeader* in_pMemoryBlock,
+                                         BlockHeader* in_pTargetMemoryBlock);
             // メモリブロックをリストからはずす
             void _DelListMemoryBlock(BlockHeader* in_pMemoryBlock);
             // 指定のメモリブロックを指定サイズで二つに分ける
             BlockHeader* _SplitMemoryBlock(BlockHeader* in_pMemoryBlock, Uint32 in_splitSize);
             // 指定されたメモリブロックをマージする
-            BlockHeader* _MergeMemoryBlock(BlockHeader* in_pMemoryBlock1, BlockHeader* in_pMemoryBlock2);
+            BlockHeader* _MergeMemoryBlock(BlockHeader* in_pMemoryBlock1,
+                                           BlockHeader* in_pMemoryBlock2);
 
 #ifdef _HOBBY_ENGINE_DEBUG
         public:
@@ -278,11 +285,11 @@ namespace Core
             // 門番（ビッグエンディアン）
             // static const Uint32 MAGIC_NUMBER = 0xDEADDEAD;
             // 門番(リトルエンディアン)
-            static const Uint32	MAGIC_NUMBER = 0xADEDADDE;
+            static const Uint32 MAGIC_NUMBER = 0xADEDADDE;
             // 空きメモリ領域に埋めるデータ
-            static const Uint8	FREEMEMORY_FILL_DATA = 0xDD;
+            static const Uint8 FREEMEMORY_FILL_DATA = 0xDD;
             // 取得直後のメモリに埋めるデータ
-            static const Uint8	NEWMEMORY_FILL_DATA = 0xCD;
+            static const Uint8 NEWMEMORY_FILL_DATA = 0xCD;
 
             /// <summary>
             /// 指定メモリブロックが有効かチェック
@@ -292,11 +299,11 @@ namespace Core
             const Bool _IsValidMemoryBlock(BlockHeader* in_pMemoryBlock)
             {
                 // ヘッダーの管理データをチェック
-                if (in_pMemoryBlock->_magicNumber != MAGIC_NUMBER)
-                    return FALSE;
+                if (in_pMemoryBlock->_magicNumber != MAGIC_NUMBER) return FALSE;
 
                 //  フッターの管理データをチェック
-                Byte* addr = (reinterpret_cast<Byte*>(in_pMemoryBlock)) + (in_pMemoryBlock->_size - this->_GetMemoryBlockFooterSize());
+                Byte* addr = (reinterpret_cast<Byte*>(in_pMemoryBlock)) +
+                             (in_pMemoryBlock->_size - this->_GetMemoryBlockFooterSize());
                 if (reinterpret_cast<BlockFooter*>(addr)->_magicNumber != MAGIC_NUMBER)
                     return FALSE;
 
@@ -308,12 +315,14 @@ namespace Core
             /// メモリブロックに門番を書き込む
             /// </summary>
             /// <param name="in_pMemoryBlock">メモリブロックのポインタ</param>
-            inline void	_SetMemoryBlockMagicNo(BlockHeader* in_pMemoryBlock)
+            inline void _SetMemoryBlockMagicNo(BlockHeader* in_pMemoryBlock)
             {
                 // ヘッダーに書き込む
                 in_pMemoryBlock->_magicNumber = MAGIC_NUMBER;
 
-                BlockFooter* pBlockFooter = reinterpret_cast<BlockFooter*>(reinterpret_cast<Byte*>(in_pMemoryBlock) + (in_pMemoryBlock->_size - _GetMemoryBlockFooterSize()));
+                BlockFooter* pBlockFooter = reinterpret_cast<BlockFooter*>(
+                    reinterpret_cast<Byte*>(in_pMemoryBlock) +
+                    (in_pMemoryBlock->_size - _GetMemoryBlockFooterSize()));
                 pBlockFooter->_magicNumber = MAGIC_NUMBER;
             }
 
@@ -334,8 +343,8 @@ namespace Core
 
             Bool _bEnable = TRUE;
         };
-    }
-}
+    }  // namespace Memory
+}  // namespace Core
 
 // メモリ管理のアクセスマクロ
 #define HOBBY_MEM_MANGER Core::Memory::Manager::I()

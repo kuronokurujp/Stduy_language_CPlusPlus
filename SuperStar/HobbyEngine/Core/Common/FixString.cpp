@@ -1,6 +1,7 @@
 ﻿#include "FixString.h"
-#include <stdio.h>
+
 #include <stdarg.h>
+#include <stdio.h>
 
 #ifdef _WIN
 
@@ -21,28 +22,26 @@ namespace Core
         {
             E_ASSERT(in_pBuff && in_size);
 
-            this->_pBuff = in_pBuff;
-            this->_size = in_size;
+            this->_pBuff    = in_pBuff;
+            this->_size     = in_size;
             this->_pBuff[0] = E_STR_TEXT('\0');
         }
 
         FixStringBase& FixStringBase::Replace(const Char* in_pOld, const Char* in_pNew)
         {
-            if (in_pOld == NULL)
-                return *this;
+            if (in_pOld == NULL) return *this;
 
-            if (in_pNew == NULL)
-                return *this;
+            if (in_pNew == NULL) return *this;
 
-            Uint32 oldLength = static_cast<Uint32>(E_STR_LEN(in_pOld));
-            Ptr newLength = static_cast<Ptr>(E_STR_LEN(in_pNew));
+            Uint32 oldLength    = static_cast<Uint32>(E_STR_LEN(in_pOld));
+            Ptr newLength       = static_cast<Ptr>(E_STR_LEN(in_pNew));
             const Char* pSrcStr = this->_pBuff;
 
             // 対象を探す
             do
             {
                 const Char* pFind = E_STR_STR(pSrcStr, in_pOld);
-                if (!pFind)	break;
+                if (!pFind) break;
 
                 // 見つかった場所を抜いて新しい文字列に差し替え
                 Ptr index = pFind - this->_pBuff;
@@ -51,8 +50,7 @@ namespace Core
                 pSrcStr = this->_pBuff + index + newLength;
 
                 // もうこれ以上置き換えられない
-                if (static_cast<Uint32>(pSrcStr - this->_pBuff) >= this->_size)
-                    break;
+                if (static_cast<Uint32>(pSrcStr - this->_pBuff) >= this->_size) break;
 
             } while (*pSrcStr != E_STR_TEXT('\0'));
 
@@ -61,24 +59,23 @@ namespace Core
 
         FixStringBase& FixStringBase::Insert(Uint32 in_index, const Char* in_pInsertStr)
         {
-            Char* pBuffEnd = this->_pBuff + this->_size - 1;
+            Char* pBuffEnd   = this->_pBuff + this->_size - 1;
             Uint32 originLen = this->Length();
-            Uint32 insertLen = ((!in_pInsertStr) ? 1 : static_cast<Uint32>(E_STR_LEN(in_pInsertStr)));
+            Uint32 insertLen =
+                ((!in_pInsertStr) ? 1 : static_cast<Uint32>(E_STR_LEN(in_pInsertStr)));
 
             // 後ろに追加して終わり
-            if (in_index >= originLen)
-                return (*this) += in_pInsertStr;
+            if (in_index >= originLen) return (*this) += in_pInsertStr;
 
             // 挿入サイズをチェックする
-            if (in_index + insertLen >= this->_size - 1)
-                insertLen = this->_size - in_index - 1;
+            if (in_index + insertLen >= this->_size - 1) insertLen = this->_size - in_index - 1;
 
             // 挿入箇所以降の文字を後ろへスライド
             {
-                const Char *pSrcTop = this->_pBuff + in_index;
-                Char *pSrcTail = this->_pBuff + originLen;
-                Char *pDst = this->_pBuff + originLen + insertLen;
-                const Char *pSrc;
+                const Char* pSrcTop = this->_pBuff + in_index;
+                Char* pSrcTail      = this->_pBuff + originLen;
+                Char* pDst          = this->_pBuff + originLen + insertLen;
+                const Char* pSrc;
 
                 // 溢れチェック
                 if (pDst > pBuffEnd)
@@ -90,21 +87,19 @@ namespace Core
                     *pSrcTail = E_STR_TEXT('\0');
                 }
                 E_ASSERT(*pSrcTail == E_STR_TEXT('\0'));
-                
+
                 // コピーする
-                for (pSrc = pSrcTail; pSrc >= pSrcTop; --pSrc, --pDst)
-                    *pDst = *pSrc;
+                for (pSrc = pSrcTail; pSrc >= pSrcTop; --pSrc, --pDst) *pDst = *pSrc;
             }
-            
+
             // 挿入処理
             {
-                Char* pDst = this->_pBuff + in_index;
+                Char* pDst       = this->_pBuff + in_index;
                 const Char* pSrc = in_pInsertStr;
 
                 if (in_pInsertStr)
                 {
-                    for (Uint32 i=0; i < insertLen; ++i)
-                        *pDst++ = *pSrc++;
+                    for (Uint32 i = 0; i < insertLen; ++i) *pDst++ = *pSrc++;
                 }
                 else
                 {
@@ -118,17 +113,17 @@ namespace Core
         FixStringBase& FixStringBase::Remove(Uint32 in_index, Uint32 in_count)
         {
             Uint32 size = this->Size();
-            Char *pDst = this->_pBuff + ((in_index > size) ? size : in_index);
-            const Char *pSrc = this->_pBuff + (((in_index + in_count) > size) ? size : (in_index + in_count));
-            const Char *pSrcEnd = this->_pBuff + size;
+            Char* pDst  = this->_pBuff + ((in_index > size) ? size : in_index);
+            const Char* pSrc =
+                this->_pBuff + (((in_index + in_count) > size) ? size : (in_index + in_count));
+            const Char* pSrcEnd = this->_pBuff + size;
 
-            while (pSrc <= pSrcEnd)
-                *pDst++ = *pSrc++;
+            while (pSrc <= pSrcEnd) *pDst++ = *pSrc++;
 
             return *this;
         }
 
-        FixStringBase& FixStringBase::Format(const Char *in_pFormat, ...)
+        FixStringBase& FixStringBase::Format(const Char* in_pFormat, ...)
         {
             va_list vlist;
             va_start(vlist, in_pFormat);
@@ -149,19 +144,17 @@ namespace Core
             {
                 this->Empty();
             }
-            
+
             return *this;
         }
 
         Sint32 FixStringBase::Find(const Char* in_pStr, Uint32 in_start) const
         {
             const Uint32 len = this->Length();
-            if (len <= in_start)
-                return -1;
+            if (len <= in_start) return -1;
 
-            const Char *pFind = E_STR_STR(this->_pBuff + in_start, in_pStr);
-            if (pFind == NULL)
-                return -1;
+            const Char* pFind = E_STR_STR(this->_pBuff + in_start, in_pStr);
+            if (pFind == NULL) return -1;
 
             return static_cast<Sint32>(pFind - this->_pBuff);
         }
@@ -172,22 +165,20 @@ namespace Core
             return static_cast<Uint32>(E_STR_LEN(this->_pBuff));
 #else
             Uint32 size = this->Size();
-            Uint32 len = 0;
+            Uint32 len  = 0;
 
             Uint32 offset = 0;
-            Uint32 i = 0;
+            Uint32 i      = 0;
             while (i < size)
             {
                 Uint8 c = static_cast<Uint8>(this->_pBuff[i]);
                 // 終端があれば終了する
-                if (c == 0x00)
-                    break;
+                if (c == 0x00) break;
 
                 // UTF8のコード表を見ると1byteが1文字とか2byteが1文字とかある
                 // https://seiai.ed.jp/sys/text/java/utf8table.html
                 // 1byteが1文字
-                if (c < 0x80)
-                    offset = 1;
+                if (c < 0x80) offset = 1;
                 // 2byteが1文字
                 else if (c < 0xE0)
                     offset = 2;
@@ -228,7 +219,7 @@ namespace Core
             {
                 this->Empty();
             }
-            
+
             return *this;
         }
 
@@ -236,7 +227,7 @@ namespace Core
         {
             if (in_pStr && this->_size > 0)
             {
-                Uint32 len = this->Length();
+                Uint32 len    = this->Length();
                 Uint32 catLen = this->_size - len - 1;
 
                 if (catLen > 0)
@@ -259,12 +250,11 @@ namespace Core
 
             if (len + 1 < this->_size)
             {
-                this->_pBuff[len] = c;
+                this->_pBuff[len]     = c;
                 this->_pBuff[len + 1] = '\0';
             }
 
             return *this;
         }
-    }
-}
-
+    }  // namespace Common
+}  // namespace Core

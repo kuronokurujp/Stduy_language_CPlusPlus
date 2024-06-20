@@ -27,11 +27,10 @@ namespace UI
         /// <param name="in_pChildActor"></param>
         virtual void OnRemoveChildActor(Actor::Object* in_pChildActor) final override;
 
-
     protected:
         virtual void _ProcessInput(const Float32, Platform::InputSystemInterface*) final override;
 
     private:
         Core::Common::Handle _hInputRouter;
     };
-}
+}  // namespace UI

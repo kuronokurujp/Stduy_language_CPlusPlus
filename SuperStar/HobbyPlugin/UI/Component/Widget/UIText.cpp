@@ -3,8 +3,8 @@
 #include "Core/Math/Vector3.h"
 
 // 依存するモジュール一覧
-#include "HobbyPlugin/Render/Command/Command.h"
 #include "HobbyPlugin/Actor/Actor.h"
+#include "HobbyPlugin/Render/Command/Command.h"
 
 namespace UI
 {
@@ -18,4 +18,4 @@ namespace UI
 
         Render::Cmd2DText(textPos, this->_str, {this->_color});
     }
-}
+}  // namespace UI

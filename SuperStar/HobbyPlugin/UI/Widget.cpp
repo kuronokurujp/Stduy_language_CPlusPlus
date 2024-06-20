@@ -9,29 +9,34 @@ namespace UI
         Actor::Object::OnAddChildActor(in_pChildActor);
 
         // TODO: 親アクターに設定しているInputRouterに追加設定
-        UIInputRouterComponent* pInputRouter = reinterpret_cast<UIInputRouterComponent*>(this->GetComponent(UIInputRouterComponent::CLASS_RTTI));
-        if (pInputRouter == NULL)
-            return;
+        UIInputRouterComponent* pInputRouter = reinterpret_cast<UIInputRouterComponent*>(
+            this->GetComponent(UIInputRouterComponent::CLASS_RTTI));
+        if (pInputRouter == NULL) return;
 
         Core::Common::FastFixArray<Actor::Component*, 128> inputTerminalComArray;
-        in_pChildActor->OutputChildComponents(inputTerminalComArray, UIInputIComponentInterface::CLASS_RTTI);
+        in_pChildActor->OutputChildComponents(inputTerminalComArray,
+                                              UIInputIComponentInterface::CLASS_RTTI);
         for (Uint32 i = 0; i < inputTerminalComArray.Size(); ++i)
         {
-            pInputRouter->AddTerminal(reinterpret_cast<UIInputIComponentInterface*>(inputTerminalComArray[i]));
+            pInputRouter->AddTerminal(
+                reinterpret_cast<UIInputIComponentInterface*>(inputTerminalComArray[i]));
         }
     }
 
     void Widget::OnRemoveChildActor(Actor::Object* in_pChildActor)
     {
         // TODO: アクターに設定しているInputRouterの解除
-        UIInputRouterComponent* pInputRouter = reinterpret_cast<UIInputRouterComponent*>(this->GetComponent(UIInputRouterComponent::CLASS_RTTI));
+        UIInputRouterComponent* pInputRouter = reinterpret_cast<UIInputRouterComponent*>(
+            this->GetComponent(UIInputRouterComponent::CLASS_RTTI));
         if (pInputRouter != NULL)
         {
             Core::Common::FastFixArray<Actor::Component*, 128> inputTerminalComArray;
-            in_pChildActor->OutputChildComponents(inputTerminalComArray, UIInputIComponentInterface::CLASS_RTTI);
+            in_pChildActor->OutputChildComponents(inputTerminalComArray,
+                                                  UIInputIComponentInterface::CLASS_RTTI);
             for (Uint32 i = 0; i < inputTerminalComArray.Size(); ++i)
             {
-                pInputRouter->RemoveTeminal(reinterpret_cast<UIInputIComponentInterface*>(inputTerminalComArray[i]));
+                pInputRouter->RemoveTeminal(
+                    reinterpret_cast<UIInputIComponentInterface*>(inputTerminalComArray[i]));
             }
         }
 
@@ -41,15 +46,15 @@ namespace UI
     void Widget::_ProcessInput(const Float32 in_dt, Platform::InputSystemInterface* in_pInput)
     {
         // TODO: 入力ルーターに入力情報を渡して子の入力端末の入力情報を更新
-        if (this->_hInputRouter.Null())
-            return;
+        if (this->_hInputRouter.Null()) return;
 
         {
             E_ASSERT(in_pInput != NULL);
 
-            UIInputRouterComponent* pInputRouter = reinterpret_cast<UIInputRouterComponent*>(this->GetComponent(UIInputRouterComponent::CLASS_RTTI));
+            UIInputRouterComponent* pInputRouter = reinterpret_cast<UIInputRouterComponent*>(
+                this->GetComponent(UIInputRouterComponent::CLASS_RTTI));
             E_ASSERT(pInputRouter != NULL);
             pInputRouter->ProcessInput(in_pInput);
         }
     }
-}
+}  // namespace UI

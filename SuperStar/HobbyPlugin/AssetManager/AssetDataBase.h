@@ -1,17 +1,16 @@
 ﻿#pragma once
 
-#include "HobbyEngine/MiniEngine.h"
-#include "HobbyEngine/Core/File/Path.h"
 #include "HobbyEngine/Core/Common/FixMap.h"
+#include "HobbyEngine/Core/File/Path.h"
+#include "HobbyEngine/MiniEngine.h"
 
-//#include "ThirdParty/nlohmann/json.hpp"
-// TODO: rapidjsonを導入
-// tomlライブラリ内の例外処理をOFF
-// こちらでエラー処理をする
+// #include "ThirdParty/nlohmann/json.hpp"
+//  TODO: rapidjsonを導入
+//  tomlライブラリ内の例外処理をOFF
+//  こちらでエラー処理をする
 #define TOML_EXCEPTIONS 0
-#include "ThirdParty/tomlplusplus/toml.hpp"
-
 #include "ThirdParty/simidjson/simdjson.h"
+#include "ThirdParty/tomlplusplus/toml.hpp"
 
 // 前方宣言
 namespace Platform
@@ -31,7 +30,7 @@ namespace AssetManager
     protected:
         virtual void _Init(const Char* in_pName, const Core::File::Path& in_rPath);
         virtual const Bool _Load(Platform::FileSystemInterface& in_rFileSystem) = 0;
-        virtual void _Unload() = 0;
+        virtual void _Unload()                                                  = 0;
 
     protected:
         Core::Common::FixString128 _name;
@@ -44,7 +43,8 @@ namespace AssetManager
     class AssetDataToml : public AssetDataBase
     {
     public:
-        #define TOML_NODE_MAP_TYPE Core::Common::FixMap<Core::Common::FixString128, class ::AssetManager::AssetDataToml::Node, 128>
+#define TOML_NODE_MAP_TYPE \
+    Core::Common::FixMap<Core::Common::FixString128, class ::AssetManager::AssetDataToml::Node, 128>
 
         class Node
         {
@@ -55,14 +55,13 @@ namespace AssetManager
 
             const Core::Common::FixString512 GetString();
 
-            template<typename... Args>
+            template <typename... Args>
             typename std::enable_if<(std::is_same<Args, const Char*>::value && ...), Node>::type
             GetNode(Args... args)
             {
                 // 引数の個数を取得
                 Uint32 count = static_cast<Uint32>(sizeof...(args));
-                if (count <= 0)
-                    return Node();
+                if (count <= 0) return Node();
 
                 // 初期化リストを使用して引数を処理
                 const Char* values[] = {args...};
@@ -70,14 +69,14 @@ namespace AssetManager
                 return this->_GetNode(values, count);
             }
 
-            template<typename... Args>
-            typename std::enable_if<(std::is_same<Args, const Char*>::value && ...), const Bool>::type
+            template <typename... Args>
+            typename std::enable_if<(std::is_same<Args, const Char*>::value && ...),
+                                    const Bool>::type
             OutputNodeMap(TOML_NODE_MAP_TYPE* out, Args... args)
             {
                 // 引数の個数を取得
                 Uint32 count = static_cast<Uint32>(sizeof...(args));
-                if (count <= 0)
-                    return FALSE;
+                if (count <= 0) return FALSE;
 
                 // 初期化リストを使用して引数を処理
                 const Char* values[] = {args...};
@@ -85,7 +84,8 @@ namespace AssetManager
             }
 
         private:
-            const Bool _OutputNodeMap(TOML_NODE_MAP_TYPE* out, const Char* in_args[], const Uint32 in_count);
+            const Bool _OutputNodeMap(TOML_NODE_MAP_TYPE* out, const Char* in_args[],
+                                      const Uint32 in_count);
             Node _GetNode(const Char*[], Uint32 in_count);
 
         private:
@@ -111,7 +111,7 @@ namespace AssetManager
         virtual void _Unload() override;
 
     protected:
-        template<typename... Args>
+        template <typename... Args>
         typename std::enable_if<(std::is_same<Args, const Char*>::value && ...), const Bool>::type
         _OutputValue(simdjson::fallback::ondemand::value* out, Args... args)
         {
@@ -119,8 +119,7 @@ namespace AssetManager
 
             // 引数の個数を取得
             Uint32 count = static_cast<Uint32>(sizeof...(args));
-            if (count <= 0)
-                return FALSE;
+            if (count <= 0) return FALSE;
 
             // 初期化リストを使用して引数を処理
             const Char* values[] = {args...};
@@ -128,8 +127,8 @@ namespace AssetManager
         }
 
     private:
-        const Bool _OutputValue(
-            simdjson::fallback::ondemand::value* out, const Sint32 in_count, const Char* values[]);
+        const Bool _OutputValue(simdjson::fallback::ondemand::value* out, const Sint32 in_count,
+                                const Char* values[]);
 
     protected:
         Core::Common::Handle _fileHandle;
@@ -138,4 +137,4 @@ namespace AssetManager
         std::unique_ptr<simdjson::ondemand::parser> _parser;
         simdjson::ondemand::document _doc;
     };
-}
+}  // namespace AssetManager

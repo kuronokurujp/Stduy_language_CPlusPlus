@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include "HobbyEngine/MiniEngine.h"
 #include "HobbyEngine/Core/Common/FixMap.h"
 #include "HobbyEngine/Core/File/Path.h"
+#include "HobbyEngine/MiniEngine.h"
 #include "HobbyEngine/Module/Module.h"
 
 // 依存モジュール
@@ -23,10 +23,7 @@ namespace Localization
         {
         public:
             LocateData() {}
-            LocateData(const LocateData& in_data)
-            {
-                this->_textFilePath = in_data._textFilePath;
-            }
+            LocateData(const LocateData& in_data) { this->_textFilePath = in_data._textFilePath; }
 
             LocateData(const Core::File::Path& in_textFileJsonPath)
             {
@@ -36,7 +33,8 @@ namespace Localization
             Core::File::Path _textFilePath;
         };
 
-        #define SYSTEM_ASSET_LOCATE_MAP Core::Common::FixMap<Core::Common::FixString128, SystemAssetData::LocateData, 32>
+#define SYSTEM_ASSET_LOCATE_MAP \
+    Core::Common::FixMap<Core::Common::FixString128, SystemAssetData::LocateData, 32>
 
         virtual const Bool _Load(Platform::FileSystemInterface& in_rFileSystem) override;
 
@@ -53,7 +51,8 @@ namespace Localization
         /// <summary>
         /// 各言語毎のデータ
         /// </summary>
-        Core::Common::FixMap<Core::Common::FixString128, SYSTEM_ASSET_LOCATE_MAP, 32> _locateDataMap;
+        Core::Common::FixMap<Core::Common::FixString128, SYSTEM_ASSET_LOCATE_MAP, 32>
+            _locateDataMap;
     };
 
     /// <summary>
@@ -70,7 +69,8 @@ namespace Localization
         const Core::Common::FixString1024& GetText(const Char* in_pKey);
 
     private:
-        Core::Common::FixMap<Core::Common::FixString128, Core::Common::FixString1024, 128> _textBuffMap;
+        Core::Common::FixMap<Core::Common::FixString128, Core::Common::FixString1024, 128>
+            _textBuffMap;
     };
 
     /// <summary>
@@ -105,20 +105,18 @@ namespace Localization
         const Bool UnloadTextAll(const Core::Common::FixString128&);
 
         // ローカライズテキストを取得
-        const Char* Text(
-            const Core::Common::FixString128& in_rLocateName,
-            const Core::Common::FixString128& in_rGroupName,
-            const Core::Common::FixString128& in_rKey);
+        const Char* Text(const Core::Common::FixString128& in_rLocateName,
+                         const Core::Common::FixString128& in_rGroupName,
+                         const Core::Common::FixString128& in_rKey);
 
     private:
-        #define LOCATE_TEXT_MAP Core::Common::FixMap<Core::Common::FixString128, Core::Common::Handle, 64>
+#define LOCATE_TEXT_MAP Core::Common::FixMap<Core::Common::FixString128, Core::Common::Handle, 64>
 
         Core::Common::Handle _sysAssetDataHandle;
         Core::Common::FixMap<Core::Common::FixString128, LOCATE_TEXT_MAP, 16> _locateDataMap;
     };
-}
+}  // namespace Localization
 
 #define HOBBY_LOCALIZATION_MODULE Localization::LocalizationModule::I()
 
 MODULE_GENRATE_DECLARATION(Localization::LocalizationModule, Localization);
-

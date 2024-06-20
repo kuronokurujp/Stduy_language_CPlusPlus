@@ -1,13 +1,14 @@
 ﻿#pragma once
 
 #include <time.h>
-#include "Core/Common/FixString.h"
+
 #include "Core/Common/FixMap.h"
+#include "Core/Common/FixString.h"
 #include "Core/Memory/Memory.h"
 
 // 標準のメモリ確保を使用する<文字列, 整数>のマップ
 typedef Core::Common::FixMap<Core::Common::FixString16, Sint32, 2048> BASICMAP;
-std::ostream& operator<<(std::ostream& out, const BASICMAP::Iterator &r)
+std::ostream& operator<<(std::ostream& out, const BASICMAP::Iterator& r)
 {
     (void)r;
     return out;
@@ -26,7 +27,7 @@ TEST_CASE("FixMap Test")
 
     // データを用意しておく
     Sint32* pDataArray = new Sint32[ARRAY_NUM];
-    for (Sint32 ii=0; ii<ARRAY_NUM; ii++)
+    for (Sint32 ii = 0; ii < ARRAY_NUM; ii++)
     {
         pDataArray[ii] = (Sint32)ii;
     }
@@ -37,7 +38,7 @@ TEST_CASE("FixMap Test")
         Sint32 b = rand() % ARRAY_NUM;
 
         // 適当に混ぜっ返す
-        Sint32	tmp = pDataArray[a];
+        Sint32 tmp    = pDataArray[a];
         pDataArray[a] = pDataArray[b];
         pDataArray[b] = tmp;
     }
@@ -49,7 +50,7 @@ TEST_CASE("FixMap Test")
     // データの追加
     {
         ctime = clock();
-        for (Sint32 ii=0; ii<ARRAY_NUM; ii++)
+        for (Sint32 ii = 0; ii < ARRAY_NUM; ii++)
         {
             // データの中身を16進数にしてキーにする
             strKey.Format("0x%04x", pDataArray[ii]);
@@ -59,13 +60,13 @@ TEST_CASE("FixMap Test")
         // 時間の報告
         E_LOG_LINE("add ctime=%f sec", (double)(clock() - ctime) / CLOCKS_PER_SEC);
     }
-    
+
     // 空じゃなくなったかチェック
     CHECK(!testmap.Empty());
-    
+
     // ノードの正当性チェック
     {
-        ctime = clock();
+        ctime        = clock();
         Bool bResult = testmap.CheckValidByDebug(ARRAY_NUM);
         CHECK(bResult);
         E_LOG_LINE("check ctime=%f sec", (double)(clock() - ctime) / CLOCKS_PER_SEC);
@@ -74,7 +75,7 @@ TEST_CASE("FixMap Test")
     // 検索
     {
         ctime = clock();
-        for (Sint32 ii=0; ii<ARRAY_NUM; ii++)
+        for (Sint32 ii = 0; ii < ARRAY_NUM; ii++)
         {
             // キーを作る
             strKey.Format("0x%04x", ii);
@@ -87,19 +88,19 @@ TEST_CASE("FixMap Test")
         }
         E_LOG_LINE("find ctime=%f sec", (double)(clock() - ctime) / CLOCKS_PER_SEC);
     }
-    
+
     // イテレータテスト
     {
         // イテレータ用のチェックリスト配列を作る
-        Bool* pCheckArray = new Bool[ARRAY_NUM];
+        Bool* pCheckArray    = new Bool[ARRAY_NUM];
         Uint32 checked_count = 0;
-        for (Sint32 ii=0; ii<ARRAY_NUM; ii++)
+        for (Sint32 ii = 0; ii < ARRAY_NUM; ii++)
         {
             pCheckArray[ii] = FALSE;
         }
-        
+
         ctime = clock();
-        for (BASICMAP::Iterator it=testmap.Begin(); it!=testmap.End(); ++it)
+        for (BASICMAP::Iterator it = testmap.Begin(); it != testmap.End(); ++it)
         {
             CHECK((0 <= it->_data && it->_data < ARRAY_NUM));
             CHECK((pCheckArray[it->_data] == FALSE));
@@ -116,11 +117,11 @@ TEST_CASE("FixMap Test")
 
         E_SAFE_DELETE_ARRAY(pCheckArray);
     }
-    
+
     // 削除
     {
         ctime = clock();
-        for (Sint32 ii=0; ii<ARRAY_NUM; ii++)
+        for (Sint32 ii = 0; ii < ARRAY_NUM; ii++)
         {
             // キーを作って
             strKey.Format("0x%04x", ii);
@@ -137,19 +138,19 @@ TEST_CASE("FixMap Test")
 
     // 全て削除が終わったので、空かどうかチェック
     CHECK(testmap.Empty());
-    
+
     // 添え字でアクセスする
-    testmap["one"] = 1;
-    testmap["two"] = 2;
+    testmap["one"]   = 1;
+    testmap["two"]   = 2;
     testmap["three"] = 3;
     CHECK(testmap["one"] == 1);
     CHECK(testmap["two"] == 2);
     CHECK(testmap["three"] == 3);
     CHECK(testmap.Size() == 3);
-    
+
     // 添え字で書き換え
-    testmap["one"] = 10;
-    testmap["two"] = 20;
+    testmap["one"]   = 10;
+    testmap["two"]   = 20;
     testmap["three"] = 30;
     CHECK(testmap["one"] == 10);
     CHECK(testmap["two"] == 20);
@@ -160,11 +161,10 @@ TEST_CASE("FixMap Test")
     // クリア関数のテスト
     testmap.Clear();
     CHECK(testmap.Empty());
-    
+
     // データの削除
     E_SAFE_DELETE_ARRAY(pDataArray);
 }
-
 
 TEST_CASE("FixMap Copy")
 {
@@ -173,16 +173,11 @@ TEST_CASE("FixMap Copy")
     struct TEST_DATA
     {
         const Char* pKey = 0;
-        Sint32 num = 0;
+        Sint32 num       = 0;
     };
-    static const TEST_DATA s_aArray[] =
-    {
-        { E_STR_TEXT("test1"), 10 },
-        { E_STR_TEXT("test2"), 20 },
-        { E_STR_TEXT("test3"), 30 },
-        { E_STR_TEXT("test4"), 40 },
-        { E_STR_TEXT("test5"), 50 },
-        { E_STR_TEXT("test6"), 60 },
+    static const TEST_DATA s_aArray[] = {
+        {E_STR_TEXT("test1"), 10}, {E_STR_TEXT("test2"), 20}, {E_STR_TEXT("test3"), 30},
+        {E_STR_TEXT("test4"), 40}, {E_STR_TEXT("test5"), 50}, {E_STR_TEXT("test6"), 60},
     };
 
     for (Uint32 i = 0; i < E_ARRAY_NUM(s_aArray); ++i)

@@ -48,10 +48,7 @@ namespace Core
             /// インスタンスがあるかどうか
             /// </summary>
             /// <returns></returns>
-            static const Bool Have()
-            {
-                return (_pInstance != NULL);
-            }
+            static const Bool Have() { return (_pInstance != NULL); }
 
             /// <summary>
             /// シングルトン対象から解放
@@ -68,7 +65,6 @@ namespace Core
 
         // static変数
         template <typename T>
-        T* Singleton <T>::_pInstance = NULL;
-    }
-};
-
+        T* Singleton<T>::_pInstance = NULL;
+    }  // namespace Common
+};     // namespace Core

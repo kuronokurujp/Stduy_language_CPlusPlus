@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Platform/Module.h"
 #include "DXLibTime.h"
+#include "Platform/Module.h"
 
 namespace DXLib
 {
@@ -23,12 +23,9 @@ namespace DXLib
 
         void GenerateOutput() override final {}
 
-        Platform::TimeInterface* Time() override final
-        {
-            return &this->_time;
-        }
+        Platform::TimeInterface* Time() override final { return &this->_time; }
 
     private:
         DXLibTime _time;
     };
-}
+}  // namespace DXLib

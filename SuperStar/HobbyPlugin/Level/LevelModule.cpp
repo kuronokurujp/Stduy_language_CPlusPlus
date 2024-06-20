@@ -41,4 +41,4 @@ namespace Level
 
         return TRUE;
     }
-}
+}  // namespace Level
