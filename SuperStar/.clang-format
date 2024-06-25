@@ -3,6 +3,8 @@ BasedOnStyle: Google
 IndentWidth: 4
 ColumnLimit: 100
 UseTab: Never
+UseCRLF: false
+DeriveLineEnding: false
 SortIncludes: true
 AlignConsecutiveAssignments: true
 BreakBeforeBraces: Allman

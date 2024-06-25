@@ -32,6 +32,11 @@ VisualStdio 2022 | 17.8.6
     - どういった編集をするのかは以下のサイトが参考になる
         - [公式ドキュメント](https://clang.llvm.org/docs/ClangFormatStyleOptions.html)
         - [Clang-Formatの書式について](https://qiita.com/koyukitukimino/items/9b8f74d1ae307a7017d3)
+
+### どういった整形内容になっているか
+- ファイルの改行コードをLFに統一
+- インデントはスペース
+
 ### バッチファイルで一括して整形する場合
 1. HobbyEngine/Tool/CodeCleanup.batを実行
     - 例: CodeClenupSampleディレクトリ内のcpp/h/hppファイルを全て自動整形
