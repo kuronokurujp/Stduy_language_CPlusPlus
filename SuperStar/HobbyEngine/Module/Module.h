@@ -1,91 +1,80 @@
 ﻿#pragma once
 
-#include "Core/Common/FixArray.h"
+// #include "Core/Common/FixArray.h"
+#include "Core/Common/FixMap.h"
+#include "Core/Common/FixString.h"
 #include "Core/Common/Handle.h"
 #include "Core/Common/Singleton.h"
 #include "Core/Core.h"
 
+namespace Platform
+{
+    class PlatformModule;
+}
+
 namespace Module
 {
-    // 前方宣言
-    class ModuleInterface;
+    /// <summary>
+    /// 外部モジュールの基本クラス
+    /// </summary>
+    class ModuleBase
+    {
+        E_CLASS_COPY_CONSTRUCT_NG(ModuleBase);
+        E_CLASS_MOVE_CONSTRUCT_NG(ModuleBase);
+
+    public:
+        ModuleBase(const Char* in_pName);
+
+        Platform::PlatformModule* GetPlatformModule() const;
+
+        const Char* Name() const E_NOEXCEPT { return this->_name.Str(); }
+
+    protected:
+        /// <summary>
+        /// モジュールの開始
+        /// </summary>
+        /// <returns></returns>
+        virtual const Bool Start() = 0;
+
+        /// <summary>
+        /// モジュールの解放
+        /// インスタンス破棄時に呼ばれる
+        /// </summary>
+        virtual const Bool Release() = 0;
+
+        virtual const Bool Update(const Float32 in_deltaTime) { return FALSE; }
+
+    private:
+        Core::Common::FixString128 _name;
+
+    private:
+        static inline Core::Common::FixMap<Core::Common::FixString128, ModuleBase*, 64> _modules;
+
+        friend class ModuleManager;
+    };
 
     /// <summary>
     /// モジュール管理クラス
     /// </summary>
     class ModuleManager : public Core::Common::Singleton<ModuleManager>
     {
-        friend class ModuleInterface;
-
     public:
+        ModuleBase* Get(const Char* in_pName);
+
+        /// <summary>
+        /// モジュールの利用開始
+        /// </summary>
+        const Bool Start();
+
         /// <summary>
         /// 解放
         /// </summary>
-        void Release();
+        const Bool Release() override final;
 
         /// <summary>
         /// モジュール更新
         /// </summary>
         void Update(const Float32 in_deltaTime);
-
-        /// <summary>
-        /// 追加モジュールの適応
-        /// </summary>
-        /// <returns></returns>
-        const Bool Apply();
-
-    private:
-        /// <summary>
-        /// モジュール登録
-        /// </summary>
-        /// <param name="in_pModule"></param>
-        void _Add(Module::ModuleInterface* in_pModule);
-
-    private:
-        Core::Common::FastFixArray<Module::ModuleInterface*, 128> _modules;
-    };
-
-    /// <summary>
-    /// モジュールのインターフェイス
-    /// </summary>
-    class ModuleInterface
-    {
-        E_CLASS_COPY_CONSTRUCT_NG(ModuleInterface);
-        E_CLASS_MOVE_CONSTRUCT_NG(ModuleInterface);
-
-    public:
-        ModuleInterface();
-
-        /// <summary>
-        /// モジュールの開始と終了
-        /// </summary>
-        /// <returns></returns>
-        virtual const Bool Init() = 0;
-        virtual const Bool End()  = 0;
-
-        virtual const Bool Update(const Float32 in_deltaTime) = 0;
-    };
-
-    /// <summary>
-    /// 外部モジュールの基本クラス
-    /// </summary>
-    template <class T>
-    class ModuleBase : public Core::Common::Singleton<T>, public ModuleInterface
-    {
-        E_CLASS_COPY_CONSTRUCT_NG(ModuleBase);
-        E_CLASS_MOVE_CONSTRUCT_NG(ModuleBase);
-
-    public:
-        ModuleBase() : Core::Common::Singleton<T>(), ModuleInterface() {}
-
-        /// <summary>
-        /// モジュールの開始と終了
-        /// </summary>
-        /// <returns></returns>
-        virtual const Bool Init() override { return FALSE; }
-        virtual const Bool End() override { return FALSE; }
-
-        virtual const Bool Update(const Float32 in_deltaTime) override { return FALSE; }
     };
 }  // namespace Module
 
@@ -93,23 +82,24 @@ namespace Module
 // モジュールのhファイルの末尾に宣言する
 // _name_にはModuleBaseクラスを継承したクラス名,
 // namespace内でこのマクロは使ってはいけない
+// ポインタにして弱参照にしている
 #define MODULE_GENRATE_DECLARATION(_type_, _name_) \
     extern _type_ s_global_module_##_name_;        \
-    extern _type_& Module##_name_()
+    extern _type_* Module##_name_();
 
 // モジュール定義マクロ
 // モジュールのcppファイルの先頭につける
-#define MODULE_GENRATE_DEFINITION(_type_, _name_) \
-    _type_& Module##_name_()                      \
-    {                                             \
-        return s_global_module_##_name_;          \
-    }                                             \
-    static _type_ s_global_module_##_name_
+#define MODULE_GENRATE_DEFINITION(_type_, _name_)                         \
+    static _type_ s_global_module_##_name_ = _type_(E_STR_TEXT(#_name_)); \
+    _type_* Module##_name_()                                              \
+    {                                                                     \
+        return &s_global_module_##_name_;                                 \
+    }
 
 // モジュール管理の定義マクロ
 // モジュール管理を使う前に呼び出す
-#define MODULE_MANAGER_DEFINITION               \
-    if (Module::ModuleManager::Have() == FALSE) \
-    {                                           \
-        static Module::ModuleManager manager;   \
+#define MODULE_MANAGER_DEFINITION                \
+    if (Module::ModuleManager::Exist() == FALSE) \
+    {                                            \
+        static Module::ModuleManager manager;    \
     }

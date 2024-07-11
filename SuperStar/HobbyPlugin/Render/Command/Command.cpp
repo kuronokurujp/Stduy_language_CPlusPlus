@@ -15,11 +15,13 @@ namespace Render
             ComText2D* pText2D = &cmd.data.text2D;
             pText2D->x         = in_pos.x;
             pText2D->y         = in_pos.y;
-            E_STR_CPY_S(pText2D->chars, E_ARRAY_SIZE(pText2D->chars), in_str.Str(), in_str.Size()),
-                pText2D->color = in_color;
+            pText2D->color     = in_color;
+            E_STR_ERRNO e = E_STR_CPY_S(pText2D->chars, E_ARRAY_NUM(pText2D->chars), in_str.Str(),
+                                        in_str.Capacity());
+            E_ASSERT(E_STR_SUCCESS(e) && "文字列コピーに失敗");
         }
 
-        RenderModule::I().AddCmd(std::move(cmd));
+        ModuleRender()->AddCmd(std::move(cmd));
     }
 
     void Cmd2DRect(const Core::Math::Rect2& in_rect, const Color in_color)
@@ -36,6 +38,6 @@ namespace Render
             pRect2D->color     = in_color;
         }
 
-        RenderModule::I().AddCmd(std::move(cmd));
+        ModuleRender()->AddCmd(std::move(cmd));
     }
 }  // namespace Render

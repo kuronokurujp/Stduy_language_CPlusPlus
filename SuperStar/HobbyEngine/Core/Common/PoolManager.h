@@ -5,7 +5,8 @@
 
 #include "Core/Common/FixArray.h"
 #include "Core/Common/Handle.h"
-#include "MiniEngine.h"
+#include "Core/Core.h"
+#include "Core/Memory/Memory.h"
 
 namespace Core
 {
@@ -40,6 +41,7 @@ namespace Core
             const Uint32 UseCount() const
             {
                 if (this->_pUserSlot == NULL) return 0;
+                if (this->_pUserSlot.operator bool() == FALSE) return 0;
 
                 return static_cast<Uint32>(this->_pUserSlot->size());
             }
@@ -251,7 +253,7 @@ namespace Core
         /// データ最大数は固定
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        template <typename T, Uint32 SIZE>
+        template <typename T, Uint32 CAPACITY>
         class FixPoolManager
         {
         private:
@@ -262,14 +264,14 @@ namespace Core
             /// データ使用個数
             /// </summary>
             /// <returns></returns>
-            const Uint32 UseCount() const { return static_cast<Uint32>(this->_userSlot.Size()); }
+            const Uint32 Size() const E_NOEXCEPT { return this->_userSlot.Size(); }
 
-            const Uint32 Max() const { return static_cast<Uint32>(this->_magicNumbers.Max()); }
+            const Uint32 Capacity() const E_NOEXCEPT { return this->_magicNumbers.Capacity(); }
 
-            const bool Empty() const { return (this->UseCount() <= 0); }
+            const bool Empty() const E_NOEXCEPT { return (this->Size() <= 0); }
 
             // 現在利用しているデータリストを取得
-            const std::list<T*>& GetUserDataList() const { return this->_userSlot; }
+            const std::list<T*>& GetUserDataList() const E_NOEXCEPT { return this->_userSlot; }
 
             /// <summary>
             /// プールしているデータの中で利用できるデータ枠を取得
@@ -281,7 +283,7 @@ namespace Core
                 E_ASSERT(out_pHandle != NULL);
 
                 Uint32 index = 0;
-                if (this->_freeSlots.IsEmpty())
+                if (this->_freeSlots.Empty())
                 {
                     this->_userSlot.PushBack(T());
 
@@ -336,9 +338,9 @@ namespace Core
             }
 
         private:
-            FastFixArray<T, SIZE> _userSlot;
-            FastFixArray<Uint32, SIZE> _freeSlots;
-            FastFixArray<Uint32, SIZE> _magicNumbers;
+            FastFixArray<T, CAPACITY> _userSlot;
+            FastFixArray<Uint32, CAPACITY> _freeSlots;
+            FastFixArray<Uint32, CAPACITY> _magicNumbers;
         };
     }  // namespace Common
 };     // namespace Core

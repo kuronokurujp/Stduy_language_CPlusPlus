@@ -10,7 +10,7 @@ namespace AssetManager
     void AssetDataBase::_Init(const Char* in_pName, const Core::File::Path& in_rPath)
     {
         E_ASSERT(in_pName && "名前が存在しない");
-        E_ASSERT(in_rPath.IsEmpty() == FALSE);
+        E_ASSERT(in_rPath.Empty() == FALSE);
 
         this->_name = in_pName;
         this->_path = in_rPath;
@@ -23,7 +23,7 @@ namespace AssetManager
         if (this->_result.failed())
         {
             Core::Common::FixString256 errorMsg(this->_result.error().description().data());
-            E_LOG_LINE(errorMsg.Str());
+            E_LOG_LINE(E_STR_FORMAT_TEXT, errorMsg.Str());
 
             return FALSE;
         }
@@ -116,10 +116,10 @@ namespace AssetManager
                         auto resultCode = this->_parser->iterate(*this->_json).get(this->_doc);
                         if (resultCode != simdjson::error_code::SUCCESS)
                         {
-                            E_PG_LOG_LINE(E_STR_TEXT("%ls ファイルエラー: %d"), this->_path.Str(),
-                                          resultCode);
+                            E_PG_LOG_LINE(E_STR_FORMAT_TEXT E_STR_TEXT(" ファイルエラー: %d"),
+                                          this->_path.Str(), resultCode);
                             E_LOG_LINE(E_STR_TEXT("エラーのjson内容"));
-                            E_LOG_LINE(E_STR_TEXT("%hs"), pReadTmpBuff);
+                            E_LOG_LINE(E_STR_FORMAT_PURE_TEXT, pReadTmpBuff);
 
                             bRet = FALSE;
                         }
@@ -132,8 +132,9 @@ namespace AssetManager
             }
             catch (const simdjson::simdjson_error& e)
             {
-                E_PG_LOG_LINE(E_STR_TEXT("{%ls}ファイルの扱いに失敗: %hs"), this->_path.Str(),
-                              e.what());
+                E_PG_LOG_LINE(E_STR_FORMAT_TEXT E_STR_TEXT("ファイルの扱いに失敗: ")
+                                  E_STR_FORMAT_PURE_TEXT,
+                              this->_path.Str(), e.what());
                 bRet = FALSE;
             }
             // jsonに展開した時のメモリを利用するので読み込んだメモリを解放
@@ -164,7 +165,7 @@ namespace AssetManager
         {
             Core::Common::FixString256 str(values[0]);
             Byte key[256] = {0};
-            str.OutputUTF8(key, E_ARRAY_NUM(key));
+            str.OutputUTF8(key, E_ARRAY_SIZE(key));
 
             auto v = this->_doc.find_field(key);
             E_ASSERT(v.error() == simdjson::error_code::SUCCESS);
@@ -172,7 +173,7 @@ namespace AssetManager
             for (Sint32 i = 1; i < in_count; ++i)
             {
                 Core::Common::FixString256 str(values[i]);
-                str.OutputUTF8(key, E_ARRAY_NUM(key));
+                str.OutputUTF8(key, E_ARRAY_SIZE(key));
                 v = v.find_field(key);
                 E_ASSERT(v.error() == simdjson::error_code::SUCCESS);
             }
@@ -183,9 +184,65 @@ namespace AssetManager
         }
         catch (const simdjson::simdjson_error& e)
         {
-            E_PG_LOG_LINE(E_STR_TEXT("json要素がない: %hs"), e.what());
+            E_PG_LOG_LINE(E_STR_TEXT("json要素がない: ") E_STR_FORMAT_PURE_TEXT, e.what());
         }
 
         return FALSE;
     }
+
+    const Bool AssetDataXml::_Load(Platform::FileSystemInterface& in_rFileSystem)
+    {
+        Bool bRet = TRUE;
+
+        // ファイルを開く
+        this->_fileHandle = in_rFileSystem.FileOpen(this->_path);
+        E_ASSERT(this->_fileHandle.Null() == FALSE);
+        {
+            Byte* pReadTmpBuff = NULL;
+            {
+                // 開いたファイルのデータサイズを取得して読み込むメモリを確保
+                Sint32 size    = in_rFileSystem.FileSize(this->_fileHandle);
+                Sint32 memSize = size + 1;
+                pReadTmpBuff   = new Byte[memSize];
+                ::memset(pReadTmpBuff, '\0', memSize);
+
+                // ファイルの読み込み
+                if (in_rFileSystem.FileRead(this->_fileHandle, pReadTmpBuff, size))
+                {
+                    pugi::xml_parse_result result = this->_doc.load_string(pReadTmpBuff);
+                    if (result)
+                    {
+                        E_LOG_LINE(E_STR_TEXT("XML Load Success: ") E_STR_FORMAT_TEXT,
+                                   this->_path.Str());
+                    }
+                    else
+                    {
+                        E_LOG_LINE(E_STR_TEXT("Error description: ") E_STR_FORMAT_PURE_TEXT,
+                                   result.description());
+                        E_LOG_LINE(E_STR_TEXT("Error offset: %lld (error at [... ")
+                                       E_STR_FORMAT_PURE_TEXT E_STR_TEXT("] "),
+                                   result.offset, (pReadTmpBuff + result.offset));
+                    }
+                }
+                else
+                {
+                    E_ASSERT(0);
+                }
+            }
+            // 展開した時のメモリを利用するので読み込んだメモリを解放
+            E_SAFE_DELETE_ARRAY(pReadTmpBuff);
+        }
+        // ファイルを閉じる
+        in_rFileSystem.FileClose(this->_fileHandle);
+
+        if (bRet == FALSE) return FALSE;
+
+        return TRUE;
+    }
+
+    void AssetDataXml::_Unload()
+    {
+        this->_doc.reset();
+    }
+
 }  // namespace AssetManager

@@ -37,13 +37,11 @@ TEST_CASE("Plugin Test")
     // エンジン起動
     CREATE_HOBBY_ENGINE;
 
-    HOBBY_ENGINE.PreInit();
     HOBBY_ENGINE.Init();
+    HOBBY_ENGINE.Start();
 
 // エンジンのプラグインのテストコード
 #include "HobbyPlugin/TestActorPlugin.hpp"
 
-    HOBBY_ENGINE.End();
-
-    RELEASE_HOBBY_ENGINE;
+    DELETE_HOBBY_ENGINE;
 }

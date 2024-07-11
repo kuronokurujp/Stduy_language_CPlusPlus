@@ -145,6 +145,21 @@
     <Filter Include="HobbyPlugin\AssetManager\ThirdParty\simidjson">
       <UniqueIdentifier>{851593d2-a16f-422c-b079-9faf2ff9a249}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Res\Assets\UI">
+      <UniqueIdentifier>{063fa955-66a5-42a8-810f-bc858f4380f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Res\Assets\UI\Builder">
+      <UniqueIdentifier>{677a319b-30ce-4c71-be06-16398345d426}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Res\Assets\UI\Builder\Debug">
+      <UniqueIdentifier>{507d4bb7-7be8-4b8b-9f40-e668e1a5eb20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HobbyPlugin\AssetManager\ThirdParty\pugixml">
+      <UniqueIdentifier>{aeb46c06-07cf-41cd-8a3a-53f588cd2735}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HobbyPlugin\Level\Component">
+      <UniqueIdentifier>{9e577790-1a58-44dc-bac4-ab23a324381d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SuperStar.rc">
@@ -257,9 +272,6 @@
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Common\RTTI.cpp">
       <Filter>HobbyEngine\Core\Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\HobbyPlugin\UI\Component\Input\UIInputInterface.cpp">
-      <Filter>HobbyPlugin\UI\Component\Input</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\Game\Program\Src\Level\Title\TitleLevel.cpp">
       <Filter>Game\Src\Level\Title</Filter>
     </ClCompile>
@@ -283,6 +295,21 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\simidjson\simdjson.cpp">
       <Filter>HobbyPlugin\AssetManager\ThirdParty\simidjson</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\HobbyPlugin\UI\Builder\UILayoutData.cpp">
+      <Filter>HobbyPlugin\UI\Builder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\HobbyPlugin\UI\Builder\UILayoutBuilder.cpp">
+      <Filter>HobbyPlugin\UI\Builder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\pugixml\pugixml.cpp">
+      <Filter>HobbyPlugin\AssetManager\ThirdParty\pugixml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\HobbyPlugin\Level\Component\LevelUserInputReceive.cpp">
+      <Filter>HobbyPlugin\Level\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\HobbyEngine\Core\Common\Handle.cpp">
+      <Filter>HobbyEngine\Core\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -389,9 +416,6 @@
     <ClInclude Include="..\..\..\..\HobbyEngine\Core\Math\Vector3.h">
       <Filter>HobbyEngine\Core\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\HobbyPlugin\Render\RenderType.h">
-      <Filter>HobbyPlugin\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\HobbyPlugin\Actor\ActorModule.h">
       <Filter>HobbyPlugin\Actor</Filter>
     </ClInclude>
@@ -485,6 +509,24 @@
     <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\simidjson\simdjson.h">
       <Filter>HobbyPlugin\AssetManager\ThirdParty\simidjson</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyPlugin\UI\Builder\UILayoutData.h">
+      <Filter>HobbyPlugin\UI\Builder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyPlugin\UI\Builder\UILayoutBuilder.h">
+      <Filter>HobbyPlugin\UI\Builder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\pugixml\pugiconfig.hpp">
+      <Filter>HobbyPlugin\AssetManager\ThirdParty\pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\pugixml\pugixml.hpp">
+      <Filter>HobbyPlugin\AssetManager\ThirdParty\pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyPlugin\Render\Color.h">
+      <Filter>HobbyPlugin\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyPlugin\Level\Component\LevelUserInputReceive.h">
+      <Filter>HobbyPlugin\Level\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\.editorconfig" />
@@ -521,5 +563,10 @@
     <Text Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdPartyNotices.txt">
       <Filter>HobbyPlugin\AssetManager</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\..\..\Game\Res\Assets\UI\Builder\Debug\Launcher.xml">
+      <Filter>Game\Res\Assets\UI\Builder\Debug</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

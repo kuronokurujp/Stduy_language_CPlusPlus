@@ -24,7 +24,7 @@ namespace Level
     /// レベルのノード
     /// アクターなどのオブジェクトを配置
     /// </summary>
-    class Node : public Core::Task
+    class Node : public Actor::Object
     {
         E_CLASS_COPY_CONSTRUCT_NG(Node);
 
@@ -37,14 +37,14 @@ namespace Level
             ETaskUpdateId_Actor,
         };
 
-        Node() : Core::Task() {}
+        Node() : Actor::Object() {}
 
         /// <summary>
         /// タスク利用した設定をした最初に実行
         /// 登録に必要な情報を設定
         /// </summary>
         /// <param name="bAutoDelete">TRUEだとタスク破棄と同時にタ
-        virtual void Init(const Bool in_bReleaseMem) override;
+        virtual void Setup(const Bool in_bReleaseMem) override;
 
         /// <summary>
         /// タスク開始
@@ -65,7 +65,7 @@ namespace Level
         /// 継承先は必ず基底クラスのメソッドを最初に呼び出す
         /// 呼ばないとエラーになるので注意
         /// </summary>
-        virtual void Update(const Float32 in_dt, const Core::TaskData* in_pData) override;
+        virtual void Update(const Float32 in_dt, const Core::TaskData&) override;
 
         /// <summary>
         /// レベルにアクターを追加
@@ -73,6 +73,9 @@ namespace Level
         template <class T>
         Core::Common::Handle AddActor()
         {
+            static_assert(std::is_base_of<Actor::Object, T>::value,
+                          "TクラスはアクターのObjectクラスを継承していない");
+
             Core::Common::Handle handle = this->_pActorManager->Add<T>();
             E_ASSERT(handle.Null() == FALSE);
 
@@ -95,7 +98,8 @@ namespace Level
         const Bool AddParentActor(const Core::Common::Handle& in_hActor,
                                   const Core::Common::Handle in_hParentActor);
 
-        Actor::ActorManagerlnterface* GetActorManagerDataAccess();
+        // TODO: 親アクターから外れる処理が必要かも
+        // Actor::ActorManagerlnterface* GetActorManagerDataAccess();
 
     private:
         /// <summary>
@@ -146,8 +150,11 @@ namespace Level
         template <class T>
         const Bool StartLevel()
         {
+            static_assert(std::is_base_of<Node, T>::value,
+                          "Tクラスはレベルのノードクラスを継承していない");
+
             // レベルのノードは使いまわさない
-            Core::Common::Handle handle = this->_taskManager.CreateAndAdd<T>(0, TRUE);
+            Core::Common::Handle handle = this->_nodeManager.Add<T>();
             if (handle.Null()) return FALSE;
 
             this->_hCurrentLevel = handle;
@@ -161,12 +168,14 @@ namespace Level
         /// <returns></returns>
         Level::Node* CurrentLevel()
         {
-            return this->_taskManager.GetTask<Level::Node>(this->_hCurrentLevel);
+            Level::Node* pNode =
+                reinterpret_cast<Level::Node*>(this->_nodeManager.Get(this->_hCurrentLevel));
+            return pNode;
         }
 
     private:
-        // レベルのノードをタスクで管理
-        Core::TaskManager _taskManager;
+        // レベルのノードをアクターとして管理
+        Actor::ActorManager _nodeManager;
 
         /// <summary>
         /// カレントレベルのハンドル

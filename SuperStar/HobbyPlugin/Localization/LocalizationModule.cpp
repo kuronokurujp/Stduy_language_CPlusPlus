@@ -4,12 +4,12 @@ MODULE_GENRATE_DEFINITION(Localization::LocalizationModule, Localization);
 
 namespace Localization
 {
-    const Bool LocalizationModule::Init()
+    const Bool LocalizationModule::Start()
     {
         return TRUE;
     }
 
-    const Bool LocalizationModule::End()
+    const Bool LocalizationModule::Release()
     {
         // ロードしたアセットを全て破棄
         for (auto it = this->_locateDataMap.Begin(); it != this->_locateDataMap.End(); ++it)
@@ -17,7 +17,7 @@ namespace Localization
             this->UnloadTextAll(it->_key);
         }
 
-        ModuleAssetManager().Unload(this->_sysAssetDataHandle);
+        ModuleAssetManager()->Unload(this->_sysAssetDataHandle);
 
         return TRUE;
     }
@@ -32,8 +32,8 @@ namespace Localization
         // tomlファイルをロード
         auto assetName = E_STR_TEXT("LSystem");
         this->_sysAssetDataHandle =
-            ModuleAssetManager().Load<SystemAssetData>(assetName,
-                                                       Core::File::Path(in_rFilePath.Str()));
+            ModuleAssetManager()->Load<SystemAssetData>(assetName,
+                                                        Core::File::Path(in_rFilePath.Str()));
         E_ASSERT(this->_sysAssetDataHandle.Null() == FALSE);
         if (this->_sysAssetDataHandle.Null()) return FALSE;
 
@@ -42,14 +42,14 @@ namespace Localization
 
     const Bool LocalizationModule::UnloadSystemFile()
     {
-        ModuleAssetManager().Unload(this->_sysAssetDataHandle);
+        ModuleAssetManager()->Unload(this->_sysAssetDataHandle);
         return TRUE;
     }
 
     const Bool LocalizationModule::LoadTextAll(const Core::Common::FixString128& in_rLocateName)
     {
         SystemAssetData& a =
-            ModuleAssetManager().GetAsset<SystemAssetData>(this->_sysAssetDataHandle);
+            ModuleAssetManager()->GetAsset<SystemAssetData>(this->_sysAssetDataHandle);
         const SYSTEM_ASSET_LOCATE_MAP& map = a.FindLocate(in_rLocateName.Str());
         E_ASSERT(map.Empty() == FALSE);
 
@@ -61,7 +61,7 @@ namespace Localization
             tmpStr.Concatenate(E_STR_TEXT("/"), it->_key.Str());
 
             auto h =
-                ModuleAssetManager().Load<LocateAssetData>(tmpStr.Str(), it->_data._textFilePath);
+                ModuleAssetManager()->Load<LocateAssetData>(tmpStr.Str(), it->_data._textFilePath);
             textMap.Add(it->_key, h);
         }
         E_ASSERT(0 < textMap.Size());
@@ -76,7 +76,7 @@ namespace Localization
         auto map = this->_locateDataMap[in_rLocateName];
         for (auto it = map.Begin(); it != map.End(); ++it)
         {
-            ModuleAssetManager().Unload(it->_data);
+            ModuleAssetManager()->Unload(it->_data);
         }
         map.Clear();
 
@@ -93,7 +93,7 @@ namespace Localization
         auto itGroup = it->_data.Find(in_rGroupName);
         E_ASSERT(itGroup.IsValid());
 
-        LocateAssetData& data = ModuleAssetManager().GetAsset<LocateAssetData>(itGroup->_data);
+        LocateAssetData& data = ModuleAssetManager()->GetAsset<LocateAssetData>(itGroup->_data);
         // テキストを取得
         return data.GetText(in_rKey.Str()).Str();
     }
@@ -135,7 +135,7 @@ namespace Localization
                     Core::File::Path(groupIt->_data.GetNode(E_STR_TEXT("json")).GetString().Str());
 
                 LocateData data(path);
-                E_LOG_LINE(data._textFilePath.Str());
+                E_LOG_LINE(E_STR_FORMAT_TEXT, data._textFilePath.Str());
 
                 const Core::Common::FixString128 groupStr(groupIt->_key.Str());
                 dataMap.Add(groupStr, data);

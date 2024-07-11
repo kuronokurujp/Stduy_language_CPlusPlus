@@ -8,26 +8,11 @@ MODULE_GENRATE_DEFINITION(AssetManager::AssetManagerModule, AssetManager);
 
 namespace AssetManager
 {
-    const Bool AssetManagerModule::Init()
+    const Bool AssetManagerModule::Start()
     {
         // 利用するアセット数を設定
         this->_Reserve(1024);
 
-        return TRUE;
-    }
-
-    const Bool AssetManagerModule::End()
-    {
-        // TODO: アセットハンドルがあれば解放する
-        {
-            auto assetList = this->GetUserDataList();
-            for (auto it = assetList.begin(); it != assetList.end(); ++it)
-            {
-                this->Unload(it->_handle);
-            }
-        }
-
-        this->_Release();
         return TRUE;
     }
 
@@ -50,7 +35,7 @@ namespace AssetManager
 
     const Bool AssetManagerModule::_Load(AssetDataBase* out_pAssetData)
     {
-        Platform::FileSystemInterface* pFileSystem = Platform::PlatformModule::I().File();
+        Platform::FileSystemInterface* pFileSystem = this->GetPlatformModule()->File();
         if (out_pAssetData->_Load(*pFileSystem) == FALSE)
         {
             return FALSE;
@@ -58,4 +43,19 @@ namespace AssetManager
 
         return TRUE;
     }
+
+    const Bool AssetManagerModule::Release()
+    {
+        // アセットハンドルがあれば解放する
+        {
+            auto assetList = this->GetUserDataList();
+            for (auto it = assetList.begin(); it != assetList.end(); ++it)
+            {
+                this->Unload(it->_handle);
+            }
+        }
+
+        return TRUE;
+    }
+
 }  // namespace AssetManager

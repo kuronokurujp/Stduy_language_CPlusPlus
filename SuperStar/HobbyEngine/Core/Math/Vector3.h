@@ -65,7 +65,7 @@ namespace Core
             /// </summary>
             /// <param name="scale">The scale.</param>
             /// <returns></returns>
-            Vector3 operator*(const Float32 scale)
+            Vector3 operator*(const Float32 scale) E_NOEXCEPT
             {
                 return Vector3(this->x * scale, this->y * scale, this->z * scale);
             }
@@ -75,7 +75,7 @@ namespace Core
             /// </summary>
             /// <param name="in_a">The in a.</param>
             /// <returns></returns>
-            Vector3 operator+(const Vector3 in_a)
+            Vector3 operator+(const Vector3 in_a) E_NOEXCEPT
             {
                 return Vector3(this->x + in_a.x, this->y + in_a.y, this->z + in_a.z);
             }
@@ -84,7 +84,10 @@ namespace Core
             /// ベクトル要素をfloatポインタで返す.
             /// </summary>
             /// <returns></returns>
-            const Float32* GetAsFloatPtr() { return reinterpret_cast<Float32*>(&this->x); }
+            const Float32* GetAsFloatPtr() E_NOEXCEPT
+            {
+                return reinterpret_cast<Float32*>(&this->x);
+            }
 
             // 頻繁にアクセスする変数にはprivate指定にはしない
             Float32 x = 0.0f;

@@ -2,6 +2,7 @@
 
 #include "Actor.h"
 #include "ActorInterface.h"
+#include "Core/Common/FixMap.h"
 #include "Core/Common/Handle.h"
 #include "Core/Task/TaskManager.h"
 #include "MiniEngine.h"
@@ -18,15 +19,22 @@ namespace Actor
     /// アクターの管理
     /// アクター登録 / 削除 / 更新などアクター個々の挙動を制御
     /// </summary>
-    class ActorManager final : public ActorManagerlnterface
+    class ActorManager final : public ActorManagerPubliclnterface
     {
+    private:
+        struct PendingData
+        {
+            Core::Common::Handle handle;
+            Sint32 moveGroupId;
+        };
+
     public:
         /// <summary>
-        /// 初期化
+        /// 起動する
         /// 必ず最初に呼び出す
         /// </summary>
         /// <returns></returns>
-        const Bool Init();
+        const Bool Start(const Uint32 in_actorCapacity, const Uint32 in_actorGroupMax);
 
         /// <summary>
         /// 終了
@@ -43,16 +51,21 @@ namespace Actor
         template <class T>
         Core::Common::Handle Add()
         {
+            static_assert(std::is_base_of<Object, T>::value,
+                          "TクラスはアクターのObjectクラスを継承していない");
+
             Core::Common::Handle handle;
-            // Actorが更新中の場合はキャッシュリストに一旦登録
+            // Actorが更新中の場合は保留グループIDに一旦登録
             // Actorは確保したメモリを使いまわさない
             if (this->_bUpdatingActors)
             {
-                handle = this->_taskManager.CreateAndAdd<T>(0, TRUE);
+                handle = this->_taskManager.CreateAndAdd<T>(this->_GetPendingGroupId(), TRUE);
+                Uint32 dataIdx = this->_pendingDataMap.Size();
+                this->_pendingDataMap.Add(handle, PendingData{handle, 0});
             }
             else
             {
-                handle = this->_taskManager.CreateAndAdd<T>(1, TRUE);
+                handle = this->_taskManager.CreateAndAdd<T>(0, TRUE);
             }
 
             Object* pObject = this->_taskManager.GetTask<Object>(handle);
@@ -93,12 +106,19 @@ namespace Actor
         /// アクター更新
         /// </summary>
         /// <param name="in_dt"></param>
-        void Update(const Float32 in_dt);
+        void Update(const Float32 in_dt, const Core::TaskData&);
 
         /// <summary>
         /// 保留アクター更新
         /// </summary>
         void UpdatePending();
+
+        /// <summary>
+        /// アクターの階層移動
+        /// </summary>
+        /// <param name="in_hHandle"></param>
+        /// <param name="in_depth"></param>
+        void MoveDepth(const Core::Common::Handle& in_hHandle, const Uint32 in_depth);
 
         /*
         /// <summary>
@@ -122,6 +142,13 @@ namespace Actor
         */
 
     protected:
+        inline const Sint32 _GetPendingGroupId() const
+        {
+            return this->_taskManager.GetMaxGroup() - 1;
+        }
+        inline const Uint32 _GetGroupMax() const { return this->_taskManager.GetMaxGroup() - 1; }
+
+    protected:
         /*
         // Actor登録リスト
         std::vector<Actor*> actors;
@@ -140,12 +167,9 @@ namespace Actor
         /// </summary>
         Core::TaskManager _taskManager;
 
-        /*
-        void _Clear()
-        {
-            this->actors.clear();
-            this->pendingActors.clear();
-        }
-        */
+        /// <summary>
+        /// 更新保留アクターのデータ
+        /// </summary>
+        Core::Common::FixMap<Uint64, PendingData, 256> _pendingDataMap;
     };
 }  // namespace Actor

@@ -1,6 +1,9 @@
 ﻿#pragma once
 
+#include <memory>
+
 #include "Core/Core.h"
+#include "FixArray.h"
 
 #ifdef _WIN
 
@@ -32,17 +35,26 @@ namespace Core
             FixStringBase& Remove(Uint32 in_index, Uint32 in_count = 1);
             FixStringBase& Format(const Char* in_pFormat, ...);
             FixStringBase& FormatV(const Char* in_pFormat, va_list vlist);
-            void Empty() { this->_pBuff[0] = '\0'; }
+            void Clear() E_NOEXCEPT { this->_pBuff[0] = '\0'; }
 
             Sint32 Find(const Char* in_pStr, Uint32 in_start = 0) const;
-            Bool IsEmpty() const { return this->_pBuff[0] == '\0'; }
-            // データ個数
-            inline Uint32 Size() const { return this->_size; }
+
+            Bool Empty() const E_NOEXCEPT { return this->_pBuff[0] == '\0'; }
+
+            // 文字列の文字容量数
+            inline Uint32 Capacity() const E_NOEXCEPT { return this->_capacity; }
+
             // 文字列の文字数
             // ワイド文字型だと配列の要素数=文字数とは限らないのでSizeメソッドとは別途文字数を取得するメソッドを用意
             const Uint32 Length() const;
 
-            inline const Char* Str() const { return this->_pBuff; }
+            inline const Char* Str() const E_NOEXCEPT { return this->_pBuff; }
+
+            /// <summary>
+            /// 文字列をハッシュ化して返す
+            /// </summary>
+            /// <returns></returns>
+            const Uint64 Hash();
 
             /// <summary>
             /// UTF8として出力
@@ -50,24 +62,7 @@ namespace Core
             /// </summary>
             /// <param name="out"></param>
             /// <param name="in_size"></param>
-            void OutputUTF8(Byte* out, Uint32 in_size)
-            {
-                E_ASSERT(out);
-                E_ASSERT(in_size <= this->Size());
-                // wchar_t型をutf8のcharに変えて出力
-#ifdef _WIN
-                ::memset(out, 0, sizeof(Byte) * in_size);
-                Sint32 StrSize =
-                    WideCharToMultiByte(CP_UTF8, 0, this->Str(), -1, NULL, 0, NULL, NULL);
-                if (StrSize <= 0) return;
-
-                StrSize = E_MIN(static_cast<Uint32>(StrSize), in_size);
-                WideCharToMultiByte(CP_UTF8, 0, this->Str(), -1, out, StrSize, NULL, NULL);
-#else
-                // TODO: のちに対応
-                E_ASSERT(0 && "Str()のをそのままコピーする");
-#endif
-            }
+            void OutputUTF8(Byte* out, Uint32 in_size) const;
 
             // 大文字 / 小文字にする
             void ToLower() { E_STR_LOWER(this->_pBuff); }
@@ -75,12 +70,13 @@ namespace Core
 
             FixStringBase& operator=(const Char* in_pStr)
             {
-                this->_Copy(in_pStr, this->_size);
+                this->_Copy(in_pStr, this->_capacity);
                 return *this;
             }
+
             FixStringBase& operator=(const FixStringBase& r)
             {
-                this->_Copy(r.Str(), this->_size);
+                this->_Copy(r.Str(), this->_capacity);
                 return *this;
             }
 
@@ -151,75 +147,90 @@ namespace Core
                 return E_STR_CMP(this->_pBuff, in_rhs.Str()) >= 0;
             }
 
+            const Char operator[](const Uint32 in_idx) const
+            {
+                if (this->_capacity <= in_idx)
+                {
+                    return '\0';
+                }
+
+                return this->_pBuff[in_idx];
+            }
+
         protected:
             FixStringBase(const FixStringBase& r) { this->_Copy(r.Str(), r.Length()); }
 
             FixStringBase& _Copy(const Char* in_pStr, const Uint32 in_strLen);
 
         private:
-            void _Init(Char* pBuff, Uint32 buffsize);
+            void _Init(Char* pBuff, Uint32 in_size);
 
             FixStringBase& _Add(const Char* in_pStr);
             FixStringBase& _Add(Char c);
 
         private:
-            Char* _pBuff = NULL;
-            Uint32 _size = 0;
+            Char* _pBuff     = NULL;
+            Uint32 _capacity = 0;
         };
 
         /// <summary>
         /// 固定長の文字列クラス
         /// </summary>
         /// <typeparam name="SIZE"></typeparam>
-        template <Uint32 SIZE>
+        template <Uint32 CAPACITY>
         class FixString : public FixStringBase
         {
             E_CLASS_MOVE_CONSTRUCT_NG(FixString);
 
         public:
-            FixString() : FixStringBase(_fixBuff, SIZE) {}
-            // FixString(const Char* in_pStr) : FixStringBase(_fixBuff, SIZE) {
-            // FixStringBase::operator=(in_pStr); }
-            FixString(const Char* in_pStr) : FixStringBase(_fixBuff, SIZE)
+            FixString() : FixStringBase(this->_fixBuff, CAPACITY) {}
+            FixString(const Char* in_pStr) : FixStringBase(this->_fixBuff, CAPACITY)
             {
                 this->_Copy(in_pStr, E_STR_LEN(in_pStr));
             }
-            FixString(const FixString<SIZE>& r) : FixStringBase(_fixBuff, SIZE) { *this = r; }
-
-#ifdef _WIN
-            FixString(const Byte* in_pStr) : FixStringBase(_fixBuff, SIZE)
+            FixString(const FixString<CAPACITY>& r) : FixStringBase(this->_fixBuff, CAPACITY)
             {
-                this->_ConvUTF8toWide(in_pStr, SIZE);
+                *this = r;
             }
 
-            FixString(const std::string_view& in_rStr) : FixStringBase(_fixBuff, SIZE)
+#ifdef _WIN
+            FixString(const Byte* in_pStr) : FixStringBase(this->_fixBuff, CAPACITY)
+            {
+                this->_ConvUTF8toWide(in_pStr, static_cast<Uint32>(::strlen(in_pStr)));
+            }
+
+            FixString(const std::string_view& in_rStr) : FixStringBase(this->_fixBuff, CAPACITY)
             {
                 this->_ConvUTF8toWide(in_rStr.data(), static_cast<Uint32>(in_rStr.length()));
             }
 #else
-            FixString(const std::string_view& in_rStr) : FixStringBase(_fixBuff, SIZE)
+            FixString(const std::string_view& in_rStr) : FixStringBase(_fixBuff, CAPACITY)
             {
                 // TODO: 対応が必要
                 E_ASSERT(0);
             }
 #endif
 
-            FixString<SIZE>& operator=(const Char* in_pStr)
+            FixString<CAPACITY>& operator=(const Char* in_pStr)
             {
                 this->_Copy(in_pStr, E_STR_LEN(in_pStr));
                 return *this;
             }
-            FixString<SIZE>& operator=(const FixString<SIZE>& r)
+
+// win版では文字列はwchar / charの二つの型がある
+#ifdef _WIN
+            FixString<CAPACITY>& operator=(const Byte* in_pStr)
+            {
+                this->_ConvUTF8toWide(in_pStr, CAPACITY);
+                return *this;
+            }
+#endif
+
+            FixString<CAPACITY>& operator=(const FixString<CAPACITY>& r)
             {
                 this->_Copy(r._fixBuff, E_STR_LEN(r._fixBuff));
                 return *this;
             }
-            /*
-            {
-                E_STR_CPY_S(this->_fixBuff, SIZE, r._fixBuff, E_STR_LEN(r._fixBuff));
-                return *this;
-            }
-            */
 
         private:
 #ifdef _WIN
@@ -232,21 +243,18 @@ namespace Core
             const Bool _ConvUTF8toWide(const Byte* in_pStr, const Uint32 in_len)
             {
                 E_ASSERT(in_pStr);
-                E_ASSERT(in_len <= SIZE);
+                E_ASSERT(in_len <= CAPACITY);
 
-                static Char w[SIZE] = {};
+                static Char w[CAPACITY] = {};
                 ::memset(w, 0, E_ARRAY_SIZE(w));
 
-                // TODO: 利用する文字数を取得
-                // lengthメソッドだとワイド文字の最大数がわからない
-                // ワイド文字の後ろから改行位置を求めて削除とかできるかな
-                // Sint32 sizeNeeded = static_cast<Sint32>(in_rStr.length());
+                // 利用する文字数を取得
                 Sint32 sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, in_pStr, in_len, NULL, 0);
                 // 利用する文字数が制限を超えていないかチェック
-                E_ASSERT(sizeNeeded < SIZE);
+                E_ASSERT(sizeNeeded < CAPACITY);
 
                 // UTF8文字列からUTF16の文字列に変える
-                MultiByteToWideChar(CP_UTF8, 0, in_pStr, SIZE, &w[0], sizeNeeded);
+                MultiByteToWideChar(CP_UTF8, 0, in_pStr, CAPACITY, &w[0], sizeNeeded);
 
                 (*this) = w;
 
@@ -254,10 +262,10 @@ namespace Core
             }
 #endif
         private:
-            Char _fixBuff[SIZE] = {};
+            Char _fixBuff[CAPACITY] = {};
         };
 
-        // 利用できる固定長の文字列型を用意
+        // 固定長の文字列型
         typedef FixString<16> FixString16;
         typedef FixString<32> FixString32;
         typedef FixString<64> FixString64;
@@ -265,5 +273,39 @@ namespace Core
         typedef FixString<256> FixString256;
         typedef FixString<512> FixString512;
         typedef FixString<1024> FixString1024;
+
+        /// <summary>
+        /// 指定文字列を指定文字で区切って出力
+        /// </summary>
+        /// <param name="out"></param>
+        /// <param name="in_rStr"></param>
+        /// <param name="in_delim"></param>
+        template <Uint32 SPLITE_COUNT>
+        static void OutputSplitString(FastFixArray<FixString1024, SPLITE_COUNT>& out,
+                                      FixStringBase& in_rStr, const Char in_delim)
+        {
+            FixString1024 item;
+            Uint32 i = 0;
+            Char ch  = in_rStr[i];
+            while (ch != '\0')
+            {
+                if (ch == in_delim)
+                {
+                    if (item.Empty() == FALSE) out.PushBack(item);
+                    item.Clear();
+                    // TODO: 配列要素数 -
+                    // 1が文字列分割できる回数なので回数を上回ったたら分割処理は終了
+                }
+                else
+                {
+                    item += ch;
+                }
+                ++i;
+                ch = in_rStr[i];
+            }
+
+            if (item.Empty() == FALSE) out.PushBack(item);
+        }
+
     }  // namespace Common
 }  // namespace Core

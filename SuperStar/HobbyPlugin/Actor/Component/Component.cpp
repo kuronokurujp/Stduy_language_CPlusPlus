@@ -4,8 +4,6 @@
 
 namespace Actor
 {
-    GENERATED_CLASS_BASE_BODY(Component);
-
     Component::Component() : Task()
     {
         this->_Clear();
@@ -20,11 +18,12 @@ namespace Actor
     /// 登録に必要な情報を設定
     /// </summary>
     /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
-    void Component::Init(const Bool in_bAutoDelete)
+    void Component::Setup(const Bool in_bAutoDelete)
     {
-        E_LOG_LINE(E_STR_TEXT("初期化したコンポーネントは(%s)"), GetRTTI().GetName().Str());
+        E_LOG_LINE(E_STR_TEXT("初期化したコンポーネントは(") E_STR_FORMAT_TEXT E_STR_TEXT(")"),
+                   GetRTTI().GetName().Str());
 
-        Core::Task::Init(in_bAutoDelete);
+        Core::Task::Setup(in_bAutoDelete);
 
         this->_Clear();
     }

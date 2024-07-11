@@ -17,24 +17,10 @@ namespace DXLib
     class DxLibModule final : public Platform::PlatformModule
     {
     public:
-        /// <summary>
-        /// モジュール初期化
-        /// </summary>
-        /// <returns></returns>
-        const Bool Init() override final;
-
-        /// <summary>
-        /// モジュール終了
-        /// </summary>
-        /// <returns></returns>
-        const Bool End() override final;
+        DxLibModule(const Char* in_pName) : PlatformModule(in_pName) {}
 
         const bool CreateMainWindow() override final;
         const bool ReleaseAllWindows() override final;
-
-        const bool BeforUpdate(const Float32 in_deltaTime) override final;
-        const bool Update(const Float32 in_deltaTime) override final;
-        const bool AfterUpdate(const Float32 in_deltaTime) override final;
 
         /// <summary>
         /// 時間システム
@@ -54,6 +40,22 @@ namespace DXLib
         /// <returns></returns>
         Platform::FileSystemInterface* File() override final { return &this->_file; }
 
+    protected:
+        /// <summary>
+        /// モジュール初期化
+        /// </summary>
+        /// <returns></returns>
+        const Bool Start() override final;
+
+        /// <summary>
+        /// インスタンス破棄時に呼ばれる
+        /// </summary>
+        virtual const Bool Release() override final;
+
+        const bool BeforUpdate(const Float32 in_deltaTime) override final;
+        const bool Update(const Float32 in_deltaTime) override final;
+        const bool AfterUpdate(const Float32 in_deltaTime) override final;
+
         // 描画
         void BeginRender(void* in_pCmdBuff) override final;
         void Redner(void* in_pCmdBuff) override final;
@@ -66,4 +68,4 @@ namespace DXLib
     };
 }  // namespace DXLib
 
-MODULE_GENRATE_DECLARATION(DXLib::DxLibModule, DxLib);
+MODULE_GENRATE_DECLARATION(DXLib::DxLibModule, Platform);

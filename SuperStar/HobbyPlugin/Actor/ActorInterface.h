@@ -9,9 +9,9 @@ namespace Actor
     class Object;
 
     /// <summary>
-    /// 管理クラスのデータ制御インターフェイス
+    /// 管理クラスの処理公開インターフェイス
     /// </summary>
-    class ActorManagerlnterface
+    class ActorManagerPubliclnterface
     {
     public:
         /// <summary>

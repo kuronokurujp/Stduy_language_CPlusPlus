@@ -19,12 +19,7 @@ namespace Level
         const Bool Begin() override final;
         const Bool End() override final;
 
-        void Update(const Float32 in_dt, const Core::TaskData* in_pData) override final;
-
     private:
-        /// <summary>
-        /// TODO: レベル名を指定してレベル移動
-        /// </summary>
-        void _MoveLevel(const Char* in_pLevelName);
+        Core::Common::Handle _hLayoutAsset;
     };
 }  // namespace Level

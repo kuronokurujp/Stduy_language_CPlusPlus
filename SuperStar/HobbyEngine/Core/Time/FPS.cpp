@@ -6,20 +6,18 @@ namespace Core
 {
     namespace Time
     {
-        FPS::FPS(Platform::TimeSystemInterface* in_pTimeInterface)
+        const Bool FPS::UpdateWait(Platform::TimeSystemInterface* in_pTimeInterface,
+                                   const Uint32 in_waitMSec)
         {
-            this->_pTimeInterface = in_pTimeInterface;
-        }
+            E_ASSERT(in_pTimeInterface);
 
-        const Bool FPS::UpdateWait(const Uint32 in_waitMSec)
-        {
             // 前フレームからin_waitMSec経ったら処理に進める
             if (in_waitMSec <
-                (this->_pTimeInterface->NowMSec() - this->_previousTime[FPS::_timeAvgMax - 1]))
+                (in_pTimeInterface->NowMSec() - this->_previousTime[FPS::_timeAvgMax - 1]))
                 return FALSE;
 
             // 帰ってくる時間の単位はmsec
-            Uint32 currentTime = this->_pTimeInterface->NowMSec();
+            Uint32 currentTime = in_pTimeInterface->NowMSec();
             // 新しい時間と一番古い時間の差を取得
             Uint32 frameTime10 = currentTime - this->_previousTime[0];
             // 格納した時間をずらす
@@ -37,20 +35,24 @@ namespace Core
             return TRUE;
         }
 
-        const Float32 FPS::GetDeltaTimeMSec() const
+        const Float32 FPS::GetDeltaTimeMSec(Platform::TimeSystemInterface* in_pTimeInterface) const
         {
+            E_ASSERT(in_pTimeInterface);
+
             const Float32 oldMSec = static_cast<Float32>(this->_previousTime[FPS::_timeAvgMax - 1]);
             if (oldMSec <= 0.0f) return 0.0f;
 
-            const Float32 nowMSec = static_cast<Float32>(this->_pTimeInterface->NowMSec());
+            const Float32 nowMSec = static_cast<Float32>(in_pTimeInterface->NowMSec());
             float deltaTime       = nowMSec - oldMSec;
 
             return deltaTime;
         }
 
-        const Float32 FPS::GetDeltaTimeSec() const
+        const Float32 FPS::GetDeltaTimeSec(Platform::TimeSystemInterface* in_pTimeInterface) const
         {
-            Float32 deletaTime = this->GetDeltaTimeMSec();
+            E_ASSERT(in_pTimeInterface);
+
+            Float32 deletaTime = this->GetDeltaTimeMSec(in_pTimeInterface);
             if (deletaTime <= 0.0f) return 0.0f;
 
             // 秒に変換

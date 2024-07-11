@@ -10,16 +10,16 @@ namespace Actor
     /// モジュール初期化
     /// </summary>
     /// <returns></returns>
-    const Bool ActorModule::Init()
+    const Bool ActorModule::Start()
     {
         return TRUE;
     }
 
     /// <summary>
-    /// モジュール終了
+    /// インスタンス破棄時に呼ばれる
     /// </summary>
     /// <returns></returns>
-    const Bool ActorModule::End()
+    const Bool ActorModule::Release()
     {
         return TRUE;
     }

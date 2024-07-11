@@ -76,22 +76,10 @@ namespace Localization
     /// <summary>
     /// 多言語対応のモジュール
     /// </summary>
-    class LocalizationModule final : public Module::ModuleBase<LocalizationModule>
+    class LocalizationModule final : public Module::ModuleBase
     {
     public:
-        /// <summary>
-        /// モジュール初期化
-        /// </summary>
-        /// <returns></returns>
-        const Bool Init() final override;
-
-        /// <summary>
-        /// モジュール終了
-        /// </summary>
-        /// <returns></returns>
-        const Bool End() final override;
-
-        const Bool Update(const Float32 in_deltaTime) final override;
+        LocalizationModule(const Char* in_pName) : ModuleBase(in_pName) {}
 
         // ローカライズ設定データをロード(テキストファイル版)
         // バイナリファイル版も用意する
@@ -109,6 +97,19 @@ namespace Localization
                          const Core::Common::FixString128& in_rGroupName,
                          const Core::Common::FixString128& in_rKey);
 
+    protected:
+        /// <summary>
+        /// モジュール初期化
+        /// </summary>
+        /// <returns></returns>
+        const Bool Start() final override;
+        /// <summary>
+        /// インスタンス破棄時に呼ばれる
+        /// </summary>
+        virtual const Bool Release() override final;
+
+        const Bool Update(const Float32 in_deltaTime) final override;
+
     private:
 #define LOCATE_TEXT_MAP Core::Common::FixMap<Core::Common::FixString128, Core::Common::Handle, 64>
 
@@ -116,7 +117,5 @@ namespace Localization
         Core::Common::FixMap<Core::Common::FixString128, LOCATE_TEXT_MAP, 16> _locateDataMap;
     };
 }  // namespace Localization
-
-#define HOBBY_LOCALIZATION_MODULE Localization::LocalizationModule::I()
 
 MODULE_GENRATE_DECLARATION(Localization::LocalizationModule, Localization);

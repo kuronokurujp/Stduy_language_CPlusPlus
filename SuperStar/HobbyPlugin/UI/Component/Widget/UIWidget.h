@@ -13,7 +13,7 @@ namespace UI
     class UIWidgetComponent : public Actor::Component
     {
         E_CLASS_COPY_CONSTRUCT_NG(UIWidgetComponent);
-        GENERATED_CLASS_BODY_HEADER();
+        GENERATED_CLASS_BODY_HEADER(UIWidgetComponent, Actor::Component);
 
     public:
         UIWidgetComponent() : Actor::Component() { this->_Clear(); }
@@ -23,25 +23,17 @@ namespace UI
         /// 登録に必要な情報を設定
         /// </summary>
         /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
-        virtual void Init(const Bool in_bReleaseMem = TRUE) override;
+        virtual void Setup(const Bool in_bReleaseMem = TRUE) override;
 
         virtual void OnTouch(const Platform::TouchInput& in_rTouch) {}
         virtual void OnKey(const Platform::KeyboardInput& in_rKeyboard) {}
 
-        void SetRect(const Core::Math::Rect2& in_rect) { this->_rect = in_rect; }
-        void SetPos(const Core::Math::Vector2& in_pos);
-
         void SetColor(const Uint32 in_color) { this->_color = in_color; }
 
     private:
-        void _Clear()
-        {
-            this->_rect.Clear();
-            this->_color = 0;
-        }
+        void _Clear() { this->_color = 0; }
 
     protected:
-        Core::Math::Rect2 _rect;
         Uint32 _color = 0;
     };
 }  // namespace UI

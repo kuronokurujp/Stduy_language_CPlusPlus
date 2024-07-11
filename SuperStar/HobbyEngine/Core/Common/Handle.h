@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "MiniEngine.h"
+#include "Core/Core.h"
 
 namespace Core
 {
@@ -44,22 +44,28 @@ namespace Core
                 this->_handleField._magic = s_magicNumber;
             }
 
-            void Clear() { this->_handle = 0; }
+            void Clear() E_NOEXCEPT { this->_handle = 0; }
 
-            inline const Uint32 Index() const { return this->_handleField._index; }
-            inline const Uint32 Magic() const { return this->_handleField._magic; }
-            inline const Bool Null() const { return (this->_handle == 0); }
+            inline const Uint32 Index() const E_NOEXCEPT { return this->_handleField._index; }
+            inline const Uint32 Magic() const E_NOEXCEPT { return this->_handleField._magic; }
+            inline const Bool Null() const E_NOEXCEPT { return (this->_handle == 0); }
 
-            operator const Uint64() const { return this->_handle; }
+            operator const Uint64() const E_NOEXCEPT { return this->_handle; }
 
             // ハンドルオペレーター
-            inline const Bool operator!=(Handle& r) { return (this->_handle != r._handle); }
+            inline const Bool operator!=(Handle& r) E_NOEXCEPT
+            {
+                return (this->_handle != r._handle);
+            }
 
-            inline const Bool operator==(Handle& r) { return (this->_handle == r._handle); }
+            inline const Bool operator==(Handle& r) E_NOEXCEPT
+            {
+                return (this->_handle == r._handle);
+            }
 
-            void operator=(const Handle& r) { this->_handle = r._handle; }
+            void operator=(const Handle& r) E_NOEXCEPT { this->_handle = r._handle; }
 
-            void operator=(Handle&& r) { this->_handle = r._handle; }
+            void operator=(Handle&& r) E_NOEXCEPT { this->_handle = r._handle; }
 
         private:
             enum
@@ -96,5 +102,4 @@ namespace Core
 
 // 空ハンドル
 // ハンドルを戻り値とする処理で失敗した時の戻り値に利用
-static const Core::Common::Handle s_emptyHandle;
-#define E_EMPTY_HANDLE s_emptyHandle;
+extern const Core::Common::Handle E_EMPTY_HANDLE;

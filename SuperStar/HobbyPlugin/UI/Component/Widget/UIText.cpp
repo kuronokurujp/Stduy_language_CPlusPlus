@@ -1,21 +1,30 @@
 ﻿#include "UIText.h"
 
-#include "Core/Math/Vector3.h"
-
 // 依存するモジュール一覧
 #include "HobbyPlugin/Actor/Actor.h"
+#include "HobbyPlugin/Localization/LocalizationModule.h"
 #include "HobbyPlugin/Render/Command/Command.h"
 
 namespace UI
 {
-    GENERATED_CLASS_BODY(UITextComponent, UIWidgetComponent);
 
     void UITextComponent::Update(const Float32 in_deltaTime)
     {
         // TODO: 描画コマンドを追加
-        Core::Math::Vector2 textPos;
-        this->TransformLocalToWorldPos2D(&textPos, this->_rect.Pos());
+        Core::Math::Rect2 rect;
+        this->TransformLocalToWorldRect2D(&rect, this->_rect);
 
-        Render::Cmd2DText(textPos, this->_str, {this->_color});
+        // TODO: ローカライズテキストならローカライズテキストを取得
+        if (0 < this->_locGroup.Length())
+        {
+            // TODO: 言語切り替えが必要
+            Core::Common::FixString1024 str(
+                ModuleLocalization()->Text(E_STR_TEXT("JP"), this->_locGroup, this->_str.Str()));
+            Render::Cmd2DText(rect.Pos(), str, {this->_color});
+        }
+        else
+        {
+            Render::Cmd2DText(rect.Pos(), this->_str, {this->_color});
+        }
     }
 }  // namespace UI

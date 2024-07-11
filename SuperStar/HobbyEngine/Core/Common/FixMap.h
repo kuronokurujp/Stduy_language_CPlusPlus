@@ -7,8 +7,6 @@
 // メモリ確保を独自のに差し替えることができる
 // キーの重複はだめ
 
-#include <memory>
-
 #include "Core/Common/PoolManager.h"
 #include "Core/Macro.h"
 #include "Core/Type.h"
@@ -17,6 +15,12 @@ namespace Core
 {
     namespace Common
     {
+        // TODO: 基本クラスを作成して基本クラス型でわたせるようにする
+        class BaseMap
+        {
+        public:
+        };
+
         /// <summary>
         /// KEY添え字にしてDATAを探索するDATA固定長のMap
         /// 探索速度はO(log n)になる
@@ -28,6 +32,8 @@ namespace Core
         template <typename KEY, typename DATA, Sint32 SIZE>
         class FixMap
         {
+            E_CLASS_MOVE_CONSTRUCT_NG(FixMap);
+
         public:
             // 前方宣言
             struct NODE;
@@ -101,7 +107,6 @@ namespace Core
                 }
 
             private:
-                // CMapにのみ公開する
                 friend class FixMap;
 
                 NODE* _pNode = NULL;
@@ -118,11 +123,6 @@ namespace Core
                 this->_Init();
                 this->_DeepCopy(&other);
             }
-
-            FixMap(const FixMap&& other) = delete;
-
-            FixMap& operator=(FixMap&& other)       = delete;
-            FixMap& operator=(const FixMap&& other) = delete;
 
             // コピー処理
             // ディープコピーにする
@@ -252,28 +252,25 @@ namespace Core
             /// マップが空かどうか
             /// </summary>
             /// <returns>空(TRUE)</returns>
-            const Bool Empty() const { return (this->_pRoot == NULL); }
+            const Bool Empty() const E_NOEXCEPT { return (this->_pRoot == NULL); }
 
             /// <summary>
             /// 要素数を返す
             /// </summary>
-            const Uint32 Size() const { return this->_nodeNum; }
+            const Uint32 Size() const E_NOEXCEPT { return this->_nodeNum; }
 
             /// <summary>
             /// 先頭イテレーターを取得
             /// データが空なら終端イテレーターを取得
             /// </summary>
             /// <returns></returns>
-            Iterator Begin() const { return Iterator(this->_head._pNext); }
+            Iterator Begin() const E_NOEXCEPT { return Iterator(this->_head._pNext); }
 
             /// <summary>
             /// 終端イテレーター取得
             /// </summary>
             /// <returns></returns>
-            Iterator End() const
-            {
-                return this->_itTail;  // Iterator(&this->_tail);
-            }
+            Iterator End() const E_NOEXCEPT { return this->_itTail; }
 
             /// <summary>
             /// KEYを添え字にしてデータアクセス
@@ -425,8 +422,6 @@ namespace Core
                 pNode->_pPrev->_pNext = pNode->_pNext;
 
 #ifdef _HOBBY_ENGINE_DEBUG
-                // わざと0xCCで埋める
-                //::memset(pNode, 0xCC, sizeof(NODE));
                 pNode->_pLeft  = NULL;
                 pNode->_pNext  = NULL;
                 pNode->_pPrev  = NULL;
@@ -519,7 +514,7 @@ namespace Core
 
             // キーの大小比較
             // クラスをキーにする場合、比較演算子( >, < )を用意してください。
-            virtual Sint32 _Compare(KEY a, KEY b) const
+            virtual Sint32 _Compare(KEY a, KEY b) const E_NOEXCEPT
             {
                 if (a < b)
                 {
@@ -780,7 +775,7 @@ namespace Core
                 return FALSE;
             }
 
-            inline void _Init()
+            inline void _Init() E_NOEXCEPT
             {
                 // 線形アクセス用のリストを初期化
                 this->_pRoot       = NULL;

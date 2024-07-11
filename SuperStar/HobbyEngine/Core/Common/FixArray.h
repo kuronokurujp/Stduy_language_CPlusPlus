@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Core/Core.h"
 
 namespace Core
@@ -18,46 +16,49 @@ namespace Core
         {
         public:
             FastFixArrayBase(TYPE* in_pArray, Uint32 in_size)
-                : _pDataArray(in_pArray), _max(in_size)
+                : _pDataArray(in_pArray), _capacity(in_size)
             {
             }
 
-            inline const Uint32 Max() const E_NOEXCEPT { return this->_max; }
+            inline const Uint32 Capacity() const E_NOEXCEPT { return this->_capacity; }
             inline const Uint32 Size() const E_NOEXCEPT { return this->_num; }
-            inline const Uint32 IsEmpty() const E_NOEXCEPT { return (this->_num <= 0); }
+            inline const Uint32 Empty() const E_NOEXCEPT { return (this->_num <= 0); }
 
-            void Empty() { this->_num = 0; }
+            void Clear() E_NOEXCEPT { this->_num = 0; }
 
             void PushBack(const TYPE in_data)
             {
-                E_ASSERT(this->_num < this->Max());
+                E_ASSERT(this->_num < this->Capacity());
                 this->_pDataArray[this->_num++] = in_data;
             }
 
-            TYPE PopBack() E_NOEXCEPT
+            TYPE PopBack()
             {
-                Sint32 i = this->_num;
-                if (this->_num > 0) this->_num--;
+                Sint32 i = this->_num - 1;
+                if (this->_num > 0) --this->_num;
 
                 i = E_MAX(i, 0);
                 return this->_pDataArray[i];
             }
 
-            void Remove(const TYPE in_data)
+            const Bool Remove(const TYPE in_data)
             {
                 for (Uint32 i = 0; i < this->_num; ++i)
                 {
                     if (this->_pDataArray[i] == in_data)
                     {
                         this->RemoveAt(i);
-                        return;
+                        return TRUE;
                     }
                 }
+
+                return FALSE;
             }
 
             void RemoveAt(const Uint32 in_index)
             {
                 E_ASSERT(in_index < this->_num);
+                E_ASSERT(0 < this->_num);
 
                 Uint32 lastIndex = this->_num - 1;
                 if (in_index < lastIndex)
@@ -98,25 +99,23 @@ namespace Core
             }
 
         private:
-            TYPE* _pDataArray;
-            Uint32 _num = 0;
-            Uint32 _max = 0;
+            TYPE* _pDataArray = NULL;
+            Uint32 _num       = 0;
+            Uint32 _capacity  = 0;
         };
 
         /// <summary>
         /// 固定長の高速処理の配列
         /// テンプレートで要素を決めている
         /// </summary>
-        /// <typeparam name="TYPE"></typeparam>
-        /// <typeparam name="SIZE"></typeparam>
-        template <class TYPE, Uint32 SIZE>
+        template <class TYPE, Uint32 CAPACITY>
         class FastFixArray : public FastFixArrayBase<TYPE>
         {
         public:
-            FastFixArray() : FastFixArrayBase<TYPE>(_dataArray, SIZE) {}
+            FastFixArray() : FastFixArrayBase<TYPE>(_dataArray, CAPACITY) {}
 
         private:
-            TYPE _dataArray[SIZE];
+            TYPE _dataArray[CAPACITY];
         };
     }  // namespace Common
 }  // namespace Core

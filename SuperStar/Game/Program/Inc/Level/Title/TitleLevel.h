@@ -19,6 +19,6 @@ namespace Level
         const Bool Begin() override final;
         const Bool End() override final;
 
-        void Update(const Float32 in_dt, const Core::TaskData* in_pData) override final;
+        void Update(const Float32 in_dt, const Core::TaskData&) override final;
     };
 }  // namespace Level

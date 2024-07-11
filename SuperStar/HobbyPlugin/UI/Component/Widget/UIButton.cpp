@@ -8,11 +8,10 @@
 
 namespace UI
 {
-    GENERATED_CLASS_BODY(UIButtonComponent, UIWidgetComponent);
 
-    void UIButtonComponent::Init(const Bool in_bAutoDelete)
+    void UIButtonComponent::Setup(const Bool in_bAutoDelete)
     {
-        UIWidgetComponent::Init(in_bAutoDelete);
+        UIWidgetComponent::Setup(in_bAutoDelete);
 
         this->_Clear();
     }
@@ -38,8 +37,9 @@ namespace UI
     /// <param name="in_deltaTime">The in delta time.</param>
     void UIButtonComponent::Update(const Float32 in_deltaTime)
     {
+        Core::Math::Rect2 srcRect(0.0f, 0.0f, this->_w, this->_h, Core::Math::Rect2::EPivot_Left);
         Core::Math::Rect2 rect;
-        this->TransformLocalToWorldRect2D(&rect, this->_rect);
+        this->TransformLocalToWorldRect2D(&rect, srcRect);
 
         // TODO: 描画コマンドを追加
         Render::Cmd2DRect(rect, {this->_color});
@@ -51,7 +51,9 @@ namespace UI
             Platform::EInputState::EInputState_PRESSED)
         {
             Core::Math::Rect2 rect;
-            this->TransformLocalToWorldRect2D(&rect, this->_rect);
+            Core::Math::Rect2 orgRect(0.0f, 0.0f, this->_w, this->_w,
+                                      Core::Math::Rect2::EPivot_Left);
+            this->TransformLocalToWorldRect2D(&rect, orgRect);
 
             // TODO: ボタンにタッチしたらコールバックを呼ぶ
             if (in_rTouch.IsTouchInRect(rect))

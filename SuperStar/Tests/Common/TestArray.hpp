@@ -6,17 +6,17 @@ TEST_CASE("FastFixArray Use")
 {
     Core::Common::FastFixArray<Sint32, 32> arr;
 
-    CHECK(arr.Max() == 32);
+    CHECK(arr.Capacity() == 32);
     CHECK(arr.Size() == 0);
-    CHECK(arr.IsEmpty() == TRUE);
+    CHECK(arr.Empty() == TRUE);
 
     arr.PushBack(10);
     CHECK(arr.Size() == 1);
-    CHECK(arr.IsEmpty() == FALSE);
+    CHECK(arr.Empty() == FALSE);
 
     arr.RemoveAt(0);
     CHECK(arr.Size() == 0);
-    CHECK(arr.IsEmpty() == TRUE);
+    CHECK(arr.Empty() == TRUE);
 
     arr.PushBack(10);
     arr.PushBack(20);

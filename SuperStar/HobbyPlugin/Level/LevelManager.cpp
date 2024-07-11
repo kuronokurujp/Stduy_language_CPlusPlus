@@ -8,7 +8,7 @@ namespace Level
     {
         // タスク管理を初期化
         // 利用するタスク設定は内部で固定する
-        if (this->_taskManager.Init(32, 1) == FALSE)
+        if (this->_nodeManager.Start(32, 2) == FALSE)
         {
             return FALSE;
         }
@@ -18,7 +18,7 @@ namespace Level
 
     const Bool Manager::End()
     {
-        this->_taskManager.End();
+        this->_nodeManager.End();
         return TRUE;
     }
 
@@ -30,33 +30,36 @@ namespace Level
         {
             Core::TaskData taskData{Node::ETaskUpdateId_Input, reinterpret_cast<void*>(in_pInput)};
 
-            this->_taskManager.UpdateAll(in_dt, &taskData);
+            this->_nodeManager.Update(in_dt, taskData);
         }
 
         // アクター更新
+        // コンポーネントの更新もやっている
         {
             Core::TaskData taskData{
                 Node::ETaskUpdateId_Actor,
                 NULL,
             };
 
-            this->_taskManager.UpdateAll(in_dt, &taskData);
+            this->_nodeManager.Update(in_dt, taskData);
         }
+
+        this->_nodeManager.UpdatePending();
     }
 
     // ここから先は
     // レベルノードの実装
 
-    void Node::Init(const Bool in_bAutoDelete)
+    void Node::Setup(const Bool in_bAutoDelete)
     {
-        Task::Init(in_bAutoDelete);
+        Task::Setup(in_bAutoDelete);
     }
 
     const Bool Node::Begin()
     {
         Actor::ActorManager* pActorManager = E_NEW(Actor::ActorManager, 0);
         this->_pActorManager               = std::shared_ptr<Actor::ActorManager>(pActorManager);
-        if (this->_pActorManager->Init() == FALSE)
+        if (this->_pActorManager->Start(256, 32) == FALSE)
         {
             E_ASSERT(FALSE && "レベルノードのアクター管理の初期化が失敗");
             return FALSE;
@@ -77,15 +80,15 @@ namespace Level
         return TRUE;
     }
 
-    void Node::Update(const Float32 in_dt, const Core::TaskData* in_pData)
+    void Node::Update(const Float32 in_dt, const Core::TaskData& in_rData)
     {
-        switch (in_pData->id)
+        switch (in_rData.id)
         {
             // TODO: 入力送信
             case Node::ETaskUpdateId_Input:
             {
                 Platform::InputSystemInterface* pInput =
-                    reinterpret_cast<Platform::InputSystemInterface*>(in_pData->pData);
+                    reinterpret_cast<Platform::InputSystemInterface*>(in_rData.pData);
                 E_ASSERT(pInput != NULL);
 
                 this->_pActorManager->ProcessInput(in_dt, pInput);
@@ -98,7 +101,8 @@ namespace Level
             {
                 // Actorの制御
                 {
-                    this->_pActorManager->Update(in_dt);
+                    Core::TaskData taskData{Actor::Object::ETaskUpdateId_Object, NULL};
+                    this->_pActorManager->Update(in_dt, taskData);
 
                     // コリジョン処理(コリジョンしてActor追加が起きてもpendingするように)
                     // this->_Colision();
@@ -132,25 +136,31 @@ namespace Level
         return this->_pActorManager->Get(in_hActor);
     }
 
-    const Bool Node::AddParentActor(const Core::Common::Handle& in_hActor,
+    const Bool Node::AddParentActor(const Core::Common::Handle& in_hChildActor,
                                     const Core::Common::Handle in_hParentActor)
     {
-        E_ASSERT(in_hActor.Null() == FALSE);
+        E_ASSERT(in_hChildActor.Null() == FALSE);
         E_ASSERT(in_hParentActor.Null() == FALSE);
 
-        Actor::Object* pActor = this->GetActor(in_hActor);
-        const Bool bRet       = pActor->SetParentActor(in_hParentActor);
+        Actor::Object* pChildActor  = this->GetActor(in_hChildActor);
+        Actor::Object* pParentActor = this->GetActor(in_hParentActor);
+        // 子アクターに親アクターを設定する
+        const Bool bRet = pChildActor->SetParentActor(in_hParentActor, pParentActor->GetDepth());
         if (bRet)
         {
-            Actor::Object* pParentActor = this->GetActor(in_hParentActor);
-            pParentActor->OnAddChildActor(pActor);
+            // TODO: 子アクターの更新順を変える
+            this->_pActorManager->MoveDepth(in_hChildActor, pChildActor->GetDepth());
+
+            pParentActor->OnAddChildActor(pChildActor);
         }
 
         return TRUE;
     }
 
-    Actor::ActorManagerlnterface* Node::GetActorManagerDataAccess()
-    {
-        return this->_pActorManager.get();
-    }
+    /*
+        Actor::ActorManagerlnterface* Node::GetActorManagerDataAccess()
+        {
+            return this->_pActorManager.get();
+        }
+        */
 }  // namespace Level

@@ -56,7 +56,7 @@ namespace UI
     class UIButtonComponent : public UIWidgetComponent
     {
         E_CLASS_COPY_CONSTRUCT_NG(UIButtonComponent);
-        GENERATED_CLASS_BODY_HEADER();
+        GENERATED_CLASS_BODY_HEADER(UIButtonComponent, UIWidgetComponent);
 
     public:
         UIButtonComponent() : UIWidgetComponent() { this->_Clear(); }
@@ -66,7 +66,7 @@ namespace UI
         /// 登録に必要な情報を設定
         /// </summary>
         /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
-        virtual void Init(const Bool in_bAutoDelete = TRUE) override;
+        virtual void Setup(const Bool in_bAutoDelete = TRUE) override;
 
         /// <summary>
         /// コンポーネントの終了
@@ -90,6 +90,9 @@ namespace UI
             this->_pushHandler = std::move(in_hanlder);
         }
 
+        void SetWidth(const Float32 in_w) { this->_w = in_w; }
+        void SetHeight(const Float32 in_h) { this->_h = in_h; }
+
         /// <summary>
         /// タッチイベント
         /// </summary>
@@ -97,9 +100,16 @@ namespace UI
         virtual void OnTouch(const Platform::TouchInput& in_rTouch) override;
 
     private:
-        void _Clear() { this->_pushHandler.release(); }
+        void _Clear()
+        {
+            this->_pushHandler.release();
+            this->_w = 0.0f;
+            this->_h = 0.0f;
+        }
 
     private:
         std::unique_ptr<UIButtonMessageHandler> _pushHandler;
+        Float32 _w = 0.0f;
+        Float32 _h = 0.0f;
     };
 }  // namespace UI

@@ -31,7 +31,7 @@ namespace Core
 
     public:
         static const Uint32 NONE_ID       = 0;
-        static const Sint32 GROUP_NONE_ID = -1;
+        static const Sint32 NONE_GROUP_ID = -1;
 
         // タスクは生成したインスタンスが再利用されるのでコンストラクタで初期化はできない
         Task() { this->_Clear(); }
@@ -40,7 +40,12 @@ namespace Core
         /// タスク利用した設定をした最初に実行
         /// 登録に必要な情報を設定
         /// </summary>
-        virtual void Init(const Bool in_bAutoDelete);
+        virtual void Setup(const Bool in_bAutoDelete);
+
+        /// <summary>
+        /// タスク破棄
+        /// </summary>
+        void Kill();
 
         /// <summary>
         /// タスク開始
@@ -54,18 +59,20 @@ namespace Core
 
         /// <summary>
         /// 更新用で継承先が実装しないとだめ
+        /// TaskData型は更新に必要なデータなのでこのデータを保存してはいけない
         /// </summary>
-        virtual void Update(const Float32 in_dt, const TaskData*)
+        virtual void Update(const Float32 in_dt, const TaskData&)
         {
             E_ASSERT(FALSE && "継承クラスは必ず実装");
         }
 
-        /// <summary>
-        /// タスク破棄
-        /// </summary>
-        void Kill();
+        inline const Common::Handle& GetHandle() const { return this->_hSelf; }
 
-        const Common::Handle& GetHandle() const { return _hSelf; }
+        /// <summary>
+        /// タスクのグループID
+        /// </summary>
+        /// <returns></returns>
+        inline const Sint32 GetGropuId() const { return this->_groupId; }
 
     private:
         void _Clear()
@@ -73,7 +80,7 @@ namespace Core
             this->_bStart = TRUE;
             this->_bKill  = FALSE;
 
-            this->_groupId     = Task::GROUP_NONE_ID;
+            this->_groupId     = Task::NONE_GROUP_ID;
             this->_pPrev       = NULL;
             this->_pNext       = NULL;
             this->_bReleaseMem = FALSE;
@@ -83,7 +90,7 @@ namespace Core
         TaskManager* _pManager = NULL;
 
     private:
-        Sint32 _groupId = Task::GROUP_NONE_ID;
+        Sint32 _groupId = Task::NONE_GROUP_ID;
         Common::Handle _hSelf;
         Bool _bStart = TRUE;
         Bool _bKill  = FALSE;
@@ -94,8 +101,8 @@ namespace Core
         Task* _pPrev = NULL;
         Task* _pNext = NULL;
     };
-
-    // タスクデータのデフォルト
-    // タスクデータの引数でデフォルト設定する場合に利用
-    extern const TaskData DEFAULT_TASK_DATA;
 };  // namespace Core
+
+// タスクデータのデフォルト
+// タスクデータの引数でデフォルト設定する場合に利用
+extern const Core::TaskData DEFAULT_TASK_DATA;

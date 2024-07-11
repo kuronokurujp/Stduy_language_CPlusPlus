@@ -1,51 +1,65 @@
 ﻿#include "Module.h"
 
+#include "../Engine.h"
+
 namespace Module
 {
-    ModuleInterface::ModuleInterface()
+    ModuleBase::ModuleBase(const Char* in_pName)
     {
-        MODULE_MANAGER_DEFINITION;
-        ModuleManager::I()._Add(this);
+        this->_name = in_pName;
+        _modules.Add(in_pName, this);
     }
 
-    void ModuleManager::Release()
+    Platform::PlatformModule* ModuleBase::GetPlatformModule() const
+    {
+#ifdef _HOBBY_ENGINE
+        return HOBBY_ENGINE.GetPlatformModule();
+#else
+        return NULL;
+#endif
+    }
+
+    ModuleBase* ModuleManager::Get(const Char* in_pName)
+    {
+        E_ASSERT(ModuleBase::_modules.Contains(in_pName));
+        return ModuleBase::_modules[in_pName];
+    }
+
+    const Bool ModuleManager::Release()
     {
         // 全モジュール解放
         {
-            for (Uint32 i = 0; i < this->_modules.Size(); ++i)
+            for (auto b = ModuleBase::_modules.Begin(); b != ModuleBase::_modules.End(); ++b)
             {
-                this->_modules[i]->End();
+                b->_data->Release();
             }
-            this->_modules.IsEmpty();
+            // this->_modules.Empty();
+            ModuleBase::_modules.Clear();
         }
+
+        return TRUE;
     }
 
     void ModuleManager::Update(const Float32 in_deltaTime)
     {
         // 更新処理は優先順位をつけて処理順を変える対応が必要かも
         {
-            Uint32 size = this->_modules.Size();
-            for (Uint32 i = 0; i < size; ++i)
+            for (auto b = ModuleBase::_modules.Begin(); b != ModuleBase::_modules.End(); ++b)
             {
-                // 依存しているモジュールが存在しているかチェック
-                this->_modules[i]->Update(in_deltaTime);
+                // TODO: 依存しているモジュールが存在しているかチェック
+                b->_data->Update(in_deltaTime);
             }
         }
     }
 
-    void ModuleManager::_Add(Module::ModuleInterface* in_pModule)
+    const Bool ModuleManager::Start()
     {
-        this->_modules.PushBack(in_pModule);
-    }
-
-    const Bool ModuleManager::Apply()
-    {
-        for (Uint32 i = 0; i < this->_modules.Size(); ++i)
+        for (auto b = ModuleBase::_modules.Begin(); b != ModuleBase::_modules.End(); ++b)
         {
-            E_LOG_LINE(E_STR_TEXT("No(%d) Module(%hs)"), i, typeid(*this->_modules[i]).name());
-            if (this->_modules[i]->Init() == FALSE)
+            E_LOG_LINE(E_STR_TEXT("Start Module(") E_STR_FORMAT_TEXT E_STR_TEXT(")"), b->_data->Name());
+            if (b->_data->Start() == FALSE)
             {
-                E_ASSERT(FALSE && "モジュール初期化に失敗");
+                E_ASSERT(FALSE && "モジュール開始に失敗");
             }
         }
 

@@ -18,7 +18,6 @@ namespace Core
 
         public:
             Manager();
-            ~Manager();
 
         public:
             // 最低アラインサイズ（ヘッダもこのアラインである必要あり）
@@ -156,10 +155,10 @@ namespace Core
 #pragma pack(pop)
 
         public:
-            //	初期化
-            const Bool Init(const Uint32 in_manageSize);
-            //	終了
-            const Bool End();
+            // システムが稼働開始
+            const Bool Start(const Uint32 in_manageSize);
+
+            const Bool Release() override final;
 
 #ifdef _HOBBY_ENGINE_DEBUG
             // メモリ確保

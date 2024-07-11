@@ -8,7 +8,7 @@ namespace Core
     /// タスク管理に登録する
     /// 登録に必要な情報を設定
     /// </summary>
-    void Task::Init(const Bool in_bReleaseMem)
+    void Task::Setup(const Bool in_bReleaseMem)
     {
         this->_Clear();
         // パラメータはタスク管理に登録された時に設定される

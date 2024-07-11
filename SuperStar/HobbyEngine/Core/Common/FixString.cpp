@@ -23,7 +23,7 @@ namespace Core
             E_ASSERT(in_pBuff && in_size);
 
             this->_pBuff    = in_pBuff;
-            this->_size     = in_size;
+            this->_capacity = in_size;
             this->_pBuff[0] = E_STR_TEXT('\0');
         }
 
@@ -50,7 +50,7 @@ namespace Core
                 pSrcStr = this->_pBuff + index + newLength;
 
                 // もうこれ以上置き換えられない
-                if (static_cast<Uint32>(pSrcStr - this->_pBuff) >= this->_size) break;
+                if (static_cast<Uint32>(pSrcStr - this->_pBuff) >= this->_capacity) break;
 
             } while (*pSrcStr != E_STR_TEXT('\0'));
 
@@ -59,7 +59,7 @@ namespace Core
 
         FixStringBase& FixStringBase::Insert(Uint32 in_index, const Char* in_pInsertStr)
         {
-            Char* pBuffEnd   = this->_pBuff + this->_size - 1;
+            Char* pBuffEnd   = this->_pBuff + this->_capacity - 1;
             Uint32 originLen = this->Length();
             Uint32 insertLen =
                 ((!in_pInsertStr) ? 1 : static_cast<Uint32>(E_STR_LEN(in_pInsertStr)));
@@ -68,7 +68,8 @@ namespace Core
             if (in_index >= originLen) return (*this) += in_pInsertStr;
 
             // 挿入サイズをチェックする
-            if (in_index + insertLen >= this->_size - 1) insertLen = this->_size - in_index - 1;
+            if (in_index + insertLen >= this->_capacity - 1)
+                insertLen = this->_capacity - in_index - 1;
 
             // 挿入箇所以降の文字を後ろへスライド
             {
@@ -112,7 +113,7 @@ namespace Core
 
         FixStringBase& FixStringBase::Remove(Uint32 in_index, Uint32 in_count)
         {
-            Uint32 size = this->Size();
+            Uint32 size = this->Capacity();
             Char* pDst  = this->_pBuff + ((in_index > size) ? size : in_index);
             const Char* pSrc =
                 this->_pBuff + (((in_index + in_count) > size) ? size : (in_index + in_count));
@@ -135,14 +136,15 @@ namespace Core
 
         FixStringBase& FixStringBase::FormatV(const Char* in_pFormat, va_list in_vList)
         {
-            if (in_pFormat && this->_size > 1)
+            if (in_pFormat && this->_capacity > 1)
             {
-                E_STR_VSNPRINTF(this->_pBuff, this->_size, this->_size - 1, in_pFormat, in_vList);
-                this->_pBuff[this->_size - 1] = '\0';
+                E_STR_VSNPRINTF(this->_pBuff, this->_capacity, this->_capacity - 1, in_pFormat,
+                                in_vList);
+                this->_pBuff[this->_capacity - 1] = '\0';
             }
             else
             {
-                this->Empty();
+                this->Clear();
             }
 
             return *this;
@@ -164,7 +166,7 @@ namespace Core
 #ifdef _WIN
             return static_cast<Uint32>(E_STR_LEN(this->_pBuff));
 #else
-            Uint32 size = this->Size();
+            Uint32 size = this->Capacity();
             Uint32 len  = 0;
 
             Uint32 offset = 0;
@@ -203,6 +205,44 @@ namespace Core
 #endif
         }
 
+        /// <summary>
+        /// 文字列をハッシュ化して返す
+        /// </summary>
+        /// <returns></returns>
+        const Uint64 FixStringBase::Hash()
+        {
+#ifdef _WIN
+            std::hash<std::wstring> hasher;
+#else
+            std::hash<std::string> hasher;
+#endif
+            return hasher(this->Str());
+        }
+
+        /// <summary>
+        /// UTF8として出力
+        /// 文字列をUTF-8として利用したい場合に利用
+        /// </summary>
+        /// <param name="out"></param>
+        /// <param name="in_size"></param>
+        void FixStringBase::OutputUTF8(Byte* out, Uint32 in_size) const
+        {
+            E_ASSERT(out);
+            E_ASSERT(in_size <= this->Capacity());
+            // wchar_t型をutf8のcharに変えて出力
+#ifdef _WIN
+            ::memset(out, 0, in_size);
+            Sint32 StrSize = WideCharToMultiByte(CP_UTF8, 0, this->Str(), -1, NULL, 0, NULL, NULL);
+            if (StrSize <= 0) return;
+
+            StrSize = E_MIN(static_cast<Uint32>(StrSize), in_size);
+            WideCharToMultiByte(CP_UTF8, 0, this->Str(), -1, out, StrSize, NULL, NULL);
+#else
+            // TODO: のちに対応
+            E_ASSERT(0 && "Str()のをそのままコピーする");
+#endif
+        }
+
         Bool FixStringBase::operator==(const Char* in_pStr) const
         {
             return (in_pStr && (E_STR_CMP(this->_pBuff, in_pStr) == 0));
@@ -210,14 +250,16 @@ namespace Core
 
         FixStringBase& FixStringBase::_Copy(const Char* in_pStr, const Uint32 in_strLen)
         {
-            if (in_pStr && this->_size > 0)
+            E_ASSERT(in_pStr && "コピーしたい文字列がない");
+            E_ASSERT(0 < this->_capacity && "コピー先のバッファサイズがない");
+            if (in_pStr && 0 < this->_capacity)
             {
-                ::memset(this->_pBuff, '\0', this->_size * sizeof(Char));
-                E_STR_CPY_S(this->_pBuff, this->_size, in_pStr, in_strLen);
+                E_STR_ERRNO e = E_STR_CPY_S(this->_pBuff, this->_capacity, in_pStr, in_strLen);
+                E_ASSERT(E_STR_SUCCESS(e) && "文字列コピーに失敗");
             }
             else
             {
-                this->Empty();
+                this->Clear();
             }
 
             return *this;
@@ -225,20 +267,26 @@ namespace Core
 
         FixStringBase& FixStringBase::_Add(const Char* in_pStr)
         {
-            if (in_pStr && this->_size > 0)
+            if (in_pStr && this->_capacity > 0)
             {
                 Uint32 len    = this->Length();
-                Uint32 catLen = this->_size - len - 1;
+                Sint32 catLen = static_cast<Sint32>(this->_capacity - len - 1);
+                E_ASSERT(0 < catLen &&
+                         "文字列の長さがバッファサイズを超えて文字列の追加ができない");
 
                 if (catLen > 0)
                 {
-                    E_STR_CPY_S(this->_pBuff + len, this->_size - len, in_pStr, catLen);
-                    this->_pBuff[this->_size - 1] = '\0';
+                    E_STR_ERRNO e =
+                        E_STR_CPY_S(this->_pBuff + len, static_cast<Sint32>(this->_capacity - len),
+                                    in_pStr, catLen);
+                    E_ASSERT(E_STR_SUCCESS(e) && "文字列コピーに失敗");
+
+                    this->_pBuff[this->_capacity - 1] = '\0';
                 }
             }
             else
             {
-                this->Empty();
+                this->Clear();
             }
 
             return *this;
@@ -247,8 +295,10 @@ namespace Core
         FixStringBase& FixStringBase::_Add(Char c)
         {
             Uint32 len = this->Length();
+            E_ASSERT(len + 1 < this->_capacity &&
+                     "文字列の長さがバッファサイズを超えて文字の追加ができない");
 
-            if (len + 1 < this->_size)
+            if (len + 1 < this->_capacity)
             {
                 this->_pBuff[len]     = c;
                 this->_pBuff[len + 1] = '\0';
@@ -256,5 +306,6 @@ namespace Core
 
             return *this;
         }
+
     }  // namespace Common
 }  // namespace Core

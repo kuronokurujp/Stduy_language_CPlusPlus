@@ -16,13 +16,11 @@ namespace DxLib
 
     const Bool TextFileRead::Open(Core::File::Path& in_rPath)
     {
-        // TODO: ファイルを開く
+        // ファイルを開く
         if (FileRead_open(in_rPath.Str()) == FALSE)
         {
             return FALSE;
         }
-
-        // TODO: テキストをロード
 
         this->_bOpen = TRUE;
         return FALSE;

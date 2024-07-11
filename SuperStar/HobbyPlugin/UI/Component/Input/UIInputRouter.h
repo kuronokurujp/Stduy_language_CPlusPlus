@@ -12,7 +12,7 @@ namespace UI
     /// </summary>
     class UIInputRouterComponent : public UIInputIComponentInterface
     {
-        GENERATED_CLASS_BODY_HEADER();
+        GENERATED_CLASS_BODY_HEADER(UIInputRouterComponent, UIInputIComponentInterface);
 
     public:
         /// <summary>

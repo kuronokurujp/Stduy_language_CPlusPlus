@@ -10,7 +10,7 @@ namespace UI
     /// </summary>
     class UIInputIComponentInterface : public Actor::Component
     {
-        GENERATED_CLASS_BODY_HEADER();
+        GENERATED_CLASS_BODY_HEADER(UIInputIComponentInterface, Actor::Component);
 
     public:
         /// <summary>

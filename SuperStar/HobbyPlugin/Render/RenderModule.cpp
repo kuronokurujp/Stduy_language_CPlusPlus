@@ -8,16 +8,7 @@ namespace Render
     /// モジュール初期化
     /// </summary>
     /// <returns></returns>
-    const Bool RenderModule::Init()
-    {
-        return TRUE;
-    }
-
-    /// <summary>
-    /// モジュール終了
-    /// </summary>
-    /// <returns></returns>
-    const Bool RenderModule::End()
+    const Bool RenderModule::Start()
     {
         return TRUE;
     }
@@ -29,4 +20,14 @@ namespace Render
 
         return TRUE;
     }
+
+    /// <summary>
+    /// インスタンス破棄時に呼ばれる
+    /// </summary>
+
+    const Bool RenderModule::Release()
+    {
+        return TRUE;
+    }
+
 }  // namespace Render

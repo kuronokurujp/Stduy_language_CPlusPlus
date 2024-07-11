@@ -25,7 +25,7 @@ namespace Core
         /// </summary>
         /// <param name="in_radians">The in radians.</param>
         /// <returns></returns>
-        static inline const float RadiansToDegrees(float in_radians)
+        static inline const float RadiansToDegrees(float in_radians) E_NOEXCEPT
         {
             return INVERT_RADIANS_UNIT * in_radians;
         }
@@ -35,7 +35,7 @@ namespace Core
         /// </summary>
         /// <param name="in_degrees">The in degrees.</param>
         /// <returns></returns>
-        static inline const float DegreesToRadians(float in_degrees)
+        static inline const float DegreesToRadians(float in_degrees) E_NOEXCEPT
         {
             return RADIANS_UNIT * in_degrees;
         }
@@ -45,7 +45,7 @@ namespace Core
         /// </summary>
         /// <param name="in_angle">The in angle.</param>
         /// <returns></returns>
-        static inline float Sin(const float in_angle)
+        static inline float Sin(const float in_angle) E_NOEXCEPT
         {
             return sinf(in_angle);
         }
@@ -55,7 +55,7 @@ namespace Core
         /// </summary>
         /// <param name="in_angle">The in angle.</param>
         /// <returns></returns>
-        static inline float Cos(const float in_angle)
+        static inline float Cos(const float in_angle) E_NOEXCEPT
         {
             return cosf(in_angle);
         }
@@ -65,7 +65,7 @@ namespace Core
         /// </summary>
         /// <param name="in_angle">The in angle.</param>
         /// <returns></returns>
-        static inline float Tan(const float in_angle)
+        static inline float Tan(const float in_angle) E_NOEXCEPT
         {
             return tanf(in_angle);
         }
@@ -75,7 +75,7 @@ namespace Core
         /// </summary>
         /// <param name="in_value">The in value.</param>
         /// <returns></returns>
-        static inline float Acos(const float in_value)
+        static inline float Acos(const float in_value) E_NOEXCEPT
         {
             return acosf(in_value);
         }
@@ -86,7 +86,7 @@ namespace Core
         /// <param name="in_x">The in x.</param>
         /// <param name="in_y">The in y.</param>
         /// <returns></returns>
-        static inline float Atan2(const float in_x, const float in_y)
+        static inline float Atan2(const float in_x, const float in_y) E_NOEXCEPT
         {
             return atan2f(in_y, in_x);
         }
@@ -102,7 +102,8 @@ namespace Core
         /// <param name="in_value">The in value.</param>
         /// <param name="in_epsilon">The in epsilon.</param>
         /// <returns></returns>
-        static inline bool NearZero(const float in_value, const float in_epsilon = 0.001f)
+        static inline bool NearZero(const float in_value,
+                                    const float in_epsilon = 0.001f) E_NOEXCEPT
         {
             if (fabsf(in_value) <= in_epsilon)
             {
@@ -117,7 +118,7 @@ namespace Core
         /// </summary>
         /// <param name="in_value">The in value.</param>
         /// <returns></returns>
-        static inline float RoundF(const float in_value)
+        static inline float RoundF(const float in_value) E_NOEXCEPT
         {
             // 四捨五入する時に+/-でずらす方向を変えている
             float offset = (in_value >= 0.0f) ? 0.5f : -0.5f;
@@ -129,7 +130,7 @@ namespace Core
         /// </summary>
         /// <param name="in_rValue">The in r value.</param>
         /// <returns></returns>
-        static inline int Round(const float in_value)
+        static inline int Round(const float in_value) E_NOEXCEPT
         {
             return static_cast<int>(RoundF(in_value));
         }
@@ -140,7 +141,7 @@ namespace Core
         /// <param name="a">a.</param>
         /// <param name="b">The b.</param>
         /// <returns></returns>
-        static inline float Max(const float a, const float b)
+        static inline float Max(const float a, const float b) E_NOEXCEPT
         {
             if (a > b)
             {

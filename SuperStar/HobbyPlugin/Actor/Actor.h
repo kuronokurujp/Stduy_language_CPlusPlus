@@ -37,14 +37,13 @@ namespace Actor
 {
     // 前方宣言
     // class Component;
-    class ActorManagerlnterface;
+    class ActorManagerPubliclnterface;
 
     /// <summary>
     /// ゲームアクター
     /// </summary>
     class Object : public Core::Task
     {
-        // E_CLASS_DEFAULT_CONSTRUCT_NG(Object);
         E_CLASS_COPY_CONSTRUCT_NG(Object);
 
     public:
@@ -70,16 +69,12 @@ namespace Actor
         virtual ~Object();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Actor" /> class.
-        /// </summary>
-        // Actor(Renderer* in_pRenderer, ActorManager* in_pActorManager);
-
-        /// <summary>
         /// 管理インスタンスを設定
         /// </summary>
         /// <param name="in_pDataAccess"></param>
-        void SetManager(ActorManagerlnterface* in_pDataAccess)
+        void SetManager(ActorManagerPubliclnterface* in_pDataAccess)
         {
+            E_ASSERT(in_pDataAccess);
             this->_pDataAccess = in_pDataAccess;
         }
 
@@ -87,7 +82,7 @@ namespace Actor
         /// 親アクターを設定
         /// </summary>
         /// <param name="in_handle"></param>
-        const Bool SetParentActor(const Core::Common::Handle in_handle);
+        const Bool SetParentActor(const Core::Common::Handle in_handle, const Uint32 in_depth);
 
         /// <summary>
         /// 開始
@@ -104,7 +99,7 @@ namespace Actor
         /// <summary>
         /// Updates the specified in delta time.
         /// </summary>
-        void Update(const Float32 in_dt, const Core::TaskData* in_pData) override;
+        void Update(const Float32 in_dt, const Core::TaskData&) override;
 
         /// <summary>
         /// 継承先でUpdateメソッドをoverride出来る.
@@ -113,12 +108,15 @@ namespace Actor
         virtual void UpdateActor(float in_deltaTime) {}
 
         /// <summary>
-        /// Adds the component.
+        /// コンポーネントを追加
         /// </summary>
         /// <returns></returns>
         template <class T>
         Core::Common::Handle AddComponent(const Sint32 in_updateOrder)
         {
+            static_assert(std::is_base_of<Component, T>::value,
+                          "TクラスはComponentクラスを継承していない");
+
             // TODO: アクターの準備が整う前に呼ばれるケースもある
             // その場合はペンディングリストに追加して準備が整った時にコンポーネントを追加する
             E_ASSERT(0 <= in_updateOrder);
@@ -134,6 +132,8 @@ namespace Actor
 
             return handle;
         }
+
+        const Uint32 GetDepth() const { return this->_depth; }
 
         /// <summary>
         /// くっつている全てのコンポーネント外す
@@ -187,16 +187,6 @@ namespace Actor
         void SetName(const Core::Common::FixString128 in_name) { this->_name = in_name; }
         const Core::Common::FixString128& GetName() const { return this->_name; }
 
-        /*
-        /// <summary>
-        /// Gets the Renderer.
-        /// </summary>
-        /// <returns></returns>
-        Renderer* GetRenderer();
-
-        inline ActorManager* GetActorManager() { return this->pActorManager; }
-        */
-
         /// <summary>
         /// 取得コンポーネント(ハンドル)
         /// </summary>
@@ -204,6 +194,9 @@ namespace Actor
         template <class T>
         T* GetComponent(Core::Common::Handle& in_hComponent)
         {
+            static_assert(std::is_base_of<Component, T>::value,
+                          "TクラスはComponentクラスを継承していない");
+
             T* p = reinterpret_cast<T*>(this->_components.GetTask(in_hComponent));
             E_ASSERT(p);
 
@@ -271,11 +264,7 @@ namespace Actor
         /// </summary>
         /// <param name="in_rPosition">The in r position.</param>
         /// <returns></returns>
-        inline void SetPos(const Core::Math::Vector3& in_rPosition)
-        {
-            this->pos = in_rPosition;
-            // this->recomputeWorldTransform = true;
-        }
+        inline void SetPos(const Core::Math::Vector3& in_rPosition) { this->pos = in_rPosition; }
 
         /// <summary>
         /// 子アクターが追加された時に呼ばれるイベント
@@ -399,9 +388,10 @@ namespace Actor
         Core::TaskManager _components;
         Core::Common::Handle _parentActorHandle;
 
-        ActorManagerlnterface* _pDataAccess = NULL;
+        ActorManagerPubliclnterface* _pDataAccess = NULL;
 
-        Bool _bStart = FALSE;
+        Bool _bStart  = FALSE;
+        Uint32 _depth = 0;
 
         // オブジェクト名
         Core::Common::FixString128 _name;

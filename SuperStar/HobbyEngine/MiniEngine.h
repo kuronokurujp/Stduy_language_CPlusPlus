@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+// エンジンを扱うアプリやプラグインのモジュールヘッダーファイルで
 // 必ずインクルードするファイル
 
 #include "Core/Common/FixString.h"

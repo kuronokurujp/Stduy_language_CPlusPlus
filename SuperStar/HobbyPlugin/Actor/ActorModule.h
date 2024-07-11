@@ -15,20 +15,22 @@ namespace Actor
     /// <summary>
     /// アクター用の追加モジュール
     /// </summary>
-    class ActorModule final : public Module::ModuleBase<ActorModule>
+    class ActorModule final : public Module::ModuleBase
     {
     public:
+        ActorModule(const Char* in_pName) : ModuleBase(in_pName) {}
+
+    protected:
         /// <summary>
         /// モジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool Init() final override;
+        const Bool Start() final override;
 
         /// <summary>
-        /// モジュール終了
+        /// インスタンス破棄時に呼ばれる
         /// </summary>
-        /// <returns></returns>
-        const Bool End() final override;
+        virtual const Bool Release() override final;
     };
 }  // namespace Actor
 

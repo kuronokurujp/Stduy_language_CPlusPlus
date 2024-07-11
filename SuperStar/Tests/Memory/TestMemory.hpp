@@ -11,8 +11,8 @@ static Core::Memory::Manager s_memoryManager;
 /// </summary>
 TEST_CASE("Memory Init to End")
 {
-    CHECK(s_memoryManager.Init(0x1000000));
-    CHECK(s_memoryManager.End());
+    CHECK(s_memoryManager.Start(0x1000000));
+    CHECK(s_memoryManager.Release());
 }
 
 /// <summary>
@@ -20,8 +20,8 @@ TEST_CASE("Memory Init to End")
 /// </summary>
 TEST_CASE("Memory SetupMemory")
 {
-    CHECK(s_memoryManager.End());
-    CHECK(s_memoryManager.Init(0x1000000));
+    CHECK(s_memoryManager.Release());
+    CHECK(s_memoryManager.Start(0x1000000));
 
     // ページ確保テスト
     {
@@ -37,7 +37,7 @@ TEST_CASE("Memory SetupMemory")
         CHECK(s_memoryManager.CheckAllMemoryBlock());
     }
 
-    CHECK(s_memoryManager.End());
+    CHECK(s_memoryManager.Release());
 }
 
 /// <summary>
@@ -45,8 +45,8 @@ TEST_CASE("Memory SetupMemory")
 /// </summary>
 TEST_CASE("Memory Allocate And Free")
 {
-    CHECK(s_memoryManager.End());
-    CHECK(s_memoryManager.Init(0x1000000));
+    CHECK(s_memoryManager.Release());
+    CHECK(s_memoryManager.Start(0x1000000));
 
     // ページ確保テスト
     Uint8 pageMax = 0;
@@ -94,5 +94,5 @@ TEST_CASE("Memory Allocate And Free")
     }
     s_memoryManager.PrintAllMemoryInfo();
 
-    CHECK(s_memoryManager.End());
+    CHECK(s_memoryManager.Release());
 }

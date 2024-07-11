@@ -81,10 +81,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     // グローバル変数にインスタンス ハンドルを格納する
     hInst = hInstance;
 
-    const Bool bPreInitRet = HOBBY_ENGINE.PreInit();
+    const Bool bPreInitRet = HOBBY_ENGINE.Init();
     E_ASSERT(bPreInitRet && "事前初期化に失敗");
 
-    const Bool bInitRet = HOBBY_ENGINE.Init();
+    const Bool bInitRet = HOBBY_ENGINE.Start();
     E_ASSERT(bInitRet && "初期化に失敗");
 
     return TRUE;
@@ -92,9 +92,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 void EndInstance(HINSTANCE hInstance)
 {
-    HOBBY_ENGINE.End();
-
-    RELEASE_HOBBY_ENGINE;
+    DELETE_HOBBY_ENGINE;
 }
 
 // アプリの起動エントリークラス
@@ -115,14 +113,14 @@ const Bool AppEntryGameMain::Start(const Bool in_bDebug)
     // TODO: ゲームのみで利用するライブラリを初期化
     //		LuaStateManager::Init();
 
-    HOBBY_LOCALIZATION_MODULE.LoadSystemFile(E_STR_TEXT("Locate/System.toml"));
-    HOBBY_LOCALIZATION_MODULE.LoadTextAll(E_STR_TEXT("JP"));
+    ModuleLocalization()->LoadSystemFile(E_STR_TEXT("Locate/System.toml"));
+    ModuleLocalization()->LoadTextAll(E_STR_TEXT("JP"));
 
 #ifdef _HOBBY_ENGINE_DEBUG
     if (in_bDebug)
     {
         // デバッグレベルを開始
-        HOBBY_ENGINE.GetLevelModule().GetManager()->StartLevel<Level::LevelLauncher>();
+        ModuleLevel()->GetManager()->StartLevel<Level::LevelLauncher>();
     }
 #endif
 

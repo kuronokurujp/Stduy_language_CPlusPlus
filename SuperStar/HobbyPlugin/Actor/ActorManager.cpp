@@ -4,9 +4,12 @@
 
 namespace Actor
 {
-    const Bool ActorManager::Init()
+    const Bool ActorManager::Start(const Uint32 in_actorCapacity, const Uint32 in_actorGroupMax)
     {
-        return this->_taskManager.Init(256, 32);
+        E_ASSERT(1 < in_actorGroupMax);
+        if (this->_taskManager.Init(in_actorCapacity, in_actorGroupMax) == FALSE) return FALSE;
+
+        return TRUE;
     }
 
     const Bool ActorManager::End()
@@ -73,30 +76,27 @@ namespace Actor
     /// </summary>
     void ActorManager::ProcessInput(const Float32 in_dt, Platform::InputSystemInterface* in_pInput)
     {
-        Core::TaskData taskData{Actor::Object::ETaskUpdateId_Input,
-                                reinterpret_cast<void*>(in_pInput)};
-
         {
-            const Uint32 max = this->_taskManager.GetMaxGroup();
-            for (Uint32 i = 1; i < max; ++i)
+            Core::TaskData taskData{Actor::Object::ETaskUpdateId_Input,
+                                    reinterpret_cast<void*>(in_pInput)};
+
+            const Uint32 max = this->_GetGroupMax();
+            for (Uint32 i = 0; i < max; ++i)
             {
-                this->_taskManager.UpdateGroup(i, in_dt, &taskData);
+                this->_taskManager.UpdateGroup(i, in_dt, taskData);
             }
         }
     }
 
-    void ActorManager::Update(const Float32 in_dt)
+    void ActorManager::Update(const Float32 in_dt, const Core::TaskData& in_rTaskData)
     {
         // アクター処理内で新しいアクターが追加した場合は保留リストにまず登録させる
         this->_bUpdatingActors = TRUE;
-
         {
-            Core::TaskData taskData{Actor::Object::ETaskUpdateId_Object, NULL};
-
-            const Uint32 max = this->_taskManager.GetMaxGroup();
-            for (Uint32 i = 1; i < max; ++i)
+            const Uint32 max = this->_GetGroupMax();
+            for (Uint32 i = 0; i < max; ++i)
             {
-                this->_taskManager.UpdateGroup(i, in_dt, &taskData);
+                this->_taskManager.UpdateGroup(i, in_dt, in_rTaskData);
             }
         }
         this->_bUpdatingActors = FALSE;
@@ -105,8 +105,35 @@ namespace Actor
     void ActorManager::UpdatePending()
     {
         // 保留グループに設定したタスクを更新グループに移動
-        this->_taskManager.MoveGroupAll(0, 1);
+        for (auto b = this->_pendingDataMap.Begin(); b != this->_pendingDataMap.End(); ++b)
+        {
+            const auto pData = &b->_data;
+            const Bool bRet  = this->_taskManager.MoveGropuTask(pData->handle, pData->moveGroupId);
+            E_ASSERT(bRet && "保留中のタスクを稼働中に切り替え失敗した");
+        }
+        this->_pendingDataMap.Clear();
     }
+
+    void ActorManager::MoveDepth(const Core::Common::Handle& in_hHandle, const Uint32 in_depth)
+    {
+        E_ASSERT(in_depth < this->_taskManager.GetMaxGroup());
+        const Sint32 groupId = static_cast<Sint32>(in_depth);
+
+        const auto pTask = this->_taskManager.GetTask(in_hHandle);
+        if (pTask->GetGropuId() == this->_GetPendingGroupId())
+        {
+            // 保留中のタスクなので移動させるグループIDのみ切り替える
+            auto it = this->_pendingDataMap.Find(in_hHandle);
+            E_ASSERT(it.IsValid());
+            it->_data.moveGroupId = groupId;
+        }
+        else
+        {
+            // タスクのグループIDに変える
+            this->_taskManager.MoveGropuTask(in_hHandle, groupId);
+        }
+    }
+
     /*
         /// <summary>
         /// Gets the actors.

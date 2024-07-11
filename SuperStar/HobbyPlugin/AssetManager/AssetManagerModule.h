@@ -17,30 +17,18 @@ namespace AssetManager
     /// <summary>
     /// エンジンのアセット対応のモジュール
     /// </summary>
-    class AssetManagerModule final : public Module::ModuleBase<AssetManagerModule>,
+    class AssetManagerModule final : public Module::ModuleBase,
                                      Core::Common::BasePoolManager<AssetDataBase>
     {
     public:
-        /// <summary>
-        /// モジュール初期化
-        /// </summary>
-        /// <returns></returns>
-        const Bool Init() final override;
-
-        /// <summary>
-        /// モジュール終了
-        /// </summary>
-        /// <returns></returns>
-        const Bool End() final override;
-
-        const Bool Update(const Float32 in_deltaTime) final override;
+        AssetManagerModule(const Char* in_pName) : ModuleBase(in_pName) {}
 
         template <class T>
         typename std::enable_if<std::is_base_of<AssetDataBase, T>::value,
                                 const Core::Common::Handle>::type
         Load(const Char* in_pName, const Core::File::Path& in_rFilePath)
         {
-            E_ASSERT(in_rFilePath.IsEmpty() == FALSE);
+            E_ASSERT(in_rFilePath.Empty() == FALSE);
             E_ASSERT(in_pName);
             // TODO: 名前が重複した時はどうするかは考える
 
@@ -70,6 +58,21 @@ namespace AssetManager
             E_ASSERT(p && "ロードしたアセットデータがない");
             return *p;
         }
+
+    protected:
+        /// <summary>
+        /// モジュール開始
+        /// </summary>
+        /// <returns></returns>
+        const Bool Start() final override;
+
+        /// <summary>
+        /// モジュール解放
+        /// インスタンス破棄時に呼ばれる
+        /// </summary>
+        virtual const Bool Release() override final;
+
+        const Bool Update(const Float32 in_deltaTime) final override;
 
     private:
         const Bool _Load(AssetDataBase* out_pAssetData);

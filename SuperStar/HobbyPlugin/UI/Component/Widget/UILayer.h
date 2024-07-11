@@ -10,7 +10,7 @@ namespace UI
     /// </summary>
     class UILayerComponent : public UIWidgetComponent
     {
-        GENERATED_CLASS_BODY_HEADER();
+        GENERATED_CLASS_BODY_HEADER(UILayerComponent, UIWidgetComponent);
 
     public:
         /// <summary>

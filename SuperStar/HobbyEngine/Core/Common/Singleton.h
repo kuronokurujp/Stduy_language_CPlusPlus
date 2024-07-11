@@ -12,8 +12,7 @@ namespace Core
         /// インスタンスを複数生成している場合はエラーにしている
         /// 複数生成している場合は使い方が間違っているので使っている側が複数生成しないように修正する
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        template <typename T>
+        template <class T>
         class Singleton
         {
             E_CLASS_COPY_CONSTRUCT_NG(Singleton);
@@ -22,25 +21,37 @@ namespace Core
         public:
             Singleton()
             {
-                E_ASSERT(!_pInstance && "インスタンス二重生成");
+                E_ASSERT((_pInstance == NULL) && "インスタンス二重生成");
                 _pInstance = static_cast<T*>(this);
             }
 
-            ~Singleton()
+            virtual ~Singleton()
             {
-                if (_pInstance == NULL)
-                    E_PG_LOG_LINE(E_STR_TEXT("インスタンス二重破棄"));
-                else
+                if (_pInstance)
+                {
+                    if (_pInstance->Release() == FALSE) E_ASSERT(FALSE && "リリース失敗");
+
                     _pInstance = NULL;
+                }
+                else
+                {
+                    E_PG_LOG_LINE(E_STR_TEXT("インスタンス二重破棄"));
+                }
             }
+
+            /// <summary>
+            /// インスタンスがリリースされたときに呼ばれる
+            /// 終了処理だが, 大抵はアプリ終了時に呼ばれる
+            /// </summary>
+            virtual const Bool Release() { return FALSE; }
 
             /// <summary>
             /// インスタンスの参照を返す
             /// </summary>
             /// <returns></returns>
-            static T& I()
+            static T& I() E_NOEXCEPT
             {
-                E_ASSERT(_pInstance);
+                E_ASSERT(_pInstance && "シングルトンのインスタンスがないので参照している");
                 return *_pInstance;
             }
 
@@ -48,7 +59,7 @@ namespace Core
             /// インスタンスがあるかどうか
             /// </summary>
             /// <returns></returns>
-            static const Bool Have() { return (_pInstance != NULL); }
+            static const Bool Exist() E_NOEXCEPT { return (_pInstance != NULL); }
 
             /// <summary>
             /// シングルトン対象から解放
@@ -56,15 +67,14 @@ namespace Core
             static void Reset()
             {
                 E_ASSERT(_pInstance);
+                if (_pInstance->Release() == FALSE) E_ASSERT(FALSE && "リリース失敗");
                 _pInstance = NULL;
             }
 
         private:
-            static T* _pInstance;
+            // ユニークなインスタンス
+            static inline T* _pInstance = NULL;
         };
 
-        // static変数
-        template <typename T>
-        T* Singleton<T>::_pInstance = NULL;
     }  // namespace Common
 };     // namespace Core

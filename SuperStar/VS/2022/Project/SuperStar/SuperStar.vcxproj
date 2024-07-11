@@ -168,6 +168,7 @@ _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     <ClCompile Include="..\..\..\..\Game\Program\Src\Level\LevelLauncher.cpp" />
     <ClCompile Include="..\..\..\..\Game\Program\Src\Level\Title\TitleLevel.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Common\FixString.cpp" />
+    <ClCompile Include="..\..\..\..\HobbyEngine\Core\Common\Handle.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Common\RTTI.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\File\Path.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Math\Random.cpp" />
@@ -182,17 +183,20 @@ _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     <ClCompile Include="..\..\..\..\HobbyEngine\Platform\PlatformInput.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\AssetManager\AssetDataBase.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\AssetManager\AssetManagerModule.cpp" />
+    <ClCompile Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\pugixml\pugixml.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\simidjson\simdjson.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\DxLib\DXLibFile.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\DxLib\DXLibInput.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\DxLib\DXLibTime.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\DxLib\DXLibModule.cpp" />
+    <ClCompile Include="..\..\..\..\HobbyPlugin\Level\Component\LevelUserInputReceive.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\Level\LevelManager.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\Level\LevelModule.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\Localization\LocalizationModule.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\Render\Command\Command.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\Render\RenderModule.cpp" />
-    <ClCompile Include="..\..\..\..\HobbyPlugin\UI\Component\Input\UIInputInterface.cpp" />
+    <ClCompile Include="..\..\..\..\HobbyPlugin\UI\Builder\UILayoutBuilder.cpp" />
+    <ClCompile Include="..\..\..\..\HobbyPlugin\UI\Builder\UILayoutData.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\UI\Component\Input\UIInputRouter.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\UI\Component\Input\UIInputTerminalTouch.cpp" />
     <ClCompile Include="..\..\..\..\HobbyPlugin\UI\Component\Widget\UIButton.cpp" />
@@ -248,19 +252,24 @@ _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     <ClInclude Include="..\..\..\..\HobbyPlugin\Actor\ActorInterface.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\AssetDataBase.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\AssetManagerModule.h" />
+    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\pugixml\pugiconfig.hpp" />
+    <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\pugixml\pugixml.hpp" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\simidjson\simdjson.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdParty\tomlplusplus\toml.hpp" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\DxLib\DXLibFile.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\DxLib\DXLibInput.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\DxLib\DXLibTime.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\DxLib\DXLibModule.h" />
+    <ClInclude Include="..\..\..\..\HobbyPlugin\Level\Component\LevelUserInputReceive.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\Level\LevelManager.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\Level\LevelModule.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\Localization\LocalizationModule.h" />
+    <ClInclude Include="..\..\..\..\HobbyPlugin\Render\Color.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\Render\CommandBuffer.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\Render\Command\Command.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\Render\RenderModule.h" />
-    <ClInclude Include="..\..\..\..\HobbyPlugin\Render\RenderType.h" />
+    <ClInclude Include="..\..\..\..\HobbyPlugin\UI\Builder\UILayoutBuilder.h" />
+    <ClInclude Include="..\..\..\..\HobbyPlugin\UI\Builder\UILayoutData.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\UI\Component\Input\UIInputInterface.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\UI\Component\Input\UIInputRouter.h" />
     <ClInclude Include="..\..\..\..\HobbyPlugin\UI\Component\Input\UIInputTerminalTouch.h" />
@@ -297,6 +306,9 @@ _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     <Text Include="..\..\..\..\HobbyPlugin\AssetManager\ThirdPartyNotices.txt" />
     <Text Include="..\..\..\..\HobbyPlugin\DxLib\ThirdPartyNotices.txt" />
     <Text Include="..\..\..\..\LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\..\..\Game\Res\Assets\UI\Builder\Debug\Launcher.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

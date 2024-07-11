@@ -8,10 +8,10 @@ MODULE_GENRATE_DEFINITION(Level::LevelModule, Level);
 namespace Level
 {
     /// <summary>
-    /// TODO: モジュール初期化
+    /// モジュール初期化
     /// </summary>
     /// <returns></returns>
-    const Bool LevelModule::Init()
+    const Bool LevelModule::Start()
     {
         // レベル関連の準備
         {
@@ -22,22 +22,17 @@ namespace Level
         return TRUE;
     }
 
-    /// <summary>
-    /// TODO: モジュール終了
-    /// </summary>
-    /// <returns></returns>
-    const Bool LevelModule::End()
+    const Bool LevelModule::Update(const Float32 in_deltaTime)
     {
-        this->_pLevelManager->End();
-        this->_pLevelManager.reset();
+        // マウスやキーボードなどの各入力を渡す
+        this->_pLevelManager->Update(in_deltaTime, this->GetPlatformModule()->Input());
 
         return TRUE;
     }
-
-    const Bool LevelModule::Update(const Float32 in_deltaTime)
+    const Bool LevelModule::Release()
     {
-        // TODO: マウスやキーボードなどの各入力を渡す
-        this->_pLevelManager->Update(in_deltaTime, Platform::PlatformModule::I().Input());
+        this->_pLevelManager->End();
+        this->_pLevelManager.reset();
 
         return TRUE;
     }

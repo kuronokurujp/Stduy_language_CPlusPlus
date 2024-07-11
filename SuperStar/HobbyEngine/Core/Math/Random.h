@@ -26,6 +26,12 @@ namespace Core
             const Bool Init(const Sint32 in_seed);
 
             /// <summary>
+            /// インスタンスがリリースされたときに呼ばれる
+            /// 終了処理だが, 大抵はアプリ終了時に呼ばれる
+            /// </summary>
+            const Bool Release() override final { return TRUE; }
+
+            /// <summary>
             /// Sets the seed.
             /// </summary>
             /// <param name="in_seed">The in seed.</param>

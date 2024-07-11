@@ -13,6 +13,8 @@ namespace Core
     }
 }  // namespace Core
 
+class Engine;
+
 namespace Platform
 {
     // 前方宣言
@@ -35,34 +37,13 @@ namespace Platform
     /// この継承したクラスのインスタンスは必ず一つになっている
     /// エンジンが起動時には必ずこのプラットフォームモジュールは設定しないとエラーになる
     /// </summary>
-    class PlatformModule : public Module::ModuleBase<PlatformModule>
+    class PlatformModule : public Module::ModuleBase
     {
     public:
-        /// <summary>
-        /// モジュール初期化
-        /// </summary>
-        /// <returns></returns>
-        virtual const Bool Init() override { return FALSE; }
-
-        /// <summary>
-        /// モジュール終了
-        /// </summary>
-        /// <returns></returns>
-        virtual const Bool End() override { return FALSE; }
+        PlatformModule(const Char* in_pName) : ModuleBase(in_pName) {}
 
         virtual const Bool CreateMainWindow() { return FALSE; }
         virtual const Bool ReleaseAllWindows() { return FALSE; }
-
-        /// <summary>
-        /// このモジュールだけ更新前処理と後処理が必要なので用意している
-        /// エンジン側で呼び出している
-        /// </summary>
-        /// <param name="in_deltaTime"></param>
-        /// <returns></returns>
-        virtual const Bool BeforUpdate(const Float32 in_deltaTime) { return FALSE; }
-        virtual const Bool AfterUpdate(const Float32 in_deltaTime) { return FALSE; }
-
-        virtual const Bool Update(const Float32 in_deltaTime) override { return FALSE; }
 
         /// <summary>
         /// 時間システム
@@ -82,9 +63,30 @@ namespace Platform
         /// <returns></returns>
         virtual FileSystemInterface* File() = 0;
 
+    protected:
+        /// <summary>
+        /// モジュール開始
+        /// </summary>
+        /// <returns></returns>
+        virtual const Bool Start() override { return FALSE; }
+
+        /// <summary>
+        /// このモジュールだけ更新前処理と後処理が必要なので用意している
+        /// エンジン側で呼び出している
+        /// </summary>
+        /// <param name="in_deltaTime"></param>
+        /// <returns></returns>
+        virtual const Bool BeforUpdate(const Float32 in_deltaTime) { return FALSE; }
+        virtual const Bool AfterUpdate(const Float32 in_deltaTime) { return FALSE; }
+
+        virtual const Bool Update(const Float32 in_deltaTime) override { return FALSE; }
+
         // 描画
         virtual void BeginRender(void* in_pCmdArray) = 0;
         virtual void Redner(void* in_pCmdArray)      = 0;
         virtual void EndRender(void* in_pCmdArray)   = 0;
+
+    private:
+        friend class Engine;
     };
 }  // namespace Platform

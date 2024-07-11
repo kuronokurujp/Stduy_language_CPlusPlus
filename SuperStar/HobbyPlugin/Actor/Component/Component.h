@@ -18,7 +18,8 @@ namespace Actor
     class Component : public Core::Task
     {
         E_CLASS_COPY_CONSTRUCT_NG(Component);
-        GENERATED_CLASS_BASE_BODY_HEADER();
+
+        GENERATED_CLASS_BASE_BODY_HEADER(Component);
 
     public:
         Component();
@@ -29,7 +30,7 @@ namespace Actor
         /// 登録に必要な情報を設定
         /// </summary>
         /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
-        virtual void Init(const Bool in_bReleaseMem) override;
+        virtual void Setup(const Bool in_bReleaseMem) override;
 
         /// <summary>
         /// コンポーネントのオーターアクターを設定
@@ -60,7 +61,7 @@ namespace Actor
         /// TaskDataは使わないので省略した更新メソッドを継承してもらう
         /// </summary>
         /// <param name="in_deltaTime">The in delta time.</param>
-        void Update(const Float32 in_deltaTime, const Core::TaskData* in_pData) override final
+        void Update(const Float32 in_deltaTime, const Core::TaskData& in_rData) override final
         {
             this->Update(in_deltaTime);
         }

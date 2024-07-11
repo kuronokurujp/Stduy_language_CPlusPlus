@@ -11,6 +11,7 @@
 #include "HobbyPlugin/Actor/ActorModule.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
+#include "Component/LevelUserInputReceive.h"
 #include "LevelManager.h"
 
 namespace Level
@@ -20,24 +21,31 @@ namespace Level
     /// <summary>
     /// レベル用の追加モジュール
     /// </summary>
-    class LevelModule final : public Module::ModuleBase<LevelModule>
+    class LevelModule final : public Module::ModuleBase
     {
     public:
+        LevelModule(const Char* in_pName) : ModuleBase(in_pName) {}
+
+        std::shared_ptr<Manager>& GetManager() { return this->_pLevelManager; }
+
+    protected:
         /// <summary>
         /// モジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool Init() final override;
+        const Bool Start() final override;
 
         /// <summary>
         /// モジュール終了
         /// </summary>
         /// <returns></returns>
-        const Bool End() final override;
+        // const Bool End() final override;
+        /// <summary>
+        /// インスタンス破棄時に呼ばれる
+        /// </summary>
+        virtual const Bool Release() override final;
 
         const Bool Update(const Float32 in_deltaTime) final override;
-
-        std::shared_ptr<Manager>& GetManager() { return this->_pLevelManager; }
 
     private:
         std::shared_ptr<Manager> _pLevelManager = NULL;
@@ -45,3 +53,6 @@ namespace Level
 }  // namespace Level
 
 MODULE_GENRATE_DECLARATION(Level::LevelModule, Level);
+
+// カレントレベルを取得
+#define LEVEL_MODULE_CURRENT_LEVEL (ModuleLevel()->GetManager()->CurrentLevel())

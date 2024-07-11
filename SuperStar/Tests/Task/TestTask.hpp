@@ -51,7 +51,7 @@ namespace Core
         public:
             EffectTask() : Task() {}
 
-            void Update(const Float32 in_dt, const TaskData* in_pData) override final
+            void Update(const Float32 in_dt, const TaskData&) override final
             {
                 this->_time += in_dt;
                 E_LOG("F");
@@ -69,7 +69,7 @@ namespace Core
         public:
             ObjectTask() : Task() {}
 
-            virtual void Update(const Float32 in_dt, const TaskData* in_pData) override
+            virtual void Update(const Float32 in_dt, const TaskData&) override
             {
                 this->_time += in_dt;
                 E_LOG("P");
@@ -88,7 +88,7 @@ namespace Core
         public:
             EnemyTask() : ObjectTask() {}
 
-            void Update(const Float32 in_dt, const TaskData* in_pData) override final
+            void Update(const Float32 in_dt, const TaskData&) override final
             {
                 this->_time += in_dt;
                 E_LOG("E");
@@ -103,7 +103,7 @@ namespace Core
         public:
             DummySystemTask() {}
 
-            void Update(const Float32 in_dt, const TaskData* in_pData) override final
+            void Update(const Float32 in_dt, const TaskData&) override final
             {
                 this->_time += in_dt;
                 E_LOG("S");
@@ -161,7 +161,7 @@ namespace Core
                 boot_time += delta_time;
 
                 // タスクの更新
-                manager.UpdateAll(delta_time, &Core::DEFAULT_TASK_DATA);
+                manager.UpdateAll(delta_time, Core::DEFAULT_TASK_DATA);
 
                 E_LOG(" (%d / %d)\n", manager.UseCount(), manager.Max());
 
@@ -204,6 +204,7 @@ namespace Core
         {
             GROUP_SYSTEM,
             GROUP_PLAYER,
+            GROUP_ENEMY,
             GROUP_NUM
         };
 
@@ -255,9 +256,9 @@ namespace Core
         CHECK(manager.UseCount() == 0);
 
         // タスクを起動する
-        manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
-        manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
-        manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
+        auto h1 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
+        auto h2 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
+        auto h3 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
 
         // タスクの利用数が意図通りか
         CHECK(manager.UseCount() == 3);
@@ -265,6 +266,7 @@ namespace Core
         // グループ設定したタスクの総数が意図通りか
         CHECK(manager.CountWithGroup(GROUP_PLAYER) == 3);
         CHECK(manager.CountWithGroup(GROUP_SYSTEM) == 0);
+        CHECK(manager.CountWithGroup(GROUP_ENEMY) == 0);
 
         // グループ移動
         manager.MoveGroupAll(GROUP_PLAYER, GROUP_SYSTEM);
@@ -275,6 +277,24 @@ namespace Core
         // グループ設定したタスクの総数が意図通りか
         CHECK(manager.CountWithGroup(GROUP_PLAYER) == 0);
         CHECK(manager.CountWithGroup(GROUP_SYSTEM) == 3);
+        CHECK(manager.CountWithGroup(GROUP_ENEMY) == 0);
+
+        manager.MoveGropuTask(h1, GROUP_PLAYER);
+        CHECK(manager.CountWithGroup(GROUP_PLAYER) == 1);
+        CHECK(manager.CountWithGroup(GROUP_SYSTEM) == 2);
+        CHECK(manager.CountWithGroup(GROUP_ENEMY) == 0);
+
+        manager.MoveGropuTask(h2, GROUP_PLAYER);
+        CHECK(manager.CountWithGroup(GROUP_PLAYER) == 2);
+        CHECK(manager.CountWithGroup(GROUP_SYSTEM) == 1);
+        CHECK(manager.CountWithGroup(GROUP_ENEMY) == 0);
+
+        manager.MoveGropuTask(h1, GROUP_ENEMY);
+        manager.MoveGropuTask(h2, GROUP_PLAYER);
+        manager.MoveGropuTask(h3, GROUP_PLAYER);
+        CHECK(manager.CountWithGroup(GROUP_PLAYER) == 2);
+        CHECK(manager.CountWithGroup(GROUP_SYSTEM) == 0);
+        CHECK(manager.CountWithGroup(GROUP_ENEMY) == 1);
 
         // タスクシステムの終了
         manager.End();

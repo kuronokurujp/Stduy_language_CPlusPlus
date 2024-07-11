@@ -1,10 +1,4 @@
-﻿/**
- *	@file 	Vector2.h
- *	@brief
- *	@author	yuto uchida
- *	@note
- */
-#pragma once
+﻿#pragma once
 
 #include <math.h>
 
@@ -31,7 +25,7 @@ namespace Core
             /// <summary>
             /// Zeroes this instance.
             /// </summary>
-            void Zero()
+            void Zero() E_NOEXCEPT
             {
                 this->x = 0.f;
                 this->y = 0.f;
@@ -42,7 +36,7 @@ namespace Core
             /// </summary>
             /// <param name="a">a.</param>
             /// <param name="b">The b.</param>
-            void Madd(const Vector2& a, Float32 b)
+            void Madd(const Vector2& a, Float32 b) E_NOEXCEPT
             {
                 this->x += (a.x * b);
                 this->y += (a.y * b);
@@ -54,7 +48,7 @@ namespace Core
             /// <param name="a">a.</param>
             /// <param name="b">The b.</param>
             /// <param name="c">The c.</param>
-            void SetMadd(const Vector2& a, Float32 b, const Vector2& c)
+            void SetMadd(const Vector2& a, Float32 b, const Vector2& c) E_NOEXCEPT
             {
                 this->x = a.x * b + c.x;
                 this->y = a.y * b + c.y;
@@ -65,7 +59,7 @@ namespace Core
             /// </summary>
             /// <param name="a">a.</param>
             /// <param name="b">The b.</param>
-            void SetAdd(const Vector2& a, const Vector2& b)
+            void SetAdd(const Vector2& a, const Vector2& b) E_NOEXCEPT
             {
                 this->x = a.x + b.x;
                 this->y = a.y + b.y;
@@ -76,7 +70,7 @@ namespace Core
             /// </summary>
             /// <param name="a">a.</param>
             /// <param name="b">The b.</param>
-            void SetSub(const Vector2& a, const Vector2& b)
+            void SetSub(const Vector2& a, const Vector2& b) E_NOEXCEPT
             {
                 this->x = a.x - b.x;
                 this->y = a.y - b.y;
@@ -87,7 +81,7 @@ namespace Core
             /// </summary>
             /// <param name="a">a.</param>
             /// <param name="b">The b.</param>
-            void SetMul(const Vector2& a, const Vector2& b)
+            void SetMul(const Vector2& a, const Vector2& b) E_NOEXCEPT
             {
                 this->x = a.x * b.x;
                 this->y = a.y * b.y;
@@ -98,13 +92,13 @@ namespace Core
             /// </summary>
             /// <param name="in_value">The in value.</param>
             /// <returns></returns>
-            inline void Set(const Float32 in_value) { this->x = this->y = in_value; }
+            inline void Set(const Float32 in_value) E_NOEXCEPT { this->x = this->y = in_value; }
 
             /// <summary>
             /// ベクトル型で設定
             /// </summary>
             /// <param name="in_value"></param>
-            inline void Set(const Vector2& in_value)
+            inline void Set(const Vector2& in_value) E_NOEXCEPT
             {
                 this->x = in_value.x;
                 this->y = in_value.y;
@@ -119,7 +113,7 @@ namespace Core
             /// <param name="u">The u.</param>
             /// <param name="v">The v.</param>
             void SetInterporation(const Vector2& a, const Vector2& ab, const Vector2& ac, Float32 u,
-                                  Float32 v)
+                                  Float32 v) E_NOEXCEPT
             {
                 this->SetMadd(ab, u, a);  // a + u(b - a)
                 this->Madd(ac, v);        // a + u(b - a) + v(c - a)
@@ -128,7 +122,7 @@ namespace Core
             /// <summary>
             /// 正規化
             /// </summary>
-            void Normalize()
+            void Normalize() E_NOEXCEPT
             {
                 float magSq = this->x * this->x + this->y * this->y;
                 if (magSq > 0.f)
@@ -141,21 +135,21 @@ namespace Core
 
             // 演算定義
             // 足し算
-            void operator+=(const Vector2& a)
+            void operator+=(const Vector2& a) E_NOEXCEPT
             {
                 this->x += a.x;
                 this->y += a.y;
             }
 
             // 引き算
-            void operator-=(const Vector2& a)
+            void operator-=(const Vector2& a) E_NOEXCEPT
             {
                 this->x -= a.x;
                 this->y -= a.y;
             }
 
             // 掛け算
-            void operator*=(const Vector2& a)
+            void operator*=(const Vector2& a) E_NOEXCEPT
             {
                 this->x *= a.x;
                 this->y *= a.y;
@@ -166,13 +160,13 @@ namespace Core
             /// </summary>
             /// <param name="scale">The scale.</param>
             /// <returns></returns>
-            const Vector2 operator*(const float scale)
+            const Vector2 operator*(const float scale) E_NOEXCEPT
             {
                 return Vector2(this->x * scale, this->y * scale);
             }
 
             // 割り算
-            void operator/=(const Vector2& a)
+            void operator/=(const Vector2& a) E_NOEXCEPT
             {
                 if ((this->x != 0.f) && (a.x != 0.f))
                 {
@@ -193,7 +187,7 @@ namespace Core
             /// <param name="in_rA">The in r a.</param>
             /// <param name="in_rB">The in r b.</param>
             /// <returns></returns>
-            static inline const Vector2 Sub(const Vector2& in_rA, const Vector2& in_rB)
+            static inline const Vector2 Sub(const Vector2& in_rA, const Vector2& in_rB) E_NOEXCEPT
             {
                 return Vector2(in_rA.x - in_rB.x, in_rA.y - in_rB.y);
             }
@@ -201,7 +195,7 @@ namespace Core
             // ベクトルの大きさを2乗したのを取得
             // こちらの方が計算が早い
             // 比較などで利用できる
-            static inline float GetLengthSquared(const Vector2& in_rV)
+            static inline float GetLengthSquared(const Vector2& in_rV) E_NOEXCEPT
             {
                 return (in_rV.x * in_rV.x + in_rV.y * in_rV.y);
             }
@@ -212,7 +206,8 @@ namespace Core
             /// <param name="in_v">The in v.</param>
             /// <param name="in_v2">The in v2.</param>
             /// <returns></returns>
-            static inline float GetDistanceSquared(const Vector2& in_v, const Vector2& in_v2)
+            static inline float GetDistanceSquared(const Vector2& in_v,
+                                                   const Vector2& in_v2) E_NOEXCEPT
             {
                 Vector2 size;
                 size.SetSub(in_v2, in_v);
@@ -227,7 +222,7 @@ namespace Core
             }
 
             //	2つのベクトルの距離取得
-            static inline float GetDistance(const Vector2& in_v, const Vector2& in_v2)
+            static inline float GetDistance(const Vector2& in_v, const Vector2& in_v2) E_NOEXCEPT
             {
                 Vector2 size;
                 size.SetSub(in_v2, in_v);
@@ -241,7 +236,7 @@ namespace Core
             /// <param name="in_v">The in v.</param>
             /// <param name="in_v2">The in v2.</param>
             /// <returns></returns>
-            static inline float Dot(const Vector2& in_v, const Vector2& in_v2)
+            static inline float Dot(const Vector2& in_v, const Vector2& in_v2) E_NOEXCEPT
             {
                 return (in_v.x * in_v2.x) + (in_v.y * in_v2.y);
             }
@@ -254,7 +249,7 @@ namespace Core
             /// <param name="in_v2">The in v2.</param>
             /// <returns></returns>
             static inline void OutputRefection(Vector2* out_pRefection, const Vector2& in_nv,
-                                               const Vector2& in_v2)
+                                               const Vector2& in_v2) E_NOEXCEPT
             {
                 Vector2 flipV(-in_v2.x, -in_v2.y);
                 const float dot = 2 * Dot(in_nv, flipV);

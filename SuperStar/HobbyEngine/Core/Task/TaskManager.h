@@ -23,9 +23,6 @@ namespace Core
         // 処理を停止するフラグ
         static const Uint32 FLAG_PAUSE = 0x00000001;
 
-        // グループの未使用ID値
-        // static const Sint32 NON_GROPU_ID = -1;
-
     public:
         TaskManager() : BasePoolManager() {}
         ~TaskManager();
@@ -44,12 +41,12 @@ namespace Core
         /// <summary>
         /// 全タスク更新
         /// </summary>
-        void UpdateAll(const Float32 in_dt, const TaskData*);
+        void UpdateAll(const Float32 in_dt, const TaskData&);
 
         /// <summary>
         /// 指定グループを更新
         /// </summary>
-        void UpdateGroup(const Sint32 in_groupId, const Float32 in_dt, const TaskData*);
+        void UpdateGroup(const Sint32 in_groupId, const Float32 in_dt, const TaskData&);
 
         /// <summary>
         /// タスク作成して追加する
@@ -95,6 +92,14 @@ namespace Core
         /// </summary>
         /// <param name="in_groupId"></param>
         const Bool MoveGroupAll(const Sint32 in_orgGroupId, const Sint32 in_targetGroupId);
+
+        /// <summary>
+        /// TODO: タスクのグループ移動
+        /// </summary>
+        /// <param name="in_hTask"></param>
+        /// <param name="in_gropuId"></param>
+        /// <returns></returns>
+        const Bool MoveGropuTask(const Common::Handle& in_hTask, const Sint32 in_groupId);
 
         /// <summary>
         /// タスクアドレスをハンドルから取得

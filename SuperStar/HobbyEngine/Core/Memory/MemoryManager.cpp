@@ -10,9 +10,23 @@ namespace Core
         {
         }
 
-        Manager::~Manager()
+        const Bool Manager::Release()
         {
-            this->End();
+            if (this->_IsReady() == FALSE) return TRUE;
+
+            // TODO: メモリが残っているかチェック
+
+            // 解放する
+            // TODO: プラットフォームのヒープ解放に切り替える
+            ::_aligned_free(this->_pHeapTop);
+
+            // 痕跡を消す
+            this->_pHeapTop = NULL;
+            this->_heapSize = 0;
+
+            ::memset(this->_memoryPageInfoArray, 0, sizeof(this->_memoryPageInfoArray));
+
+            return TRUE;
         }
 
         /// <summary>
@@ -21,7 +35,7 @@ namespace Core
         /// </summary>
         /// <param name="in_useHeepSize">管理側で利用するヒープサイズ</param>
         /// <returns></returns>
-        const Bool Manager::Init(const Uint32 in_useHeapSize)
+        const Bool Manager::Start(const Uint32 in_useHeapSize)
         {
             //	既に初期化されているか、チェックする．
             if (this->_IsReady())
@@ -45,29 +59,6 @@ namespace Core
             this->_heapSize = in_useHeapSize;
 
             //	ページ情報初期化．
-            ::memset(this->_memoryPageInfoArray, 0, sizeof(this->_memoryPageInfoArray));
-
-            return TRUE;
-        }
-
-        /// <summary>
-        /// 終了
-        /// </summary>
-        /// <returns></returns>
-        const Bool Manager::End()
-        {
-            if (this->_IsReady() == FALSE) return TRUE;
-
-            // TODO: メモリが残っているかチェック
-
-            // 解放する
-            // TODO: プラットフォームのヒープ解放に切り替える
-            ::_aligned_free(this->_pHeapTop);
-
-            // 痕跡を消す
-            this->_pHeapTop = NULL;
-            this->_heapSize = 0;
-
             ::memset(this->_memoryPageInfoArray, 0, sizeof(this->_memoryPageInfoArray));
 
             return TRUE;
@@ -158,8 +149,8 @@ namespace Core
             Bool bNeedInitFlagArray[MEMORY_PAGE_MAX];
 
             //	サイズをクリアしておく(サイズが0ならいらないページ)
-            memset(sizeArray, 0, E_ARRAY_SIZE(sizeArray));
-            memset(bNeedInitFlagArray, 0, E_ARRAY_SIZE(bNeedInitFlagArray));
+            ::memset(sizeArray, 0, E_ARRAY_SIZE(sizeArray));
+            ::memset(bNeedInitFlagArray, 0, E_ARRAY_SIZE(bNeedInitFlagArray));
 
             // 最初にチェックとオフセット等の計算を別枠でする
             // そうしないとDEBUG時で一個前のサイズが大きくなったときメモリブロックのところがデバッグ情報で埋められてしまう
@@ -295,8 +286,8 @@ namespace Core
             pPageInfo->_pMemoryBlockTop->_paddingSize = 0;
 
 #ifdef _HOBBY_ENGINE_DEBUG
-            memset(pPageInfo->_pMemoryBlockTop->_fileName, 0,
-                   E_ARRAY_SIZE(pPageInfo->_pMemoryBlockTop->_fileName));
+            ::memset(pPageInfo->_pMemoryBlockTop->_fileName, 0,
+                     E_ARRAY_SIZE(pPageInfo->_pMemoryBlockTop->_fileName));
             pPageInfo->_pMemoryBlockTop->_line = 0;
 
             // マジックNoセット
@@ -593,7 +584,7 @@ namespace Core
             pMemoryBlock->_paddingSize = 0;
 
 #ifdef _HOBBY_ENGINE_DEBUG
-            memset(pMemoryBlock->_fileName, 0, E_ARRAY_SIZE(pMemoryBlock->_fileName));
+            ::memset(pMemoryBlock->_fileName, 0, E_ARRAY_SIZE(pMemoryBlock->_fileName));
             pMemoryBlock->_line = 0;
 #endif
 
@@ -888,13 +879,15 @@ namespace Core
                 {
                     Ptr blockAddr = reinterpret_cast<Ptr>(pUsedMemoryBlock);
 #ifdef _X64
-                    E_LOG_LINE(E_STR_TEXT("0llx%8.8llx: 0x%8.8x (0x%8.8x) [%d] {%d}: %hs(%d)"),
+                    E_LOG_LINE(E_STR_TEXT("0llx%8.8llx: 0x%8.8x (0x%8.8x) [%d] {%d}: ")
+                                   E_STR_FORMAT_PURE_TEXT E_STR_TEXT("(%d)"),
                                blockAddr + this->_GetMemoryBlockHeaderSize(),
                                pUsedMemoryBlock->_allocateSize, pUsedMemoryBlock->_size,
                                pUsedMemoryBlock->_paddingSize, pUsedMemoryBlock->_alignSize,
                                pUsedMemoryBlock->_fileName, pUsedMemoryBlock->_line);
 #else
-                    E_LOG_LINE(E_STR_TEXT("0x%8.8x: 0x%8.8x (0x%8.8x) [%d] {%d}: %s(%d)"),
+                    E_LOG_LINE(E_STR_TEXT("0x%8.8x: 0x%8.8x (0x%8.8x) [%d] {%d}: ")
+                                   E_STR_FORMAT_PURE_TEXT E_STR_TEXT("(%d)"),
                                blockAddr + this->_GetMemoryBlockHeaderSize(),
                                pUsedMemoryBlock->_allocateSize, pUsedMemoryBlock->_size,
                                pUsedMemoryBlock->_paddingSize, pUsedMemoryBlock->_alignSize,

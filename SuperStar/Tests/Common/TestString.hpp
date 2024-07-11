@@ -7,7 +7,7 @@ TEST_CASE("FixString Use")
 {
     Core::Common::FixString<32> str(E_STR_TEXT("test"));
     // テキストが存在するか
-    CHECK_FALSE(str.IsEmpty());
+    CHECK_FALSE(str.Empty());
 
     // 意図したテキストが存在するか
     CHECK(str == E_STR_TEXT("test"));

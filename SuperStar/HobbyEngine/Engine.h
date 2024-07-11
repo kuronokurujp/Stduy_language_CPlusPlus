@@ -6,13 +6,9 @@
 #include "MiniEngine.h"
 #include "Module/Module.h"
 
-// テスト実行用にcppファイルが必要
-#ifdef CATCH_CONFIG_MAIN
-#include "Module/Module.cpp"
-#endif
-
 // エンジン標準利用のモジュール一覧
 #include "HobbyPlugin/Level/LevelModule.h"
+#include "HobbyPlugin/Render/RenderModule.h"
 
 // 前方宣言
 namespace Core
@@ -23,6 +19,11 @@ namespace Core
     }
 }  // namespace Core
 
+namespace Platform
+{
+    class PlatformModule;
+}
+
 /// <summary>
 /// ゲームエンジン本体
 /// インスタンスは一つのみなのでシングルトンにする
@@ -31,22 +32,20 @@ class Engine : public Core::Common::Singleton<Engine>
 {
 public:
     /// <summary>
-    /// 事前初期化
-    /// メモリシステムなどエンジンを動かす上で最低元の初期化をする
-    /// </summary>
-    /// <returns></returns>
-    const Bool PreInit();
-
-    /// <summary>
     /// 初期化
+    /// メモリシステムなどエンジンを動かす上で最低元の初期化をする
     /// </summary>
     /// <returns></returns>
     const Bool Init();
 
     /// <summary>
-    /// 終了
+    /// エンジン起動
+    /// Initメソッドを事前に呼ばないとエラーになる
     /// </summary>
-    void End();
+    /// <returns></returns>
+    const Bool Start();
+
+    const Bool Release() override final;
 
     /// <summary>
     /// ゲームウィンドウ生成
@@ -76,13 +75,15 @@ public:
     /// モジュール管理を取得
     /// </summary>
     /// <returns></returns>
-    Module::ModuleManager& ModuleManager() const { return *this->_pModuleManager; }
+    Module::ModuleManager& ModuleManager() { return this->_moduleManager; }
 
     /// <summary>
-    /// レベルモジュールを取得
+    /// プラットフォームのモジュールを取得
+    /// windows / android / iosなどのプラットフォームが扱える予定
+    /// 現在はwindowsのみ
     /// </summary>
     /// <returns></returns>
-    Level::LevelModule& GetLevelModule();
+    Platform::PlatformModule* GetPlatformModule();
 
     /// <summary>
     /// デバッグモードかどうか
@@ -100,7 +101,7 @@ public:
     /// １フレームの差分時間を秒で取得
     /// </summary>
     /// <returns></returns>
-    const Float32 GetDeltaTimeSec() const;
+    const Float32 GetDeltaTimeSec();
 
 private:
     /// <summary>
@@ -115,8 +116,8 @@ private:
     void _Redner();
 
 private:
-    Bool _bPreInit = FALSE;
-    Bool _bInit    = FALSE;
+    Bool _bInit  = FALSE;
+    Bool _bStart = FALSE;
 
     // メモリ管理
     Core::Memory::Manager _memoryManager;
@@ -124,8 +125,8 @@ private:
     // fPS 制御
     std::shared_ptr<Core::Time::FPS> _pFPS = NULL;
 
-    // TODO: モジュール管理
-    Module::ModuleManager* _pModuleManager = NULL;
+    // モジュール管理
+    Module::ModuleManager _moduleManager;
 };
 
 // エンジン参照マクロ
@@ -133,8 +134,5 @@ private:
 
 // エンジン作成
 #define CREATE_HOBBY_ENGINE static Engine s_engine
-// エンジン解放
-#define RELEASE_HOBBY_ENGINE Engine::I().Reset()
-
-// カレントレベル参照マクロ
-#define HOBBY_CURRENT_LEVEL (*HOBBY_ENGINE.GetLevelModule().GetManager()->CurrentLevel())
+// エンジン削除
+#define DELETE_HOBBY_ENGINE Engine::I().Reset()

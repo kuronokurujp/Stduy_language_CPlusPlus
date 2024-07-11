@@ -5,11 +5,11 @@
 // 依存モジュール一覧
 #include "HobbyPlugin/Render/RenderModule.h"
 
-MODULE_GENRATE_DEFINITION(DXLib::DxLibModule, DxLib);
+MODULE_GENRATE_DEFINITION(DXLib::DxLibModule, Platform);
 
 namespace DXLib
 {
-    const Bool DxLibModule::Init()
+    const Bool DxLibModule::Start()
     {
         Bool bRet = TRUE;
         {
@@ -37,14 +37,13 @@ namespace DXLib
         return bRet;
     }
 
-    const Bool DxLibModule::End()
+    const Bool DxLibModule::Release()
     {
         // DxLibの後始末
         DxLib_End();
 
         return TRUE;
     }
-
     const Bool DxLibModule::CreateMainWindow()
     {
         return FALSE;
@@ -147,4 +146,5 @@ namespace DXLib
         Render::CommandBuffer* pCmdBuff = reinterpret_cast<Render::CommandBuffer*>(in_pCmdBuff);
         E_ASSERT(pCmdBuff);
     }
+
 }  // namespace DXLib

@@ -29,9 +29,9 @@ namespace Level
         return TRUE;
     }
 
-    void TitleLevel::Update(const Float32 in_dt, const Core::TaskData* in_pData)
+    void TitleLevel::Update(const Float32 in_dt, const Core::TaskData& in_rData)
     {
-        Level::Node::Update(in_dt, in_pData);
+        Level::Node::Update(in_dt, in_rData);
     }
 
     /*

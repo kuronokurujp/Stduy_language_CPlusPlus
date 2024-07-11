@@ -43,6 +43,7 @@ namespace Actor
 
     const Bool Object::Begin()
     {
+        this->_depth = 0;
         return TRUE;
     }
 
@@ -52,7 +53,7 @@ namespace Actor
         this->RemoveAllComponent();
 
         // 設定している子アクターを全て外す
-        this->_childObjects.Empty();
+        this->_childObjects.Clear();
 
         this->_pDataAccess = NULL;
 
@@ -62,19 +63,19 @@ namespace Actor
     /// <summary>
     /// Updates the specified in delta time.
     /// </summary>
-    void Object::Update(const Float32 in_dt, const Core::TaskData* in_pData)
+    void Object::Update(const Float32 in_dt, const Core::TaskData& in_rData)
     {
         if (this->state != EState_Active) return;
 
-        switch (in_pData->id)
+        switch (in_rData.id)
         {
             // TODO: 入力処理
             case Object::ETaskUpdateId_Input:
             {
-                E_ASSERT(in_pData->pData != NULL);
+                E_ASSERT(in_rData.pData != NULL);
                 {
                     Platform::InputSystemInterface* pInput =
-                        reinterpret_cast<Platform::InputSystemInterface*>(in_pData->pData);
+                        reinterpret_cast<Platform::InputSystemInterface*>(in_rData.pData);
                     E_ASSERT(pInput != NULL);
 
                     // TODO: 入力送信する
@@ -90,7 +91,7 @@ namespace Actor
                 //        this->ComputeWorldTransform();
 
                 // コンポーネント更新
-                this->_components.UpdateAll(in_dt, in_pData);
+                this->_components.UpdateAll(in_dt, in_rData);
 
                 // コンポーネント内で更新した座標を含めて更新
                 //        this->ComputeWorldTransform();
@@ -102,7 +103,7 @@ namespace Actor
                 // Actor内で更新した座標を含めて更新
                 //        this->ComputeWorldTransform();
 
-                // TODO: 存在しない親アクターがあるかチェックして整理
+                // 存在しない親アクターがあるかチェックして整理
                 if (this->_parentActorHandle.Null() == FALSE)
                 {
                     Object* pParentActor = this->_pDataAccess->Get(this->_parentActorHandle);
@@ -114,15 +115,12 @@ namespace Actor
         }
     }
 
-    /// <summary>
-    /// 子アクターを追加
-    /// </summary>
-    /// <param name="in_handle"></param>
-    const Bool Object::SetParentActor(const Core::Common::Handle in_handle)
+    const Bool Object::SetParentActor(const Core::Common::Handle in_handle, const Uint32 in_depth)
     {
         E_ASSERT(in_handle.Null() == FALSE);
 
         this->_parentActorHandle = in_handle;
+        this->_depth             = in_depth + 1;
 
         return TRUE;
     }

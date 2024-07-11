@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core/Config.h"
+#include "Core/Str.h"
 #include "Core/Type.h"
 
 #ifdef _HOBBY_ENGINE_DEBUG
@@ -25,6 +26,8 @@
 
 // 文字列のローカル変数を利用するのでwhile文で囲っている
 // ログ出力(改行なし)
+// format引数は必ず文字列リテラルを設定する
+// 文字列型の変数を入れるとコンパイルエラーになる
 #define E_LOG(format, ...)                                                    \
     do                                                                        \
     {                                                                         \
@@ -34,6 +37,8 @@
     } while (0)
 
 // ログ出力(改行をする)
+// format引数は必ず文字列リテラルを設定する
+// 文字列型の変数を入れるとコンパイルエラーになる
 #define E_LOG_LINE(format, ...)                                               \
     do                                                                        \
     {                                                                         \
@@ -129,23 +134,27 @@
 // デフォルトコンストラクタを封印
 #define E_CLASS_DEFAULT_CONSTRUCT_NG(_x_) \
 private:                                  \
-    _x_() = delete
+    _x_() = delete;
 
 // コピーコンストラクタを封印
-#define E_CLASS_COPY_CONSTRUCT_NG(_x_) \
-private:                               \
-    _x_(const _x_&) = delete;          \
-                                       \
-private:                               \
-    _x_& operator=(const _x_&) = delete
+#define E_CLASS_COPY_CONSTRUCT_NG(_x_)   \
+private:                                 \
+    _x_(_x_&)       = delete;            \
+    _x_(const _x_&) = delete;            \
+                                         \
+private:                                 \
+    _x_& operator=(_x_&)       = delete; \
+    _x_& operator=(const _x_&) = delete;
 
 // セマンティクスコンストラクターと演算子を封印
-#define E_CLASS_MOVE_CONSTRUCT_NG(_x_) \
-private:                               \
-    _x_(_x_&&) = delete;               \
-                                       \
-private:                               \
-    _x_& operator=(_x_&&) = delete
+#define E_CLASS_MOVE_CONSTRUCT_NG(_x_)    \
+private:                                  \
+    _x_(_x_&&)       = delete;            \
+    _x_(const _x_&&) = delete;            \
+                                          \
+private:                                  \
+    _x_& operator=(_x_&&)       = delete; \
+    _x_& operator=(const _x_&&) = delete;
 
 // 値のmin/maxマクロ
 // 上限値の制御
@@ -164,4 +173,5 @@ private:                               \
 // 例外を作らないキーワード
 // クラスのメソッドで絶対に例外が起きない処理ではつける
 // 例外をつけないコードをコンパイラが生成して最適化になる
+// 処理が入らないプロパティのゲッターやセッターで使うのがいいと思う
 #define E_NOEXCEPT noexcept

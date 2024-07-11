@@ -52,13 +52,13 @@ namespace Core
         E_SAFE_DELETE_ARRAY(this->_pTasks);
     }
 
-    void TaskManager::UpdateAll(const Float32 in_dt, const TaskData* in_pData)
+    void TaskManager::UpdateAll(const Float32 in_dt, const TaskData& in_rData)
     {
-        for (Sint32 i = 0; i < this->_groupNum; ++i) this->UpdateGroup(i, in_dt, in_pData);
+        for (Sint32 i = 0; i < this->_groupNum; ++i) this->UpdateGroup(i, in_dt, in_rData);
     }
 
     void TaskManager::UpdateGroup(const Sint32 in_groupId, const Float32 in_dt,
-                                  const TaskData* in_pData)
+                                  const TaskData& in_rData)
     {
         E_ASSERT(in_groupId < this->_groupNum);
 
@@ -87,7 +87,7 @@ namespace Core
                 }
 
                 // タスク更新
-                pTask->Update(in_dt, in_pData);
+                pTask->Update(in_dt, in_rData);
             }
         }
 
@@ -120,7 +120,7 @@ namespace Core
         pTask->End();
 
         Sint32 groupId = this->_Dettach(pTask);
-        if (groupId == Task::GROUP_NONE_ID) return;
+        if (groupId == Task::NONE_GROUP_ID) return;
 
         // タスクがメモリ削除されると,
         // タスク内にある解放ハンドルも一緒に消えるのでコピーして保存
@@ -192,6 +192,20 @@ namespace Core
         return TRUE;
     }
 
+    const Bool TaskManager::MoveGropuTask(const Common::Handle& in_hTask, const Sint32 in_groupId)
+    {
+        E_ASSERT(in_hTask.Null() == FALSE);
+
+        Task* pTask = this->GetTask(in_hTask);
+        E_ASSERT(pTask);
+
+        if (this->_Dettach(pTask) == Task::NONE_GROUP_ID) return FALSE;
+
+        if (this->_Attach(pTask, in_groupId) == FALSE) return FALSE;
+
+        return TRUE;
+    }
+
     Task* TaskManager::GetTask(const Common::Handle& in_hTask)
     {
         if (in_hTask.Null()) return NULL;
@@ -237,7 +251,7 @@ namespace Core
         E_ASSERT(out_pData != NULL);
         Task* pTask = out_pData->_pItem;
 
-        pTask->Init(in_bReleaseMem);
+        pTask->Setup(in_bReleaseMem);
         pTask->_hSelf = out_pData->_handle;
 
         return pTask;
@@ -248,7 +262,7 @@ namespace Core
     /// </summary>
     const Bool TaskManager::_Attach(Task* in_pTask, const Sint32 in_groupId)
     {
-        E_ASSERT(Task::GROUP_NONE_ID < in_groupId);
+        E_ASSERT(Task::NONE_GROUP_ID < in_groupId);
         E_ASSERT(in_groupId < this->_groupNum);
 
         E_ASSERT((in_pTask != NULL) && "タスクに割り当ている数がいっぱいで割り当てに失敗");

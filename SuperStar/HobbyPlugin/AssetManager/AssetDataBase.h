@@ -4,11 +4,10 @@
 #include "HobbyEngine/Core/File/Path.h"
 #include "HobbyEngine/MiniEngine.h"
 
-// #include "ThirdParty/nlohmann/json.hpp"
-//  TODO: rapidjsonを導入
 //  tomlライブラリ内の例外処理をOFF
 //  こちらでエラー処理をする
 #define TOML_EXCEPTIONS 0
+#include "ThirdParty/pugixml/pugixml.hpp"
 #include "ThirdParty/simidjson/simdjson.h"
 #include "ThirdParty/tomlplusplus/toml.hpp"
 
@@ -137,4 +136,19 @@ namespace AssetManager
         std::unique_ptr<simdjson::ondemand::parser> _parser;
         simdjson::ondemand::document _doc;
     };
+
+    /// <summary>
+    /// xmlファイルを扱うアセットデータ
+    /// </summary>
+    class AssetDataXml : public AssetDataBase
+    {
+    public:
+        virtual const Bool _Load(Platform::FileSystemInterface& in_rFileSystem) override;
+        virtual void _Unload() override;
+
+    protected:
+        Core::Common::Handle _fileHandle;
+        pugi::xml_document _doc;
+    };
+
 }  // namespace AssetManager
