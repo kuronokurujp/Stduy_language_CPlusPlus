@@ -10,42 +10,41 @@ namespace Core
         /// 固定長配列の基本クラス
         /// 削除すると配列の要素とインデックスの結びつけが変わるのでインデックスは保有していはいけない
         /// </summary>
-        /// <typeparam name="TYPE"></typeparam>
         template <class TYPE>
         class FastFixArrayBase
         {
         public:
-            FastFixArrayBase(TYPE* in_pArray, Uint32 in_size)
-                : _pDataArray(in_pArray), _capacity(in_size)
+            FastFixArrayBase(TYPE* in_tpArrayAddr, Uint32 in_uSize)
+                : _tpBuff(in_tpArrayAddr), _uCapacity(in_uSize)
             {
             }
 
-            inline const Uint32 Capacity() const E_NOEXCEPT { return this->_capacity; }
-            inline const Uint32 Size() const E_NOEXCEPT { return this->_num; }
-            inline const Uint32 Empty() const E_NOEXCEPT { return (this->_num <= 0); }
+            inline const Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
+            inline const Uint32 Size() const HE_NOEXCEPT { return this->_uNum; }
+            inline const Uint32 Empty() const HE_NOEXCEPT { return (this->_uNum <= 0); }
 
-            void Clear() E_NOEXCEPT { this->_num = 0; }
+            void Clear() HE_NOEXCEPT { this->_uNum = 0; }
 
-            void PushBack(const TYPE in_data)
+            void PushBack(const TYPE in_tData)
             {
-                E_ASSERT(this->_num < this->Capacity());
-                this->_pDataArray[this->_num++] = in_data;
+                HE_ASSERT(this->_uNum < this->Capacity());
+                this->_tpBuff[this->_uNum++] = in_tData;
             }
 
             TYPE PopBack()
             {
-                Sint32 i = this->_num - 1;
-                if (this->_num > 0) --this->_num;
+                Sint32 i = this->_uNum - 1;
+                if (this->_uNum > 0) --this->_uNum;
 
-                i = E_MAX(i, 0);
-                return this->_pDataArray[i];
+                i = HE_MAX(i, 0);
+                return this->_tpBuff[i];
             }
 
-            const Bool Remove(const TYPE in_data)
+            const Bool Remove(const TYPE in_tData)
             {
-                for (Uint32 i = 0; i < this->_num; ++i)
+                for (Uint32 i = 0; i < this->_uNum; ++i)
                 {
-                    if (this->_pDataArray[i] == in_data)
+                    if (this->_tpBuff[i] == in_tData)
                     {
                         this->RemoveAt(i);
                         return TRUE;
@@ -55,53 +54,53 @@ namespace Core
                 return FALSE;
             }
 
-            void RemoveAt(const Uint32 in_index)
+            void RemoveAt(const Uint32 in_uIndex)
             {
-                E_ASSERT(in_index < this->_num);
-                E_ASSERT(0 < this->_num);
+                HE_ASSERT(in_uIndex < this->_uNum);
+                HE_ASSERT(0 < this->_uNum);
 
-                Uint32 lastIndex = this->_num - 1;
-                if (in_index < lastIndex)
+                Uint32 uLastIndex = this->_uNum - 1;
+                if (in_uIndex < uLastIndex)
                 {
                     // 削除する要素位置に上書きして削除
                     // メモリ移動のみで高速削除できる
-                    Uint32 size = (lastIndex - in_index) * sizeof(TYPE);
-                    ::memmove(&this->_pDataArray[in_index], &this->_pDataArray[in_index + 1], size);
+                    Uint32 uSize = (uLastIndex - in_uIndex) * sizeof(TYPE);
+                    ::memmove(&this->_tpBuff[in_uIndex], &this->_tpBuff[in_uIndex + 1], uSize);
                 }
                 else
                 {
                     // 末尾の削除は要素数を減らすだけでよい
                 }
 
-                --this->_num;
+                --this->_uNum;
             }
 
             TYPE Back()
             {
-                E_ASSERT(0 < this->_num);
+                HE_ASSERT(0 < this->_uNum);
 
-                Uint32 index = this->_num - 1;
-                --this->_num;
+                Uint32 uIndex = this->_uNum - 1;
+                --this->_uNum;
 
-                return this->_pDataArray[index];
+                return this->_tpBuff[uIndex];
             }
 
-            TYPE operator[](const Uint32 in_index) const
+            TYPE operator[](const Uint32 in_uIndex) const
             {
-                E_ASSERT(0 < this->_num);
-                return this->_pDataArray[in_index];
+                HE_ASSERT(0 < this->_uNum);
+                return this->_tpBuff[in_uIndex];
             }
 
-            TYPE* GetPtr(const Uint32 in_index) const
+            TYPE* GetPtr(const Uint32 in_uIndex) const
             {
-                E_ASSERT(0 < this->_num);
-                return &this->_pDataArray[in_index];
+                HE_ASSERT(0 < this->_uNum);
+                return &this->_tpBuff[in_uIndex];
             }
 
         private:
-            TYPE* _pDataArray = NULL;
-            Uint32 _num       = 0;
-            Uint32 _capacity  = 0;
+            TYPE* _tpBuff     = NULL;
+            Uint32 _uNum      = 0;
+            Uint32 _uCapacity = 0;
         };
 
         /// <summary>
@@ -112,10 +111,10 @@ namespace Core
         class FastFixArray : public FastFixArrayBase<TYPE>
         {
         public:
-            FastFixArray() : FastFixArrayBase<TYPE>(_dataArray, CAPACITY) {}
+            FastFixArray() : FastFixArrayBase<TYPE>(_taBuff, CAPACITY) {}
 
         private:
-            TYPE _dataArray[CAPACITY];
+            TYPE _taBuff[CAPACITY];
         };
     }  // namespace Common
 }  // namespace Core

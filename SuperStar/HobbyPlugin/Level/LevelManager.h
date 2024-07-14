@@ -26,13 +26,13 @@ namespace Level
     /// </summary>
     class Node : public Actor::Object
     {
-        E_CLASS_COPY_CONSTRUCT_NG(Node);
+        HE_CLASS_COPY_CONSTRUCT_NG(Node);
 
     public:
         enum ETaskUpdateId
         {
             // 入力更新
-            ETaskUpdateId_Input = Task::NONE_ID + 1,
+            ETaskUpdateId_Input = Task::uNoneId + 1,
             // Actor更新
             ETaskUpdateId_Actor,
         };
@@ -65,7 +65,7 @@ namespace Level
         /// 継承先は必ず基底クラスのメソッドを最初に呼び出す
         /// 呼ばないとエラーになるので注意
         /// </summary>
-        virtual void Update(const Float32 in_dt, const Core::TaskData&) override;
+        virtual void Update(const Float32 in_fDt, const Core::TaskData&) override;
 
         /// <summary>
         /// レベルにアクターを追加
@@ -77,29 +77,26 @@ namespace Level
                           "TクラスはアクターのObjectクラスを継承していない");
 
             Core::Common::Handle handle = this->_pActorManager->Add<T>();
-            E_ASSERT(handle.Null() == FALSE);
+            HE_ASSERT(handle.Null() == FALSE);
 
             return handle;
         }
 
         // TODO: レベルに追加されたアクターを削除
-        void RemoveActor(const Core::Common::Handle& in_hActor);
+        void RemoveActor(const Core::Common::Handle&);
 
         /// <summary>
         /// レベルのアクターを取得
         /// </summary>
         /// <param name="in_hActor"></param>
         /// <returns></returns>
-        Actor::Object* GetActor(const Core::Common::Handle& in_hActor);
+        Actor::Object* GetActor(const Core::Common::Handle&);
 
         /// <summary>
         /// アクターに親アクターを追加
         /// </summary>
-        const Bool AddParentActor(const Core::Common::Handle& in_hActor,
-                                  const Core::Common::Handle in_hParentActor);
-
-        // TODO: 親アクターから外れる処理が必要かも
-        // Actor::ActorManagerlnterface* GetActorManagerDataAccess();
+        const Bool AddParentActor(const Core::Common::Handle& in_rActor,
+                                  const Core::Common::Handle& in_rParentActor);
 
     private:
         /// <summary>
@@ -110,7 +107,7 @@ namespace Level
         /// <summary>
         /// UIオブジェクトのコリジョン配列
         /// </summary>
-        Core::Common::FastFixArray<Core::Common::Handle, 256> _uiCollisionArray;
+        Core::Common::FastFixArray<Core::Common::Handle, 256> _aCollision;
     };
 
     /// <summary>
@@ -119,7 +116,7 @@ namespace Level
     /// </summary>
     class Manager
     {
-        E_CLASS_COPY_CONSTRUCT_NG(Manager);
+        HE_CLASS_COPY_CONSTRUCT_NG(Manager);
 
     public:
         Manager() {}
@@ -140,8 +137,7 @@ namespace Level
         /// <summary>
         /// 更新
         /// </summary>
-        /// <param name="in_dt"></param>
-        void Update(const Float32 in_dt, Platform::InputSystemInterface* in_pInput);
+        void Update(const Float32 in_fDt, Platform::InputSystemInterface* in_pInput);
 
         /// <summary>
         /// 起動するレベルを設定
@@ -157,7 +153,7 @@ namespace Level
             Core::Common::Handle handle = this->_nodeManager.Add<T>();
             if (handle.Null()) return FALSE;
 
-            this->_hCurrentLevel = handle;
+            this->_currentLevel = handle;
 
             return TRUE;
         }
@@ -169,9 +165,11 @@ namespace Level
         Level::Node* CurrentLevel()
         {
             Level::Node* pNode =
-                reinterpret_cast<Level::Node*>(this->_nodeManager.Get(this->_hCurrentLevel));
+                reinterpret_cast<Level::Node*>(this->_nodeManager.Get(this->_currentLevel));
             return pNode;
         }
+
+        // TODO: レベルを切り替える
 
     private:
         // レベルのノードをアクターとして管理
@@ -180,7 +178,7 @@ namespace Level
         /// <summary>
         /// カレントレベルのハンドル
         /// </summary>
-        Core::Common::Handle _hCurrentLevel;
+        Core::Common::Handle _currentLevel;
     };
 
 }  // namespace Level

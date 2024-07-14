@@ -4,12 +4,12 @@ namespace Core
 {
     namespace Common
     {
-        Bool RTTI::DerivesFrom(const RTTI& in_rtti) const
+        Bool RTTI::DerivesFrom(const RTTI* in_pRtti) const
         {
             const RTTI* pCompare = this;
             while (pCompare != NULL)
             {
-                if (pCompare == &in_rtti) return TRUE;
+                if (pCompare == in_pRtti) return TRUE;
 
                 pCompare = pCompare->_pBaseRTTI;
             }

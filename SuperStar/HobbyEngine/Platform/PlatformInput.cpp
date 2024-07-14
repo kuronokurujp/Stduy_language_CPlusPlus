@@ -2,11 +2,11 @@
 
 namespace Platform
 {
-    const EInputState KeyboardInput::GetKeyState(const EKeyboard in_keyCode) const
+    const EInputState KeyboardInput::GetKeyState(const EKeyboard in_eKeyCode) const
     {
-        if (this->_prevState[in_keyCode] == EInputState::EInputState_NONE)
+        if (this->_aPrevState[in_eKeyCode] == EInputState::EInputState_NONE)
         {
-            if (this->_currState[in_keyCode] == EInputState::EInputState_NONE)
+            if (this->_aCurrState[in_eKeyCode] == EInputState::EInputState_NONE)
             {
                 return EInputState::EInputState_NONE;
             }
@@ -17,7 +17,7 @@ namespace Platform
         }
         else
         {
-            if (this->_currState[in_keyCode] == EInputState::EInputState_NONE)
+            if (this->_aCurrState[in_eKeyCode] == EInputState::EInputState_NONE)
             {
                 return EInputState::EInputState_RELEASED;
             }
@@ -32,14 +32,14 @@ namespace Platform
 
     const Bool TouchInput::GetTouchValue(const EInputMouseType in_type) const
     {
-        return ((this->_currTouchState & in_type) != 0);
+        return ((this->_uCurrTouchState & in_type) != 0);
     }
 
     const EInputState TouchInput::GetTouchState(const EInputMouseType in_type) const
     {
-        if ((this->_prevTouchState & in_type) == 0)
+        if ((this->_uPrevTouchState & in_type) == 0)
         {
-            if ((this->_currTouchState & in_type) == 0)
+            if ((this->_uCurrTouchState & in_type) == 0)
             {
                 return EInputState::EInputState_NONE;
             }
@@ -50,7 +50,7 @@ namespace Platform
         }
         else
         {
-            if ((this->_currTouchState & in_type))
+            if ((this->_uCurrTouchState & in_type))
             {
                 return EInputState::EInputState_RELEASED;
             }
@@ -63,8 +63,8 @@ namespace Platform
         return EInputState::EInputState_NONE;
     }
 
-    const Bool TouchInput::IsTouchInRect(const Core::Math::Rect2 in_rect) const
+    const Bool TouchInput::IsTouchInRect(const Core::Math::Rect2& in_rRect) const
     {
-        return in_rect.InSidePoint(this->GetWorldPos());
+        return in_rRect.InSidePoint(this->GetWorldPos());
     }
 }  // namespace Platform

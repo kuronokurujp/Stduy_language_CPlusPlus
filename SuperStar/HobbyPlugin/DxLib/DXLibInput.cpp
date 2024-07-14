@@ -4,7 +4,7 @@
 
 namespace DXLib
 {
-    static const Sint32 s_keyMaps[Platform::EKeyboard::EKeyboard_MAX] = {
+    static const Sint32 s_iaKeyMaps[Platform::EKeyboard::EKeyboard_MAX] = {
         KEY_INPUT_BACK,        KEY_INPUT_TAB,       KEY_INPUT_RETURN,   KEY_INPUT_LSHIFT,
         KEY_INPUT_RSHIFT,      KEY_INPUT_LCONTROL,  KEY_INPUT_RCONTROL, KEY_INPUT_ESCAPE,
         KEY_INPUT_SPACE,       KEY_INPUT_PGUP,      KEY_INPUT_PGDN,     KEY_INPUT_END,
@@ -41,11 +41,11 @@ namespace DXLib
         {
             for (Uint32 i = 0; i < Platform::EKeyboard::EKeyboard_MAX; ++i)
             {
-                this->_state._keyboard._currState[i] = CheckHitKey(s_keyMaps[i]);
+                this->_state._keyboard._aCurrState[i] = CheckHitKey(s_iaKeyMaps[i]);
             }
 
-            ::memset(this->_state._keyboard._prevState, Platform::EInputState::EInputState_NONE,
-                     E_ARRAY_SIZE(this->_state._keyboard._prevState));
+            ::memset(this->_state._keyboard._aPrevState, Platform::EInputState::EInputState_NONE,
+                     HE_ARRAY_SIZE(this->_state._keyboard._aPrevState));
         }
 
         // タッチ入力初期化
@@ -53,24 +53,24 @@ namespace DXLib
             int x = 0;
             int y = 0;
             GetMousePoint(&x, &y);
-            this->_state._touch._pos.x = static_cast<Float32>(x);
-            this->_state._touch._pos.y = static_cast<Float32>(y);
+            this->_state._touch._pos._fX = static_cast<Float32>(x);
+            this->_state._touch._pos._fY = static_cast<Float32>(y);
 
-            this->_currButton = GetMouseInput();
-            this->_prevButton = Platform::EInputState::EInputState_NONE;
+            this->_uCurrButton = GetMouseInput();
+            this->_uPrevButton = Platform::EInputState::EInputState_NONE;
         }
     }
 
-    void InputSystem::BeforeUpdate(const Float32 in_deltaTime)
+    void InputSystem::BeforeUpdate(const Float32 in_fDeltaTime)
     {
         // キー入力の処理
         {
             for (Uint32 i = 0; i < Platform::EKeyboard::EKeyboard_MAX; ++i)
             {
                 // キーの前情報を設定
-                this->_state._keyboard._prevState[i] = this->_state._keyboard._currState[i];
+                this->_state._keyboard._aPrevState[i] = this->_state._keyboard._aCurrState[i];
                 // キーの新しい情報を設定
-                this->_state._keyboard._currState[i] = CheckHitKey(s_keyMaps[i]);
+                this->_state._keyboard._aCurrState[i] = CheckHitKey(s_iaKeyMaps[i]);
             }
         }
 
@@ -79,35 +79,35 @@ namespace DXLib
             int x = 0;
             int y = 0;
             GetMousePoint(&x, &y);
-            this->_state._touch._pos.x = static_cast<Float32>(x);
-            this->_state._touch._pos.y = static_cast<Float32>(y);
+            this->_state._touch._pos._fX = static_cast<Float32>(x);
+            this->_state._touch._pos._fY = static_cast<Float32>(y);
 
-            this->_prevButton = this->_state._touch._currTouchState;
-            this->_currButton = GetMouseInput();
+            this->_uPrevButton = this->_state._touch._uCurrTouchState;
+            this->_uCurrButton = GetMouseInput();
 
-            this->_state._touch._prevTouchState = 0;
-            this->_state._touch._currTouchState = 0;
-            if (this->_prevButton & MOUSE_INPUT_LEFT)
-                this->_state._touch._prevTouchState |= Platform::EInputMouseType_Left;
-            if (this->_prevButton & MOUSE_INPUT_RIGHT)
-                this->_state._touch._prevTouchState |= Platform::EInputMouseType_Right;
-            if (this->_prevButton & MOUSE_INPUT_MIDDLE)
-                this->_state._touch._prevTouchState |= Platform::EInputMouseType_Middle;
+            this->_state._touch._uPrevTouchState = 0;
+            this->_state._touch._uCurrTouchState = 0;
+            if (this->_uPrevButton & MOUSE_INPUT_LEFT)
+                this->_state._touch._uPrevTouchState |= Platform::EInputMouseType_Left;
+            if (this->_uPrevButton & MOUSE_INPUT_RIGHT)
+                this->_state._touch._uPrevTouchState |= Platform::EInputMouseType_Right;
+            if (this->_uPrevButton & MOUSE_INPUT_MIDDLE)
+                this->_state._touch._uPrevTouchState |= Platform::EInputMouseType_Middle;
 
-            if (this->_currButton & MOUSE_INPUT_LEFT)
-                this->_state._touch._currTouchState |= Platform::EInputMouseType_Left;
-            if (this->_currButton & MOUSE_INPUT_RIGHT)
-                this->_state._touch._currTouchState |= Platform::EInputMouseType_Right;
-            if (this->_currButton & MOUSE_INPUT_MIDDLE)
-                this->_state._touch._currTouchState |= Platform::EInputMouseType_Middle;
+            if (this->_uCurrButton & MOUSE_INPUT_LEFT)
+                this->_state._touch._uCurrTouchState |= Platform::EInputMouseType_Left;
+            if (this->_uCurrButton & MOUSE_INPUT_RIGHT)
+                this->_state._touch._uCurrTouchState |= Platform::EInputMouseType_Right;
+            if (this->_uCurrButton & MOUSE_INPUT_MIDDLE)
+                this->_state._touch._uCurrTouchState |= Platform::EInputMouseType_Middle;
         }
     }
 
-    void InputSystem::Update(const Float32 in_deltaTime)
+    void InputSystem::Update(const Float32 in_fDeltaTime)
     {
     }
 
-    void InputSystem::AfterUpdate(const Float32 in_deltaTime)
+    void InputSystem::AfterUpdate(const Float32 in_fDeltaTime)
     {
     }
 }  // namespace DXLib

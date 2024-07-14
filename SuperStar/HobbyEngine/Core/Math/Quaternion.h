@@ -1,49 +1,51 @@
-﻿#ifndef __MATH__QUATERNION_H__
-#define __MATH__QUATERNION_H__
+﻿#pragma once
 
-#include "vector3.h"
+#include "Vector3.h"
 
-namespace Math
+namespace Core
 {
-    class Quaternion
+    namespace Math
     {
-    public:
-        Quaternion();
+        class Quaternion
+        {
+        public:
+            Quaternion();
 
-        explicit Quaternion(const float in_x, const float in_y, const float in_z, const float in_w);
-        explicit Quaternion(const Vector3& in_rAxis, const float angle);
+            explicit Quaternion(const Float32 in_fX, const Float32 in_fY, const Float32 in_fZ,
+                                const Float32 in_fW);
+            explicit Quaternion(const Vector3& in_rAxis, const Float32 in_fAngle);
 
-        ~Quaternion() {}
+            ~Quaternion() {}
 
-        /// <summary>
-        /// Sets the specified in x.
-        /// </summary>
-        /// <param name="in_x">The in x.</param>
-        /// <param name="in_y">The in y.</param>
-        /// <param name="in_z">The in z.</param>
-        /// <param name="in_w">The in w.</param>
-        /// <returns></returns>
-        void Set(const float in_x, const float in_y, const float in_z, const float in_w);
+            /// <summary>
+            /// Sets the specified in x.
+            /// </summary>
+            /// <param name="in_x">The in x.</param>
+            /// <param name="in_y">The in y.</param>
+            /// <param name="in_z">The in z.</param>
+            /// <param name="in_w">The in w.</param>
+            /// <returns></returns>
+            void Set(const Float32 in_fX, const Float32 in_fY, const Float32 in_fZ,
+                     const Float32 in_fW);
 
-        /// <summary>
-        /// Angles the specified in in r angle.
-        /// </summary>
-        /// <param name="in_in_rAngle">The in in r angle.</param>
-        /// <returns></returns>
-        void AngleUnitRadian(const Vector3& in_in_rAngle);
+            /// <summary>
+            /// Angles the specified in in r angle.
+            /// </summary>
+            /// <param name="in_in_rAngle">The in in r angle.</param>
+            /// <returns></returns>
+            void AngleUnitRadian(const Vector3& in_in_rAngle);
 
-        float x, y, z, w;
+            Float32 _fX, _fY, _fZ, _fW;
 
-        /// <summary>
-        /// Concatenates the specified in q.
-        /// </summary>
-        /// <param name="in_q">The in q.</param>
-        /// <param name="in_p">The in p.</param>
-        /// <returns></returns>
-        static Quaternion Concatenate(const Quaternion& in_q, const Quaternion& in_p);
+            /// <summary>
+            /// Concatenates the specified in q.
+            /// </summary>
+            /// <param name="in_q">The in q.</param>
+            /// <param name="in_p">The in p.</param>
+            /// <returns></returns>
+            static Quaternion Concatenate(const Quaternion& in_fQ, const Quaternion& in_fP);
 
-        static Quaternion Identity;
-    };
-}  // namespace Math
-
-#endif  // __MATH__QUATERNION_H__
+            static const Quaternion Identity;
+        };
+    }  // namespace Math
+}  // namespace Core

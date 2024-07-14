@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <string.h>
+
 #include <type_traits>
 
 // 環境依存型のマクロ

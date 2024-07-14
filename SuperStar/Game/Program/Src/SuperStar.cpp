@@ -82,10 +82,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     hInst = hInstance;
 
     const Bool bPreInitRet = HOBBY_ENGINE.Init();
-    E_ASSERT(bPreInitRet && "事前初期化に失敗");
+    HE_ASSERT(bPreInitRet && "事前初期化に失敗");
 
     const Bool bInitRet = HOBBY_ENGINE.Start();
-    E_ASSERT(bInitRet && "初期化に失敗");
+    HE_ASSERT(bInitRet && "初期化に失敗");
 
     return TRUE;
 }
@@ -97,7 +97,7 @@ void EndInstance(HINSTANCE hInstance)
 
 // アプリの起動エントリークラス
 
-#ifdef _HOBBY_ENGINE_DEBUG
+#ifdef HE_ENGINE_DEBUG
 
 // 最初に実行するレベルをインクルード
 #include "Level/LevelLauncher.h"
@@ -108,15 +108,18 @@ void EndInstance(HINSTANCE hInstance)
 
 const Bool AppEntryGameMain::Start(const Bool in_bDebug)
 {
-    E_LOG_LINE(E_STR_TEXT("game start"));
+    HE_LOG_LINE(HE_STR_TEXT("game start"));
 
     // TODO: ゲームのみで利用するライブラリを初期化
     //		LuaStateManager::Init();
+    // リソースの起点ディレクトリを設定
+    ModuleAssetManager()->SetMountDir(HE_STR_TEXT("Assets"));
 
-    ModuleLocalization()->LoadSystemFile(E_STR_TEXT("Locate/System.toml"));
-    ModuleLocalization()->LoadTextAll(E_STR_TEXT("JP"));
+    ModuleLocalization()->LoadSystemFile(
+        Core::Common::FixString256(HE_STR_TEXT("Locate/System.toml")));
+    ModuleLocalization()->LoadTextAll(Core::Common::FixString16(HE_STR_TEXT("JP")));
 
-#ifdef _HOBBY_ENGINE_DEBUG
+#ifdef HE_ENGINE_DEBUG
     if (in_bDebug)
     {
         // デバッグレベルを開始
@@ -127,9 +130,9 @@ const Bool AppEntryGameMain::Start(const Bool in_bDebug)
     return TRUE;
 }
 
-const Bool AppEntryGameMain::Update(const Float32 in_deltaTime)
+const Bool AppEntryGameMain::Update(const Float32 in_fDeltaTime)
 {
-    // E_LOG(E_STR_TEXT("game update"));
+    // HE_LOG_LINE(HE_STR_TEXT("game update"));
     /*
     if( mp_parent->update() == false )
     {
@@ -163,7 +166,7 @@ const Bool AppEntryGameMain::Update(const Float32 in_deltaTime)
 
 const Bool AppEntryGameMain::End()
 {
-    E_LOG_LINE(E_STR_TEXT("game end"));
+    HE_LOG_LINE(HE_STR_TEXT("game end"));
     /*
     LuaStateManager::Final();
     SAFE_DELETE( mp_parent );

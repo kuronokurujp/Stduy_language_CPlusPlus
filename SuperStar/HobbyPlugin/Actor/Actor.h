@@ -5,27 +5,10 @@
 #include "Core/Common/FixArray.h"
 #include "Core/Common/FixString.h"
 #include "Core/Common/Handle.h"
-#include "Core/Math/Vector3.h"
+#include "Core/Math/Math.h"
 #include "Core/Task/Task.h"
 #include "Core/Task/TaskManager.h"
 #include "MiniEngine.h"
-
-/*
-// 配列管理「vector」クラスをインクルード
-#include <vector>
-// nullptr定義するためのインクルード
-#include <stdio.h>
-// #include <typeinfo.h>
-#include "Math/Quaternion.h"
-#include "Math/math.h"
-#include "Math/matrix4.h"
-#include "Math/vector2.h"
-#include "common.h"
-
-// 前方宣言
-class Renderer;
-class Renderer;
-*/
 
 // 前方宣言
 namespace Platform
@@ -36,7 +19,6 @@ namespace Platform
 namespace Actor
 {
     // 前方宣言
-    // class Component;
     class ActorManagerPubliclnterface;
 
     /// <summary>
@@ -44,7 +26,7 @@ namespace Actor
     /// </summary>
     class Object : public Core::Task
     {
-        E_CLASS_COPY_CONSTRUCT_NG(Object);
+        HE_CLASS_COPY_CONSTRUCT_NG(Object);
 
     public:
         /// <summary>
@@ -60,7 +42,7 @@ namespace Actor
         enum ETaskUpdateId
         {
             // 入力更新
-            ETaskUpdateId_Input = Task::NONE_ID + 1,
+            ETaskUpdateId_Input = Task::uNoneId + 1,
             // オブジェクト更新
             ETaskUpdateId_Object,
         };
@@ -74,15 +56,21 @@ namespace Actor
         /// <param name="in_pDataAccess"></param>
         void SetManager(ActorManagerPubliclnterface* in_pDataAccess)
         {
-            E_ASSERT(in_pDataAccess);
+            HE_ASSERT(in_pDataAccess);
             this->_pDataAccess = in_pDataAccess;
         }
 
         /// <summary>
         /// 親アクターを設定
         /// </summary>
-        /// <param name="in_handle"></param>
-        const Bool SetParentActor(const Core::Common::Handle in_handle, const Uint32 in_depth);
+        const Bool SetParentActor(const Core::Common::Handle& in_rHandle, const Uint32 in_uDepth);
+
+        /// <summary>
+        /// 生成直後の設定処理
+        /// データ初期化はここで行う
+        /// </summary>
+        /// <param name="in_bAutoDelete"></param>
+        virtual void Setup(const Bool in_bAutoDelete) override;
 
         /// <summary>
         /// 開始
@@ -99,32 +87,30 @@ namespace Actor
         /// <summary>
         /// Updates the specified in delta time.
         /// </summary>
-        void Update(const Float32 in_dt, const Core::TaskData&) override;
+        void Update(const Float32 in_fDt, const Core::TaskData&) override;
 
         /// <summary>
         /// 継承先でUpdateメソッドをoverride出来る.
         /// </summary>
-        /// <param name="in_deltaTime">The in delta time.</param>
-        virtual void UpdateActor(float in_deltaTime) {}
+        virtual void UpdateActor(Float32 in_fDeltaTime) {}
 
         /// <summary>
         /// コンポーネントを追加
         /// </summary>
-        /// <returns></returns>
         template <class T>
-        Core::Common::Handle AddComponent(const Sint32 in_updateOrder)
+        Core::Common::Handle AddComponent(const Sint32 in_uUpdateOrder)
         {
             static_assert(std::is_base_of<Component, T>::value,
                           "TクラスはComponentクラスを継承していない");
 
             // TODO: アクターの準備が整う前に呼ばれるケースもある
             // その場合はペンディングリストに追加して準備が整った時にコンポーネントを追加する
-            E_ASSERT(0 <= in_updateOrder);
-            E_ASSERT(in_updateOrder < static_cast<Sint32>(this->_components.GetMaxGroup()));
+            HE_ASSERT(0 <= in_uUpdateOrder);
+            HE_ASSERT(in_uUpdateOrder < static_cast<Sint32>(this->_components.GetMaxGroup()));
 
             // TODO: 更新優先準備による追加処理を指定が必要
             // コンポーネントは確保したメモリを使いまわす
-            Core::Common::Handle handle = this->_components.CreateAndAdd<T>(in_updateOrder, FALSE);
+            Core::Common::Handle handle = this->_components.CreateAndAdd<T>(in_uUpdateOrder, FALSE);
             Component* pComp            = this->_components.GetTask<Component>(handle);
 
             // コンポーネントを付けた自身を設定
@@ -133,7 +119,7 @@ namespace Actor
             return handle;
         }
 
-        const Uint32 GetDepth() const { return this->_depth; }
+        const Uint32 GetDepth() const { return this->_uDepth; }
 
         /// <summary>
         /// くっつている全てのコンポーネント外す
@@ -143,9 +129,7 @@ namespace Actor
         /// <summary>
         /// Removes the component.
         /// </summary>
-        /// <param name="in_pComponent">The in p component.</param>
-        /// <returns></returns>
-        const Bool RemoveComponent(Core::Common::Handle in_hComponent);
+        const Bool RemoveComponent(Core::Common::Handle&);
 
         /// <summary>
         /// 親アクターがあればその親アクターのコンポーネントを取得
@@ -153,12 +137,15 @@ namespace Actor
         template <class T>
         T* GetParentComponent()
         {
+            static_assert(std::is_base_of<Component, T>::value,
+                          "TクラスはComponentクラスを継承していない");
+
             // 親アクターがないなら即終了
             if (this->_parentActorHandle.Null()) return NULL;
 
             // 親アクターに目的のコンポーネント取得
             Object* pParentObj = this->_pDataAccess->Get(this->_parentActorHandle);
-            E_ASSERT(pParentObj != NULL);
+            HE_ASSERT(pParentObj != NULL);
 
             T* pFindComp = pParentObj->GetComponent<T>();
             if (pFindComp != NULL) return pFindComp;
@@ -171,87 +158,54 @@ namespace Actor
         /// <summary>
         /// Gets the state.
         /// </summary>
-        /// <returns></returns>
-        const EState GetState() const { return this->state; }
+        const EState GetState() const { return this->_eState; }
 
         /// <summary>
         /// Sets the state.
         /// </summary>
-        /// <param name="in_state">State of the in.</param>
-        /// <returns></returns>
-        void SetState(const EState in_state) { this->state = in_state; }
+        void SetState(const EState in_eState) { this->_eState = in_eState; }
 
         /// <summary>
         /// オブジェクト名を設定 / 取得
         /// </summary>
-        void SetName(const Core::Common::FixString128 in_name) { this->_name = in_name; }
-        const Core::Common::FixString128& GetName() const { return this->_name; }
+        void SetName(const Core::Common::FixStringBase& in_szrName)
+        {
+            this->_szName = in_szrName.Str();
+        }
+        const Core::Common::FixStringBase& GetName() const { return this->_szName; }
 
         /// <summary>
         /// 取得コンポーネント(ハンドル)
         /// </summary>
-        /// <returns></returns>
         template <class T>
-        T* GetComponent(Core::Common::Handle& in_hComponent)
+        T* GetComponent(Core::Common::Handle& in_rHandle)
         {
             static_assert(std::is_base_of<Component, T>::value,
                           "TクラスはComponentクラスを継承していない");
 
-            T* p = reinterpret_cast<T*>(this->_components.GetTask(in_hComponent));
-            E_ASSERT(p);
+            T* p = reinterpret_cast<T*>(this->_components.GetTask(in_rHandle));
+            HE_ASSERT(p);
 
             return p;
         }
 
-        /*
-                /// <summary>
-                /// TODO: アクター自身, 子アクターに設定しているコンポーネントを全て出力
-                /// アクターの階層構造が深くなると再帰処理が多くなるので注意
-                /// </summary>
-                template<class T>
-                void OutputChildComponents(Core::Common::FastFixArray<T*, 128>& out_comArray)
-                {
-                    T* c = this->GetComponent<T>();
-                    if (c != NULL)
-                        out_comArray.PushBack(c);
-
-                    // TODO: 子アクターがあれば再帰処理する
-                    for (Uint32 i = 0; i < this->_childObjects.Size(); ++i)
-                    {
-                        this->_childObjects[i]->OutputChildComponents(out_comArray);
-                    }
-                }
-
-                /// <summary>
-                /// TODO: 型指定したコンポーネントを取得.
-                /// コンポーネントは重複設定しない前提.
-                /// </summary>
-                /// <returns></returns>
-                template <class T>
-                T* GetComponent()
-                {
-                    auto& list = this->_components.GetUserDataList();
-                    for (auto itr = list.begin(); itr != list.end(); ++itr)
-                    {
-                        T* target = reinterpret_cast<T*>(*itr);
-                        if (target != NULL)
-                            return target;
-                    }
-                    return NULL;
-                }
-        */
-
         /// <summary>
-        /// TODO: アクター自身, 子アクターに設定しているコンポーネントを全て出力
+        /// アクター自身, 子アクターに設定しているコンポーネントを全て出力
         /// アクターの階層構造が深くなると再帰処理が多くなるので注意
         /// </summary>
-        void OutputChildComponents(Core::Common::FastFixArray<Component*, 128>& out_comArray,
-                                   const Core::Common::RTTI& in_rtti);
-
+        void OutputChildrenComponent(Core::Common::FastFixArrayBase<Component*>* out,
+                                     const Core::Common::RTTI*);
         /// <summary>
         /// RTTIから目的のコンポーネントを取得
         /// </summary>
-        Component* GetComponent(const Core::Common::RTTI& in_rtti);
+        Core::Common::Handle GetComponentHandle(const Core::Common::RTTI*);
+
+        inline const Bool ValidComponent(const Core::Common::Handle& in_h)
+        {
+            if (in_h.Null()) return FALSE;
+
+            return this->_components.Valid(in_h);
+        }
 
         /// <summary>
         /// 親の位置を含めたワールド座標取得
@@ -264,7 +218,7 @@ namespace Actor
         /// </summary>
         /// <param name="in_rPosition">The in r position.</param>
         /// <returns></returns>
-        inline void SetPos(const Core::Math::Vector3& in_rPosition) { this->pos = in_rPosition; }
+        inline void SetPos(const Core::Math::Vector3& in_rPosition) { this->_pos = in_rPosition; }
 
         /// <summary>
         /// 子アクターが追加された時に呼ばれるイベント
@@ -354,46 +308,57 @@ namespace Actor
         /// <returns></returns>
         virtual void ActorInput(const uint8_t* /* in_pKeyState */) {}
 
-        /// <summary>
-        /// Computes the world transform.
-        /// </summary>
-        /// <returns></returns>
-        void ComputeWorldTransform();
 #endif
     protected:
         virtual void _ProcessInput(const Float32, Platform::InputSystemInterface*) {}
 
+        /// <summary>
+        /// Computes the world transform.
+        /// </summary>
+        void _ComputeWorldTransform();
+
+    private:
+        void _Clear()
+        {
+            // Actorの状態
+            this->_eState = EState_Active;
+            this->_pos.Clear();
+            this->_scale.Clear();
+            this->_bComputeTransform = FALSE;
+
+            this->_aChildObject.Clear();
+            this->_parentActorHandle.Clear();
+            this->_pDataAccess = NULL;
+            this->_components.RemoveAll();
+
+            this->_bStart = FALSE;
+            this->_uDepth = 0;
+        }
+
+    protected:
+        // 子アクターリスト
+        Core::Common::FastFixArray<Actor::Object*, 512> _aChildObject;
+
     private:
         // Actorの状態
-        EState state = EState_Active;
+        EState _eState = EState_Active;
 
-        Core::Math::Vector3 pos;
+        Core::Math::Vector3 _pos;
+        Core::Math::Vector3 _scale;
+        Core::Math::Quaternion _rotation;
 
-        /*
-        Math::Vector3 scale;
-        Math::Quaternion rotation;
-
-        Math::Matrix4 worldTransform;
-        bool recomputeWorldTransform;
-
-        ActorManager* pActorManager;
-        Renderer* pRenderer;
-        */
-
-        // Actorにつけるコンポーネントリスト
-        // ポインターにしているのはポインターからリストの要素を削除するため
-        // std::vector<Component*> _components;
-        Core::Common::FastFixArray<Actor::Object*, 512> _childObjects;
+        Core::Math::Matrix4 _worldTransform;
+        Bool _bComputeTransform = FALSE;
 
         Core::TaskManager _components;
         Core::Common::Handle _parentActorHandle;
 
         ActorManagerPubliclnterface* _pDataAccess = NULL;
 
-        Bool _bStart  = FALSE;
-        Uint32 _depth = 0;
+        Bool _bStart   = FALSE;
+        Uint32 _uDepth = 0;
 
         // オブジェクト名
-        Core::Common::FixString128 _name;
+        Core::Common::FixString128 _szName;
     };
 }  // namespace Actor

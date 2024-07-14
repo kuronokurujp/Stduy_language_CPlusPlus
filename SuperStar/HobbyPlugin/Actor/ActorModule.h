@@ -18,7 +18,7 @@ namespace Actor
     class ActorModule final : public Module::ModuleBase
     {
     public:
-        ActorModule(const Char* in_pName) : ModuleBase(in_pName) {}
+        ActorModule(const Char* in_szName) : ModuleBase(in_szName) {}
 
     protected:
         /// <summary>

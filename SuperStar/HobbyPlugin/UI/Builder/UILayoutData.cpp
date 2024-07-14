@@ -14,21 +14,22 @@ namespace UI
         /// </summary>
         namespace Local
         {
-            static const Char s_treeNodeDelimita = E_STR_TEXT('.');
-            static const Char s_locGroupDelimita = E_STR_TEXT('.');
+            static const Char s_treeNodeDelimita = HE_STR_TEXT('.');
+            static const Char s_locGroupDelimita = HE_STR_TEXT('.');
+
             /// <summary>
             /// UIのスタイルカラー
             /// </summary>
             struct StyleColor
             {
             public:
-                StyleColor(const Byte* in_pName, Render::Color in_rgba)
+                StyleColor(const UTF8* in_szName, Render::Color in_rgba)
                 {
-                    this->pName = in_pName;
-                    this->rgba  = in_rgba;
+                    this->szName = in_szName;
+                    this->rgba   = in_rgba;
                 }
 
-                const Byte* pName = NULL;
+                const UTF8* szName = NULL;
                 Render::Color rgba;
             };
 
@@ -45,59 +46,59 @@ namespace UI
                                           StyleColor("magenta", Render::RGB::Magenta),
                                           StyleColor("ornage", Render::RGB::Orange)};
 
-            static void _ParseStyle(Style* s, const Byte* in_pStyle, const Uint32 in_styleSize)
+            static void _ParseStyle(Style* out, const UTF8* in_szName, const Uint32 in_uSize)
             {
-                static Byte buff[1024] = {0};
+                static UTF8 buff[1024] = {0};
 
-                E_ASSERT(in_styleSize < E_ARRAY_SIZE(buff));
-                ::memset(s, 0, sizeof(Style));
+                HE_ASSERT(in_uSize < HE_ARRAY_SIZE(buff));
+                ::memset(out, 0, sizeof(Style));
 
-                ::memcpy_s(buff, E_ARRAY_SIZE(buff), in_pStyle, in_styleSize);
-                Byte* pRestartToken = NULL;
-                Byte* token         = ::strtok_s(buff, ";", &pRestartToken);
+                ::memcpy_s(buff, HE_ARRAY_SIZE(buff), in_szName, in_uSize);
+                UTF8* pRestartToken = NULL;
+                UTF8* pToken        = ::strtok_s(buff, ";", &pRestartToken);
 
-                while (token != NULL)
+                while (pToken != NULL)
                 {
-                    Byte* key   = ::strtok(token, ":");
-                    Byte* value = ::strtok(NULL, ":");
+                    UTF8* szKey  = ::strtok(pToken, ":");
+                    UTF8* pValue = ::strtok(NULL, ":");
 
-                    if (key && value)
+                    if (szKey && pValue)
                     {
-                        while (*key == ' ') ++key;
-                        while (*value == ' ') ++value;
+                        while (*szKey == ' ') ++szKey;
+                        while (*pValue == ' ') ++pValue;
 
-                        if (::strcmp(key, "w") == 0)
+                        if (::strcmp(szKey, "w") == 0)
                         {
-                            s->w = static_cast<Float32>(::atof(value));
+                            out->w = static_cast<Float32>(::atof(pValue));
                         }
-                        else if (::strcmp(key, "h") == 0)
+                        else if (::strcmp(szKey, "h") == 0)
                         {
-                            s->h = static_cast<Float32>(::atoi(value));
+                            out->h = static_cast<Float32>(::atoi(pValue));
                         }
-                        else if (::strcmp(key, "color") == 0)
+                        else if (::strcmp(szKey, "color") == 0)
                         {
-                            Byte aColorName[128] = {0};
-                            ::strncpy_s(aColorName, E_ARRAY_NUM(aColorName), value,
-                                        E_ARRAY_NUM(aColorName));
+                            UTF8 szColorName[128] = {0};
+                            ::strncpy_s(szColorName, HE_ARRAY_NUM(szColorName), pValue,
+                                        HE_ARRAY_NUM(szColorName));
                             // TODO: キーワードと色名の対応テーブルを作る
-                            for (Uint32 i = 0; i < E_ARRAY_NUM(s_aColorTable); ++i)
+                            for (Uint32 i = 0; i < HE_ARRAY_NUM(s_aColorTable); ++i)
                             {
-                                if (::strcmp(s_aColorTable[i].pName, aColorName) == 0)
+                                if (::strcmp(s_aColorTable[i].szName, szColorName) == 0)
                                 {
-                                    s->color = s_aColorTable[i].rgba.c;
+                                    out->color = s_aColorTable[i].rgba.c;
                                     break;
                                 }
                             }
                         }
                     }
 
-                    token = ::strtok_s(NULL, ";", &pRestartToken);
+                    pToken = ::strtok_s(NULL, ";", &pRestartToken);
                 }
             }
 
             static void ApplyNode(Node* out, const pugi::xml_node& in_rNode)
             {
-                E_ASSERT(out);
+                HE_ASSERT(out);
                 ::memset(out, 0, sizeof(Node));
 
                 // サードパーティライブラリのノードポインタを保存
@@ -106,36 +107,36 @@ namespace UI
                 Node::Data* pData = &out->data;
 
                 // TODO: ノードから反映する情報を抜き出す
-                pData->widgetType = UI::Builder::EWidget_None;
+                pData->eWidgetType = UI::Builder::EWidget_None;
 
-                Core::Common::FixString128 attrName = in_rNode.name();
-                if (attrName == E_STR_TEXT("ui"))
+                Core::Common::FixString128 szAttrName = in_rNode.name();
+                if (szAttrName == HE_STR_TEXT("ui"))
                 {
-                    pData->widgetType = UI::Builder::EWidget_Root;
+                    pData->eWidgetType = UI::Builder::EWidget_Root;
                 }
-                else if (attrName == E_STR_TEXT("w"))
+                else if (szAttrName == HE_STR_TEXT("w"))
                 {
-                    pData->widgetType = UI::Builder::EWidget_Widget;
-                    auto pWidget      = &pData->exData.widget;
-                    pWidget->x        = in_rNode.attribute("x").as_float();
-                    pWidget->y        = in_rNode.attribute("y").as_float();
+                    pData->eWidgetType = UI::Builder::EWidget_Widget;
+                    auto pWidget       = &pData->exData.widget;
+                    pWidget->fX        = in_rNode.attribute("x").as_float();
+                    pWidget->fY        = in_rNode.attribute("y").as_float();
                 }
-                else if (attrName == E_STR_TEXT("b"))
+                else if (szAttrName == HE_STR_TEXT("b"))
                 {
-                    pData->widgetType = UI::Builder::EWidget_Button;
-                    auto pBtn         = &pData->exData.button;
-                    pBtn->x           = in_rNode.attribute("x").as_float();
-                    pBtn->y           = in_rNode.attribute("y").as_float();
+                    pData->eWidgetType = UI::Builder::EWidget_Button;
+                    auto pBtn          = &pData->exData.button;
+                    pBtn->fX           = in_rNode.attribute("x").as_float();
+                    pBtn->fY           = in_rNode.attribute("y").as_float();
 
                     auto s = in_rNode.attribute("style").value();
                     _ParseStyle(&pBtn->style, s, static_cast<Uint32>(::strlen(s)));
                 }
-                else if (attrName == E_STR_TEXT("t"))
+                else if (szAttrName == HE_STR_TEXT("t"))
                 {
-                    pData->widgetType = UI::Builder::EWidget_Label;
-                    auto pLabel       = &pData->exData.label;
-                    pLabel->x         = in_rNode.attribute("x").as_float();
-                    pLabel->y         = in_rNode.attribute("y").as_float();
+                    pData->eWidgetType = UI::Builder::EWidget_Label;
+                    auto pLabel        = &pData->exData.label;
+                    pLabel->fX         = in_rNode.attribute("x").as_float();
+                    pLabel->fY         = in_rNode.attribute("y").as_float();
 
                     // ローカライズテキストか
                     if (in_rNode.attribute("loc").as_bool())
@@ -146,53 +147,54 @@ namespace UI
                     auto t = in_rNode.attribute("text").value();
                     if (0 < ::strlen(t))
                     {
-                        Core::Common::FixString1024 tmp(t);
+                        Core::Common::FixString1024 szTmp(t);
                         if (pLabel->bLoc)
                         {
-                            Core::Common::FastFixArray<Core::Common::FixString1024, 3> split;
+                            Core::Common::FastFixArray<Core::Common::FixString1024, 3> szaSplitName;
 
-                            Core::Common::OutputSplitString(split, tmp, s_locGroupDelimita);
-                            E_STR_CPY_S(pLabel->loc, E_ARRAY_NUM(pLabel->loc), split[0].Str(),
-                                        split[0].Length());
+                            Core::Common::OutputSplitString(szaSplitName, szTmp,
+                                                            s_locGroupDelimita);
+                            HE_STR_CPY_S(pLabel->szLoc, HE_ARRAY_NUM(pLabel->szLoc),
+                                         szaSplitName[0].Str(), szaSplitName[0].Length());
 
-                            E_STR_CPY_S(pLabel->text, E_ARRAY_NUM(pLabel->text), split[1].Str(),
-                                        split[1].Length());
+                            HE_STR_CPY_S(pLabel->szText, HE_ARRAY_NUM(pLabel->szText),
+                                         szaSplitName[1].Str(), szaSplitName[1].Length());
                         }
                         else
                         {
-                            E_STR_CPY_S(pLabel->text, E_ARRAY_NUM(pLabel->text), tmp.Str(),
-                                        tmp.Length());
+                            HE_STR_CPY_S(pLabel->szText, HE_ARRAY_NUM(pLabel->szText), szTmp.Str(),
+                                         szTmp.Length());
                         }
                     }
 
                     auto s = in_rNode.attribute("style").value();
                     _ParseStyle(&pLabel->style, s, static_cast<Uint32>(::strlen(s)));
                 }
-                else if (attrName == E_STR_TEXT("l"))
+                else if (szAttrName == HE_STR_TEXT("l"))
                 {
-                    pData->widgetType = UI::Builder::EWidget_Layout;
-                    auto pLayout      = &pData->exData.layout;
+                    pData->eWidgetType = UI::Builder::EWidget_Layout;
+                    auto pLayout       = &pData->exData.layout;
 
                     auto s = in_rNode.attribute("style").value();
                     _ParseStyle(&pLayout->style, s, static_cast<Uint32>(::strlen(s)));
                 }
 
-                Core::Common::FixString1024 idName(in_rNode.attribute("id").value());
-                E_STR_ERRNO e =
-                    E_STR_CPY_S(pData->id, E_ARRAY_NUM(pData->id), idName.Str(), idName.Length());
-                E_ASSERT(E_STR_SUCCESS(e) && "文字列のコピーでエラー");
+                Core::Common::FixString1024 szIdName(in_rNode.attribute("id").value());
+                HE_STR_ERRNO e = HE_STR_CPY_S(pData->szId, HE_ARRAY_NUM(pData->szId),
+                                              szIdName.Str(), szIdName.Length());
+                HE_ASSERT(HE_STR_SUCCESS(e) && "文字列のコピーでエラー");
             }
         }  // namespace Local
 
-        const Bool UILayoutData::OutputNodeByRootPos(Node* out, const Byte* in_pName)
+        const Bool UILayoutData::OutputNodeByRootPos(Node* out, const UTF8* in_szName)
         {
-            E_ASSERT(out);
+            HE_ASSERT(out);
 
-            Core::Common::FixString256 nodeName(in_pName);
-            Uint64 targetNodeHash = nodeName.Hash();
+            Core::Common::FixString256 nodeName(in_szName);
+            Uint64 ulTargetNodeHash = nodeName.Hash();
 
-            auto libNode = this->_doc.child(in_pName);
-            E_ASSERT(libNode.empty() == FALSE && "ノードがない");
+            auto libNode = this->_doc.child(in_szName);
+            HE_ASSERT(libNode.empty() == FALSE && "ノードがない");
 
             Local::ApplyNode(out, libNode);
 
@@ -200,13 +202,13 @@ namespace UI
         }
 
         const Bool UILayoutData::OutputNode(Node* out, const Node& in_rParentNode,
-                                            const Byte* in_pName)
+                                            const UTF8* in_szName)
         {
-            E_ASSERT(out);
-            E_ASSERT(in_rParentNode.pNode);
+            HE_ASSERT(out);
+            HE_ASSERT(in_rParentNode.pNode);
 
             pugi::xml_node libNode(in_rParentNode.pNode);
-            libNode = libNode.child(in_pName);
+            libNode = libNode.child(in_szName);
 
             Node node;
             Local::ApplyNode(out, libNode);
@@ -217,7 +219,7 @@ namespace UI
         void UILayoutData::OutputNodeChildren(Core::Common::FastFixArrayBase<Node>* out,
                                               const Node& in_rParentNode)
         {
-            E_ASSERT(out);
+            HE_ASSERT(out);
 
             pugi::xml_node libNode(in_rParentNode.pNode);
             {

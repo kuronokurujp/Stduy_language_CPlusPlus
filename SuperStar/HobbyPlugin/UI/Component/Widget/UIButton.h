@@ -33,9 +33,9 @@ namespace UI
     class UIButtonMessageHandlerDefault : public UIButtonMessageHandler
     {
     public:
-        UIButtonMessageHandlerDefault(Core::Common::FixString128 in_msg,
+        UIButtonMessageHandlerDefault(Core::Common::FixString128 in_szMsg,
                                       UIButtonMessageHandlerImpOnPush in_func)
-            : _onPush(in_func), _msg(in_msg)
+            : _onPush(in_func), _msg(in_szMsg)
         {
         }
 
@@ -55,7 +55,7 @@ namespace UI
     /// </summary>
     class UIButtonComponent : public UIWidgetComponent
     {
-        E_CLASS_COPY_CONSTRUCT_NG(UIButtonComponent);
+        HE_CLASS_COPY_CONSTRUCT_NG(UIButtonComponent);
         GENERATED_CLASS_BODY_HEADER(UIButtonComponent, UIWidgetComponent);
 
     public:
@@ -77,21 +77,19 @@ namespace UI
         /// コンポーネントの更新
         /// 必ず処理を記述
         /// </summary>
-        /// <param name="in_deltaTime">The in delta time.</param>
-        void Update(const Float32 in_deltaTime) final override;
+        void Update(const Float32 in_fDeltaTime) final override;
 
         /// <summary>
         /// プッシュ通知のハンドラーを設定
         /// ユニークポインタで所有権を移譲している
         /// </summary>
-        /// <param name="in_hanlder"></param>
-        void SetPushHandler(std::unique_ptr<UIButtonMessageHandler> in_hanlder)
+        void SetPushHandler(std::unique_ptr<UIButtonMessageHandler> in_spHandler)
         {
-            this->_pushHandler = std::move(in_hanlder);
+            this->_pushHandler = std::move(in_spHandler);
         }
 
-        void SetWidth(const Float32 in_w) { this->_w = in_w; }
-        void SetHeight(const Float32 in_h) { this->_h = in_h; }
+        void SetWidth(const Float32 in_fW) { this->_fWidth = in_fW; }
+        void SetHeight(const Float32 in_fH) { this->_fHeight = in_fH; }
 
         /// <summary>
         /// タッチイベント
@@ -103,13 +101,13 @@ namespace UI
         void _Clear()
         {
             this->_pushHandler.release();
-            this->_w = 0.0f;
-            this->_h = 0.0f;
+            this->_fWidth  = 0.0f;
+            this->_fHeight = 0.0f;
         }
 
     private:
         std::unique_ptr<UIButtonMessageHandler> _pushHandler;
-        Float32 _w = 0.0f;
-        Float32 _h = 0.0f;
+        Float32 _fWidth  = 0.0f;
+        Float32 _fHeight = 0.0f;
     };
 }  // namespace UI

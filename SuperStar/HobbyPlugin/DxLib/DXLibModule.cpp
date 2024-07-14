@@ -54,12 +54,12 @@ namespace DXLib
         return FALSE;
     }
 
-    const Bool DxLibModule::BeforUpdate(const Float32 in_deltaTime)
+    const Bool DxLibModule::BeforUpdate(const Float32 in_fDeltaTime)
     {
         Bool bRet = TRUE;
         {
             // 入力の前更新
-            this->_input.BeforeUpdate(in_deltaTime);
+            this->_input.BeforeUpdate(in_fDeltaTime);
 
             if ((ProcessMessage() != 0))
             {
@@ -75,19 +75,19 @@ namespace DXLib
         return bRet;
     }
 
-    const Bool DxLibModule::Update(const Float32 in_deltaTime)
+    const Bool DxLibModule::Update(const Float32 in_fDeltaTime)
     {
-        this->_input.Update(in_deltaTime);
+        this->_input.Update(in_fDeltaTime);
 
         return TRUE;
     }
 
-    const Bool DxLibModule::AfterUpdate(const Float32 in_deltaTime)
+    const Bool DxLibModule::AfterUpdate(const Float32 in_fDeltaTime)
     {
         // 画面の反映
         ScreenFlip();
 
-        this->_input.AfterUpdate(in_deltaTime);
+        this->_input.AfterUpdate(in_fDeltaTime);
 
         return TRUE;
     }
@@ -95,48 +95,48 @@ namespace DXLib
     void DxLibModule::BeginRender(void* in_pCmdBuff)
     {
         Render::CommandBuffer* pCmdBuff = reinterpret_cast<Render::CommandBuffer*>(in_pCmdBuff);
-        E_ASSERT(pCmdBuff);
+        HE_ASSERT(pCmdBuff);
     }
 
     void DxLibModule::Redner(void* in_pCmdBuff)
     {
         Render::CommandBuffer* pCmdBuff = reinterpret_cast<Render::CommandBuffer*>(in_pCmdBuff);
-        E_ASSERT(pCmdBuff);
+        HE_ASSERT(pCmdBuff);
 
         for (Uint32 i = 0; i < pCmdBuff->Size(); ++i)
         {
-            Render::Command* cmd = pCmdBuff->GetPtr(i);
+            Render::Command* pCmd = pCmdBuff->GetPtr(i);
 
             // TODO: コマンドに応じた描画処理をする
-            switch (cmd->type)
+            switch (pCmd->uType)
             {
                 // TODO: 矩形を描画
                 case Render::CMD_TYPE_2D_RECT:
                 {
-                    Render::ComRect2D* pRect2D = &cmd->data.rect2D;
+                    Render::ComRect2D* pRect2D = &pCmd->data.rect2D;
 
-                    Uint32 cr =
+                    Uint32 uColor =
                         GetColor(pRect2D->color.c32.r, pRect2D->color.c32.g, pRect2D->color.c32.b);
-                    DrawBox(static_cast<int>(pRect2D->leftX), static_cast<int>(pRect2D->leftY),
-                            static_cast<int>(pRect2D->rightX), static_cast<int>(pRect2D->rightY),
-                            cr, TRUE);
+                    DrawBox(static_cast<int>(pRect2D->fLeftX), static_cast<int>(pRect2D->fLeftY),
+                            static_cast<int>(pRect2D->fRightX), static_cast<int>(pRect2D->fRightY),
+                            uColor, TRUE);
                     break;
                 }
                 // TODO: 2Dテキストを描画
                 case Render::CMD_TYPE_2D_TEXT:
                 {
-                    Render::ComText2D* pText2D = &cmd->data.text2D;
+                    Render::ComText2D* pText2D = &pCmd->data.text2D;
 
-                    Uint32 cr =
+                    Uint32 uColor =
                         GetColor(pText2D->color.c32.r, pText2D->color.c32.g, pText2D->color.c32.b);
-                    Core::Common::FixString1024 str(pText2D->chars);
+                    Core::Common::FixString1024 str(pText2D->szChars);
 
-                    DrawString(static_cast<int>(pText2D->x), static_cast<int>(pText2D->y),
-                               pText2D->chars, cr);
+                    DrawString(static_cast<int>(pText2D->fX), static_cast<int>(pText2D->fY),
+                               pText2D->szChars, uColor);
                     break;
                 }
                 default:
-                    E_ASSERT(0 && "存在しないコマンド");
+                    HE_ASSERT(0 && "存在しないコマンド");
             }
         }
     }
@@ -144,7 +144,7 @@ namespace DXLib
     void DxLibModule::EndRender(void* in_pCmdBuff)
     {
         Render::CommandBuffer* pCmdBuff = reinterpret_cast<Render::CommandBuffer*>(in_pCmdBuff);
-        E_ASSERT(pCmdBuff);
+        HE_ASSERT(pCmdBuff);
     }
 
 }  // namespace DXLib

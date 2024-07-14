@@ -17,7 +17,6 @@ namespace UI
         /// コンポーネントの更新
         /// 必ず処理を記述
         /// </summary>
-        /// <param name="in_deltaTime">The in delta time.</param>
-        void Update(const Float32 in_deltaTime) final override;
+        void Update(const Float32 in_fDeltaTime) final override;
     };
 }  // namespace UI

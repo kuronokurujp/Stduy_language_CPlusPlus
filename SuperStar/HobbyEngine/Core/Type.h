@@ -5,26 +5,26 @@
 
 // コンソールかどうか
 #ifdef _WINDOWS
-#define _WIN
+#define HE_WIN
 #else
-#define _CLS
+#define HE_CLS
 #endif
 
 // アプリがx64(8byte)かx84(4byte)かを定義
 #ifdef _WIN64
 
-#define _X64
+#define HE_X64
 
 #else
 
-#define _X84
+#define HE_X84
 
 #endif
 
 #endif
 
 // x64 / x84でのポインタを整数へキャストする型
-#ifdef _X64
+#ifdef HE_X64
 typedef unsigned long long Ptr;
 #else
 typedef unsigned int Ptr;
@@ -39,14 +39,16 @@ typedef unsigned short Uint16;
 typedef signed char Sint8;
 typedef unsigned char Uint8;
 // WindowsではUnicode前提実装なのでwchar型にしている
-#ifdef _WIN
+#ifdef HE_WIN
 typedef wchar_t Char;
 #else
 typedef char Char;
 #endif
-typedef char Byte;
+typedef char UTF8;
+
 typedef bool Bool;
 typedef float Float32;
+typedef double Float64;
 
 // 定数定義
 #ifndef FALSE

@@ -18,10 +18,10 @@ namespace Platform
         /// 失敗した時のエラーメッセージ
         /// </summary>
         /// <returns></returns>
-        const Core::Common::FixString256& ErrorMsg() { return this->_err; }
+        const Core::Common::FixString256& ErrorMsg() { return this->_szErr; }
 
     protected:
-        Core::Common::FixString256 _err;
+        Core::Common::FixString256 _szErr;
         Bool _bOpen = FALSE;
     };
 
@@ -33,8 +33,8 @@ namespace Platform
     public:
         virtual const Core::Common::Handle FileOpen(const Core::File::Path& in_rPath) = 0;
         virtual const Bool FileClose(const Core::Common::Handle& in_rHandle)          = 0;
-        virtual const Bool FileRead(const Core::Common::Handle& in_rHandle, void* out_pBuff,
-                                    const Sint32 in_size)                             = 0;
+        virtual const Bool FileRead(void* out_pBuff, const Core::Common::Handle& in_rHandle,
+                                    const Sint32 in_uSize)                            = 0;
 
         virtual const Sint32 FileSize(const Core::Common::Handle& in_rHandle) = 0;
     };

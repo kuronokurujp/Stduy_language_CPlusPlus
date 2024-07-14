@@ -17,7 +17,7 @@ namespace DXLib
     class DxLibModule final : public Platform::PlatformModule
     {
     public:
-        DxLibModule(const Char* in_pName) : PlatformModule(in_pName) {}
+        DxLibModule(const Char* in_szName) : PlatformModule(in_szName) {}
 
         const bool CreateMainWindow() override final;
         const bool ReleaseAllWindows() override final;
@@ -52,9 +52,9 @@ namespace DXLib
         /// </summary>
         virtual const Bool Release() override final;
 
-        const bool BeforUpdate(const Float32 in_deltaTime) override final;
-        const bool Update(const Float32 in_deltaTime) override final;
-        const bool AfterUpdate(const Float32 in_deltaTime) override final;
+        const bool BeforUpdate(const Float32 in_fDeltaTime) override final;
+        const bool Update(const Float32 in_fDeltaTime) override final;
+        const bool AfterUpdate(const Float32 in_fDeltaTime) override final;
 
         // 描画
         void BeginRender(void* in_pCmdBuff) override final;

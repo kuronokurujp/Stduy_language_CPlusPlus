@@ -15,7 +15,7 @@ namespace Core
     struct TaskData
     {
     public:
-        Uint32 id   = 0;
+        Uint32 uId  = 0;
         void* pData = NULL;
     };
 
@@ -27,11 +27,11 @@ namespace Core
         // タスクマネージャには非公開メンバを操作させる
         friend class TaskManager;
 
-        E_CLASS_COPY_CONSTRUCT_NG(Task);
+        HE_CLASS_COPY_CONSTRUCT_NG(Task);
 
     public:
-        static const Uint32 NONE_ID       = 0;
-        static const Sint32 NONE_GROUP_ID = -1;
+        static const Uint32 uNoneId      = 0;
+        static const Sint32 iNoneGroupId = -1;
 
         // タスクは生成したインスタンスが再利用されるのでコンストラクタで初期化はできない
         Task() { this->_Clear(); }
@@ -61,9 +61,9 @@ namespace Core
         /// 更新用で継承先が実装しないとだめ
         /// TaskData型は更新に必要なデータなのでこのデータを保存してはいけない
         /// </summary>
-        virtual void Update(const Float32 in_dt, const TaskData&)
+        virtual void Update(const Float32 in_fDt, const TaskData&)
         {
-            E_ASSERT(FALSE && "継承クラスは必ず実装");
+            HE_ASSERT(FALSE && "継承クラスは必ず実装");
         }
 
         inline const Common::Handle& GetHandle() const { return this->_hSelf; }
@@ -72,7 +72,7 @@ namespace Core
         /// タスクのグループID
         /// </summary>
         /// <returns></returns>
-        inline const Sint32 GetGropuId() const { return this->_groupId; }
+        inline const Sint32 GetGropuId() const { return this->_iGroupId; }
 
     private:
         void _Clear()
@@ -80,7 +80,7 @@ namespace Core
             this->_bStart = TRUE;
             this->_bKill  = FALSE;
 
-            this->_groupId     = Task::NONE_GROUP_ID;
+            this->_iGroupId    = Task::iNoneGroupId;
             this->_pPrev       = NULL;
             this->_pNext       = NULL;
             this->_bReleaseMem = FALSE;
@@ -90,7 +90,7 @@ namespace Core
         TaskManager* _pManager = NULL;
 
     private:
-        Sint32 _groupId = Task::NONE_GROUP_ID;
+        Sint32 _iGroupId = Task::iNoneGroupId;
         Common::Handle _hSelf;
         Bool _bStart = TRUE;
         Bool _bKill  = FALSE;

@@ -19,16 +19,16 @@
 /// <returns></returns>
 const Bool Engine::Init()
 {
-    E_ASSERT(this->_bInit == FALSE);
+    HE_ASSERT(this->_bInit == FALSE);
     if (this->_bInit) return TRUE;
 
-    E_LOG_LINE(E_STR_TEXT("エンジンの前準備"));
+    HE_LOG_LINE(HE_STR_TEXT("エンジンの前準備"));
 
     // カスタムメモリ確保
     // TODO: 確保数は適当にしている
     if (this->_memoryManager.Start(1024 * 1024 * 300) == FALSE)
     {
-        E_ASSERT(0 && "カスタムメモリの初期化に失敗");
+        HE_ASSERT(0 && "カスタムメモリの初期化に失敗");
         return FALSE;
     }
 
@@ -44,13 +44,13 @@ const Bool Engine::Init()
         };
 
         if (this->_memoryManager.SetupMemoryPage(memoryPageSetupInfoArray,
-                                                 E_ARRAY_NUM(memoryPageSetupInfoArray)) == FALSE)
+                                                 HE_ARRAY_NUM(memoryPageSetupInfoArray)) == FALSE)
         {
-            E_ASSERT(0 && "カスタムメモリのページ作成に失敗");
+            HE_ASSERT(0 && "カスタムメモリのページ作成に失敗");
             return FALSE;
         }
 
-        E_ASSERT(this->_memoryManager.CheckAllMemoryBlock());
+        HE_ASSERT(this->_memoryManager.CheckAllMemoryBlock());
     }
 
     this->_bInit = TRUE;
@@ -65,21 +65,23 @@ const Bool Engine::Init()
 /// <returns></returns>
 const Bool Engine::Start()
 {
-    E_ASSERT(this->_bStart == FALSE);
+    HE_ASSERT(this->_bStart == FALSE);
     if (this->_bStart) return TRUE;
 
-    E_LOG_LINE(E_STR_TEXT("エンジンの初期化"));
+    HE_LOG_LINE(HE_STR_TEXT("エンジンの初期化"));
 
     // 追加したモジュール適応
     this->_moduleManager.Start();
 
     // FPSタイマーを作成
     // ゲームを固定フレームレートにするため
+    auto pPlatformModule = this->GetPlatformModule();
+    if (pPlatformModule)
     {
-        Core::Time::FPS* pFPS = new Core::Time::FPS();
-        E_ASSERT(pFPS);
+        Core::Time::FPS* pFPS = new Core::Time::FPS(pPlatformModule->Time());
+        HE_ASSERT(pFPS);
 
-        this->_pFPS = std::shared_ptr<Core::Time::FPS>(pFPS);
+        this->_spFPS = std::shared_ptr<Core::Time::FPS>(pFPS);
     }
 
     this->_bStart = TRUE;
@@ -90,8 +92,8 @@ const Bool Engine::Start()
 
 const Bool Engine::Release()
 {
-    E_ASSERT(this->_bInit);
-    E_ASSERT(this->_bStart);
+    HE_ASSERT(this->_bInit);
+    HE_ASSERT(this->_bStart);
 
     if (this->_bStart == FALSE) return TRUE;
 
@@ -100,13 +102,13 @@ const Bool Engine::Release()
     // 確保したメモリを解放しないとEngineのデストラクタでエラーになる
     this->_moduleManager.Release();
 
-    this->_pFPS.reset();
+    this->_spFPS.reset();
 
     // アプリ/エンジンで利用しているメモリはここで解放
     // 確保したメモリが残っている場合はエラーになるので注意
     this->_memoryManager.Release();
 
-    E_LOG_LINE(E_STR_TEXT("エンジンの終了"));
+    HE_LOG_LINE(HE_STR_TEXT("エンジンの終了"));
     // デストラクタが呼ばれる
     // メモリ管理から取得したメモリを参照すると例外エラーになる
 
@@ -119,7 +121,7 @@ const Bool Engine::Release()
 /// <returns></returns>
 const Bool Engine::CreateGameWindow()
 {
-    E_ASSERT(this->_bStart);
+    HE_ASSERT(this->_bStart);
 
     auto pPlatform = this->GetPlatformModule();
     if (pPlatform == NULL) return FALSE;
@@ -147,7 +149,7 @@ const Bool Engine::BeforUpdateLoop()
     auto pPlatform = this->GetPlatformModule();
     if (pPlatform == NULL) return FALSE;
 
-    if (pPlatform->BeforUpdate(this->_pFPS->GetDeltaTimeSec(pPlatform->Time())) == FALSE)
+    if (pPlatform->BeforUpdate(this->_spFPS->GetDeltaTimeSec(pPlatform->Time())) == FALSE)
         return FALSE;
 
     return TRUE;
@@ -159,26 +161,28 @@ const Bool Engine::WaitFrameLoop()
     if (pPlatform == NULL) return FALSE;
 
     // 1 / 60 秒経過しないと更新しない
-    if (this->_pFPS != NULL)
+    if (this->_spFPS != NULL)
     {
-        while (this->_pFPS->UpdateWait(pPlatform->Time(), 16))
+        while (this->_spFPS->UpdateWait(pPlatform->Time(), 16))
         {
             pPlatform->Time()->SleepMSec(1);
         }
+
+        // HE_LOG_LINE(HE_STR_TEXT("%d"), this->_spFPS->GetFrameRate());
     }
 
     return TRUE;
 }
 
-const Bool Engine::MainUpdateLoop(const Float32 in_deltaSec)
+const Bool Engine::MainUpdateLoop(const Float32 in_fDeltaSec)
 {
     // モジュール更新
-    this->_moduleManager.Update(in_deltaSec);
+    this->_moduleManager.Update(in_fDeltaSec);
 
     return TRUE;
 }
 
-const Bool Engine::AfterUpdateLoop(const Float32 in_deltaSec)
+const Bool Engine::AfterUpdateLoop(const Float32 in_fDeltaSec)
 {
     // 描画処理
     this->_Redner();
@@ -186,7 +190,7 @@ const Bool Engine::AfterUpdateLoop(const Float32 in_deltaSec)
     auto pPlatform = this->GetPlatformModule();
     if (pPlatform == NULL) return FALSE;
 
-    if (pPlatform->AfterUpdate(this->_pFPS->GetDeltaTimeSec(pPlatform->Time())) == FALSE)
+    if (pPlatform->AfterUpdate(this->_spFPS->GetDeltaTimeSec(pPlatform->Time())) == FALSE)
         return FALSE;
 
     return TRUE;
@@ -195,19 +199,19 @@ const Bool Engine::AfterUpdateLoop(const Float32 in_deltaSec)
 Platform::PlatformModule* Engine::GetPlatformModule()
 {
     auto pPlatform = reinterpret_cast<Platform::PlatformModule*>(
-        this->_moduleManager.Get(E_STR_TEXT("Platform")));
+        this->_moduleManager.Get(HE_STR_TEXT("Platform")));
 
     return pPlatform;
 }
 
 const Float32 Engine::GetDeltaTimeSec()
 {
-    if (this->_pFPS == NULL) return 0.0f;
+    if (this->_spFPS == NULL) return 0.0f;
 
     auto pPlatform = this->GetPlatformModule();
     if (pPlatform == NULL) return 0.0f;
 
-    return this->_pFPS->GetDeltaTimeSec(pPlatform->Time());
+    return this->_spFPS->GetDeltaTimeSec(pPlatform->Time());
 }
 
 /// <summary>
@@ -222,7 +226,7 @@ void Engine::_Redner()
     Render::RenderModule* pRenderModule = ModuleRender();
 
     auto pComArray = reinterpret_cast<void*>(pRenderModule->GetCmdBuff());
-    E_ASSERT(pComArray);
+    HE_ASSERT(pComArray);
 
     // 描画コマンドを渡す
     pPlatformModule->BeginRender(pComArray);

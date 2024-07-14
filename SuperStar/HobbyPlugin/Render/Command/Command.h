@@ -20,32 +20,32 @@ namespace Render
     /// </summary>
     struct ComText2D
     {
-        Float32 x;
-        Float32 y;
+        Float32 fX = 0.0f;
+        Float32 fY = 0.0f;
 
         Color color;
 
-        Char chars[128];
+        Char szChars[128] = {0};
     };
 
-    extern void Cmd2DText(const Core::Math::Vector2& in_pos,
-                          const Core::Common::FixStringBase& in_str, const Color in_color);
+    extern void Cmd2DText(const Core::Math::Vector2& in_rPos,
+                          const Core::Common::FixStringBase& in_str, const Color& in_rColor);
 
     /// <summary>
     /// 2D画面に矩形を表示
     /// </summary>
     struct ComRect2D
     {
-        Float32 leftX;
-        Float32 leftY;
+        Float32 fLeftX;
+        Float32 fLeftY;
 
-        Float32 rightX;
-        Float32 rightY;
+        Float32 fRightX;
+        Float32 fRightY;
 
         Color color;
     };
 
-    extern void Cmd2DRect(const Core::Math::Rect2& in_rect, const Color in_color);
+    extern void Cmd2DRect(const Core::Math::Rect2& in_rRect, const Color& in_rColor);
 
     /// <summary>
     /// 描画コマンド
@@ -53,11 +53,11 @@ namespace Render
     /// </summary>
     struct Command
     {
-        Uint32 type = 0;
+        Uint32 uType = 0;
         union
         {
             // バッファ
-            Uint64 work[128] = {};
+            Uint64 ulaWork[128] = {};
 
             ComText2D text2D;
             ComRect2D rect2D;

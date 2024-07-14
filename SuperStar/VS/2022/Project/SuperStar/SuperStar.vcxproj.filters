@@ -311,6 +311,18 @@
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Common\Handle.cpp">
       <Filter>HobbyEngine\Core\Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\HobbyEngine\Core\Math\Matrix4.cpp">
+      <Filter>HobbyEngine\Core\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\HobbyEngine\Core\Math\Math.cpp">
+      <Filter>HobbyEngine\Core\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\HobbyEngine\Core\Math\Matrix3.cpp">
+      <Filter>HobbyEngine\Core\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\HobbyEngine\Core\Math\Quaternion.cpp">
+      <Filter>HobbyEngine\Core\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Game\Program\Inc\framework.h">
@@ -526,6 +538,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\HobbyPlugin\Level\Component\LevelUserInputReceive.h">
       <Filter>HobbyPlugin\Level\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyEngine\Core\Math\Matrix4.h">
+      <Filter>HobbyEngine\Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyEngine\Core\Math\Matrix3.h">
+      <Filter>HobbyEngine\Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyEngine\Core\Math\Vector4.h">
+      <Filter>HobbyEngine\Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\HobbyEngine\Core\Math\Quaternion.h">
+      <Filter>HobbyEngine\Core\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

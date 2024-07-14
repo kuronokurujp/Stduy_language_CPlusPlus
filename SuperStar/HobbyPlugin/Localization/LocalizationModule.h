@@ -25,9 +25,9 @@ namespace Localization
             LocateData() {}
             LocateData(const LocateData& in_data) { this->_textFilePath = in_data._textFilePath; }
 
-            LocateData(const Core::File::Path& in_textFileJsonPath)
+            LocateData(const Core::File::Path& in_rTextFileJsonPath)
             {
-                this->_textFilePath = in_textFileJsonPath;
+                this->_textFilePath = in_rTextFileJsonPath;
             }
 
             Core::File::Path _textFilePath;
@@ -45,7 +45,7 @@ namespace Localization
         /// </summary>
         /// <param name="in_pLocateName"></param>
         /// <returns></returns>
-        const SYSTEM_ASSET_LOCATE_MAP& FindLocate(const Char* in_pLocateName);
+        const SYSTEM_ASSET_LOCATE_MAP& FindLocate(const Char* in_szLocateName);
 
     private:
         /// <summary>
@@ -66,7 +66,7 @@ namespace Localization
         /// </summary>
         /// <param name="in_pKey"></param>
         /// <returns></returns>
-        const Core::Common::FixString1024& GetText(const Char* in_pKey);
+        const Core::Common::FixString1024& GetText(const Char* in_szKey);
 
     private:
         Core::Common::FixMap<Core::Common::FixString128, Core::Common::FixString1024, 128>
@@ -79,23 +79,23 @@ namespace Localization
     class LocalizationModule final : public Module::ModuleBase
     {
     public:
-        LocalizationModule(const Char* in_pName) : ModuleBase(in_pName) {}
+        LocalizationModule(const Char* in_szName) : ModuleBase(in_szName) {}
 
         // ローカライズ設定データをロード(テキストファイル版)
         // バイナリファイル版も用意する
-        const Bool LoadSystemFile(const Core::Common::FixString128& in_rFilePath);
+        const Bool LoadSystemFile(const Core::Common::FixStringBase&);
         // ローカライズ設定データをアンロード
         const Bool UnloadSystemFile();
 
         // ローカライズデータをロード
-        const Bool LoadTextAll(const Core::Common::FixString128&);
+        const Bool LoadTextAll(const Core::Common::FixStringBase&);
         // ローカライズデータをアンロード
-        const Bool UnloadTextAll(const Core::Common::FixString128&);
+        const Bool UnloadTextAll(const Core::Common::FixStringBase&);
 
         // ローカライズテキストを取得
-        const Char* Text(const Core::Common::FixString128& in_rLocateName,
-                         const Core::Common::FixString128& in_rGroupName,
-                         const Core::Common::FixString128& in_rKey);
+        const Char* Text(const Core::Common::FixStringBase& in_szrLocateName,
+                         const Core::Common::FixStringBase& in_szrGroupName,
+                         const Core::Common::FixStringBase& in_szrKey);
 
     protected:
         /// <summary>
@@ -108,7 +108,7 @@ namespace Localization
         /// </summary>
         virtual const Bool Release() override final;
 
-        const Bool Update(const Float32 in_deltaTime) final override;
+        const Bool Update(const Float32 in_fDeltaTime) final override;
 
     private:
 #define LOCATE_TEXT_MAP Core::Common::FixMap<Core::Common::FixString128, Core::Common::Handle, 64>

@@ -16,7 +16,7 @@ namespace Core
     /// </summary>
     class TaskManager final : public Common::BasePoolManager<Task>
     {
-        E_CLASS_COPY_CONSTRUCT_NG(TaskManager);
+        HE_CLASS_COPY_CONSTRUCT_NG(TaskManager);
 
     public:
         // タスクマネージャが使用するフラグ
@@ -59,12 +59,15 @@ namespace Core
         {
             static_assert(std::is_base_of<Task, T>::value, "TクラスはTaskクラスを継承していない");
 
-            E_ASSERT(in_groupId < this->_groupNum);
+            HE_ASSERT(in_groupId < this->_iGroupNum);
 
             // 利用するタスクを割り当て
             BasePoolManager::AllocData resAlloc = this->_Alloc<T>();
+            Task* pTask                         = resAlloc._tpItem;
 
-            Task* pTask = this->_SetupTask(&resAlloc, in_bReleaseMem);
+            pTask->Setup(in_bReleaseMem);
+            pTask->_hSelf = resAlloc._handle;
+
             this->_Attach(pTask, in_groupId);
 
             return resAlloc._handle;
@@ -140,7 +143,7 @@ namespace Core
         /// <returns></returns>
         const Uint32 CountWithGroup(const Sint32 in_groupId) const;
 
-        const Uint32 GetMaxGroup() const { return this->_groupNum; }
+        const Uint32 GetMaxGroup() const { return this->_iGroupNum; }
 
     private:
         // タスクグループ管理
@@ -151,22 +154,16 @@ namespace Core
             // グループのタスク終端
             Task* _pTailTask = NULL;
             // グループのフラグ
-            Uint32 _flags = 0;
+            Uint32 _uFlags = 0;
 
             /// <summary>
             /// 設定しているタスク数
             /// </summary>
-            Uint32 _count = 0;
+            Uint32 _uCount = 0;
 
             TaskGroup();
             ~TaskGroup();
         };
-
-        /// <summary>
-        /// 生成したタスクのセットアップ
-        /// </summary>
-        /// <param name="out_pData"></param>
-        Task* _SetupTask(BasePoolManager::AllocData* out_pData, const Bool in_bReleaseMem);
 
         /// <summary>
         /// タスク追加する
@@ -180,6 +177,6 @@ namespace Core
 
     private:
         TaskGroup* _pTasks = NULL;
-        Sint32 _groupNum   = 0;
+        Sint32 _iGroupNum  = 0;
     };
 };  // namespace Core

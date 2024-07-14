@@ -33,7 +33,7 @@ TEST_CASE("Memory SetupMemory")
         };
 
         CHECK(s_memoryManager.SetupMemoryPage(memoryPageSetupInfoArray,
-                                              E_ARRAY_NUM(memoryPageSetupInfoArray)));
+                                              HE_ARRAY_NUM(memoryPageSetupInfoArray)));
         CHECK(s_memoryManager.CheckAllMemoryBlock());
     }
 
@@ -58,7 +58,7 @@ TEST_CASE("Memory Allocate And Free")
             {3, 2 * 1024 * 1024}, {4, 2 * 1024 * 1024}, {5, 3 * 1024 * 1024},
         };
 
-        pageMax = E_ARRAY_NUM(memoryPageSetupInfoArray);
+        pageMax = HE_ARRAY_NUM(memoryPageSetupInfoArray);
         CHECK(s_memoryManager.SetupMemoryPage(memoryPageSetupInfoArray, pageMax));
         CHECK(s_memoryManager.CheckAllMemoryBlock());
     }
@@ -71,28 +71,33 @@ TEST_CASE("Memory Allocate And Free")
 
         // メモリの前確保がうまくいっているか
         Uint8* pPtr = static_cast<Uint8*>(
-            s_memoryManager.ALLOCATE_MEMORY(0x10000, page,
-                                            Core::Memory::Manager::MINIMUM_ALIGN_SIZE));
+            s_memoryManager.HE_ALLOCATE_MEMORY(0x10000, page,
+                                               Core::Memory::Manager::MinimumAlignSize));
         CHECK(pPtr);
         {
             *pPtr = static_cast<Uint8>(i);
-            E_LOG("%d\n", *pPtr);
+            HE_LOG("%d\n", *pPtr);
         }
 
         // メモリの後確保がうまくいっているか
         Uint32* pPtr2 = static_cast<Uint32*>(
-            s_memoryManager.ALLOCATE_MEMORY_LAST(1000, 1,
-                                                 Core::Memory::Manager::MINIMUM_ALIGN_SIZE));
+            s_memoryManager.HE_ALLOCATE_MEMORY_LAST(1000, 1,
+                                                    Core::Memory::Manager::MinimumAlignSize));
         CHECK(pPtr2);
         {
             *pPtr2 = i + 1234;
-            E_LOG("%d\n", *pPtr2);
+            HE_LOG("%d\n", *pPtr2);
         }
 
-        s_memoryManager.FREE_MEMORY(pPtr);
-        s_memoryManager.FREE_MEMORY(pPtr2);
+        s_memoryManager.HE_FREE_MEMORY(pPtr);
+        s_memoryManager.HE_FREE_MEMORY(pPtr2);
     }
     s_memoryManager.PrintAllMemoryInfo();
 
     CHECK(s_memoryManager.Release());
+}
+
+TEST_CASE("Memory New and Delete")
+{
+    // TODO new と deleteがうまくいっているかチェック
 }

@@ -1,193 +1,182 @@
-﻿#ifndef __MATH_MATRIX4_H__
-#define __MATH_MATRIX4_H__
+﻿#pragma once
 
-#include <string.h>
+#include "Core/Core.h"
+#include "Matrix3.h"
+#include "Vector3.h"
+#include "Vector4.h"
 
-#include "Math/matrix3.h"
-#include "Math/vector3.h"
-#include "Math/vector4.h"
-
-namespace Math
+namespace Core
 {
-    /// <summary>
-    /// 4x4行列のクラス
-    /// 行ベクトル前提で各計算処理をしている
-    /// 列ベクトルにするで扱いたい場合は転置する必要がある
-    /// クラスだが扱いは構造体とするので仮想関数の定義はしてはいけない
-    /// </summary>
-    class Matrix4
+    namespace Math
     {
-    public:
-        float mat[4][4];
-
-        Matrix4() { *this = Matrix4::Identity; }
-
-        explicit Matrix4(const float in_mat[4][4])
+        /// <summary>
+        /// 4x4行列のクラス
+        /// 行ベクトル前提で各計算処理をしている
+        /// 列ベクトルにするで扱いたい場合は転置する必要がある
+        /// クラスだが扱いは構造体とするので仮想関数の定義はしてはいけない
+        /// </summary>
+        class Matrix4
         {
-            memcpy(this->mat, in_mat, 4 * 4 * sizeof(float));
-        }
+        public:
+            Float32 _faaMat[4][4];
 
-        // Floatのポインタとして取得
-        const float* GetAsFloatPtr() const
-        {
-            return reinterpret_cast<const float*>(&this->mat[0][0]);
-        }
+            Matrix4() { *this = Matrix4::Identity; }
 
-        void Mul(const Matrix4& in_rSrcMat)
-        {
-            // 行列同士の計算で行側と列側でそれぞれVector4クラスに格納
-            // Vector4クラス同士の掛け算で行列の各行を作成
-            auto row01 =
-                Vector4(this->mat[0][0], this->mat[0][1], this->mat[0][2], this->mat[0][3]);
-            auto row02 =
-                Vector4(this->mat[1][0], this->mat[1][1], this->mat[1][2], this->mat[1][3]);
-            auto row03 =
-                Vector4(this->mat[2][0], this->mat[2][1], this->mat[2][2], this->mat[2][3]);
-            auto row04 =
-                Vector4(this->mat[3][0], this->mat[3][1], this->mat[3][2], this->mat[3][3]);
+            /// <summary>
+            /// TODO: コピーなので重い
+            /// </summary>
+            /// <param name="in_faaMat"></param>
+            explicit Matrix4(const Float32 in_faaMat[4][4])
+            {
+                ::memcpy(this->_faaMat, in_faaMat, 4 * 4 * sizeof(Float32));
+            }
 
-            auto col01 = Vector4(in_rSrcMat.mat[0][0], in_rSrcMat.mat[1][0], in_rSrcMat.mat[2][0],
-                                 in_rSrcMat.mat[3][0]);
-            auto col02 = Vector4(in_rSrcMat.mat[0][1], in_rSrcMat.mat[1][1], in_rSrcMat.mat[2][1],
-                                 in_rSrcMat.mat[3][1]);
-            auto col03 = Vector4(in_rSrcMat.mat[0][2], in_rSrcMat.mat[1][2], in_rSrcMat.mat[2][2],
-                                 in_rSrcMat.mat[3][2]);
-            auto col04 = Vector4(in_rSrcMat.mat[0][3], in_rSrcMat.mat[1][3], in_rSrcMat.mat[2][3],
-                                 in_rSrcMat.mat[3][3]);
+            // Floatのポインタとして取得
+            const Float32* GetAsFloatPtr() const
+            {
+                return reinterpret_cast<const Float32*>(&this->_faaMat[0][0]);
+            }
 
-            auto newRow01 = Vector4(row01.AddMul(col01), row01.AddMul(col02), row01.AddMul(col03),
-                                    row01.AddMul(col04));
-            auto newRow02 = Vector4(row02.AddMul(col01), row02.AddMul(col02), row02.AddMul(col03),
-                                    row02.AddMul(col04));
-            auto newRow03 = Vector4(row03.AddMul(col01), row03.AddMul(col02), row03.AddMul(col03),
-                                    row03.AddMul(col04));
-            auto newRow04 = Vector4(row04.AddMul(col01), row04.AddMul(col02), row04.AddMul(col03),
-                                    row04.AddMul(col04));
+            void Mul(const Matrix4& in_rSrcMat)
+            {
+                // 行列同士の計算で行側と列側でそれぞれVector4クラスに格納
+                // Vector4クラス同士の掛け算で行列の各行を作成
+                auto row01 = Vector4(this->_faaMat[0][0], this->_faaMat[0][1], this->_faaMat[0][2],
+                                     this->_faaMat[0][3]);
+                auto row02 = Vector4(this->_faaMat[1][0], this->_faaMat[1][1], this->_faaMat[1][2],
+                                     this->_faaMat[1][3]);
+                auto row03 = Vector4(this->_faaMat[2][0], this->_faaMat[2][1], this->_faaMat[2][2],
+                                     this->_faaMat[2][3]);
+                auto row04 = Vector4(this->_faaMat[3][0], this->_faaMat[3][1], this->_faaMat[3][2],
+                                     this->_faaMat[3][3]);
 
-            float temp[4][4] = {
-                {newRow01.x, newRow01.y, newRow01.z, newRow01.w},
-                {newRow02.x, newRow02.y, newRow02.z, newRow02.w},
-                {newRow03.x, newRow03.y, newRow03.z, newRow03.w},
-                {newRow04.x, newRow04.y, newRow04.z, newRow04.w},
-            };
+                auto col01 = Vector4(in_rSrcMat._faaMat[0][0], in_rSrcMat._faaMat[1][0],
+                                     in_rSrcMat._faaMat[2][0], in_rSrcMat._faaMat[3][0]);
+                auto col02 = Vector4(in_rSrcMat._faaMat[0][1], in_rSrcMat._faaMat[1][1],
+                                     in_rSrcMat._faaMat[2][1], in_rSrcMat._faaMat[3][1]);
+                auto col03 = Vector4(in_rSrcMat._faaMat[0][2], in_rSrcMat._faaMat[1][2],
+                                     in_rSrcMat._faaMat[2][2], in_rSrcMat._faaMat[3][2]);
+                auto col04 = Vector4(in_rSrcMat._faaMat[0][3], in_rSrcMat._faaMat[1][3],
+                                     in_rSrcMat._faaMat[2][3], in_rSrcMat._faaMat[3][3]);
 
-            memcpy(this->mat, temp, sizeof(float) * 4 * 4);
-        }
+                auto newRow01 = Vector4(row01.AddMul(col01), row01.AddMul(col02),
+                                        row01.AddMul(col03), row01.AddMul(col04));
+                auto newRow02 = Vector4(row02.AddMul(col01), row02.AddMul(col02),
+                                        row02.AddMul(col03), row02.AddMul(col04));
+                auto newRow03 = Vector4(row03.AddMul(col01), row03.AddMul(col02),
+                                        row03.AddMul(col03), row03.AddMul(col04));
+                auto newRow04 = Vector4(row04.AddMul(col01), row04.AddMul(col02),
+                                        row04.AddMul(col03), row04.AddMul(col04));
 
-        // 平行移動ベクトル取得
-        void OutputTranslation(Vector3* out_pVec);
+                Float32 temp[4][4] = {
+                    {newRow01.x, newRow01.y, newRow01.z, newRow01.w},
+                    {newRow02.x, newRow02.y, newRow02.z, newRow02.w},
+                    {newRow03.x, newRow03.y, newRow03.z, newRow03.w},
+                    {newRow04.x, newRow04.y, newRow04.z, newRow04.w},
+                };
 
-        /// <summary>
-        /// 逆行列に変換したのを出力
-        /// </summary>
-        void OutputInvert(Matrix4* out_pMat);
+                ::memcpy(this->_faaMat, temp, sizeof(Float32) * 4 * 4);
+            }
 
-        /// <summary>
-        /// 行列式を取得.
-        /// </summary>
-        /// <returns></returns>
-        float GetDet();
+            // 平行移動ベクトル取得
+            void OutputTranslation(Vector3* out);
 
-        /// <summary>
-        /// 余因子行列を出力.
-        /// </summary>
-        /// <param name="out_pMat">The out p mat.</param>
-        void OutputYoinshi(Matrix4* out_pMat);
+            /// <summary>
+            /// 逆行列に変換したのを出力
+            /// </summary>
+            void OutputInvert(Matrix4* out);
 
-        /// <summary>
-        /// 行と列を指定した3x3の余因子行列を出力.
-        /// </summary>
-        /// <param name="in_row">The in row.</param>
-        /// <param name="in_col">The in col.</param>
-        /// <param name="out_pMat">The out p mat.</param>
-        void OutputYoinshi3x3(int in_row, int in_col, Matrix3* out_pMat);
+            /// <summary>
+            /// 行列式を取得.
+            /// </summary>
+            Float32 GetDet();
 
-        /// <summary>
-        /// 転置行列に変換.
-        /// </summary>
-        void ChangeTentsu();
+            /// <summary>
+            /// 余因子行列を出力.
+            /// </summary>
+            void OutputYoinshi(Matrix4* out);
 
-        /// <summary>
-        /// 各要素にスケール値を掛ける.
-        /// </summary>
-        /// <param name="in_scaler">The in scaler.</param>
-        void Scale(float);
+            /// <summary>
+            /// 行と列を指定した3x3の余因子行列を出力.
+            /// </summary>
+            void OutputYoinshi3x3(Matrix3* out_pMat, Sint32 in_iRow, Sint32 in_iCol);
 
-        /// <summary>
-        /// Creates the scale matrix4.
-        /// </summary>
-        /// <param name="in_x">The in x.</param>
-        /// <param name="in_y">The in y.</param>
-        /// <param name="in_z">The in z.</param>
-        /// <returns></returns>
-        static Matrix4 CreateScale(const float in_x, const float in_y, const float in_z)
-        {
-            float temp[4][4] = {
-                {in_x, 0.0f, 0.0f, 0.0f},
-                {0.0f, in_y, 0.0f, 0.0f},
-                {0.0f, 0.0f, in_z, 0.0f},
-                {0.0f, 0.0f, 0.0f, 1.0f},
-            };
+            /// <summary>
+            /// 転置行列に変換.
+            /// </summary>
+            void ChangeTentsu();
 
-            return Matrix4(temp);
-        }
+            /// <summary>
+            /// 各要素にスケール値を掛ける.
+            /// </summary>
+            void Scale(Float32);
 
-        /// <summary>
-        /// Creates the scale.
-        /// </summary>
-        /// <param name="in_rScale">The in r scale.</param>
-        /// <returns></returns>
-        static Matrix4 CreateScale(const Math::Vector3& in_rScale)
-        {
-            return CreateScale(in_rScale.x, in_rScale.y, in_rScale.z);
-        }
+            /// <summary>
+            /// Creates the scale matrix4.
+            /// </summary>
+            static Matrix4 CreateScale(const Float32 in_fX, const Float32 in_fY,
+                                       const Float32 in_fZ)
+            {
+                Float32 faaTemp[4][4] = {
+                    {in_fX, 0.0f, 0.0f, 0.0f},
+                    {0.0f, in_fY, 0.0f, 0.0f},
+                    {0.0f, 0.0f, in_fZ, 0.0f},
+                    {0.0f, 0.0f, 0.0f, 1.0f},
+                };
 
-        /// <summary>
-        /// Creates the scale.
-        /// </summary>
-        /// <param name="in_scale">The in scale.</param>
-        /// <returns></returns>
-        static Matrix4 CreateScale(const float in_scale)
-        {
-            return CreateScale(in_scale, in_scale, in_scale);
-        }
+                return Matrix4(faaTemp);
+            }
 
-        /// <summary>
-        /// Creates the rotation z.
-        /// 回転する単位はラジアンなので注意です。
-        /// 1ラジアン = 2pi / 360
-        /// なぜ?
-        ///   2pi = 360度なのでこれを360分割すれば1ラジアンになるから
-        /// </summary>
-        /// <returns></returns>
-        static Matrix4 CreateRotationZ(const float in_radian);
+            /// <summary>
+            /// Creates the scale.
+            /// </summary>
+            static Matrix4 CreateScale(const Math::Vector3& in_rScale)
+            {
+                return CreateScale(in_rScale._fX, in_rScale._fY, in_rScale._fZ);
+            }
 
-        /// <summary>
-        /// Creates the translation.
-        /// </summary>
-        /// <param name="in_rPos">The in r position.</param>
-        /// <returns></returns>
-        static Matrix4 CreateTranslation(const Vector3& in_rPos);
+            /// <summary>
+            /// Creates the scale.
+            /// </summary>
+            static Matrix4 CreateScale(const Float32 in_fScale)
+            {
+                return CreateScale(in_fScale, in_fScale, in_fScale);
+            }
 
-        // 縦横のサイズを元に単位正方形の座標系に行列変換する行列作成
-        static Matrix4 CreateSimpleViewProj(const float in_width, const float in_height);
+            /// <summary>
+            /// Creates the rotation z.
+            /// 回転する単位はラジアンなので注意です。
+            /// 1ラジアン = 2pi / 360
+            /// なぜ?
+            ///   2pi = 360度なのでこれを360分割すれば1ラジアンになるから
+            /// </summary>
+            /// <returns></returns>
+            static Matrix4 CreateRotationZ(const Float32 in_fRadian);
 
-        // カメラ情報からビュー行列生成
-        static Matrix4 CreateLookAt(const Vector3& in_rEye, const Vector3& in_rTarget,
-                                    const Vector3& in_rUp);
+            /// <summary>
+            /// Creates the translation.
+            /// </summary>
+            static Matrix4 CreateTranslation(const Vector3& in_rPos);
 
-        // 正射影行列作成
-        static Matrix4 CreateOrtho(const float in_width, const float in_height, const float in_near,
-                                   const float in_far);
+            // 縦横のサイズを元に単位正方形の座標系に行列変換する行列作成
+            static Matrix4 CreateSimpleViewProj(const Float32 in_fWidth, const Float32 in_fHeight);
 
-        // 透視射影行列作成
-        static Matrix4 CreatePerspectiveFOV(const float in_fov, const float in_width,
-                                            const float in_height, const float in_near,
-                                            const float in_far);
+            // カメラ情報からビュー行列生成
+            static Matrix4 CreateLookAt(const Vector3& in_rEye, const Vector3& in_rTarget,
+                                        const Vector3& in_rUp);
 
-        // 単位行列定義
-        static const Matrix4 Identity;
-    };
-}  // namespace Math
+            // 正射影行列作成
+            static Matrix4 CreateOrtho(const Float32 in_fWidth, const Float32 in_fHeight,
+                                       const Float32 in_fNear, const Float32 in_fFar);
 
-#endif  // __MATH_MATRIX4_H__
+            // 透視射影行列作成
+            static Matrix4 CreatePerspectiveFOV(const Float32 in_fFov, const Float32 in_fWidth,
+                                                const Float32 in_fHeight, const Float32 in_fNear,
+                                                const Float32 in_fFar);
+
+            // 単位行列定義
+            static const Matrix4 Identity;
+        };
+    }  // namespace Math
+
+}  // namespace Core

@@ -40,7 +40,7 @@ namespace Platform
     class PlatformModule : public Module::ModuleBase
     {
     public:
-        PlatformModule(const Char* in_pName) : ModuleBase(in_pName) {}
+        PlatformModule(const Char* in_szName) : ModuleBase(in_szName) {}
 
         virtual const Bool CreateMainWindow() { return FALSE; }
         virtual const Bool ReleaseAllWindows() { return FALSE; }
@@ -76,10 +76,10 @@ namespace Platform
         /// </summary>
         /// <param name="in_deltaTime"></param>
         /// <returns></returns>
-        virtual const Bool BeforUpdate(const Float32 in_deltaTime) { return FALSE; }
-        virtual const Bool AfterUpdate(const Float32 in_deltaTime) { return FALSE; }
+        virtual const Bool BeforUpdate(const Float32 in_fDeltaTime) { return FALSE; }
+        virtual const Bool AfterUpdate(const Float32 in_fDeltaTime) { return FALSE; }
 
-        virtual const Bool Update(const Float32 in_deltaTime) override { return FALSE; }
+        virtual const Bool Update(const Float32 in_fDeltaTime) override { return FALSE; }
 
         // 描画
         virtual void BeginRender(void* in_pCmdArray) = 0;

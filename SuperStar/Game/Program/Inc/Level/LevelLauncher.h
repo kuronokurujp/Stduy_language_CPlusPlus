@@ -12,7 +12,7 @@ namespace Level
     /// </summary>
     class LevelLauncher : public Level::Node
     {
-        E_CLASS_COPY_CONSTRUCT_NG(LevelLauncher);
+        HE_CLASS_COPY_CONSTRUCT_NG(LevelLauncher);
 
     public:
         LevelLauncher() : Level::Node() {}
@@ -20,6 +20,7 @@ namespace Level
         const Bool End() override final;
 
     private:
-        Core::Common::Handle _hLayoutAsset;
+        Core::Common::Handle _layoutAssetHandle;
+        Core::Common::Handle _uIWidgetHandle;
     };
 }  // namespace Level

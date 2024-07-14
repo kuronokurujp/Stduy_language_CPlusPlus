@@ -16,12 +16,12 @@ namespace Level
     /// </summary>
     class LevelUserInputMessage
     {
-        E_CLASS_COPY_CONSTRUCT_NG(LevelUserInputMessage);
+        HE_CLASS_COPY_CONSTRUCT_NG(LevelUserInputMessage);
 
     public:
         LevelUserInputMessage(LevelUserInputEventHandler in_func) : _eventHandler(in_func) {}
 
-        void Message(const Char* in_pMsg) { this->_eventHandler(in_pMsg); }
+        void Message(const Char* in_szMsg) { this->_eventHandler(in_szMsg); }
 
     private:
         LevelUserInputEventHandler _eventHandler;
@@ -32,7 +32,7 @@ namespace Level
     /// </summary>
     class LevelUserInputReceiveComponent : public Actor::Component
     {
-        E_CLASS_COPY_CONSTRUCT_NG(LevelUserInputReceiveComponent);
+        HE_CLASS_COPY_CONSTRUCT_NG(LevelUserInputReceiveComponent);
         GENERATED_CLASS_BODY_HEADER(LevelUserInputReceiveComponent, Actor::Component);
 
     public:
@@ -45,14 +45,14 @@ namespace Level
         /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
         virtual void Setup(const Bool in_bReleaseMem = TRUE) override;
 
-        void Message(const Char* in_pMsg);
+        void Message(const Char* in_szMsg);
 
-        void SetReceiver(std::unique_ptr<LevelUserInputMessage> in_reciver)
+        void SetReceiver(std::unique_ptr<LevelUserInputMessage> in_spReciver)
         {
-            this->_eventReceiver = std::move(in_reciver);
+            this->_spEventReceiver = std::move(in_spReciver);
         }
 
     private:
-        std::unique_ptr<LevelUserInputMessage> _eventReceiver;
+        std::unique_ptr<LevelUserInputMessage> _spEventReceiver;
     };
 }  // namespace Level

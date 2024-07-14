@@ -22,15 +22,15 @@ namespace Level
         return TRUE;
     }
 
-    void Manager::Update(const Float32 in_dt, Platform::InputSystemInterface* in_pInput)
+    void Manager::Update(const Float32 in_fDt, Platform::InputSystemInterface* in_pInput)
     {
-        E_ASSERT(in_pInput != NULL);
+        HE_ASSERT(in_pInput != NULL);
 
         // 入力更新
         {
             Core::TaskData taskData{Node::ETaskUpdateId_Input, reinterpret_cast<void*>(in_pInput)};
 
-            this->_nodeManager.Update(in_dt, taskData);
+            this->_nodeManager.Update(in_fDt, taskData);
         }
 
         // アクター更新
@@ -41,7 +41,7 @@ namespace Level
                 NULL,
             };
 
-            this->_nodeManager.Update(in_dt, taskData);
+            this->_nodeManager.Update(in_fDt, taskData);
         }
 
         this->_nodeManager.UpdatePending();
@@ -57,11 +57,11 @@ namespace Level
 
     const Bool Node::Begin()
     {
-        Actor::ActorManager* pActorManager = E_NEW(Actor::ActorManager, 0);
+        Actor::ActorManager* pActorManager = HE_NEW(Actor::ActorManager, 0);
         this->_pActorManager               = std::shared_ptr<Actor::ActorManager>(pActorManager);
         if (this->_pActorManager->Start(256, 32) == FALSE)
         {
-            E_ASSERT(FALSE && "レベルノードのアクター管理の初期化が失敗");
+            HE_ASSERT(FALSE && "レベルノードのアクター管理の初期化が失敗");
             return FALSE;
         }
 
@@ -72,7 +72,7 @@ namespace Level
     {
         if (this->_pActorManager->End() == FALSE)
         {
-            E_ASSERT(FALSE && "レベルノードの終了に失敗");
+            HE_ASSERT(FALSE && "レベルノードの終了に失敗");
         }
         // メモリ解放をしている
         this->_pActorManager.reset();
@@ -80,18 +80,18 @@ namespace Level
         return TRUE;
     }
 
-    void Node::Update(const Float32 in_dt, const Core::TaskData& in_rData)
+    void Node::Update(const Float32 in_fDt, const Core::TaskData& in_rData)
     {
-        switch (in_rData.id)
+        switch (in_rData.uId)
         {
             // TODO: 入力送信
             case Node::ETaskUpdateId_Input:
             {
                 Platform::InputSystemInterface* pInput =
                     reinterpret_cast<Platform::InputSystemInterface*>(in_rData.pData);
-                E_ASSERT(pInput != NULL);
+                HE_ASSERT(pInput != NULL);
 
-                this->_pActorManager->ProcessInput(in_dt, pInput);
+                this->_pActorManager->ProcessInput(in_fDt, pInput);
 
                 break;
             }
@@ -102,7 +102,7 @@ namespace Level
                 // Actorの制御
                 {
                     Core::TaskData taskData{Actor::Object::ETaskUpdateId_Object, NULL};
-                    this->_pActorManager->Update(in_dt, taskData);
+                    this->_pActorManager->Update(in_fDt, taskData);
 
                     // コリジョン処理(コリジョンしてActor追加が起きてもpendingするように)
                     // this->_Colision();
@@ -123,33 +123,33 @@ namespace Level
     }
 
     // TODO: レベルに追加されたアクターを削除
-    void Node::RemoveActor(const Core::Common::Handle& in_hActor)
+    void Node::RemoveActor(const Core::Common::Handle& in_rActor)
     {
-        if (in_hActor.Null()) return;
+        if (in_rActor.Null()) return;
 
-        this->_pActorManager->Remove(in_hActor);
+        this->_pActorManager->Remove(in_rActor);
     }
 
-    Actor::Object* Node::GetActor(const Core::Common::Handle& in_hActor)
+    Actor::Object* Node::GetActor(const Core::Common::Handle& in_rActor)
     {
-        E_ASSERT(in_hActor.Null() == FALSE);
-        return this->_pActorManager->Get(in_hActor);
+        HE_ASSERT(in_rActor.Null() == FALSE);
+        return this->_pActorManager->Get(in_rActor);
     }
 
-    const Bool Node::AddParentActor(const Core::Common::Handle& in_hChildActor,
-                                    const Core::Common::Handle in_hParentActor)
+    const Bool Node::AddParentActor(const Core::Common::Handle& in_rChildActor,
+                                    const Core::Common::Handle& in_rParentActor)
     {
-        E_ASSERT(in_hChildActor.Null() == FALSE);
-        E_ASSERT(in_hParentActor.Null() == FALSE);
+        HE_ASSERT(in_rChildActor.Null() == FALSE);
+        HE_ASSERT(in_rParentActor.Null() == FALSE);
 
-        Actor::Object* pChildActor  = this->GetActor(in_hChildActor);
-        Actor::Object* pParentActor = this->GetActor(in_hParentActor);
+        Actor::Object* pChildActor  = this->GetActor(in_rChildActor);
+        Actor::Object* pParentActor = this->GetActor(in_rParentActor);
         // 子アクターに親アクターを設定する
-        const Bool bRet = pChildActor->SetParentActor(in_hParentActor, pParentActor->GetDepth());
+        const Bool bRet = pChildActor->SetParentActor(in_rParentActor, pParentActor->GetDepth());
         if (bRet)
         {
-            // TODO: 子アクターの更新順を変える
-            this->_pActorManager->MoveDepth(in_hChildActor, pChildActor->GetDepth());
+            // 子アクターの更新順を変える
+            this->_pActorManager->MoveDepth(in_rChildActor, pChildActor->GetDepth());
 
             pParentActor->OnAddChildActor(pChildActor);
         }

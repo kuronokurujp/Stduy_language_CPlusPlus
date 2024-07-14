@@ -4,38 +4,38 @@
 
 namespace Render
 {
-    void Cmd2DText(const Core::Math::Vector2& in_pos, const Core::Common::FixStringBase& in_str,
-                   const Color in_color)
+    void Cmd2DText(const Core::Math::Vector2& in_rPos,
+                   const Core::Common::FixStringBase& in_szrName, const Color& in_rColor)
     {
         // TODO: 必要なコマンド情報を作る
         Command cmd;
         {
-            cmd.type = CMD_TYPE_2D_TEXT;
+            cmd.uType = CMD_TYPE_2D_TEXT;
 
             ComText2D* pText2D = &cmd.data.text2D;
-            pText2D->x         = in_pos.x;
-            pText2D->y         = in_pos.y;
-            pText2D->color     = in_color;
-            E_STR_ERRNO e = E_STR_CPY_S(pText2D->chars, E_ARRAY_NUM(pText2D->chars), in_str.Str(),
-                                        in_str.Capacity());
-            E_ASSERT(E_STR_SUCCESS(e) && "文字列コピーに失敗");
+            pText2D->fX        = in_rPos._fX;
+            pText2D->fY        = in_rPos._fY;
+            pText2D->color     = in_rColor;
+            HE_STR_ERRNO e     = HE_STR_CPY_S(pText2D->szChars, HE_ARRAY_NUM(pText2D->szChars),
+                                              in_szrName.Str(), in_szrName.Capacity());
+            HE_ASSERT(HE_STR_SUCCESS(e) && "文字列コピーに失敗");
         }
 
         ModuleRender()->AddCmd(std::move(cmd));
     }
 
-    void Cmd2DRect(const Core::Math::Rect2& in_rect, const Color in_color)
+    void Cmd2DRect(const Core::Math::Rect2& in_rRect, const Color& in_rColor)
     {
-        // TODO: 必要なコマンド情報を作る
+        // 必要なコマンド情報を作る
         Command cmd;
         {
-            cmd.type           = CMD_TYPE_2D_RECT;
+            cmd.uType          = CMD_TYPE_2D_RECT;
             ComRect2D* pRect2D = &cmd.data.rect2D;
-            pRect2D->leftX     = in_rect.left;
-            pRect2D->leftY     = in_rect.top;
-            pRect2D->rightX    = in_rect.right;
-            pRect2D->rightY    = in_rect.bottom;
-            pRect2D->color     = in_color;
+            pRect2D->fLeftX    = in_rRect._fLeft;
+            pRect2D->fLeftY    = in_rRect._fTop;
+            pRect2D->fRightX   = in_rRect._fRight;
+            pRect2D->fRightY   = in_rRect._fBottom;
+            pRect2D->color     = in_rColor;
         }
 
         ModuleRender()->AddCmd(std::move(cmd));

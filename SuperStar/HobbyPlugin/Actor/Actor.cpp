@@ -3,47 +3,30 @@
 #include "ActorManager.h"
 #include "Component/component.h"
 
-/*
-#include "SDL/SDL_assert.h"
-#include "renderer.h"
-*/
-
 namespace Actor
 {
-    /*
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Actor"/> class.
-    /// </summary>
-    Actor::Actor(Renderer* in_pRenderer, ActorManager* in_pActorManager)
-    {
-        this->_Clear();
-
-        this->pActorManager = in_pActorManager;
-        this->pActorManager->AddActorMemData(this);
-
-        this->pRenderer = in_pRenderer;
-    }
-    */
     Object::Object() : Task()
     {
         if (this->_components.Init(32, 32) == FALSE)
         {
-            E_ASSERT(FALSE && "コンポーネントのタスク管理の初期化失敗");
+            HE_ASSERT(FALSE && "コンポーネントのタスク管理の初期化失敗");
         }
     }
 
-    /// <summary>
-    /// Finalizes an instance of the <see cref="Actor"/> class.
-    /// </summary>
     Object::~Object()
     {
         this->_components.End();
         this->_pDataAccess = NULL;
     }
 
+    void Object::Setup(const Bool in_bAutoDelete)
+    {
+        Task::Setup(in_bAutoDelete);
+        this->_Clear();
+    }
+
     const Bool Object::Begin()
     {
-        this->_depth = 0;
         return TRUE;
     }
 
@@ -53,7 +36,7 @@ namespace Actor
         this->RemoveAllComponent();
 
         // 設定している子アクターを全て外す
-        this->_childObjects.Clear();
+        this->_aChildObject.Clear();
 
         this->_pDataAccess = NULL;
 
@@ -63,45 +46,45 @@ namespace Actor
     /// <summary>
     /// Updates the specified in delta time.
     /// </summary>
-    void Object::Update(const Float32 in_dt, const Core::TaskData& in_rData)
+    void Object::Update(const Float32 in_fDt, const Core::TaskData& in_rData)
     {
-        if (this->state != EState_Active) return;
+        if (this->_eState != EState_Active) return;
 
-        switch (in_rData.id)
+        switch (in_rData.uId)
         {
-            // TODO: 入力処理
+            // 入力処理
             case Object::ETaskUpdateId_Input:
             {
-                E_ASSERT(in_rData.pData != NULL);
+                HE_ASSERT(in_rData.pData != NULL);
                 {
                     Platform::InputSystemInterface* pInput =
                         reinterpret_cast<Platform::InputSystemInterface*>(in_rData.pData);
-                    E_ASSERT(pInput != NULL);
+                    HE_ASSERT(pInput != NULL);
 
-                    // TODO: 入力送信する
-                    this->_ProcessInput(in_dt, pInput);
+                    // 入力送信する
+                    this->_ProcessInput(in_fDt, pInput);
                 }
 
                 break;
             }
-            // TODO: オブジェクト更新
+            // オブジェクト更新
             case Object::ETaskUpdateId_Object:
             {
                 // 座標更新
-                //        this->ComputeWorldTransform();
+                this->_ComputeWorldTransform();
 
                 // コンポーネント更新
-                this->_components.UpdateAll(in_dt, in_rData);
+                this->_components.UpdateAll(in_fDt, in_rData);
 
                 // コンポーネント内で更新した座標を含めて更新
-                //        this->ComputeWorldTransform();
+                this->_ComputeWorldTransform();
 
                 // コンポーネントがすべて更新してから実行
                 // コンポーネントの結果が同フレーム取れる
-                this->UpdateActor(in_dt);
+                this->UpdateActor(in_fDt);
 
                 // Actor内で更新した座標を含めて更新
-                //        this->ComputeWorldTransform();
+                this->_ComputeWorldTransform();
 
                 // 存在しない親アクターがあるかチェックして整理
                 if (this->_parentActorHandle.Null() == FALSE)
@@ -115,12 +98,13 @@ namespace Actor
         }
     }
 
-    const Bool Object::SetParentActor(const Core::Common::Handle in_handle, const Uint32 in_depth)
+    const Bool Object::SetParentActor(const Core::Common::Handle& in_rHandle,
+                                      const Uint32 in_uDepth)
     {
-        E_ASSERT(in_handle.Null() == FALSE);
+        HE_ASSERT(in_rHandle.Null() == FALSE);
 
-        this->_parentActorHandle = in_handle;
-        this->_depth             = in_depth + 1;
+        this->_parentActorHandle = in_rHandle;
+        this->_uDepth            = in_uDepth + 1;
 
         return TRUE;
     }
@@ -128,96 +112,96 @@ namespace Actor
     /// <summary>
     /// くっつている全てのコンポーネント削除.
     /// </summary>
-    /// <returns></returns>
     void Object::RemoveAllComponent()
     {
         this->_components.RemoveAll();
-        /*
-        for (auto component : this->_components)
-        {
-            SAFETY_MEM_RELEASE(component);
-        }
-
-        this->_components.clear();
-        */
     }
 
     /// <summary>
     /// Removes the component.
     /// </summary>
-    /// <param name="in_pComponent">The in p component.</param>
-    /// <returns></returns>
-    const Bool Object::RemoveComponent(Core::Common::Handle in_hComponent)
+    const Bool Object::RemoveComponent(Core::Common::Handle& in_rHandle)
     {
-        E_ASSERT(in_hComponent.Null() == FALSE);
-        this->_components.Remove(in_hComponent);
-        /*
-
-        // 同じコンポーネントを多重設定出来ない
-        auto iter = std::find(
-            this->_components.begin(),
-            this->_components.end(),
-            in_pComponent);
-        if (iter == this->_components.end())
-        {
-            return false;
-        }
-
-        this->_components.erase(iter);
-        */
-
+        HE_ASSERT(in_rHandle.Null() == FALSE);
+        this->_components.Remove(in_rHandle);
         return TRUE;
     }
 
     /// <summary>
     /// 子アクターが追加された時に呼ばれるイベント
     /// </summary>
-    /// <param name="in_pChildActor"></param>
     void Object::OnAddChildActor(Actor::Object* in_pChildActor)
     {
-        E_ASSERT(in_pChildActor != NULL);
-        E_ASSERT(this != in_pChildActor);
+        HE_ASSERT(in_pChildActor != NULL);
+        HE_ASSERT(this != in_pChildActor);
 
-        this->_childObjects.PushBack(in_pChildActor);
+        this->_aChildObject.PushBack(in_pChildActor);
     }
 
     /// <summary>
     /// 子アクター外す時に呼ばれるイベント
     /// </summary>
-    /// <param name="in_pChildActor"></param>
     void Object::OnRemoveChildActor(Actor::Object* in_pChildActor)
     {
-        E_ASSERT(in_pChildActor != NULL);
-        this->_childObjects.Remove(in_pChildActor);
+        HE_ASSERT(in_pChildActor != NULL);
+        this->_aChildObject.Remove(in_pChildActor);
     }
 
     /// <summary>
-    /// TODO: アクター自身, 子アクターに設定しているコンポーネントを全て出力
-    /// アクターの階層構造が深くなると再帰処理が多くなるので注意
+    /// アクター自身, 子アクターに設定しているコンポーネントを全て出力
     /// </summary>
-    void Object::OutputChildComponents(Core::Common::FastFixArray<Component*, 128>& out_comArray,
-                                       const Core::Common::RTTI& in_rtti)
+    void Object::OutputChildrenComponent(Core::Common::FastFixArrayBase<Component*>* out,
+                                         const Core::Common::RTTI* in_pRtti)
     {
-        Component* c = this->GetComponent(in_rtti);
-        if (c != NULL) out_comArray.PushBack(c);
-
-        // TODO: 子アクターがあれば再帰処理する
-        for (Uint32 i = 0; i < this->_childObjects.Size(); ++i)
+        auto c = this->GetComponentHandle(in_pRtti);
+        if (c.Null() == FALSE)
         {
-            this->_childObjects[i]->OutputChildComponents(out_comArray, in_rtti);
+            out->PushBack(this->GetComponent<Component>(c));
+        }
+
+        const Uint32 uSize = this->_aChildObject.Size();
+        if (uSize <= 0) return;
+
+        Core::Common::FastFixArray<Object*, 32> stack;
+
+        // 子アクターがあれば再帰処理する
+        for (Uint32 i = 0; i < uSize; ++i)
+        {
+            stack.PushBack(this->_aChildObject[i]);
+            while (stack.Empty())
+            {
+                auto obj = stack.PopBack();
+                {
+                    auto slot = obj->_components.GetUserDataList();
+                    for (auto b = slot->begin(); b != slot->end(); ++b)
+                    {
+                        auto c = reinterpret_cast<Actor::Component*>(b->second);
+                        if (c->GetRTTI().DerivesFrom(in_pRtti))
+                        {
+                            out->PushBack(c);
+                        }
+                    }
+                }
+
+                for (Uint32 j = 0; j < obj->_aChildObject.Size(); ++j)
+                {
+                    stack.PushBack(obj);
+                }
+            }
         }
     }
 
-    Component* Object::GetComponent(const Core::Common::RTTI& in_rtti)
+    Core::Common::Handle Object::GetComponentHandle(const Core::Common::RTTI* in_pRtti)
     {
-        auto& list = this->_components.GetUserDataList();
-        for (auto itr = list.begin(); itr != list.end(); ++itr)
+        auto list = this->_components.GetUserDataList();
+        auto end  = list->end();
+        for (auto itr = list->begin(); itr != end; ++itr)
         {
-            Component* target = reinterpret_cast<Component*>(itr->_pItem);
-            if (target->GetRTTI().DerivesFrom(in_rtti)) return target;
+            Component* target = reinterpret_cast<Component*>(itr->second);
+            if (target->GetRTTI().DerivesFrom(in_pRtti)) return itr->first;
         }
 
-        return NULL;
+        return InvalidHandle;
     }
 
     /// <summary>
@@ -226,8 +210,8 @@ namespace Actor
     /// <returns></returns>
     const Core::Math::Vector3 Object::GetWorldPos()
     {
-        Core::Math::Vector3 pos = this->pos;
-        // TODO: 親アクターがあれば座標を取得
+        Core::Math::Vector3 pos = this->_pos;
+        // 親アクターがあれば座標を取得
         Core::Common::Handle handle = this->_parentActorHandle;
         while (handle.Null() == FALSE)
         {
@@ -236,7 +220,7 @@ namespace Actor
 
             pos += pParentActor->GetWorldPos();
 
-            // TODO: 親アクターに更に親アクターがあれば処理を続ける
+            // 親アクターに更に親アクターがあれば処理を続ける
             handle = pParentActor->_parentActorHandle;
         }
 
@@ -299,30 +283,28 @@ namespace Actor
         }
     }
 
+#endif
     /// <summary>
     /// Computes the world transform.
     /// </summary>
     /// <returns></returns>
-    auto Actor::ComputeWorldTransform() -> void
+    void Object::_ComputeWorldTransform()
     {
-        if (this->recomputeWorldTransform == false)
+        if (this->_bComputeTransform == false)
         {
             return;
         }
 
-        this->recomputeWorldTransform = false;
+        this->_bComputeTransform = false;
 
         // 拡大・拡縮行列作成して初期行列として設定
-        this->worldTransform = Math::Matrix4::CreateScale(
-            this->scale.x,
-            this->scale.y,
-            this->scale.z);
+        this->_worldTransform =
+            Core::Math::Matrix4::CreateScale(this->_scale._fX, this->_scale._fY, this->_scale._fZ);
 
         // 回転行列作成して掛け算
-        this->worldTransform.Mul(Math::Matrix4FormQuaternion(this->rotation));
+        this->_worldTransform.Mul(Core::Math::Matrix4FormQuaternion(this->_rotation));
 
         // 平行移動行列作成して掛け算
-        this->worldTransform.Mul(Math::Matrix4::CreateTranslation(this->position));
+        this->_worldTransform.Mul(Core::Math::Matrix4::CreateTranslation(this->_pos));
     }
-#endif
 }  // namespace Actor

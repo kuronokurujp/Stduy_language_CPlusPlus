@@ -19,15 +19,15 @@ namespace Module
     /// </summary>
     class ModuleBase
     {
-        E_CLASS_COPY_CONSTRUCT_NG(ModuleBase);
-        E_CLASS_MOVE_CONSTRUCT_NG(ModuleBase);
+        HE_CLASS_COPY_CONSTRUCT_NG(ModuleBase);
+        HE_CLASS_MOVE_CONSTRUCT_NG(ModuleBase);
 
     public:
-        ModuleBase(const Char* in_pName);
+        ModuleBase(const Char* in_szName);
 
         Platform::PlatformModule* GetPlatformModule() const;
 
-        const Char* Name() const E_NOEXCEPT { return this->_name.Str(); }
+        const Char* Name() const HE_NOEXCEPT { return this->_szName.Str(); }
 
     protected:
         /// <summary>
@@ -42,13 +42,13 @@ namespace Module
         /// </summary>
         virtual const Bool Release() = 0;
 
-        virtual const Bool Update(const Float32 in_deltaTime) { return FALSE; }
+        virtual const Bool Update(const Float32 in_fDeltaTime) { return FALSE; }
 
     private:
-        Core::Common::FixString128 _name;
+        Core::Common::FixString128 _szName;
 
     private:
-        static inline Core::Common::FixMap<Core::Common::FixString128, ModuleBase*, 64> _modules;
+        static inline Core::Common::FixMap<Core::Common::FixString128, ModuleBase*, 64> _mModule;
 
         friend class ModuleManager;
     };
@@ -59,7 +59,7 @@ namespace Module
     class ModuleManager : public Core::Common::Singleton<ModuleManager>
     {
     public:
-        ModuleBase* Get(const Char* in_pName);
+        ModuleBase* Get(const Char* in_szName);
 
         /// <summary>
         /// モジュールの利用開始
@@ -74,7 +74,7 @@ namespace Module
         /// <summary>
         /// モジュール更新
         /// </summary>
-        void Update(const Float32 in_deltaTime);
+        void Update(const Float32 in_fDeltaTime);
     };
 }  // namespace Module
 
@@ -89,11 +89,11 @@ namespace Module
 
 // モジュール定義マクロ
 // モジュールのcppファイルの先頭につける
-#define MODULE_GENRATE_DEFINITION(_type_, _name_)                         \
-    static _type_ s_global_module_##_name_ = _type_(E_STR_TEXT(#_name_)); \
-    _type_* Module##_name_()                                              \
-    {                                                                     \
-        return &s_global_module_##_name_;                                 \
+#define MODULE_GENRATE_DEFINITION(_type_, _name_)                          \
+    static _type_ s_global_module_##_name_ = _type_(HE_STR_TEXT(#_name_)); \
+    _type_* Module##_name_()                                               \
+    {                                                                      \
+        return &s_global_module_##_name_;                                  \
     }
 
 // モジュール管理の定義マクロ

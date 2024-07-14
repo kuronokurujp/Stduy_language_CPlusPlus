@@ -6,11 +6,11 @@
 // Debug/Releaseの切り替えマクロ
 #ifdef _DEBUG
 
-#define _HOBBY_ENGINE_DEBUG
+#define HE_ENGINE_DEBUG
 
 #else
 
-#define _ENGINE_RELEASE
+#define HE_ENGINE_RELEASE
 
 #endif
 

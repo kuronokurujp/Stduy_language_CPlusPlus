@@ -22,10 +22,10 @@ namespace Level
         return TRUE;
     }
 
-    const Bool LevelModule::Update(const Float32 in_deltaTime)
+    const Bool LevelModule::Update(const Float32 in_fDeltaTime)
     {
         // マウスやキーボードなどの各入力を渡す
-        this->_pLevelManager->Update(in_deltaTime, this->GetPlatformModule()->Input());
+        this->_pLevelManager->Update(in_fDeltaTime, this->GetPlatformModule()->Input());
 
         return TRUE;
     }

@@ -17,8 +17,8 @@ namespace DXLib
     /// 指定した時間停止(ミリセコンド)
     /// </summary>
     /// <param name="in_ms"></param>
-    void TimeSystem::SleepMSec(const Uint32 in_ms)
+    void TimeSystem::SleepMSec(const Uint32 in_uMs)
     {
-        DxLib::SleepThread(static_cast<int>(in_ms));
+        DxLib::SleepThread(static_cast<int>(in_uMs));
     }
 }  // namespace DXLib

@@ -17,7 +17,7 @@ namespace Actor
     /// </summary>
     class Component : public Core::Task
     {
-        E_CLASS_COPY_CONSTRUCT_NG(Component);
+        HE_CLASS_COPY_CONSTRUCT_NG(Component);
 
         GENERATED_CLASS_BASE_BODY_HEADER(Component);
 
@@ -53,40 +53,41 @@ namespace Actor
         /// 必ず処理を記述
         /// </summary>
         /// <param name="in_deltaTime">The in delta time.</param>
-        virtual void Update(const Float32 in_deltaTime) {}
-
-        /// <summary>
-        /// コンポーネントの更新
-        /// 必ず処理を記述
-        /// TaskDataは使わないので省略した更新メソッドを継承してもらう
-        /// </summary>
-        /// <param name="in_deltaTime">The in delta time.</param>
-        void Update(const Float32 in_deltaTime, const Core::TaskData& in_rData) override final
-        {
-            this->Update(in_deltaTime);
-        }
+        virtual void Update(const Float32 in_fDeltaTime) {}
 
         /// <summary>
         /// Gets the update order.
         /// </summary>
         /// <returns></returns>
-        const int GetUpdateOrder() const { return this->_updateOrder; }
+        const int GetUpdateOrder() const { return this->_iUpdateOrder; }
 
         // 座標変換一覧
-        void TransformLocalToWorldPos2D(Core::Math::Vector2* out_pPos,
-                                        const Core::Math::Vector2& in_offsetPos);
-        void TransformLocalToWorldRect2D(Core::Math::Rect2* out_pRect,
-                                         const Core::Math::Rect2& in_offsetRect);
+        void TransformLocalToWorldPos2D(Core::Math::Vector2* out,
+                                        const Core::Math::Vector2& in_rOffsetPos);
+        void TransformLocalToWorldRect2D(Core::Math::Rect2* out,
+                                         const Core::Math::Rect2& in_rOffsetRect);
+
+    protected:
+        /// <summary>
+        /// コンポーネントの更新
+        /// 必ず処理を記述
+        /// TaskDataは使わないので省略した更新メソッドを継承してもらう
+        /// 呼び出してほしくないのでpublicとしない
+        /// </summary>
+        void Update(const Float32 in_fDeltaTime, const Core::TaskData& in_rData) override final
+        {
+            this->Update(in_fDeltaTime);
+        }
 
     private:
         void _Clear()
         {
-            this->_pOwner      = NULL;
-            this->_updateOrder = 0;
+            this->_pOwner       = NULL;
+            this->_iUpdateOrder = 0;
         }
 
     protected:
-        Object* _pOwner     = NULL;
-        Sint32 _updateOrder = 0;
+        Object* _pOwner      = NULL;
+        Sint32 _iUpdateOrder = 0;
     };
 }  // namespace Actor

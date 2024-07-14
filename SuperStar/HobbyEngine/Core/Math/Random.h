@@ -23,7 +23,7 @@ namespace Core
             /// 利用する前に必ず最初に呼び出す
             /// </summary>
             /// <returns></returns>
-            const Bool Init(const Sint32 in_seed);
+            const Bool Init(const Sint32 in_iSeed);
 
             /// <summary>
             /// インスタンスがリリースされたときに呼ばれる
@@ -36,7 +36,7 @@ namespace Core
             /// </summary>
             /// <param name="in_seed">The in seed.</param>
             /// <returns></returns>
-            void SetSeed(const Sint32 in_seed);
+            void SetSeed(const Sint32 in_iSeed);
 
             /// <summary>
             /// 0 - 1の乱数を取得
@@ -52,9 +52,9 @@ namespace Core
             /// <param name="in_max"></param>
             /// <returns></returns>
             template <typename T>
-            const T Range(const T in_min, const T in_max)
+            const T Range(const T in_tMin, const T in_tMax)
             {
-                std::uniform_real_distribution<T> dist(in_min, in_max);
+                std::uniform_real_distribution<T> dist(in_tMin, in_tMax);
                 return dist(this->_generator);
             }
 

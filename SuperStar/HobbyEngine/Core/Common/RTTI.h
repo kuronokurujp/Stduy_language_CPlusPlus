@@ -12,32 +12,33 @@ namespace Core
         /// </summary>
         class RTTI
         {
-            E_CLASS_DEFAULT_CONSTRUCT_NG(RTTI);
-            E_CLASS_COPY_CONSTRUCT_NG(RTTI);
+            HE_CLASS_DEFAULT_CONSTRUCT_NG(RTTI);
+            HE_CLASS_COPY_CONSTRUCT_NG(RTTI);
 
         public:
-            RTTI(const Char* in_pClassName) : _className(in_pClassName), _pBaseRTTI(NULL)
+            RTTI(const Char* in_szClass) : _szClass(in_szClass), _pBaseRTTI(NULL)
             {
-                E_LOG_LINE(E_STR_TEXT("RTTI BaseClassName: ") E_STR_FORMAT_TEXT, in_pClassName);
+                HE_LOG_LINE(HE_STR_TEXT("RTTI BaseClassName: ") HE_STR_FORMAT_TEXT, in_szClass);
             }
 
-            RTTI(const Char* in_pClassName, const RTTI& in_baseRTTI)
-                : _className(in_pClassName), _pBaseRTTI(&in_baseRTTI)
+            RTTI(const Char* in_szClass, const RTTI& in_rBaseRTTI)
+                : _szClass(in_szClass), _pBaseRTTI(&in_rBaseRTTI)
             {
-                E_LOG_LINE(E_STR_TEXT("RTTI InheritClassName: ")
-                               E_STR_FORMAT_TEXT E_STR_TEXT(" BaseClassName: ") E_STR_FORMAT_TEXT,
-                           in_pClassName, in_baseRTTI.GetName().Str());
+                HE_LOG_LINE(HE_STR_TEXT("RTTI InheritClassName: ")
+                                HE_STR_FORMAT_TEXT HE_STR_TEXT(" BaseClassName: ")
+                                    HE_STR_FORMAT_TEXT,
+                            in_szClass, in_rBaseRTTI.GetName().Str());
             }
 
-            const FixString128& GetName() const E_NOEXCEPT { return this->_className; }
-            Bool IsExactly(const RTTI& in_rtti) const E_NOEXCEPT
+            const FixString128& GetName() const HE_NOEXCEPT { return this->_szClass; }
+            Bool IsExactly(const RTTI& in_rRtti) const HE_NOEXCEPT
             {
-                return (this->_pBaseRTTI == &in_rtti);
+                return (this->_pBaseRTTI == &in_rRtti);
             }
-            Bool DerivesFrom(const RTTI& in_rtti) const;
+            Bool DerivesFrom(const RTTI*) const;
 
         private:
-            const FixString128 _className;
+            const FixString128 _szClass;
             const RTTI* _pBaseRTTI = NULL;
         };
     }  // namespace Common

@@ -1,21 +1,23 @@
-﻿#ifndef __MATH__MATRIX3_H__
-#define __MATH__MATRIX3_H__
+﻿#pragma once
 
-namespace Math
+#include "Core/Core.h"
+
+namespace Core
 {
-    class Matrix3
+    namespace Math
     {
-    public:
-        float mat[3][3];
+        class Matrix3
+        {
+        public:
+            Float32 _faaMat[3][3];
 
-        Matrix3();
+            Matrix3();
 
-        /// <summary>
-        /// 行列式を取得.
-        /// </summary>
-        /// <returns></returns>
-        float GetDet();
-    };
-}  // namespace Math
+            /// <summary>
+            /// 行列式を取得.
+            /// </summary>
+            Float32 GetDet();
+        };
+    }  // namespace Math
 
-#endif  // __MATH__MATRIX3_H__
+}  // namespace Core

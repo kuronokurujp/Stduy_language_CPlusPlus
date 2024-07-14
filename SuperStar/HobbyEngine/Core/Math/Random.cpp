@@ -8,9 +8,9 @@ namespace Core
         /// Initializes this instance.
         /// </summary>
         /// <returns></returns>
-        const Bool RandomManager::Init(const Sint32 in_seed)
+        const Bool RandomManager::Init(const Sint32 in_iSeed)
         {
-            this->SetSeed(in_seed);
+            this->SetSeed(in_iSeed);
 
             return TRUE;
         }
@@ -20,9 +20,9 @@ namespace Core
         /// </summary>
         /// <param name="in_seed">The in seed.</param>
         /// <returns></returns>
-        void RandomManager::SetSeed(const Sint32 in_seed)
+        void RandomManager::SetSeed(const Sint32 in_iSeed)
         {
-            this->_generator.seed(in_seed);
+            this->_generator.seed(in_iSeed);
         }
 
         /// <summary>

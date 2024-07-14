@@ -13,7 +13,17 @@ namespace UI
     class Widget : public Actor::Object
     {
     public:
-        void SetInputRouter(Core::Common::Handle h) { this->_hInputRouter = h; }
+        /// <summary>
+        /// 開始
+        /// 継承したクラスで必ず基本クラスのメソッドを呼ぶ
+        /// </summary>
+        virtual const Bool Begin() override;
+
+        /// <summary>
+        /// 終了
+        /// 継承したクラスで必ず基本クラスのメソッドを呼ぶ
+        /// </summary>
+        virtual const Bool End() override;
 
         /// <summary>
         /// 子アクターが追加された時に呼ばれるイベント
@@ -31,6 +41,6 @@ namespace UI
         virtual void _ProcessInput(const Float32, Platform::InputSystemInterface*) final override;
 
     private:
-        Core::Common::Handle _hInputRouter;
+        Core::Common::Handle _inputHandle;
     };
 }  // namespace UI

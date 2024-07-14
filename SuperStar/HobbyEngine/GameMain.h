@@ -23,7 +23,7 @@ public:
     /// </summary>
     /// <param name="in_deltaTime"></param>
     /// <returns></returns>
-    virtual const Bool Update(const Float32 in_deltaTime) = 0;
+    virtual const Bool Update(const Float32 in_fDeltaTime) = 0;
 
     /// <summary>
     /// ゲーム終了

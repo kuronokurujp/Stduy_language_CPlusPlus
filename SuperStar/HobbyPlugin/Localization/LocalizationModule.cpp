@@ -14,7 +14,7 @@ namespace Localization
         // ロードしたアセットを全て破棄
         for (auto it = this->_locateDataMap.Begin(); it != this->_locateDataMap.End(); ++it)
         {
-            this->UnloadTextAll(it->_key);
+            this->UnloadTextAll(it->_tKey);
         }
 
         ModuleAssetManager()->Unload(this->_sysAssetDataHandle);
@@ -22,19 +22,18 @@ namespace Localization
         return TRUE;
     }
 
-    const Bool LocalizationModule::Update(const Float32 in_deltaTime)
+    const Bool LocalizationModule::Update(const Float32 in_fDeltaTime)
     {
         return TRUE;
     }
 
-    const Bool LocalizationModule::LoadSystemFile(const Core::Common::FixString128& in_rFilePath)
+    const Bool LocalizationModule::LoadSystemFile(const Core::Common::FixStringBase& in_szrFilePath)
     {
         // tomlファイルをロード
-        auto assetName = E_STR_TEXT("LSystem");
+        auto szAssetName = HE_STR_TEXT("LSystem");
         this->_sysAssetDataHandle =
-            ModuleAssetManager()->Load<SystemAssetData>(assetName,
-                                                        Core::File::Path(in_rFilePath.Str()));
-        E_ASSERT(this->_sysAssetDataHandle.Null() == FALSE);
+            ModuleAssetManager()->Load<SystemAssetData>(szAssetName, in_szrFilePath.Str());
+        HE_ASSERT(this->_sysAssetDataHandle.Null() == FALSE);
         if (this->_sysAssetDataHandle.Null()) return FALSE;
 
         return TRUE;
@@ -46,134 +45,134 @@ namespace Localization
         return TRUE;
     }
 
-    const Bool LocalizationModule::LoadTextAll(const Core::Common::FixString128& in_rLocateName)
+    const Bool LocalizationModule::LoadTextAll(const Core::Common::FixStringBase& in_szLocateName)
     {
         SystemAssetData& a =
             ModuleAssetManager()->GetAsset<SystemAssetData>(this->_sysAssetDataHandle);
-        const SYSTEM_ASSET_LOCATE_MAP& map = a.FindLocate(in_rLocateName.Str());
-        E_ASSERT(map.Empty() == FALSE);
+        const SYSTEM_ASSET_LOCATE_MAP& map = a.FindLocate(in_szLocateName.Str());
+        HE_ASSERT(map.Empty() == FALSE);
 
         LOCATE_TEXT_MAP textMap;
-        Core::Common::FixString128 tmpStr;
+        Core::Common::FixString128 szTmp;
         for (auto it = map.Begin(); it != map.End(); ++it)
         {
-            tmpStr = in_rLocateName;
-            tmpStr.Concatenate(E_STR_TEXT("/"), it->_key.Str());
+            szTmp = in_szLocateName.Str();
+            szTmp.Concatenate(HE_STR_TEXT("/"), it->_tKey.Str());
 
-            auto h =
-                ModuleAssetManager()->Load<LocateAssetData>(tmpStr.Str(), it->_data._textFilePath);
-            textMap.Add(it->_key, h);
+            auto h = ModuleAssetManager()->Load<LocateAssetData>(szTmp.Str(),
+                                                                 it->_tData._textFilePath.Str());
+            textMap.Add(it->_tKey, h);
         }
-        E_ASSERT(0 < textMap.Size());
+        HE_ASSERT(0 < textMap.Size());
 
-        this->_locateDataMap.Add(in_rLocateName, textMap);
+        this->_locateDataMap.Add(in_szLocateName.Str(), textMap);
 
         return TRUE;
     }
 
-    const Bool LocalizationModule::UnloadTextAll(const Core::Common::FixString128& in_rLocateName)
+    const Bool LocalizationModule::UnloadTextAll(const Core::Common::FixStringBase& in_szLocateName)
     {
-        auto map = this->_locateDataMap[in_rLocateName];
-        for (auto it = map.Begin(); it != map.End(); ++it)
+        auto pMap = &this->_locateDataMap[in_szLocateName.Str()];
+        for (auto it = pMap->Begin(); it != pMap->End(); ++it)
         {
-            ModuleAssetManager()->Unload(it->_data);
+            ModuleAssetManager()->Unload(it->_tData);
         }
-        map.Clear();
+        pMap->Clear();
 
         return TRUE;
     }
 
-    const Char* LocalizationModule::Text(const Core::Common::FixString128& in_rLocateName,
-                                         const Core::Common::FixString128& in_rGroupName,
-                                         const Core::Common::FixString128& in_rKey)
+    const Char* LocalizationModule::Text(const Core::Common::FixStringBase& in_szLocateName,
+                                         const Core::Common::FixStringBase& in_szGroupName,
+                                         const Core::Common::FixStringBase& in_szKey)
     {
-        auto it = this->_locateDataMap.Find(in_rLocateName);
-        E_ASSERT(it.IsValid());
+        auto locateIter = this->_locateDataMap.Find(in_szLocateName.Str());
+        HE_ASSERT(locateIter.IsValid());
 
-        auto itGroup = it->_data.Find(in_rGroupName);
-        E_ASSERT(itGroup.IsValid());
+        auto groupIter = locateIter->_tData.Find(in_szGroupName.Str());
+        HE_ASSERT(groupIter.IsValid());
 
-        LocateAssetData& data = ModuleAssetManager()->GetAsset<LocateAssetData>(itGroup->_data);
+        LocateAssetData& rData = ModuleAssetManager()->GetAsset<LocateAssetData>(groupIter->_tData);
         // テキストを取得
-        return data.GetText(in_rKey.Str()).Str();
+        return rData.GetText(in_szKey.Str()).Str();
     }
 
     const Bool SystemAssetData::_Load(Platform::FileSystemInterface& in_rFileSystem)
     {
         const Bool bRet = AssetManager::AssetDataToml::_Load(in_rFileSystem);
-        E_ASSERT(bRet);
+        HE_ASSERT(bRet);
 
         auto rootNode = this->GetRootNode();
 
         // コンフィグデータからデータパスのディレクトリ名を取得
-        Core::Common::FixString512 path =
-            rootNode.GetNode(E_STR_TEXT("config"), E_STR_TEXT("current_dir")).GetString();
-        Core::File::Path dataRootPath(path.Str());
+        Core::Common::FixString512 pathName =
+            rootNode.GetNode(HE_STR_TEXT("config"), HE_STR_TEXT("current_dir")).GetString();
+        Core::File::Path dataRootPath(pathName.Str());
 
         // Locateデータ構築
-        AssetManager::AssetDataToml::Node locateNode = rootNode.GetNode(E_STR_TEXT("locate"));
+        AssetManager::AssetDataToml::Node locateNode = rootNode.GetNode(HE_STR_TEXT("locate"));
 
-        TOML_NODE_MAP_TYPE locateMap;
-        TOML_NODE_MAP_TYPE groupMap;
-        locateNode.OutputNodeMap(&locateMap, E_STR_EMPTY);
-        for (auto it = locateMap.Begin(); it != locateMap.End(); ++it)
+        TOML_NODE_MAP_TYPE mLocateNode;
+        TOML_NODE_MAP_TYPE mGroupNode;
+        locateNode.OutputNodeMap(&mLocateNode, HE_STR_EMPTY);
+        for (auto it = mLocateNode.Begin(); it != mLocateNode.End(); ++it)
         {
-            Core::Common::FixString128 locateStr(it->_key.Str());
+            Core::Common::FixString128 locateStr(it->_tKey.Str());
             locateStr.ToUpper();
 
-            Core::Common::FixMap<Core::Common::FixString128, LocateData, 32> dataMap;
+            Core::Common::FixMap<Core::Common::FixString128, LocateData, 32> mData;
 
-            groupMap.Clear();
-            it->_data.OutputNodeMap(&groupMap, E_STR_EMPTY);
+            mGroupNode.Clear();
+            it->_tData.OutputNodeMap(&mGroupNode, HE_STR_EMPTY);
 
-            for (auto groupIt = groupMap.Begin(); groupIt != groupMap.End(); ++groupIt)
+            for (auto groupIt = mGroupNode.Begin(); groupIt != mGroupNode.End(); ++groupIt)
             {
                 // ファイルパス連結する
                 Core::File::Path path(dataRootPath);
                 path += Core::File::Path(locateStr.Str());
-                path +=
-                    Core::File::Path(groupIt->_data.GetNode(E_STR_TEXT("json")).GetString().Str());
+                path += Core::File::Path(
+                    groupIt->_tData.GetNode(HE_STR_TEXT("json")).GetString().Str());
 
                 LocateData data(path);
-                E_LOG_LINE(E_STR_FORMAT_TEXT, data._textFilePath.Str());
+                HE_LOG_LINE(HE_STR_FORMAT_TEXT, data._textFilePath.Str());
 
-                const Core::Common::FixString128 groupStr(groupIt->_key.Str());
-                dataMap.Add(groupStr, data);
+                const Core::Common::FixString128 szGroupName(groupIt->_tKey.Str());
+                mData.Add(szGroupName, data);
             }
 
-            this->_locateDataMap.Add(locateStr, dataMap);
+            this->_locateDataMap.Add(locateStr, mData);
         }
 
         return TRUE;
     }
 
-    const SYSTEM_ASSET_LOCATE_MAP& SystemAssetData::FindLocate(const Char* in_pLocateName)
+    const SYSTEM_ASSET_LOCATE_MAP& SystemAssetData::FindLocate(const Char* in_szLocateName)
     {
-        E_ASSERT(in_pLocateName);
+        HE_ASSERT(in_szLocateName);
 
-        Core::Common::FixString128 key(in_pLocateName);
+        Core::Common::FixString128 key(in_szLocateName);
         auto it = this->_locateDataMap.Find(key);
-        return it->_data;
+        return it->_tData;
     }
 
-    const Core::Common::FixString1024& LocateAssetData::GetText(const Char* in_pKey)
+    const Core::Common::FixString1024& LocateAssetData::GetText(const Char* in_szKey)
     {
         // キャッシュしているテキストがなければデータからテキストを取る
-        if (this->_textBuffMap.Contains(in_pKey) == FALSE)
+        if (this->_textBuffMap.Contains(in_szKey) == FALSE)
         {
             simdjson::fallback::ondemand::value v;
-            if (this->_OutputValue(&v, in_pKey))
+            if (this->_OutputValue(&v, in_szKey))
             {
                 auto value = v["items"]["0"]["text"];
-                E_ASSERT(value.error() == simdjson::error_code::SUCCESS);
-                E_ASSERT(value.is_string());
+                HE_ASSERT(value.error() == simdjson::error_code::SUCCESS);
+                HE_ASSERT(value.is_string());
 
                 auto str   = value.get_string();
                 auto str_v = str.value();
-                this->_textBuffMap.Add(in_pKey, value.get_string().value());
+                this->_textBuffMap.Add(in_szKey, value.get_string().value());
             }
         }
 
-        return this->_textBuffMap[in_pKey];
+        return this->_textBuffMap[in_szKey];
     }
 }  // namespace Localization

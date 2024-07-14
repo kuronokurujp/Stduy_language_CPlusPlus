@@ -21,10 +21,10 @@ namespace Core
             ::_aligned_free(this->_pHeapTop);
 
             // 痕跡を消す
-            this->_pHeapTop = NULL;
-            this->_heapSize = 0;
+            this->_pHeapTop  = NULL;
+            this->_uHeapSize = 0;
 
-            ::memset(this->_memoryPageInfoArray, 0, sizeof(this->_memoryPageInfoArray));
+            ::memset(this->_aMemoryPageInfoArray, 0, sizeof(this->_aMemoryPageInfoArray));
 
             return TRUE;
         }
@@ -35,31 +35,31 @@ namespace Core
         /// </summary>
         /// <param name="in_useHeepSize">管理側で利用するヒープサイズ</param>
         /// <returns></returns>
-        const Bool Manager::Start(const Uint32 in_useHeapSize)
+        const Bool Manager::Start(const Uint32 in_uUseHeapSize)
         {
             //	既に初期化されているか、チェックする．
             if (this->_IsReady())
             {
-                E_ASSERT(0 && "すでに初期化されている．");
+                HE_ASSERT(0 && "すでに初期化されている．");
                 return FALSE;
             }
 
             // ヒープからごっそりとる
-            // とり方は各プラットフォームによって変えること
-            // とりあえず4バイトアラインにしたい．
             // TODO: プラットフォーム用のヒープ取得に切り替え
-            this->_pHeapTop = ::_aligned_malloc(in_useHeapSize, MINIMUM_ALIGN_SIZE);
+            // プラットフォームのアライメントに合わせたい
+            // とり方は各プラットフォームによって変えること
+            this->_pHeapTop = ::_aligned_malloc(in_uUseHeapSize, MinimumAlignSize);
             if (this->_pHeapTop == NULL)
             {
                 //	取れなかった．
-                E_ASSERT(0 && "取得に失敗．");
+                HE_ASSERT(0 && "取得に失敗．");
                 return FALSE;
             }
 
-            this->_heapSize = in_useHeapSize;
+            this->_uHeapSize = in_uUseHeapSize;
 
             //	ページ情報初期化．
-            ::memset(this->_memoryPageInfoArray, 0, sizeof(this->_memoryPageInfoArray));
+            ::memset(this->_aMemoryPageInfoArray, 0, sizeof(this->_aMemoryPageInfoArray));
 
             return TRUE;
         }
@@ -71,52 +71,49 @@ namespace Core
         /// <param name="in_pSetupInfoArray"></param>
         /// <param name="in_num">配列の個数</param>
         /// <returns>TRUE 成功 / FALSE 失敗</returns>
-        const Bool Manager::SetupMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_num)
+        const Bool Manager::SetupMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_uNum)
         {
-            E_ASSERT(in_pSetupInfoArray && "ページ設定情報がない");
+            HE_ASSERT(in_pSetupInfoArray && "ページ設定情報がない");
 
             if (this->_IsReady() == FALSE)
             {
-                E_ASSERT(0 && "Managertが初期化されていない．");
+                HE_ASSERT(0 && "Managertが初期化されていない．");
                 return FALSE;
             }
 
             // メモリページが一つでも初期化状態であればエラーにする
-            for (Uint8 i = 0; i < MEMORY_PAGE_MAX; i++)
+            for (Uint8 i = 0; i < MemoryPageMax; i++)
             {
-                if (this->_IsInitMemoryPage(i))
+                if (this->_ValidMemoryPage(i))
                 {
-                    E_ASSERT(0 && "すでに初期化されています．");
+                    HE_ASSERT(0 && "すでにページが有効になっているのでメモリページは構築済み．");
                     return FALSE;
                 }
             }
 
-            // PageSetupInfo* tempSetupInfo = in_pSetupInfoArray;
-            Uint32 heapOffset = 0;
+            Uint32 uHeapOffset = 0;
 
             // 終端子まで繰り返してページを作成する
-            // while (tempSetupInfo->_page != INVALID_MEMORY_PAGE)
-            for (Uint32 i = 0; i < in_num; ++i)
+            for (Uint32 i = 0; i < in_uNum; ++i)
             {
                 const PageSetupInfo* pTempSetupInfo = &in_pSetupInfoArray[i];
 
                 // サイズが大きすぎる場合
-                if (heapOffset + pTempSetupInfo->_size > _heapSize)
+                if (uHeapOffset + pTempSetupInfo->_uSize > _uHeapSize)
                 {
-                    E_ASSERT(0 && "サイズが大きすぎる．");
+                    HE_ASSERT(0 && "サイズが大きすぎる．");
                     return FALSE;
                 }
 
-                if (this->_InitMemoryPage(pTempSetupInfo->_page, heapOffset,
-                                          pTempSetupInfo->_size) == FALSE)
+                if (this->_InitMemoryPage(pTempSetupInfo->_chPage, uHeapOffset,
+                                          pTempSetupInfo->_uSize) == FALSE)
                 {
-                    E_ASSERT(0 && "メモリページの初期化に失敗．");
+                    HE_ASSERT(0 && "メモリページの初期化に失敗．");
                     return FALSE;
                 }
 
                 // 作成ページのサイズ分はヒープを作ったので空いているヒープアドレスにする
-                heapOffset += pTempSetupInfo->_size;
-                // tempSetupInfo++;
+                uHeapOffset += pTempSetupInfo->_uSize;
             }
 
             return TRUE;
@@ -128,70 +125,76 @@ namespace Core
         /// <param name="in_pSetupInfoArray">メモリページ設定情報の配列</param>
         /// <param name="in_num">配列個数</param>
         /// <returns>TRUE 成功 / FALSE 失敗</returns>
-        const Bool Manager::RemapMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_num)
+        const Bool Manager::RemapMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_uNum)
         {
             // 初期化されていない
             if (this->_IsReady() == FALSE)
             {
-                E_ASSERT(0 && "Managertが初期化されていない．");
+                HE_ASSERT(0 && "Managertが初期化されていない．");
                 return FALSE;
             }
 
-#ifdef _HOBBY_ENGINE_DEBUG
+#ifdef HE_ENGINE_DEBUG
             // メモリブロックが壊れていないかチェック
             this->CheckAllMemoryBlock();
 #endif
-
-            Uint32 offset = 0;
-
-            Uint32 offsetArray[MEMORY_PAGE_MAX];
-            Uint32 sizeArray[MEMORY_PAGE_MAX];
-            Bool bNeedInitFlagArray[MEMORY_PAGE_MAX];
+            Uint32 uaOffset[MemoryPageMax]     = {0};
+            Uint32 uaSize[MemoryPageMax]       = {0};
+            Bool baNeedInitFlag[MemoryPageMax] = {FALSE};
 
             //	サイズをクリアしておく(サイズが0ならいらないページ)
-            ::memset(sizeArray, 0, E_ARRAY_SIZE(sizeArray));
-            ::memset(bNeedInitFlagArray, 0, E_ARRAY_SIZE(bNeedInitFlagArray));
+            ::memset(uaSize, 0, HE_ARRAY_SIZE(uaSize));
+            ::memset(baNeedInitFlag, 0, HE_ARRAY_SIZE(baNeedInitFlag));
 
             // 最初にチェックとオフセット等の計算を別枠でする
             // そうしないとDEBUG時で一個前のサイズが大きくなったときメモリブロックのところがデバッグ情報で埋められてしまう
-            for (Uint32 i = 0; i < in_num; ++i)
+            Uint32 uOffset = 0;
+            for (Uint32 i = 0; i < in_uNum; ++i)
             {
-                PageSetupInfo* tempSetupInfo = &in_pSetupInfoArray[i];
+                PageSetupInfo* pTempSetupInfo = &in_pSetupInfoArray[i];
+
+                uaSize[pTempSetupInfo->_chPage] = pTempSetupInfo->_uSize;
 
                 // サイズ0なら消すだけなので特にチェックいらず
-                if ((sizeArray[tempSetupInfo->_page] = tempSetupInfo->_size) != 0)
+                if (uaSize[pTempSetupInfo->_chPage] != 0)
                 {
                     // サイズが確保したヒープサイズを超えているのでエラー
-                    if (offset + tempSetupInfo->_size > this->_heapSize)
+                    if ((uOffset + pTempSetupInfo->_uSize) > this->_uHeapSize)
                     {
-                        E_ASSERT(0 && "サイズが大きすぎる．");
+                        HE_ASSERT(0 && "サイズが大きすぎる．");
                         return FALSE;
                     }
 
                     // 全ページの形にしておく
-                    offsetArray[tempSetupInfo->_page]        = offset;
-                    bNeedInitFlagArray[tempSetupInfo->_page] = TRUE;
+                    uaOffset[pTempSetupInfo->_chPage]       = uOffset;
+                    baNeedInitFlag[pTempSetupInfo->_chPage] = TRUE;
 
                     // すでに初期化されている場合チェック必要
-                    if (this->_IsInitMemoryPage(tempSetupInfo->_page))
+                    if (this->_ValidMemoryPage(pTempSetupInfo->_chPage))
                     {
-                        // オフセットが違うか
-                        // サイズが違う場合は初期化しなおし
-                        if (reinterpret_cast<Byte*>(
-                                this->_memoryPageInfoArray[tempSetupInfo->_page]._pTopAddr) !=
-                                reinterpret_cast<Byte*>(this->_pHeapTop) + offset ||
-                            this->_memoryPageInfoArray[tempSetupInfo->_page]._size !=
-                                tempSetupInfo->_size)
+                        // オフセットが違う
+                        const Bool bDiffOffsetAddr =
+                            reinterpret_cast<Sint8*>(
+                                this->_aMemoryPageInfoArray[pTempSetupInfo->_chPage]._pTopAddr) !=
+                            reinterpret_cast<Sint8*>(this->_pHeapTop) + uOffset;
+
+                        // サイズが違う
+                        const Bool bDiffSize =
+                            this->_aMemoryPageInfoArray[pTempSetupInfo->_chPage]._uSize !=
+                            pTempSetupInfo->_uSize;
+
+                        // ページ初期化ができるかチェック
+                        if (bDiffOffsetAddr || bDiffSize)
                         {
                             // 使用中のメモリブロックがあるならだめ
                             // サイズが違う場合は大きくなる分には問題ないし
                             // 小さくなる場合も使用していない部分なら問題ないけど
                             // さらにリマップして問題が発生した際に原因が見つけにくくなりそうなのでとりあえずこうしておく
-                            if (this->_IsExistUsedMemoryBlock(tempSetupInfo->_page))
+                            if (this->_ExistUsedMemoryBlock(pTempSetupInfo->_chPage))
                             {
-                                E_ASSERT(0 &&
-                                         "オフセットもしくはサイズの変更が指定されているが、使用中"
-                                         "のメモリブロックが存在している．");
+                                HE_ASSERT(0 &&
+                                          "オフセットもしくはサイズの変更が指定されているが、使用中"
+                                          "のメモリブロックが存在している．");
                                 return FALSE;
                             }
                         }
@@ -199,45 +202,45 @@ namespace Core
                         {
                             // オフセットも変わらず,
                             // サイズも同じなのでそのままページが使えるので初期化は不要
-                            bNeedInitFlagArray[tempSetupInfo->_page] = FALSE;
+                            baNeedInitFlag[pTempSetupInfo->_chPage] = FALSE;
                         }
                     }
                 }
 
-                offset += tempSetupInfo->_size;
+                uOffset += pTempSetupInfo->_uSize;
             }
 
             // 指定されていないページは消す
             // これも先にやっておかないと
             // DEBUG時で一個前のサイズが大きくなったときメモリブロックのところがデバッグ情報で埋められてしまう．
-            for (Uint8 i = 0; i < MEMORY_PAGE_MAX; ++i)
+            for (Uint8 i = 0; i < MemoryPageMax; ++i)
             {
                 // サイズが0になっているページは指定していないページなので消す
-                if (sizeArray[i] == 0)
+                if (uaSize[i] == 0)
                 {
                     // 消すのにごみが残っていてはだめ
-                    if (this->_IsExistUsedMemoryBlock(i))
+                    if (this->_ExistUsedMemoryBlock(i))
                     {
-                        E_ASSERT(0 &&
-                                 "ページを消去するのに、使用中のメモリブロックが存在している．");
+                        HE_ASSERT(0 &&
+                                  "ページを消去するのに、使用中のメモリブロックが存在している．");
                         return FALSE;
                     }
 
-                    this->_memoryPageInfoArray[i]._pTopAddr        = 0;
-                    this->_memoryPageInfoArray[i]._size            = 0;
-                    this->_memoryPageInfoArray[i]._pMemoryBlockTop = NULL;
+                    this->_aMemoryPageInfoArray[i]._pTopAddr        = 0;
+                    this->_aMemoryPageInfoArray[i]._uSize           = 0;
+                    this->_aMemoryPageInfoArray[i]._pMemoryBlockTop = NULL;
                 }
             }
 
             // 最後に初期化が必要な場所を初期化
-            for (Uint8 i = 0; i < MEMORY_PAGE_MAX; ++i)
+            for (Uint8 i = 0; i < MemoryPageMax; ++i)
             {
                 //	初期化が必要ならしろ．
-                if (bNeedInitFlagArray[i])
+                if (baNeedInitFlag[i])
                 {
-                    if (this->_InitMemoryPage(i, offsetArray[i], sizeArray[i]) == FALSE)
+                    if (this->_InitMemoryPage(i, uaOffset[i], uaSize[i]) == FALSE)
                     {
-                        E_ASSERT(0 && "メモリページの初期化に失敗．");
+                        HE_ASSERT(0 && "メモリページの初期化に失敗．");
                         return FALSE;
                     }
                 }
@@ -254,41 +257,40 @@ namespace Core
         /// name="in_heepOffset">メモリページをどこから取るか(メモリマネージャー管理領域先頭からのオフセット。MINIMUM_ALIGN_SIZEの倍数であること)</param>
         /// <param
         /// name="in_useHeepSize">メモリページのサイズ（MINIMUM_ALIGN_SIZEの倍数であること）</param>
-        /// <returns>TRUE 成功 / FALSE 失敗</returns>
-        const Bool Manager::_InitMemoryPage(Uint8 in_page, Uint32 in_heepOffset,
-                                            Uint32 in_useHeepSize)
+        const Bool Manager::_InitMemoryPage(Uint8 in_page, Uint32 in_uHeepOffset,
+                                            Uint32 in_uUseHeepSize)
         {
-            E_ASSERT((in_page < E_ARRAY_NUM(this->_memoryPageInfoArray)) &&
-                     "指定ページが存在しない");
-            E_ASSERT((this->_GetMemoryBlockSystemDataSize() <= in_useHeepSize) &&
-                     "ページで確保するサイズがブロックサイズより小さい");
+            HE_ASSERT((in_page < HE_ARRAY_NUM(this->_aMemoryPageInfoArray)) &&
+                      "指定ページが存在しない");
+            HE_ASSERT((this->_GetMemoryBlockSystemDataSize() <= in_uUseHeepSize) &&
+                      "ページで確保するサイズがブロックサイズより小さい");
 
-            PageInfo* pPageInfo = &this->_memoryPageInfoArray[in_page];
+            PageInfo* pPageInfo = &this->_aMemoryPageInfoArray[in_page];
 
             // ページ情報の初期化
             // 確保したヒープからページで利用するヒープ分を割り当てる
             pPageInfo->_pTopAddr =
-                reinterpret_cast<void*>(reinterpret_cast<Byte*>(this->_pHeapTop) + in_heepOffset);
-            pPageInfo->_size = in_useHeepSize;
+                reinterpret_cast<void*>(reinterpret_cast<Sint8*>(this->_pHeapTop) + in_uHeepOffset);
+            pPageInfo->_uSize = in_uUseHeepSize;
 
             // 最初のメモリブロックを設定する
             pPageInfo->_pMemoryBlockTop = reinterpret_cast<BlockHeader*>(pPageInfo->_pTopAddr);
 
             // 頭にヘッダ情報を書き込む
-            pPageInfo->_pMemoryBlockTop->_size = in_useHeepSize;
-            pPageInfo->_pMemoryBlockTop->_allocateSize =
-                in_useHeepSize - this->_GetMemoryBlockSystemDataSize();
+            pPageInfo->_pMemoryBlockTop->_uSize = in_uUseHeepSize;
+            pPageInfo->_pMemoryBlockTop->_uAllocateSize =
+                in_uUseHeepSize - this->_GetMemoryBlockSystemDataSize();
             pPageInfo->_pMemoryBlockTop->_pPrev       = NULL;
             pPageInfo->_pMemoryBlockTop->_pNext       = NULL;
             pPageInfo->_pMemoryBlockTop->_useFlag     = 0;
-            pPageInfo->_pMemoryBlockTop->_alignSize   = MINIMUM_ALIGN_SIZE;
+            pPageInfo->_pMemoryBlockTop->_alignSize   = MinimumAlignSize;
             pPageInfo->_pMemoryBlockTop->_page        = in_page;
             pPageInfo->_pMemoryBlockTop->_paddingSize = 0;
 
-#ifdef _HOBBY_ENGINE_DEBUG
-            ::memset(pPageInfo->_pMemoryBlockTop->_fileName, 0,
-                     E_ARRAY_SIZE(pPageInfo->_pMemoryBlockTop->_fileName));
-            pPageInfo->_pMemoryBlockTop->_line = 0;
+#ifdef HE_ENGINE_DEBUG
+            ::memset(pPageInfo->_pMemoryBlockTop->_szFileName, 0,
+                     HE_ARRAY_SIZE(pPageInfo->_pMemoryBlockTop->_szFileName));
+            pPageInfo->_pMemoryBlockTop->_uLine = 0;
 
             // マジックNoセット
             this->_SetMemoryBlockMagicNo(pPageInfo->_pMemoryBlockTop);
@@ -299,10 +301,10 @@ namespace Core
             return TRUE;
         }
 
-#ifdef _HOBBY_ENGINE_DEBUG
+#ifdef HE_ENGINE_DEBUG
         /// <summary>
         /// メモリ確保
-        /// アライメントサイズはMINIMUM_ALIGN_SIZEの倍数である必要がある
+        /// アライメントサイズMinimumAlignSizeの倍数である必要がある
         /// </summary>
         /// <param name="in_allocateSize">確保したいサイズ</param>
         /// <param name="in_page">メモリページ</param>
@@ -311,55 +313,55 @@ namespace Core
         /// <param name="in_pFile">呼び出したファイル名(デバッグ限定)</param>
         /// <param name="in_line">呼び出したファイルの行数(デバッグ限定)</param>
         /// <returns>NULL 確保失敗 / 非NULL 確保したメモリアドレス</returns>
-        void* Manager::AllocateMemory(Uint32 in_allocateSize, Uint8 in_page, Uint8 in_alignSize,
-                                      ALLOCATE_LOCATE_TYPE in_locateType, const Byte* in_pFile,
-                                      Uint32 in_line)
+        void* Manager::AllocateMemory(Uint32 in_uAllocateSize, Uint8 in_page, Uint8 in_alignSize,
+                                      EAllocateLocateType in_eLocateType, const UTF8* in_szFile,
+                                      Uint32 in_uLine)
 #else
         /// <summary>
         /// メモリ確保
-        /// アライメントサイズはMINIMUM_ALIGN_SIZEの倍数である必要がある
+        /// アライメントサイズはMinimumAlignSizeの倍数である必要がある
         /// </summary>
         /// <param name="in_allocateSize">確保したいサイズ</param>
         /// <param name="in_page">メモリページ</param>
         /// <param name="in_alignSize">メモリのアライメントサイズ</param>
         /// <param name="in_locateType">確保位置(前からなのか後ろからなのか)</param>
         /// <returns>NULL 確保失敗 / 非NULL 確保したメモリアドレス</returns>
-        void* Manager::AllocateMemory(Uint32 in_allocateSize, Uint8 in_page, Uint8 in_alignSize,
-                                      ALLOCATE_LOCATE_TYPE in_locateType)
+        void* Manager::AllocateMemory(Uint32 in_uAllocateSize, Uint8 in_page, Uint8 in_alignSize,
+                                      EAllocateLocateType in_eLocateType)
 #endif
         {
             // 確保サイズが0以下では確保できない
-            E_ASSERT((0 < in_allocateSize) && "サイズが0．");
+            HE_ASSERT((0 < in_uAllocateSize) && "サイズが0．");
             // 指定したページが存在するか
-            E_ASSERT((in_page < E_ARRAY_NUM(this->_memoryPageInfoArray)) &&
-                     "指定したページが存在しない");
+            HE_ASSERT((in_page < HE_ARRAY_NUM(this->_aMemoryPageInfoArray)) &&
+                      "指定したページが存在しない");
 
             // 初期化されていないとだめ
             if (this->_IsReady() == FALSE)
             {
-                E_ASSERT(0 && "メモリマネージャーが初期化されていない．");
+                HE_ASSERT(0 && "メモリマネージャーが初期化されていない．");
                 return NULL;
             }
 
             // ページも初期化されていないとだめ
-            if (this->_IsInitMemoryPage(in_page) == FALSE)
+            if (this->_ValidMemoryPage(in_page) == FALSE)
             {
-                E_ASSERT(0 && "ページが初期化されていない．");
+                HE_ASSERT(0 && "ページが初期化されていない．");
                 return NULL;
             }
 
             // メモリブロックヘッダの都合上最低アラインサイズを守る
-            if ((in_alignSize % MINIMUM_ALIGN_SIZE) != 0)
+            if ((in_alignSize % MinimumAlignSize) != 0)
             {
-                E_ASSERT(0 && "alignSizeがMINIMUM_ALIGN_SIZEの倍数ではない．");
+                HE_ASSERT(0 && "alignSizeがMINIMUM_ALIGN_SIZEの倍数ではない．");
                 return NULL;
             }
 
-            // 0の時はMINIMUM_ALIGN_SIZEに
-            in_alignSize = in_alignSize == 0 ? MINIMUM_ALIGN_SIZE : in_alignSize;
+            // 0の時はMinimumAlignSizeに
+            in_alignSize = in_alignSize == 0 ? MinimumAlignSize : in_alignSize;
 
             // 空きメモリブロックをたどって, 確保したい容量より大きい奴を探す
-            BlockHeader* pFreeMemoryBlock = this->_memoryPageInfoArray[in_page]._pMemoryBlockTop;
+            BlockHeader* pFreeMemoryBlock = this->_aMemoryPageInfoArray[in_page]._pMemoryBlockTop;
             if (pFreeMemoryBlock == NULL)
             {
                 // 空きが見つからなかった
@@ -367,7 +369,7 @@ namespace Core
             }
 
             // 後ろからとる場合降順にする
-            if (in_locateType == ALLOCATE_LOCATE_LAST)
+            if (in_eLocateType == EAllocateLocteType_Last)
             {
                 // 一番後ろまでたどっていく
                 while (pFreeMemoryBlock->_pNext != NULL)
@@ -383,52 +385,52 @@ namespace Core
             // 空きのどこからとるかというオフセット
             // 0ならいらない
             // それ以外の場合はシステム使用分も含まれる
-            Uint32 offsetSize = 0;
+            Uint32 uOffsetSize = 0;
             // 後ろのパディング
-            Uint32 paddingSize     = 0;
-            Uint32 memoryBlockSize = 0;
+            Uint32 uPaddingSize     = 0;
+            Uint32 uMemoryBlockSize = 0;
 
             while (pFreeMemoryBlock != NULL)
             {
                 // 空いていて, かつ最低限要求量が確保できるか？
                 if (pFreeMemoryBlock->_useFlag == 0 &&
-                    pFreeMemoryBlock->_allocateSize >= in_allocateSize)
+                    pFreeMemoryBlock->_uAllocateSize >= in_uAllocateSize)
                 {
                     // 後ろのパディングサイズを割り出す
-                    // 後ろはMINIMUM_ALIGN_SIZEの倍数であればいい
-                    // また頭の方は最低MINIMUM_ALIGN_SIZEの倍数のはずなので
+                    // 後ろはMinimumAlignSizeの倍数であればいい
+                    // また頭の方は最低MinimumAlignSizeの倍数のはずなので
                     // 単純に要求サイズから割り出せる
-                    paddingSize = in_allocateSize % MINIMUM_ALIGN_SIZE;
-                    if (paddingSize != 0)
+                    uPaddingSize = in_uAllocateSize % MinimumAlignSize;
+                    if (uPaddingSize != 0)
                     {
                         // 0じゃないならパディング必要
-                        paddingSize = MINIMUM_ALIGN_SIZE - paddingSize;
+                        uPaddingSize = MinimumAlignSize - uPaddingSize;
                     }
 
                     // 後ろからとる場合オフセットの割り出しが違う
-                    if (in_locateType == ALLOCATE_LOCATE_TOP)
+                    if (in_eLocateType == EAllocateLocateType_Top)
                     {
                         // 前からとるとき
                         // アラインを考えて実際に置けるかどうか
-                        Byte* startAddr = reinterpret_cast<Byte*>(pFreeMemoryBlock) +
-                                          this->_GetMemoryBlockHeaderSize();
+                        Sint8* pStartAddr = reinterpret_cast<Sint8*>(pFreeMemoryBlock) +
+                                            this->_GetMemoryBlockHeaderSize();
 
                         // 開始位置のオフセットを割り出す
-                        offsetSize = reinterpret_cast<Ptr>(startAddr) % in_alignSize;
-                        if (offsetSize != 0)
+                        uOffsetSize = reinterpret_cast<Ptr>(pStartAddr) % in_alignSize;
+                        if (uOffsetSize != 0)
                         {
                             // ぴったりじゃないならスタート位置にオフセットが必要
-                            offsetSize = in_alignSize - offsetSize;
+                            uOffsetSize = in_alignSize - uOffsetSize;
 
                             // 一個余分に増えることになるのでシステム使用分を考慮に入れる
                             // オフセットが小さい場合
                             // オフセットにシステム使用分（ただしアラインサイズとの倍数になるように）足しこむ
-                            if (offsetSize < this->_GetMemoryBlockSystemDataSize())
+                            if (uOffsetSize < this->_GetMemoryBlockSystemDataSize())
                             {
                                 // システム使用分に足りないサイズをアラインサイズで割って切り上げて
                                 // その数分アラインサイズを足しこむ
-                                offsetSize +=
-                                    (((this->_GetMemoryBlockSystemDataSize() - offsetSize) +
+                                uOffsetSize +=
+                                    (((this->_GetMemoryBlockSystemDataSize() - uOffsetSize) +
                                       in_alignSize - 1) /
                                      in_alignSize) *
                                     in_alignSize;
@@ -439,25 +441,25 @@ namespace Core
                     {
                         // 後ろからとるとき
                         // アライン考慮せず一番後ろにおいた場合の開始アドレス
-                        Ptr lastStartAddr = reinterpret_cast<Ptr>(
-                            reinterpret_cast<Byte*>(pFreeMemoryBlock) + pFreeMemoryBlock->_size -
-                            _GetMemoryBlockFooterSize() - (in_allocateSize + paddingSize));
+                        Ptr pLastStartAddr = reinterpret_cast<Ptr>(
+                            reinterpret_cast<Sint8*>(pFreeMemoryBlock) + pFreeMemoryBlock->_uSize -
+                            _GetMemoryBlockFooterSize() - (in_uAllocateSize + uPaddingSize));
 
                         // 開始位置のオフセットを割り出す
-                        offsetSize = lastStartAddr % in_alignSize;
-                        if (offsetSize != 0)
+                        uOffsetSize = pLastStartAddr % in_alignSize;
+                        if (uOffsetSize != 0)
                         {
                             // ぴったりじゃない
                             // なので、ぴったりのところまで引く
 
                             // その場合分割が必要なので,
                             // 後ろの方のシステム使用分を最低限とれるように
-                            if (offsetSize < this->_GetMemoryBlockSystemDataSize())
+                            if (uOffsetSize < this->_GetMemoryBlockSystemDataSize())
                             {
                                 // システム使用分に足りないサイズをアラインサイズで割って切り上げて
                                 // その数分アラインサイズを足しこむ
-                                offsetSize +=
-                                    (((this->_GetMemoryBlockSystemDataSize() - offsetSize) +
+                                uOffsetSize +=
+                                    (((this->_GetMemoryBlockSystemDataSize() - uOffsetSize) +
                                       in_alignSize - 1) /
                                      in_alignSize) *
                                     in_alignSize;
@@ -466,42 +468,42 @@ namespace Core
 
                         // 後ろからのオフセットなので前からに変換
                         // 0になった場合はオフセットはいらないということになる
-                        offsetSize = pFreeMemoryBlock->_size - offsetSize -
-                                     (in_allocateSize + paddingSize) -
-                                     this->_GetMemoryBlockSystemDataSize();
+                        uOffsetSize = pFreeMemoryBlock->_uSize - uOffsetSize -
+                                      (in_uAllocateSize + uPaddingSize) -
+                                      this->_GetMemoryBlockSystemDataSize();
 
                         // オフセットが0じゃない場合,
                         // マイナス（Uintなので最上位ビットが1で判断）になったり
                         // システム使用サイズより小さくなったら絶対とれないので,
                         // 極端に大きくしてとれないようにする．
-                        if (offsetSize != 0 && (offsetSize & 0x80000000 ||
-                                                offsetSize < _GetMemoryBlockSystemDataSize()))
+                        if (uOffsetSize != 0 && (uOffsetSize & 0x80000000 ||
+                                                 uOffsetSize < _GetMemoryBlockSystemDataSize()))
                         {
                             // 適当に
                             // これで2G弱までなら問題ないはず
-                            offsetSize = 0x80000000;
+                            uOffsetSize = 0x80000000;
                         }
                     }
 
                     // システム使用分＋オフセット＋確保したい容量＋パディングを足した分とれるか？
                     // とりあえず とりたいメモリブロックのサイズ
-                    memoryBlockSize =
-                        this->_GetMemoryBlockSystemDataSize() + in_allocateSize + paddingSize;
+                    uMemoryBlockSize =
+                        this->_GetMemoryBlockSystemDataSize() + in_uAllocateSize + uPaddingSize;
 
                     // それにオフセットを足して 必要なサイズがとれるか
                     // あるいはオフセット＋要求量＋パディングがまったく同じな場合もOK（置き換えられるから）
 
                     // メモリ確保可能
-                    if (pFreeMemoryBlock->_allocateSize >= (memoryBlockSize + offsetSize)) break;
-                    if (pFreeMemoryBlock->_allocateSize ==
-                        (offsetSize + in_allocateSize + paddingSize))
+                    if (pFreeMemoryBlock->_uAllocateSize >= (uMemoryBlockSize + uOffsetSize)) break;
+                    if (pFreeMemoryBlock->_uAllocateSize ==
+                        (uOffsetSize + in_uAllocateSize + uPaddingSize))
                         break;
                 }
 
                 // 次へ
                 // 前からとる場合は昇順
                 // 後ろからとる場合降順にする
-                if (in_locateType == ALLOCATE_LOCATE_TOP)
+                if (in_eLocateType == EAllocateLocateType_Top)
                 {
                     pFreeMemoryBlock = pFreeMemoryBlock->_pNext;
                 }
@@ -516,49 +518,49 @@ namespace Core
 
             // アラインぴったりの位置なら置き換えられる
             // そうじゃないなら二つに分ける
-            if (offsetSize != 0)
+            if (uOffsetSize != 0)
             {
                 // アラインぴったりじゃないので前を二つに分ける
-                pFreeMemoryBlock = this->_SplitMemoryBlock(pFreeMemoryBlock, offsetSize);
+                pFreeMemoryBlock = this->_SplitMemoryBlock(pFreeMemoryBlock, uOffsetSize);
             }
 
             // 必要な部分以外わける
             BlockHeader* pAllocateMemoryBlock = pFreeMemoryBlock;
 
             // 要求量 + パディングが空き容量と同じなら分割しないでそのまま置き換えでOK
-            if (in_allocateSize + paddingSize != pAllocateMemoryBlock->_allocateSize)
+            if (in_uAllocateSize + uPaddingSize != pAllocateMemoryBlock->_uAllocateSize)
             {
                 // 二つに分けて前を使用
                 // 後ろは空きのまま
                 pFreeMemoryBlock = this->_SplitMemoryBlock(pAllocateMemoryBlock,
                                                            this->_GetMemoryBlockSystemDataSize() +
-                                                               in_allocateSize + paddingSize);
+                                                               in_uAllocateSize + uPaddingSize);
             }
 
             // 利用ブロックに利用するメモリ情報を設定
-            pAllocateMemoryBlock->_size         = memoryBlockSize;
-            pAllocateMemoryBlock->_allocateSize = in_allocateSize;
-            pAllocateMemoryBlock->_alignSize    = in_alignSize;
-            pAllocateMemoryBlock->_paddingSize  = static_cast<Uint8>(paddingSize);
-            pAllocateMemoryBlock->_page         = in_page;
-            pAllocateMemoryBlock->_useFlag      = 1;
+            pAllocateMemoryBlock->_uSize         = uMemoryBlockSize;
+            pAllocateMemoryBlock->_uAllocateSize = in_uAllocateSize;
+            pAllocateMemoryBlock->_alignSize     = in_alignSize;
+            pAllocateMemoryBlock->_paddingSize   = static_cast<Uint8>(uPaddingSize);
+            pAllocateMemoryBlock->_page          = in_page;
+            pAllocateMemoryBlock->_useFlag       = 1;
 
-#ifdef _HOBBY_ENGINE_DEBUG
+#ifdef HE_ENGINE_DEBUG
             // ファイル名をコピーする
             {
-                Sint32 maxCount = E_ARRAY_NUM(pAllocateMemoryBlock->_fileName);
-                Sint32 count    = E_MIN(static_cast<Sint32>(::strlen(in_pFile)), maxCount);
-                ::strncpy_s(pAllocateMemoryBlock->_fileName, in_pFile,
-                            count * sizeof(pAllocateMemoryBlock->_fileName[0]));
+                Sint32 uMaxCount = HE_ARRAY_NUM(pAllocateMemoryBlock->_szFileName);
+                Sint32 uCount    = HE_MIN(static_cast<Sint32>(::strlen(in_szFile)), uMaxCount);
+                ::strncpy_s(pAllocateMemoryBlock->_szFileName, in_szFile,
+                            uCount * sizeof(pAllocateMemoryBlock->_szFileName[0]));
             }
-            pAllocateMemoryBlock->_line = in_line;
+            pAllocateMemoryBlock->_uLine = in_uLine;
 
             // 新規メモリな感じ
             this->_FillNewMemoryBlock(pAllocateMemoryBlock);
 #endif
 
             // 返すのは使用できる領域の先頭
-            return (reinterpret_cast<BlockHeader*>(reinterpret_cast<Byte*>(pAllocateMemoryBlock) +
+            return (reinterpret_cast<BlockHeader*>(reinterpret_cast<Sint8*>(pAllocateMemoryBlock) +
                                                    this->_GetMemoryBlockHeaderSize()));
         }
 
@@ -570,22 +572,22 @@ namespace Core
         {
             // 受け取ったのは使用できるメモリの先頭
             BlockHeader* pMemoryBlock = reinterpret_cast<BlockHeader*>(
-                reinterpret_cast<Byte*>(in_pAllocatedMemory) - this->_GetMemoryBlockHeaderSize());
+                reinterpret_cast<Sint8*>(in_pAllocatedMemory) - this->_GetMemoryBlockHeaderSize());
 
-            E_ASSERT(this->_IsValidMemoryBlock(pMemoryBlock) &&
-                     "メモリマネージャーの管理領域ではないか, メモリブロックが破損している");
-            E_ASSERT(pMemoryBlock->_useFlag != 0 && "すでに解放されている．");
+            HE_ASSERT(this->_IsValidMemoryBlock(pMemoryBlock) &&
+                      "メモリマネージャーの管理領域ではないか, メモリブロックが破損している");
+            HE_ASSERT(pMemoryBlock->_useFlag != 0 && "すでに解放されている．");
 
             // 未使用にする
             pMemoryBlock->_useFlag = 0;
 
             // パディングの後始末
-            pMemoryBlock->_allocateSize += pMemoryBlock->_paddingSize;
+            pMemoryBlock->_uAllocateSize += pMemoryBlock->_paddingSize;
             pMemoryBlock->_paddingSize = 0;
 
-#ifdef _HOBBY_ENGINE_DEBUG
-            ::memset(pMemoryBlock->_fileName, 0, E_ARRAY_SIZE(pMemoryBlock->_fileName));
-            pMemoryBlock->_line = 0;
+#ifdef HE_ENGINE_DEBUG
+            ::memset(pMemoryBlock->_szFileName, 0, HE_ARRAY_SIZE(pMemoryBlock->_szFileName));
+            pMemoryBlock->_uLine = 0;
 #endif
 
             // 前に空きがあって隙間がないならマージ
@@ -606,7 +608,7 @@ namespace Core
                 this->_MergeMemoryBlock(pMemoryBlock, pMemoryBlock->_pNext);
             }
 
-#ifdef _HOBBY_ENGINE_DEBUG
+#ifdef HE_ENGINE_DEBUG
             // 解放したメモリブロックを初期化
             this->_FillFreeMemoryBlock(pMemoryBlock);
 #endif
@@ -621,13 +623,13 @@ namespace Core
         {
             // 受け取ったのは使用できるメモリの先頭
             BlockHeader* pMemoryBlock = reinterpret_cast<BlockHeader*>(
-                reinterpret_cast<Byte*>(in_pAllocatedMemory) - this->_GetMemoryBlockHeaderSize());
+                reinterpret_cast<Sint8*>(in_pAllocatedMemory) - this->_GetMemoryBlockHeaderSize());
 
-            E_ASSERT(_IsValidMemoryBlock(pMemoryBlock) &&
-                     "メモリマネージャーの管理領域ではないか、メモリブロックが破損している．");
-            E_ASSERT(pMemoryBlock->_useFlag == 1 && "開き領域のサイズを取得しようとした．");
+            HE_ASSERT(_IsValidMemoryBlock(pMemoryBlock) &&
+                      "メモリマネージャーの管理領域ではないか、メモリブロックが破損している．");
+            HE_ASSERT(pMemoryBlock->_useFlag == 1 && "開き領域のサイズを取得しようとした．");
 
-            return pMemoryBlock->_allocateSize;
+            return pMemoryBlock->_uAllocateSize;
         }
 
         /// <summary>
@@ -638,17 +640,17 @@ namespace Core
         void Manager::_AddListMemoryBlockPrev(BlockHeader* in_pMemoryBlock,
                                               BlockHeader* in_pTargetMemoryBlock)
         {
-            E_ASSERT(in_pMemoryBlock && "連結させたいメモリブロックがない");
-            E_ASSERT(in_pTargetMemoryBlock && "連結するメモリブロックがない");
-            E_ASSERT(in_pMemoryBlock->_page == in_pTargetMemoryBlock->_page && "ページが違う．");
-            E_ASSERT(in_pMemoryBlock->_useFlag == in_pTargetMemoryBlock->_useFlag &&
-                     "使用状況が違う．");
+            HE_ASSERT(in_pMemoryBlock && "連結させたいメモリブロックがない");
+            HE_ASSERT(in_pTargetMemoryBlock && "連結するメモリブロックがない");
+            HE_ASSERT(in_pMemoryBlock->_page == in_pTargetMemoryBlock->_page && "ページが違う．");
+            HE_ASSERT(in_pMemoryBlock->_useFlag == in_pTargetMemoryBlock->_useFlag &&
+                      "使用状況が違う．");
 
             // 前の処理
             if (in_pTargetMemoryBlock->_pPrev == NULL)
             {
                 // 先頭
-                this->_memoryPageInfoArray[in_pMemoryBlock->_page]._pMemoryBlockTop =
+                this->_aMemoryPageInfoArray[in_pMemoryBlock->_page]._pMemoryBlockTop =
                     in_pMemoryBlock;
             }
             else
@@ -671,11 +673,11 @@ namespace Core
         void Manager::_AddListMemoryBlockNext(BlockHeader* in_pMemoryBlock,
                                               BlockHeader* in_pTargetMemoryBlock)
         {
-            E_ASSERT(in_pMemoryBlock && "連結させるメモリブロックがない");
-            E_ASSERT(in_pTargetMemoryBlock && "連結するメモリブロックがない");
-            E_ASSERT(in_pMemoryBlock->_page == in_pTargetMemoryBlock->_page && "ページが違う．");
-            E_ASSERT(in_pMemoryBlock->_useFlag == in_pTargetMemoryBlock->_useFlag &&
-                     "使用状況が違う．");
+            HE_ASSERT(in_pMemoryBlock && "連結させるメモリブロックがない");
+            HE_ASSERT(in_pTargetMemoryBlock && "連結するメモリブロックがない");
+            HE_ASSERT(in_pMemoryBlock->_page == in_pTargetMemoryBlock->_page && "ページが違う．");
+            HE_ASSERT(in_pMemoryBlock->_useFlag == in_pTargetMemoryBlock->_useFlag &&
+                      "使用状況が違う．");
 
             // 後ろの処理
             if (in_pTargetMemoryBlock->_pNext != NULL)
@@ -696,7 +698,7 @@ namespace Core
         /// <param name="in_pMemoryBlock">外すメモリブロック</param>
         void Manager::_DelListMemoryBlock(BlockHeader* in_pMemoryBlock)
         {
-            E_ASSERT(in_pMemoryBlock && "外すメモリブロックが存在しない");
+            HE_ASSERT(in_pMemoryBlock && "外すメモリブロックが存在しない");
 
             // 最後か？
             if (in_pMemoryBlock->_pNext == NULL)
@@ -706,7 +708,7 @@ namespace Core
                 if (in_pMemoryBlock->_pPrev == NULL)
                 {
                     // 先頭．
-                    this->_memoryPageInfoArray[in_pMemoryBlock->_page]._pMemoryBlockTop = NULL;
+                    this->_aMemoryPageInfoArray[in_pMemoryBlock->_page]._pMemoryBlockTop = NULL;
                 }
                 else
                 {
@@ -723,7 +725,7 @@ namespace Core
                 {
                     // 先頭
                     // 自分を飛ばす
-                    this->_memoryPageInfoArray[in_pMemoryBlock->_page]._pMemoryBlockTop =
+                    this->_aMemoryPageInfoArray[in_pMemoryBlock->_page]._pMemoryBlockTop =
                         in_pMemoryBlock->_pNext;
                     in_pMemoryBlock->_pNext->_pPrev = NULL;
                 }
@@ -750,43 +752,43 @@ namespace Core
         /// <param name="in_splitSize">分割したいサイズ(システム使用分を含める)</param>
         /// <returns>NULL 分割失敗 / 非NULL 分割して新規作成したメモリブロック(後ろの方)</returns>
         Manager::BlockHeader* Manager::_SplitMemoryBlock(BlockHeader* in_pMemoryBlock,
-                                                         Uint32 in_splitSize)
+                                                         Uint32 in_uSplitSize)
         {
-            if (in_pMemoryBlock->_allocateSize < in_splitSize)
+            if (in_pMemoryBlock->_uAllocateSize < in_uSplitSize)
             {
-                E_ASSERT(0 && "分割するサイズが残りヒープサイズより小さい");
+                HE_ASSERT(0 && "分割するサイズが残りヒープサイズより小さい");
                 return NULL;
             }
 
-            if (in_splitSize < this->_GetMemoryBlockSystemDataSize())
+            if (in_uSplitSize < this->_GetMemoryBlockSystemDataSize())
             {
-                E_ASSERT(0 && "分割するサイズがブロックのシステムサイズより小さい");
+                HE_ASSERT(0 && "分割するサイズがブロックのシステムサイズより小さい");
                 return NULL;
             }
 
             BlockHeader* pSplitMemoryBlock = reinterpret_cast<BlockHeader*>(
-                reinterpret_cast<Byte*>(in_pMemoryBlock) + in_splitSize);
+                reinterpret_cast<Sint8*>(in_pMemoryBlock) + in_uSplitSize);
 
             // パディングは無効になる
-            in_pMemoryBlock->_allocateSize += in_pMemoryBlock->_paddingSize;
+            in_pMemoryBlock->_uAllocateSize += in_pMemoryBlock->_paddingSize;
             in_pMemoryBlock->_paddingSize = 0;
 
             // ヘッダコピー
             ::memcpy(pSplitMemoryBlock, in_pMemoryBlock, this->_GetMemoryBlockHeaderSize());
 
             // サイズ減らす
-            in_pMemoryBlock->_size         = in_splitSize;
-            in_pMemoryBlock->_allocateSize = in_splitSize - this->_GetMemoryBlockSystemDataSize();
+            in_pMemoryBlock->_uSize         = in_uSplitSize;
+            in_pMemoryBlock->_uAllocateSize = in_uSplitSize - this->_GetMemoryBlockSystemDataSize();
 
             // 新しく作った方も減らす
             // 減る量は_size、_allocateSizeとも同じであることに注意
-            pSplitMemoryBlock->_size -= in_splitSize;
-            pSplitMemoryBlock->_allocateSize -= in_splitSize;
+            pSplitMemoryBlock->_uSize -= in_uSplitSize;
+            pSplitMemoryBlock->_uAllocateSize -= in_uSplitSize;
 
             // アライン初期化
-            pSplitMemoryBlock->_alignSize = MINIMUM_ALIGN_SIZE;
+            pSplitMemoryBlock->_alignSize = MinimumAlignSize;
 
-#ifdef _HOBBY_ENGINE_DEBUG
+#ifdef HE_ENGINE_DEBUG
             // マジックNoセット
             this->_SetMemoryBlockMagicNo(in_pMemoryBlock);
             // 念のため
@@ -810,26 +812,27 @@ namespace Core
         Manager::BlockHeader* Manager::_MergeMemoryBlock(BlockHeader* in_pMemoryBlock1,
                                                          BlockHeader* in_pMemoryBlock2)
         {
-            E_ASSERT(in_pMemoryBlock1->_page == in_pMemoryBlock2->_page && "ページが違う．");
-            E_ASSERT(in_pMemoryBlock1->_useFlag == in_pMemoryBlock2->_useFlag &&
-                     "使用状況が違う．");
-            E_ASSERT(reinterpret_cast<BlockHeader*>(reinterpret_cast<Byte*>(in_pMemoryBlock1) +
-                                                    in_pMemoryBlock1->_size) == in_pMemoryBlock2 &&
-                     "メモリブロックが連続していない．");
+            HE_ASSERT(in_pMemoryBlock1->_page == in_pMemoryBlock2->_page && "ページが違う．");
+            HE_ASSERT(in_pMemoryBlock1->_useFlag == in_pMemoryBlock2->_useFlag &&
+                      "使用状況が違う．");
+            HE_ASSERT(reinterpret_cast<BlockHeader*>(reinterpret_cast<Sint8*>(in_pMemoryBlock1) +
+                                                     in_pMemoryBlock1->_uSize) ==
+                          in_pMemoryBlock2 &&
+                      "メモリブロックが連続していない．");
 
             // まず後ろを外す
             this->_DelListMemoryBlock(in_pMemoryBlock2);
 
             // マージする場合, パディングはなくなる（空きメモリ系でしか使わないので問題ないはず）
-            in_pMemoryBlock1->_allocateSize += in_pMemoryBlock1->_paddingSize;
+            in_pMemoryBlock1->_uAllocateSize += in_pMemoryBlock1->_paddingSize;
             in_pMemoryBlock1->_paddingSize = 0;
 
             // マージする分足しこむ
-            in_pMemoryBlock1->_size += in_pMemoryBlock2->_size;
+            in_pMemoryBlock1->_uSize += in_pMemoryBlock2->_uSize;
             // 後ろの分丸々入るので, m_sizeであることに注意
-            in_pMemoryBlock1->_allocateSize += in_pMemoryBlock2->_size;
+            in_pMemoryBlock1->_uAllocateSize += in_pMemoryBlock2->_uSize;
 
-#ifdef _HOBBY_ENGINE_DEBUG
+#ifdef HE_ENGINE_DEBUG
             // マジックNoのセット
             this->_SetMemoryBlockMagicNo(in_pMemoryBlock1);
 #endif
@@ -837,7 +840,7 @@ namespace Core
             return in_pMemoryBlock1;
         }
 
-#ifdef _HOBBY_ENGINE_DEBUG
+#ifdef HE_ENGINE_DEBUG
 
         /// <summary>
         /// 指定メモリページの情報を出力
@@ -845,46 +848,46 @@ namespace Core
         /// <param name="in_page">ページ</param>
         void Manager::PrintMemoryPageInfo(Uint8 in_page)
         {
-            Uint32 usedTotal               = 0;
-            Uint32 freeTotal               = 0;
-            Uint32 usedCount               = 0;
-            Uint32 freeCount               = 0;
+            Uint32 uUsedTotal              = 0;
+            Uint32 uFreeTotal              = 0;
+            Uint32 uUsedCount              = 0;
+            Uint32 uFreeCount              = 0;
             BlockHeader* pLargestUsedBlock = NULL;
             BlockHeader* pLargestFreeBlock = NULL;
 
             // ページ情報の表示
-            E_LOG_LINE(E_STR_TEXT("============================================"));
-            E_LOG_LINE(E_STR_TEXT("page[%d]"), in_page);
-            E_LOG_LINE(E_STR_TEXT("============================================"));
-#ifdef _X64
-            E_LOG_LINE(E_STR_TEXT("TopAddr    :0llx%8.8llx"),
-                       reinterpret_cast<Ptr>(this->_memoryPageInfoArray[in_page]._pTopAddr));
+            HE_LOG_LINE(HE_STR_TEXT("============================================"));
+            HE_LOG_LINE(HE_STR_TEXT("page[%d]"), in_page);
+            HE_LOG_LINE(HE_STR_TEXT("============================================"));
+#ifdef HE_X64
+            HE_LOG_LINE(HE_STR_TEXT("TopAddr    :0llx%8.8llx"),
+                        reinterpret_cast<Ptr>(this->_aMemoryPageInfoArray[in_page]._pTopAddr));
 #else
             E_LOG_LINE(E_STR_TEXT("TopAddr    :0lx%8.8lx"),
                        reinterpret_cast<Ptr>(this->_memoryPageInfoArray[in_page]._pTopAddr));
 #endif
-            E_LOG_LINE(E_STR_TEXT("Size       :0lx%8.8lx"),
-                       this->_memoryPageInfoArray[in_page]._size);
-            E_LOG_LINE(E_STR_TEXT("--------------------------------------------"));
+            HE_LOG_LINE(HE_STR_TEXT("Size       :0lx%8.8lx"),
+                        this->_aMemoryPageInfoArray[in_page]._uSize);
+            HE_LOG_LINE(HE_STR_TEXT("--------------------------------------------"));
 
             // チェックする
             this->CheckMemoryBlockByPage(in_page);
 
             // 使用分の表示
-            BlockHeader* pUsedMemoryBlock = this->_memoryPageInfoArray[in_page]._pMemoryBlockTop;
+            BlockHeader* pUsedMemoryBlock = this->_aMemoryPageInfoArray[in_page]._pMemoryBlockTop;
 
             while (pUsedMemoryBlock != NULL)
             {
                 if (pUsedMemoryBlock->_useFlag == 1)
                 {
-                    Ptr blockAddr = reinterpret_cast<Ptr>(pUsedMemoryBlock);
-#ifdef _X64
-                    E_LOG_LINE(E_STR_TEXT("0llx%8.8llx: 0x%8.8x (0x%8.8x) [%d] {%d}: ")
-                                   E_STR_FORMAT_PURE_TEXT E_STR_TEXT("(%d)"),
-                               blockAddr + this->_GetMemoryBlockHeaderSize(),
-                               pUsedMemoryBlock->_allocateSize, pUsedMemoryBlock->_size,
-                               pUsedMemoryBlock->_paddingSize, pUsedMemoryBlock->_alignSize,
-                               pUsedMemoryBlock->_fileName, pUsedMemoryBlock->_line);
+                    Ptr pBlockAddr = reinterpret_cast<Ptr>(pUsedMemoryBlock);
+#ifdef HE_X64
+                    HE_LOG_LINE(HE_STR_TEXT("0llx%8.8llx: 0x%8.8x (0x%8.8x) [%d] {%d}: ")
+                                    HE_STR_FORMAT_PURE_TEXT HE_STR_TEXT("(%d)"),
+                                pBlockAddr + this->_GetMemoryBlockHeaderSize(),
+                                pUsedMemoryBlock->_uAllocateSize, pUsedMemoryBlock->_uSize,
+                                pUsedMemoryBlock->_paddingSize, pUsedMemoryBlock->_alignSize,
+                                pUsedMemoryBlock->_szFileName, pUsedMemoryBlock->_uLine);
 #else
                     E_LOG_LINE(E_STR_TEXT("0x%8.8x: 0x%8.8x (0x%8.8x) [%d] {%d}: ")
                                    E_STR_FORMAT_PURE_TEXT E_STR_TEXT("(%d)"),
@@ -894,11 +897,11 @@ namespace Core
                                pUsedMemoryBlock->_pFile, pUsedMemoryBlock->_line);
 #endif
 
-                    usedTotal += pUsedMemoryBlock->_allocateSize;
-                    ++usedCount;
+                    uUsedTotal += pUsedMemoryBlock->_uAllocateSize;
+                    ++uUsedCount;
 
                     if (pLargestUsedBlock == NULL ||
-                        pLargestUsedBlock->_allocateSize < pUsedMemoryBlock->_allocateSize)
+                        pLargestUsedBlock->_uAllocateSize < pUsedMemoryBlock->_uAllocateSize)
                     {
                         pLargestUsedBlock = pUsedMemoryBlock;
                     }
@@ -907,17 +910,17 @@ namespace Core
                 pUsedMemoryBlock = pUsedMemoryBlock->_pNext;
             }
 
-            E_LOG_LINE(E_STR_TEXT(""));
-            E_LOG_LINE(E_STR_TEXT("usedCount: %d"), usedCount);
-            E_LOG_LINE(E_STR_TEXT("usedTotal: 0x%8.8x"), usedTotal);
+            HE_LOG_LINE(HE_STR_TEXT(""));
+            HE_LOG_LINE(HE_STR_TEXT("usedCount: %d"), uUsedCount);
+            HE_LOG_LINE(HE_STR_TEXT("usedTotal: 0x%8.8x"), uUsedTotal);
 
             if (pLargestUsedBlock != NULL)
             {
-                Ptr blockAddr = reinterpret_cast<Ptr>(pLargestFreeBlock);
-#ifdef _X64
-                E_LOG_LINE(E_STR_TEXT("maxUsed: 0llx%8.8llx 0x%8.8x (0x%8.8x)"),
-                           blockAddr + this->_GetMemoryBlockHeaderSize(),
-                           pLargestUsedBlock->_allocateSize, pLargestUsedBlock->_size);
+                Ptr pBlockAddr = reinterpret_cast<Ptr>(pLargestFreeBlock);
+#ifdef HE_X64
+                HE_LOG_LINE(HE_STR_TEXT("maxUsed: 0llx%8.8llx 0x%8.8x (0x%8.8x)"),
+                            pBlockAddr + this->_GetMemoryBlockHeaderSize(),
+                            pLargestUsedBlock->_uAllocateSize, pLargestUsedBlock->_uSize);
 #else
                 E_LOG_LINE(E_STR_TEXT("maxUsed: 0x%8.8x 0x%8.8x (0x%8.8x)"),
                            blockAddr + this->_GetMemoryBlockHeaderSize(),
@@ -925,30 +928,30 @@ namespace Core
 #endif
             }
 
-            E_LOG_LINE(E_STR_TEXT("-------------------------------------------"));
+            HE_LOG_LINE(HE_STR_TEXT("-------------------------------------------"));
 
             // 開き領域の表示
-            BlockHeader* pFreeMemoryBlock = this->_memoryPageInfoArray[in_page]._pMemoryBlockTop;
+            BlockHeader* pFreeMemoryBlock = this->_aMemoryPageInfoArray[in_page]._pMemoryBlockTop;
 
             while (pFreeMemoryBlock != NULL)
             {
                 if (pFreeMemoryBlock->_useFlag == 0)
                 {
-                    Ptr blockAddr = reinterpret_cast<Ptr>(pFreeMemoryBlock);
-#ifdef _X64
-                    E_LOG_LINE(E_STR_TEXT("0llx%8.8llx:0x%8.8x (0x%8.8x)"),
-                               (blockAddr + this->_GetMemoryBlockHeaderSize()),
-                               pFreeMemoryBlock->_allocateSize, pFreeMemoryBlock->_size);
+                    Ptr pBlockAddr = reinterpret_cast<Ptr>(pFreeMemoryBlock);
+#ifdef HE_X64
+                    HE_LOG_LINE(HE_STR_TEXT("0llx%8.8llx:0x%8.8x (0x%8.8x)"),
+                                (pBlockAddr + this->_GetMemoryBlockHeaderSize()),
+                                pFreeMemoryBlock->_uAllocateSize, pFreeMemoryBlock->_uSize);
 #else
                     E_LOG_LINE(E_STR_TEXT("0x%8.8x:0x%8.8x (0x%8.8x)"),
                                (blockAddr + this->_GetMemoryBlockHeaderSize()),
                                pFreeMemoryBlock->_allocateSize, pFreeMemoryBlock->_size);
 #endif
-                    freeTotal += pFreeMemoryBlock->_allocateSize;
-                    ++freeCount;
+                    uFreeTotal += pFreeMemoryBlock->_uAllocateSize;
+                    ++uFreeCount;
 
                     if (pLargestFreeBlock == NULL ||
-                        pLargestFreeBlock->_allocateSize < pFreeMemoryBlock->_allocateSize)
+                        pLargestFreeBlock->_uAllocateSize < pFreeMemoryBlock->_uAllocateSize)
                     {
                         pLargestFreeBlock = pFreeMemoryBlock;
                     }
@@ -957,16 +960,16 @@ namespace Core
                 pFreeMemoryBlock = pFreeMemoryBlock->_pNext;
             }
 
-            E_LOG_LINE(E_STR_TEXT(""));
-            E_LOG_LINE(E_STR_TEXT("freeCount: %d"), freeCount);
-            E_LOG_LINE(E_STR_TEXT("freeTotal: 0x%8.8x"), freeTotal);
+            HE_LOG_LINE(HE_STR_TEXT(""));
+            HE_LOG_LINE(HE_STR_TEXT("freeCount: %d"), uFreeCount);
+            HE_LOG_LINE(HE_STR_TEXT("freeTotal: 0x%8.8x"), uFreeTotal);
 
             if (pLargestFreeBlock != NULL)
             {
-                E_LOG_LINE(E_STR_TEXT("maxFree: 0x%8.8x"), pLargestFreeBlock->_allocateSize);
+                HE_LOG_LINE(HE_STR_TEXT("maxFree: 0x%8.8x"), pLargestFreeBlock->_uAllocateSize);
             }
 
-            E_LOG_LINE(E_STR_TEXT("============================================"));
+            HE_LOG_LINE(HE_STR_TEXT("============================================"));
         }
 
         /// <summary>
@@ -974,10 +977,10 @@ namespace Core
         /// </summary>
         void Manager::PrintAllMemoryInfo()
         {
-            for (Uint8 i = 0; i < MEMORY_PAGE_MAX; ++i)
+            for (Uint8 i = 0; i < MemoryPageMax; ++i)
             {
                 // 使用していないページは表示しない
-                if (this->_IsInitMemoryPage(i))
+                if (this->_ValidMemoryPage(i))
                 {
                     this->PrintMemoryPageInfo(i);
                 }
@@ -991,13 +994,13 @@ namespace Core
         /// <returns>TRUE 全メモリブロックが正常 / FALSE 異常なメモリブロックがある</returns>
         const Bool Manager::CheckMemoryBlockByPage(Uint8 in_page)
         {
-            BlockHeader* pMemoryBlock = this->_memoryPageInfoArray[in_page]._pMemoryBlockTop;
+            BlockHeader* pMemoryBlock = this->_aMemoryPageInfoArray[in_page]._pMemoryBlockTop;
 
             while (pMemoryBlock != NULL)
             {
                 if (this->_IsValidMemoryBlock(pMemoryBlock) == FALSE)
                 {
-                    E_ASSERT(0 && "門番が死んでいる．");
+                    HE_ASSERT(0 && "門番が死んでいる．");
                     return FALSE;
                 }
 
@@ -1014,7 +1017,7 @@ namespace Core
         /// 異常なメモリブロックがある</returns>
         const Bool Manager::CheckAllMemoryBlock()
         {
-            for (Uint8 i = 0; i < MEMORY_PAGE_MAX; ++i)
+            for (Uint8 i = 0; i < MemoryPageMax; ++i)
             {
                 //	使用していないページはチェックしない．
                 if (this->CheckMemoryBlockByPage(i))
@@ -1033,8 +1036,8 @@ namespace Core
         void Manager::_FillFreeMemoryBlock(BlockHeader* in_pMemoryBlock)
         {
             ::memset(reinterpret_cast<Uint8*>(in_pMemoryBlock) + this->_GetMemoryBlockHeaderSize(),
-                     FREEMEMORY_FILL_DATA,
-                     in_pMemoryBlock->_allocateSize + in_pMemoryBlock->_paddingSize);
+                     FreeMemoryFillData,
+                     in_pMemoryBlock->_uAllocateSize + in_pMemoryBlock->_paddingSize);
         }
 
         /// <summary>
@@ -1044,8 +1047,8 @@ namespace Core
         void Manager::_FillNewMemoryBlock(BlockHeader* in_pMemoryBlock)
         {
             ::memset(reinterpret_cast<Uint8*>(in_pMemoryBlock) + this->_GetMemoryBlockHeaderSize(),
-                     NEWMEMORY_FILL_DATA,
-                     in_pMemoryBlock->_allocateSize + in_pMemoryBlock->_paddingSize);
+                     NewMemoryFillData,
+                     in_pMemoryBlock->_uAllocateSize + in_pMemoryBlock->_paddingSize);
         }
 #endif
     }  // namespace Memory

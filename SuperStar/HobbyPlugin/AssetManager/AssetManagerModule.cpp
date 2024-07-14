@@ -16,7 +16,7 @@ namespace AssetManager
         return TRUE;
     }
 
-    const Bool AssetManagerModule::Update(const Float32 in_deltaTime)
+    const Bool AssetManagerModule::Update(const Float32 in_fDeltaTime)
     {
         return TRUE;
     }
@@ -33,10 +33,10 @@ namespace AssetManager
         p->_Unload();
     }
 
-    const Bool AssetManagerModule::_Load(AssetDataBase* out_pAssetData)
+    const Bool AssetManagerModule::_Load(AssetDataBase* out)
     {
         Platform::FileSystemInterface* pFileSystem = this->GetPlatformModule()->File();
-        if (out_pAssetData->_Load(*pFileSystem) == FALSE)
+        if (out->_Load(*pFileSystem) == FALSE)
         {
             return FALSE;
         }
@@ -49,9 +49,9 @@ namespace AssetManager
         // アセットハンドルがあれば解放する
         {
             auto assetList = this->GetUserDataList();
-            for (auto it = assetList.begin(); it != assetList.end(); ++it)
+            for (auto it = assetList->begin(); it != assetList->end(); ++it)
             {
-                this->Unload(it->_handle);
+                this->Unload(it->first);
             }
         }
 

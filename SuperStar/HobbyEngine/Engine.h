@@ -62,8 +62,8 @@ public:
     // エンジンを稼働させるためのループ用メソッド
     const Bool BeforUpdateLoop();
     const Bool WaitFrameLoop();
-    const Bool MainUpdateLoop(const Float32 in_deltaSec);
-    const Bool AfterUpdateLoop(const Float32 in_deltaSec);
+    const Bool MainUpdateLoop(const Float32 in_fDeltaSec);
+    const Bool AfterUpdateLoop(const Float32 in_fDeltaSec);
 
     /// <summary>
     /// メモリ管理を取得
@@ -123,7 +123,7 @@ private:
     Core::Memory::Manager _memoryManager;
 
     // fPS 制御
-    std::shared_ptr<Core::Time::FPS> _pFPS = NULL;
+    std::shared_ptr<Core::Time::FPS> _spFPS = NULL;
 
     // モジュール管理
     Module::ModuleManager _moduleManager;

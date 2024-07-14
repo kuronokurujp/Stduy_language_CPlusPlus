@@ -10,6 +10,5 @@ namespace Render
     /// </summary>
     class CommandBuffer : public Core::Common::FastFixArray<Command, 128>
     {
-    public:
     };
 }  // namespace Render

@@ -1,13 +1,9 @@
 ﻿#pragma once
 
-#include "MiniEngine.h"
-#ifdef _HOBBY_ENGINE
-#include "Engine.h"
-#endif
-
 #include "Core/Common/FixString.h"
 #include "Core/Common/Handle.h"
 #include "Core/Math/Math.h"
+#include "MiniEngine.h"
 #include "Module/Module.h"
 
 // プラットフォームモジュールを使う
@@ -64,7 +60,7 @@ namespace UI
 
         // UIのLayerを作成する
         // 描画ソート機能は未実装
-        Core::Common::Handle NewLayer(const Core::Common::FixString128 in_name,
+        Core::Common::Handle NewLayer(const Core::Common::FixStringBase& in_szrName,
                                       const Uint32 in_sort);
 
         /// <summary>
@@ -72,44 +68,40 @@ namespace UI
         /// </summary>
         /// <param name="in_bLoc">ローカライズテキスト対象フラグ</param>
         /// <returns></returns>
-        Core::Common::Handle NewLabelWidget(const Core::Common::FixString128 in_name,
+        Core::Common::Handle NewLabelWidget(const Core::Common::FixStringBase& in_szrName,
                                             const Uint32 in_sort, const Char* in_pLocGroupName,
-                                            const Char* in_pText,
-                                            const Core::Math::Rect2& in_textRect,
-                                            const Uint32 in_textColor);
+                                            const Char* in_szText,
+                                            const Core::Math::Rect2& in_rTextRect,
+                                            const Uint32 in_uTextColor);
 
         /// <summary>
         /// ボタンWidget作成
         /// </summary>
-        /// <param name="in_name"></param>
-        /// <param name="in_sort"></param>
-        /// <param name="in_rBtnRect"></param>
-        /// <param name="in_btnColor"></param>
-        /// <returns></returns>
-        Core::Common::Handle NewButtonWidget(const Core::Common::FixString128 in_name,
+        Core::Common::Handle NewButtonWidget(const Core::Common::FixStringBase& in_szrName,
                                              const Uint32 in_sort,
                                              const Core::Math::Rect2& in_rBtnRect,
-                                             const Uint32 in_btnColor);
+                                             const Uint32 in_uBtnColor);
 
         // TODO: UIのWidgetを作成する
         // TODO: 描画ソート機能は未実装
-        Core::Common::Handle NewWidget(const Core::Common::FixString128 in_name,
-                                       const Uint32 in_sort);
+        Core::Common::Handle NewWidget(const Core::Common::FixStringBase& in_szName,
+                                       const Uint32 in_uSort);
 
         // 親Widgetに子Widgetを追加
-        const Bool AddChildWidget(Core::Common::Handle in_hParent, Core::Common::Handle in_hWidget);
+        const Bool AddChildWidget(Core::Common::Handle& in_rParent,
+                                  Core::Common::Handle& in_rWidget);
 
         // Widgetにコンポーネント追加
         template <class T>
-        Core::Common::Handle AddComponent(Core::Common::Handle in_hWidget,
-                                          const Sint32 in_updateOrder)
+        Core::Common::Handle AddComponent(Core::Common::Handle& in_rWidget,
+                                          const Sint32 in_iUpdateOrder)
         {
             Actor::Object* pActor = NULL;
-            pActor = LEVEL_MODULE_CURRENT_LEVEL->GetActor(in_hWidget);
-            E_ASSERT(pActor);
+            pActor                = LEVEL_MODULE_CURRENT_LEVEL->GetActor(in_rWidget);
+            HE_ASSERT(pActor);
 
             // アクターにコンポーネント追加
-            return pActor->AddComponent<T>(in_updateOrder);
+            return pActor->AddComponent<T>(in_iUpdateOrder);
         }
 
     protected:

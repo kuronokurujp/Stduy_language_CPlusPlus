@@ -37,28 +37,28 @@ namespace UI
             /// </summary>
             struct Data
             {
-                Char id[256]       = {0};
-                EWidget widgetType = EWidget::EWidget_None;
+                Char szId[256]      = {0};
+                EWidget eWidgetType = EWidget::EWidget_None;
 
                 union ExData
                 {
                     struct Widget
                     {
-                        Float32 x, y;
+                        Float32 fX, fY;
                     } widget;
 
                     struct Label
                     {
                         Bool bLoc;
-                        Float32 x, y;
-                        Char loc[256];
-                        Char text[256];
+                        Float32 fX, fY;
+                        Char szLoc[256];
+                        Char szText[256];
                         Style style;
                     } label;
 
                     struct Button
                     {
-                        Float32 x, y;
+                        Float32 fX, fY;
                         Style style;
                     } button;
 
@@ -79,23 +79,16 @@ namespace UI
             /// <summary>
             /// 親ルート下にあるノードを名前で取得
             /// </summary>
-            /// <param name="in_pName"></param>
-            /// <returns></returns>
-            const Bool OutputNodeByRootPos(Node* out, const Byte* in_pName);
+            const Bool OutputNodeByRootPos(Node* out, const UTF8* in_szName);
 
             /// <summary>
             /// 指定したノード下にあるノードを名前で取得
             /// </summary>
-            /// <param name="in_rParentNode"></param>
-            /// <param name="in_pName"></param>
-            /// <returns></returns>
-            const Bool OutputNode(Node* out, const Node& in_rParentNode, const Byte* in_pName);
+            const Bool OutputNode(Node* out, const Node& in_rParentNode, const UTF8* in_szName);
 
             /// <summary>
             /// 指定したノード下にあるノード群を取得
             /// </summary>
-            /// <param name="in_rParentNode"></param>
-            /// <returns></returns>
             void OutputNodeChildren(Core::Common::FastFixArrayBase<Node>* out,
                                     const Node& in_rParentNode);
         };

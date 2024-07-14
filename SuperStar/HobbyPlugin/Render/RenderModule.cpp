@@ -13,10 +13,10 @@ namespace Render
         return TRUE;
     }
 
-    const Bool RenderModule::AddCmd(const Command&& in_cmd)
+    const Bool RenderModule::AddCmd(const Command&& in_rrCmd)
     {
         // コマンドをコピー
-        this->_comBuff.PushBack(in_cmd);
+        this->_commandBuff.PushBack(in_rrCmd);
 
         return TRUE;
     }

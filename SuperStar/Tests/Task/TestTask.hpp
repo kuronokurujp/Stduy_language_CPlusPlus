@@ -54,7 +54,7 @@ namespace Core
             void Update(const Float32 in_dt, const TaskData&) override final
             {
                 this->_time += in_dt;
-                E_LOG("F");
+                HE_LOG("F");
 
                 // 3秒経過したら自動的に死ぬ
                 if (this->_time >= 3000.0f) this->Kill();
@@ -72,7 +72,7 @@ namespace Core
             virtual void Update(const Float32 in_dt, const TaskData&) override
             {
                 this->_time += in_dt;
-                E_LOG("P");
+                HE_LOG("P");
 
                 // 1/30の確率でエフェクトを発生させる
                 // TODO: これだけエラーになる
@@ -91,7 +91,7 @@ namespace Core
             void Update(const Float32 in_dt, const TaskData&) override final
             {
                 this->_time += in_dt;
-                E_LOG("E");
+                HE_LOG("E");
             }
 
         private:
@@ -106,7 +106,7 @@ namespace Core
             void Update(const Float32 in_dt, const TaskData&) override final
             {
                 this->_time += in_dt;
-                E_LOG("S");
+                HE_LOG("S");
             }
 
         private:
@@ -163,7 +163,7 @@ namespace Core
                 // タスクの更新
                 manager.UpdateAll(delta_time, Core::DEFAULT_TASK_DATA);
 
-                E_LOG(" (%d / %d)\n", manager.UseCount(), manager.Max());
+                HE_LOG(" (%d / %d)\n", manager.UseCount(), manager.Max());
 
                 // フレーム更新間隔まで待つ
                 do
@@ -217,7 +217,7 @@ namespace Core
             void Update(const Float32 dt)
             {
                 this->_time += dt;
-                E_LOG("F");
+                HE_LOG("F");
 
                 // 3秒経過したら自動的に死ぬ
                 if (this->_time >= 3000.0f) this->Kill();
@@ -235,7 +235,7 @@ namespace Core
             void Update(const Float32 dt)
             {
                 this->_time += dt;
-                E_LOG("P");
+                HE_LOG("P");
 
                 // 1/30の確率でエフェクトを発生させる
                 if (rand() % 30 == 0) new EffectTask();
@@ -324,7 +324,7 @@ namespace Core
             void Update(const Float32 dt)
             {
                 this->_time += dt;
-                E_LOG("F");
+                HE_LOG("F");
 
                 // 3秒経過したら自動的に死ぬ
                 if (this->_time >= 3000.0f) this->Kill();
@@ -342,7 +342,7 @@ namespace Core
             void Update(const Float32 dt)
             {
                 this->_time += dt;
-                E_LOG("P");
+                HE_LOG("P");
 
                 // 1/30の確率でエフェクトを発生させる
                 if (rand() % 30 == 0) new EffectTask();

@@ -27,22 +27,22 @@ namespace UI
             ModuleAssetManager()->Load<UI::Builder::UILayoutData>(in_rFilePath.Str(),
                                                                   Core::File::Path(
                                                                       in_rFilePath.Str()));
-        E_ASSERT(handle.Null() == FALSE);
-        if (handle.Null()) return E_EMPTY_HANDLE;
+        HE_ASSERT(handle.Null() == FALSE);
+        if (handle.Null()) return InvalidHandle;
 
         return handle;
     }
 
     void UIModule::UnloadAssetWithLayoutBuild(Core::Common::Handle& in_rHandle)
     {
-        E_ASSERT(in_rHandle.Null() == FALSE);
+        HE_ASSERT(in_rHandle.Null() == FALSE);
         ModuleAssetManager()->Unload(in_rHandle);
     }
 
-    Core::Common::Handle UIModule::NewLayer(const Core::Common::FixString128 in_name,
-                                            const Uint32 in_sort)
+    Core::Common::Handle UIModule::NewLayer(const Core::Common::FixStringBase& in_szrName,
+                                            const Uint32 in_uSort)
     {
-        Core::Common::Handle handle = this->NewWidget(in_name, in_sort);
+        Core::Common::Handle handle = this->NewWidget(in_szrName, in_uSort);
 
         // 入力ルーターコンポーネントを設定
         auto hInputRouter = this->AddComponent<UI::UIInputRouterComponent>(handle, 0);
@@ -50,35 +50,29 @@ namespace UI
         // レイヤーコンポーネントを追加
         auto hLayer = this->AddComponent<UI::UILayerComponent>(handle, 0);
 
-        Widget* pWidget = NULL;
-
-        pWidget = reinterpret_cast<Widget*>(LEVEL_MODULE_CURRENT_LEVEL->GetActor(handle));
-        E_ASSERT(pWidget);
-
-        pWidget->SetInputRouter(hInputRouter);
-
         return handle;
     }
 
     Core::Common::Handle UIModule::NewLayoutByLayotuAsset(Core::Common::Handle& in_rHandle,
-                                                          const Uint32 in_sort)
+                                                          const Uint32 in_uSort)
     {
-        E_ASSERT(in_rHandle.Null() == FALSE);
+        HE_ASSERT(in_rHandle.Null() == FALSE);
         auto& asset = ModuleAssetManager()->GetAsset<UI::Builder::UILayoutData>(in_rHandle);
         // ルートノードを取得
         UI::Builder::Node node;
         auto bRet = asset.OutputNodeByRootPos(&node, "ui");
-        E_ASSERT(bRet);
+        HE_ASSERT(bRet);
 
         // ルートノードからレイアウトノードを取得
         UI::Builder::Node layoutNode;
         bRet = asset.OutputNode(&layoutNode, node, "l");
-        E_ASSERT(bRet);
-        E_ASSERT(layoutNode.data.widgetType == UI::Builder::EWidget_Layout &&
-                 "レイアウトノードが存在しない");
+        HE_ASSERT(bRet);
+        HE_ASSERT(layoutNode.data.eWidgetType == UI::Builder::EWidget_Layout &&
+                  "レイアウトノードが存在しない");
 
         // レイアウトを作成
-        Core::Common::Handle hLayout = this->NewLayer(layoutNode.data.id, in_sort);
+        Core::Common::Handle hLayout =
+            this->NewLayer(Core::Common::FixString256(layoutNode.data.szId), in_uSort);
 
         // レイアウトノード下にあるWidgetを取得
         // MEMO: 要素数が1000を超えるとスタックサイズが足りずにスタックオーバーフローになるので注意
@@ -98,7 +92,7 @@ namespace UI
             {
                 auto widgetNode                       = stack.PopBack();
                 const auto pNodeData                  = &widgetNode.data;
-                const UI::Builder::EWidget widgetType = pNodeData->widgetType;
+                const UI::Builder::EWidget widgetType = pNodeData->eWidgetType;
                 // TODO: 関数テーブルにしてswitch文を消す方向にするかも
                 // 今は種類が少ないからいいが, 数が膨大になるとまずいから
                 switch (widgetType)
@@ -116,11 +110,12 @@ namespace UI
                             &pNodeData->exData.label;
                         const UI::Builder::Style* pStyle = &pLabel->style;
                         const Core::Math::Rect2 rect =
-                            Core::Math::Rect2(pLabel->x, pLabel->y, pStyle->w, pStyle->h,
+                            Core::Math::Rect2(pLabel->fX, pLabel->fY, pStyle->w, pStyle->h,
                                               Core::Math::Rect2::EPivot_Left);
 
-                        auto h = this->NewLabelWidget(pNodeData->id, sort, pLabel->loc,
-                                                      pLabel->text, rect, pStyle->color);
+                        auto h = this->NewLabelWidget(Core::Common::FixString256(pNodeData->szId),
+                                                      sort, pLabel->szLoc, pLabel->szText, rect,
+                                                      pStyle->color);
 
                         this->AddChildWidget(hParentWidget, h);
                         hParentWidget = h;
@@ -135,8 +130,8 @@ namespace UI
                         const UI::Builder::Style* pStyle = &pButton->style;
 
                         auto h =
-                            this->NewButtonWidget(pNodeData->id, sort,
-                                                  Core::Math::Rect2(pButton->x, pButton->y,
+                            this->NewButtonWidget(Core::Common::FixString256(pNodeData->szId), sort,
+                                                  Core::Math::Rect2(pButton->fX, pButton->fY,
                                                                     pStyle->w, pStyle->h,
                                                                     Core::Math::Rect2::EPivot_Left),
                                                   pStyle->color);
@@ -145,24 +140,30 @@ namespace UI
                         {
                             Actor::Object* pWidget = NULL;
                             pWidget                = LEVEL_MODULE_CURRENT_LEVEL->GetActor(h);
-                            E_ASSERT(pWidget);
+                            HE_ASSERT(pWidget);
 
+                            auto handle =
+                                pWidget->GetComponentHandle(&UI::UIButtonComponent::CLASS_RTTI);
+                            HE_ASSERT(handle.Null() == FALSE);
                             UI::UIButtonComponent* pBtnComp =
-                                reinterpret_cast<UI::UIButtonComponent*>(
-                                    pWidget->GetComponent(UI::UIButtonComponent::CLASS_RTTI));
-                            E_ASSERT(pBtnComp != NULL);
+                                pWidget->GetComponent<UI::UIButtonComponent>(handle);
+                            //                                reinterpret_cast<UI::UIButtonComponent*>(
 
                             auto handler = std::make_unique<UI::UIButtonMessageHandlerDefault>(
-                                pNodeData->id,
+                                pNodeData->szId,
                                 [this](Core::Common::FixString128 in_msg)
                                 {
                                     // ボタン入力をレベルのコンポーネントに通知
-                                    Level::LevelUserInputReceiveComponent* pUserInputEventComp =
-                                        reinterpret_cast<Level::LevelUserInputReceiveComponent*>(
-                                            LEVEL_MODULE_CURRENT_LEVEL->GetComponent(
-                                                Level::LevelUserInputReceiveComponent::CLASS_RTTI));
-                                    if (pUserInputEventComp)
+                                    //                                        reinterpret_cast<Level::LevelUserInputReceiveComponent*>(
+                                    auto handle = LEVEL_MODULE_CURRENT_LEVEL->GetComponentHandle(
+                                        &Level::LevelUserInputReceiveComponent::CLASS_RTTI);
+                                    if (handle.Null() == FALSE)
+                                    //                                    if (pUserInputEventComp)
                                     {
+                                        Level::LevelUserInputReceiveComponent* pUserInputEventComp =
+                                            LEVEL_MODULE_CURRENT_LEVEL->GetComponent<
+                                                Level::LevelUserInputReceiveComponent>(handle);
+                                        ;
                                         pUserInputEventComp->Message(in_msg.Str());
                                     }
                                 });
@@ -189,84 +190,84 @@ namespace UI
         return hLayout;
     }
 
-    Core::Common::Handle UIModule::NewLabelWidget(const Core::Common::FixString128 in_name,
-                                                  const Uint32 in_sort,
-                                                  const Char* in_pLocGroupName,
-                                                  const Char* in_pText,
-                                                  const Core::Math::Rect2& in_textRect,
-                                                  const Uint32 in_textColor)
+    Core::Common::Handle UIModule::NewLabelWidget(const Core::Common::FixStringBase& in_szrName,
+                                                  const Uint32 in_uSort,
+                                                  const Char* in_szLocGroupName,
+                                                  const Char* in_szText,
+                                                  const Core::Math::Rect2& in_rTextRect,
+                                                  const Uint32 in_uTextColor)
     {
-        Core::Common::Handle handle = this->NewWidget(in_name, in_sort);
-        E_ASSERT(handle.Null() == FALSE);
+        Core::Common::Handle handle = this->NewWidget(in_szrName, in_uSort);
+        HE_ASSERT(handle.Null() == FALSE);
 
         Actor::Object* pWidget = NULL;
         pWidget                = LEVEL_MODULE_CURRENT_LEVEL->GetActor(handle);
         if (pWidget == NULL) return handle;
 
         // ボタンの上に表示するテキストコンポーネント追加と設定
-        auto hText = this->AddComponent<UI::UITextComponent>(handle, in_sort + 1);
+        auto textHandle = this->AddComponent<UI::UITextComponent>(handle, in_uSort + 1);
         {
-            UI::UITextComponent* pText = pWidget->GetComponent<UI::UITextComponent>(hText);
-            pText->SetText(in_pText);
-            pText->SetRect(in_textRect);
-            pText->SetColor(in_textColor);
-            pText->SetLocGroupName(in_pLocGroupName);
+            UI::UITextComponent* pText = pWidget->GetComponent<UI::UITextComponent>(textHandle);
+            pText->SetText(in_szText);
+            pText->SetRect(in_rTextRect);
+            pText->SetColor(in_uTextColor);
+            pText->SetLocGroupName(in_szLocGroupName);
         }
 
         return handle;
     }
 
-    Core::Common::Handle UIModule::NewButtonWidget(const Core::Common::FixString128 in_name,
-                                                   const Uint32 in_sort,
+    Core::Common::Handle UIModule::NewButtonWidget(const Core::Common::FixStringBase& in_szrName,
+                                                   const Uint32 in_uSort,
                                                    const Core::Math::Rect2& in_rBtnRect,
-                                                   const Uint32 in_btnColor)
+                                                   const Uint32 in_uBtnColor)
     {
-        Core::Common::Handle handle = this->NewWidget(in_name, in_sort);
-        E_ASSERT(handle.Null() == FALSE);
+        Core::Common::Handle handle = this->NewWidget(in_szrName, in_uSort);
+        HE_ASSERT(handle.Null() == FALSE);
 
         Widget* pWidget = NULL;
         pWidget         = reinterpret_cast<Widget*>(LEVEL_MODULE_CURRENT_LEVEL->GetActor(handle));
-        if (pWidget == NULL) return handle;
+        if (pWidget == NULL) return InvalidHandle;
 
         pWidget->SetPos(Core::Math::Vector3(in_rBtnRect.Pos()));
 
         // ボタンコンポーネント追加と設定
-        auto hButton = this->AddComponent<UI::UIButtonComponent>(handle, in_sort);
+        auto hButton = this->AddComponent<UI::UIButtonComponent>(handle, in_uSort);
         {
             UI::UIButtonComponent* pButton = pWidget->GetComponent<UI::UIButtonComponent>(hButton);
             pButton->SetWidth(in_rBtnRect.Width());
             pButton->SetHeight(in_rBtnRect.Height());
-            pButton->SetColor(in_btnColor);
+            pButton->SetColor(in_uBtnColor);
         }
 
         // 入力ルーターの端末コンポーネントを設定
-        auto hInputTerminal = this->AddComponent<UI::UIInputTouchComponent>(handle, 0);
+        auto inputTerminalHandle = this->AddComponent<UI::UIInputTouchComponent>(handle, 0);
 
         return handle;
     }
 
-    Core::Common::Handle UIModule::NewWidget(const Core::Common::FixString128 in_name,
-                                             const Uint32 in_sort)
+    Core::Common::Handle UIModule::NewWidget(const Core::Common::FixStringBase& in_szrName,
+                                             const Uint32 in_uSort)
     {
         Core::Common::Handle handle;
 
         Actor::Object* pWidget = NULL;
         handle                 = LEVEL_MODULE_CURRENT_LEVEL->AddActor<Widget>();
-        E_ASSERT(handle.Null() == FALSE);
+        HE_ASSERT(handle.Null() == FALSE);
 
         pWidget = LEVEL_MODULE_CURRENT_LEVEL->GetActor(handle);
-        if (pWidget == NULL) return E_EMPTY_HANDLE;
+        if (pWidget == NULL) return InvalidHandle;
 
         // Widgetの初期設定
-        pWidget->SetName(in_name);
+        pWidget->SetName(in_szrName);
 
         return handle;
     }
 
-    const Bool UIModule::AddChildWidget(Core::Common::Handle in_hParent,
-                                        Core::Common::Handle in_hWidget)
+    const Bool UIModule::AddChildWidget(Core::Common::Handle& in_rParent,
+                                        Core::Common::Handle& in_rWidget)
     {
-        return LEVEL_MODULE_CURRENT_LEVEL->AddParentActor(in_hWidget, in_hParent);
+        return LEVEL_MODULE_CURRENT_LEVEL->AddParentActor(in_rWidget, in_rParent);
     }
 
     const Bool UIModule::Release()

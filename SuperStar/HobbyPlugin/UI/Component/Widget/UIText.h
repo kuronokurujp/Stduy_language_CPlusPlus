@@ -33,39 +33,39 @@ namespace UI
         /// 必ず処理を記述
         /// </summary>
         /// <param name="in_deltaTime">The in delta time.</param>
-        void Update(const Float32 in_deltaTime) final override;
+        void Update(const Float32 in_fDeltaTime) final override;
 
         /// <summary>
         /// テキスト設定
         /// </summary>
         /// <param name="in_pText"></param>
-        void SetText(const Char* in_pText) { this->_str = in_pText; }
+        void SetText(const Char* in_szText) { this->_szText = in_szText; }
 
         /// <summary>
         /// ローカライズグループ名
         /// </summary>
         /// <param name="in_pName"></param>
-        void SetLocGroupName(const Char* in_pName) { this->_locGroup = in_pName; }
+        void SetLocGroupName(const Char* in_szName) { this->_szLocGroup = in_szName; }
 
         /// <summary>
         /// テキストの描画矩形を設定
         /// </summary>
         /// <param name="in_rect"></param>
-        void SetRect(const Core::Math::Rect2& in_rect) { this->_rect = in_rect; }
+        void SetRect(const Core::Math::Rect2& in_rRect) { this->_rect = in_rRect; }
 
         /// <summary>
         /// ローカライズグループ名を設定
         /// 文字列がある == ローカライズテキスト
         /// </summary>
         /// <param name="in_pGroupName"></param>
-        void SetLogGroup(const Char* in_pGroupName) { this->_locGroup = in_pGroupName; }
+        void SetLogGroup(const Char* in_szGroupName) { this->_szLocGroup = in_szGroupName; }
 
     private:
-        void _Clear() { this->_str.Clear(); }
+        void _Clear() { this->_szText.Clear(); }
 
     private:
-        Core::Common::FixString1024 _str;
-        Core::Common::FixString128 _locGroup;
+        Core::Common::FixString1024 _szText;
+        Core::Common::FixString128 _szLocGroup;
         Core::Math::Rect2 _rect;
     };
 }  // namespace UI

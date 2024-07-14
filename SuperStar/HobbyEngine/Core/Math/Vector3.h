@@ -14,15 +14,31 @@ namespace Core
         class Vector3
         {
         public:
-            explicit Vector3() : x(0.0f), y(0.0f), z(0.0f) {}
-            explicit Vector3(Float32 aX, Float32 aY, Float32 aZ) : x(aX), y(aY), z(aZ) {}
-            explicit Vector3(const Vector2& in_rVec2) : x(in_rVec2.x), y(in_rVec2.y), z(0.0f) {}
+            explicit Vector3() : _fX(0.0f), _fY(0.0f), _fZ(0.0f) {}
+            explicit Vector3(Float32 in_fX, Float32 in_fY, Float32 in_fZ)
+                : _fX(in_fX), _fY(in_fY), _fZ(in_fZ)
+            {
+            }
+            explicit Vector3(const Vector2& in_rVec2)
+                : _fX(in_rVec2._fX), _fY(in_rVec2._fY), _fZ(0.0f)
+            {
+            }
+
+            Vector3(Vector3& in_rVec3) : _fX(in_rVec3._fX), _fY(in_rVec3._fY), _fZ(in_rVec3._fZ) {}
+
+            Vector3(const Vector3& in_rVec3)
+                : _fX(in_rVec3._fX), _fY(in_rVec3._fY), _fZ(in_rVec3._fZ)
+            {
+            }
 
             // 整数設定
-            explicit Vector3(Sint32 aX, Sint32 aY, Sint32 aZ);
+            explicit Vector3(Sint32 in_iX, Sint32 in_iY, Sint32 in_iZ);
+
+            // 情報をクリア
+            inline void Clear() { this->_fX = this->_fY = this->_fZ = 0.0f; }
 
             // 値設定
-            void Set(const Float32 in_x, const Float32 in_y, const Float32 in_z);
+            void Set(const Float32 in_fX, const Float32 in_fY, const Float32 in_fZ);
             void Set(const Float32 in_val);
 
             // 掛け算
@@ -65,9 +81,9 @@ namespace Core
             /// </summary>
             /// <param name="scale">The scale.</param>
             /// <returns></returns>
-            Vector3 operator*(const Float32 scale) E_NOEXCEPT
+            Vector3 operator*(const Float32 scale) HE_NOEXCEPT
             {
-                return Vector3(this->x * scale, this->y * scale, this->z * scale);
+                return Vector3(this->_fX * scale, this->_fY * scale, this->_fZ * scale);
             }
 
             /// <summary>
@@ -75,29 +91,29 @@ namespace Core
             /// </summary>
             /// <param name="in_a">The in a.</param>
             /// <returns></returns>
-            Vector3 operator+(const Vector3 in_a) E_NOEXCEPT
+            Vector3 operator+(const Vector3 in_a) HE_NOEXCEPT
             {
-                return Vector3(this->x + in_a.x, this->y + in_a.y, this->z + in_a.z);
+                return Vector3(this->_fX + in_a._fX, this->_fY + in_a._fY, this->_fZ + in_a._fZ);
             }
 
             /// <summary>
             /// ベクトル要素をfloatポインタで返す.
             /// </summary>
             /// <returns></returns>
-            const Float32* GetAsFloatPtr() E_NOEXCEPT
+            const Float32* GetAsFloatPtr() HE_NOEXCEPT
             {
-                return reinterpret_cast<Float32*>(&this->x);
+                return reinterpret_cast<Float32*>(&this->_fX);
             }
 
             // 頻繁にアクセスする変数にはprivate指定にはしない
-            Float32 x = 0.0f;
-            Float32 y = 0.0f;
-            Float32 z = 0.0f;
+            Float32 _fX = 0.0f;
+            Float32 _fY = 0.0f;
+            Float32 _fZ = 0.0f;
 
             // 各要素を1にしてそれ以外の要素を0にしたベクトル
-            static Vector3 Unit_X;
-            static Vector3 Unit_Y;
-            static Vector3 Unit_Z;
+            static Vector3 UnitX;
+            static Vector3 UnitY;
+            static Vector3 UnitZ;
             static Vector3 Zero;
             static Vector3 One;
 

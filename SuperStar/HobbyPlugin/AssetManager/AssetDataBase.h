@@ -27,12 +27,12 @@ namespace AssetManager
         friend class AssetManagerModule;
 
     protected:
-        virtual void _Init(const Char* in_pName, const Core::File::Path& in_rPath);
+        virtual void _Init(const Char* in_szName, const Core::File::Path& in_rPath);
         virtual const Bool _Load(Platform::FileSystemInterface& in_rFileSystem) = 0;
         virtual void _Unload()                                                  = 0;
 
     protected:
-        Core::Common::FixString128 _name;
+        Core::Common::FixString128 _szName;
         Core::File::Path _path;
     };
 
@@ -50,7 +50,7 @@ namespace AssetManager
         public:
             Node() {}
             Node(toml::node_view<toml::node> in_node) : _node(in_node) {}
-            Node(toml::node& in_node) : _node(in_node) {}
+            Node(toml::node& in_rNode) : _node(in_rNode) {}
 
             const Core::Common::FixString512 GetString();
 
@@ -59,13 +59,13 @@ namespace AssetManager
             GetNode(Args... args)
             {
                 // 引数の個数を取得
-                Uint32 count = static_cast<Uint32>(sizeof...(args));
-                if (count <= 0) return Node();
+                Uint32 uCount = static_cast<Uint32>(sizeof...(args));
+                if (uCount <= 0) return Node();
 
                 // 初期化リストを使用して引数を処理
                 const Char* values[] = {args...};
 
-                return this->_GetNode(values, count);
+                return this->_GetNode(values, uCount);
             }
 
             template <typename... Args>
@@ -74,18 +74,18 @@ namespace AssetManager
             OutputNodeMap(TOML_NODE_MAP_TYPE* out, Args... args)
             {
                 // 引数の個数を取得
-                Uint32 count = static_cast<Uint32>(sizeof...(args));
-                if (count <= 0) return FALSE;
+                Uint32 uCount = static_cast<Uint32>(sizeof...(args));
+                if (uCount <= 0) return FALSE;
 
                 // 初期化リストを使用して引数を処理
-                const Char* values[] = {args...};
-                return this->_OutputNodeMap(out, values, count);
+                const Char* szaName[] = {args...};
+                return this->_OutputNodeMap(out, szaName, uCount);
             }
 
         private:
-            const Bool _OutputNodeMap(TOML_NODE_MAP_TYPE* out, const Char* in_args[],
-                                      const Uint32 in_count);
-            Node _GetNode(const Char*[], Uint32 in_count);
+            const Bool _OutputNodeMap(TOML_NODE_MAP_TYPE* out, const Char* in_szaName[],
+                                      const Uint32 in_uCount);
+            Node _GetNode(const Char* in_szaName[], Uint32 in_uCount);
 
         private:
             toml::node_view<toml::node> _node;
@@ -114,20 +114,20 @@ namespace AssetManager
         typename std::enable_if<(std::is_same<Args, const Char*>::value && ...), const Bool>::type
         _OutputValue(simdjson::fallback::ondemand::value* out, Args... args)
         {
-            E_ASSERT(out);
+            HE_ASSERT(out);
 
             // 引数の個数を取得
-            Uint32 count = static_cast<Uint32>(sizeof...(args));
-            if (count <= 0) return FALSE;
+            Uint32 uCount = static_cast<Uint32>(sizeof...(args));
+            if (uCount <= 0) return FALSE;
 
             // 初期化リストを使用して引数を処理
-            const Char* values[] = {args...};
-            return this->_OutputValue(out, count, values);
+            const Char* szaName[] = {args...};
+            return this->_OutputValue(out, szaName, uCount);
         }
 
     private:
-        const Bool _OutputValue(simdjson::fallback::ondemand::value* out, const Sint32 in_count,
-                                const Char* values[]);
+        const Bool _OutputValue(simdjson::fallback::ondemand::value* out, const Char* in_szaName[],
+                                const Uint32 in_uCount);
 
     protected:
         Core::Common::Handle _fileHandle;

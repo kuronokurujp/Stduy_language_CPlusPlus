@@ -5,7 +5,7 @@
 #include "Core/Core.h"
 #include "FixArray.h"
 
-#ifdef _WIN
+#ifdef HE_WIN
 
 #include <string_view>
 
@@ -22,33 +22,33 @@ namespace Core
         /// </summary>
         class FixStringBase
         {
-            E_CLASS_DEFAULT_CONSTRUCT_NG(FixStringBase);
-            E_CLASS_MOVE_CONSTRUCT_NG(FixStringBase);
+            HE_CLASS_DEFAULT_CONSTRUCT_NG(FixStringBase);
+            HE_CLASS_MOVE_CONSTRUCT_NG(FixStringBase);
 
         public:
-            FixStringBase(Char* in_pBuff, Uint32 in_size);
+            FixStringBase(Char* in_cpBuff, Uint32 in_uSize);
 
             virtual ~FixStringBase() {}
 
-            FixStringBase& Replace(const Char* in_pOld, const Char* in_pNew);
-            FixStringBase& Insert(Uint32 in_index, const Char* in_pInsertStr);
-            FixStringBase& Remove(Uint32 in_index, Uint32 in_count = 1);
-            FixStringBase& Format(const Char* in_pFormat, ...);
-            FixStringBase& FormatV(const Char* in_pFormat, va_list vlist);
-            void Clear() E_NOEXCEPT { this->_pBuff[0] = '\0'; }
+            FixStringBase& Replace(const Char* in_szOld, const Char* in_szNew);
+            FixStringBase& Insert(Uint32 in_uIndex, const Char* in_szInsert);
+            FixStringBase& Remove(Uint32 in_uIndex, Uint32 in_uCount = 1);
+            FixStringBase& Format(const Char* in_cszFormat, ...);
+            FixStringBase& FormatV(const Char* in_szFormat, va_list in_vlist);
+            void Clear() HE_NOEXCEPT { this->_cpBuff[0] = '\0'; }
 
-            Sint32 Find(const Char* in_pStr, Uint32 in_start = 0) const;
+            Sint32 Find(const Char* in_szName, Uint32 in_uStart = 0) const;
 
-            Bool Empty() const E_NOEXCEPT { return this->_pBuff[0] == '\0'; }
+            Bool Empty() const HE_NOEXCEPT { return this->_cpBuff[0] == '\0'; }
 
             // 文字列の文字容量数
-            inline Uint32 Capacity() const E_NOEXCEPT { return this->_capacity; }
+            inline Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
 
             // 文字列の文字数
             // ワイド文字型だと配列の要素数=文字数とは限らないのでSizeメソッドとは別途文字数を取得するメソッドを用意
             const Uint32 Length() const;
 
-            inline const Char* Str() const E_NOEXCEPT { return this->_pBuff; }
+            inline const Char* Str() const HE_NOEXCEPT { return this->_cpBuff; }
 
             /// <summary>
             /// 文字列をハッシュ化して返す
@@ -62,21 +62,21 @@ namespace Core
             /// </summary>
             /// <param name="out"></param>
             /// <param name="in_size"></param>
-            void OutputUTF8(Byte* out, Uint32 in_size) const;
+            void OutputUTF8(UTF8* out, const Uint32 in_uSize) const;
 
             // 大文字 / 小文字にする
-            void ToLower() { E_STR_LOWER(this->_pBuff); }
-            void ToUpper() { E_STR_UPPER(this->_pBuff); }
+            void ToLower() { HE_STR_LOWER(this->_cpBuff); }
+            void ToUpper() { HE_STR_UPPER(this->_cpBuff); }
 
-            FixStringBase& operator=(const Char* in_pStr)
+            FixStringBase& operator=(const Char* in_szName)
             {
-                this->_Copy(in_pStr, this->_capacity);
+                this->_Copy(in_szName, this->_uCapacity);
                 return *this;
             }
 
             FixStringBase& operator=(const FixStringBase& r)
             {
-                this->_Copy(r.Str(), this->_capacity);
+                this->_Copy(r.Str(), this->_uCapacity);
                 return *this;
             }
 
@@ -85,9 +85,9 @@ namespace Core
                 this->_Add(c);
                 return *this;
             }
-            FixStringBase& operator+=(const Char* in_pStr)
+            FixStringBase& operator+=(const Char* in_szName)
             {
-                this->_Add(in_pStr);
+                this->_Add(in_szName);
                 return *this;
             }
             FixStringBase& operator+=(const FixStringBase& r)
@@ -102,75 +102,88 @@ namespace Core
             Concatenate(Args... args)
             {
                 // 引数の個数を取得
-                Uint32 count = static_cast<Uint32>(sizeof...(args));
-                if (count <= 0) return;
+                Uint32 uCount = static_cast<Uint32>(sizeof...(args));
+                if (uCount <= 0) return;
 
                 // 初期化リストを使用して引数を処理
-                const Char* values[] = {args...};
-                for (Uint32 i = 0; i < count; ++i) this->_Add(values[i]);
+                const Char* carrValue[] = {args...};
+                for (Uint32 i = 0; i < uCount; ++i) this->_Add(carrValue[i]);
             }
 
-            Bool operator==(const Char* in_pStr) const;
-            Bool operator==(const FixStringBase& in_rhs) const { return operator==(in_rhs.Str()); }
-            Bool operator!=(const Char* in_pStr) const { return !operator==(in_pStr); }
-            Bool operator!=(const FixStringBase& rhs) const { return !operator==(rhs); }
-            Bool operator<(const Char* in_pStr) const
+            Bool operator==(const Char* in_szName) const
             {
-                return E_STR_CMP(this->_pBuff, in_pStr) < 0;
-            }
-            Bool operator<(const FixStringBase& in_rhs) const
-            {
-                return E_STR_CMP(this->_pBuff, in_rhs.Str()) < 0;
-            }
-            Bool operator<=(const Char* in_pStr) const
-            {
-                return E_STR_CMP(this->_pBuff, in_pStr) <= 0;
-            }
-            Bool operator<=(const FixStringBase& in_rhs) const
-            {
-                return E_STR_CMP(this->_pBuff, in_rhs.Str()) <= 0;
-            }
-            Bool operator>(const Char* in_pStr) const
-            {
-                return E_STR_CMP(this->_pBuff, in_pStr) > 0;
-            }
-            Bool operator>(const FixStringBase& in_rhs) const
-            {
-                return E_STR_CMP(this->_pBuff, in_rhs.Str()) > 0;
-            }
-            Bool operator>=(const Char* in_pStr) const
-            {
-                return E_STR_CMP(this->_pBuff, in_pStr) >= 0;
-            }
-            Bool operator>=(const FixStringBase& in_rhs) const
-            {
-                return E_STR_CMP(this->_pBuff, in_rhs.Str()) >= 0;
+                return (in_szName && (HE_STR_CMP(this->_cpBuff, in_szName) == 0));
             }
 
-            const Char operator[](const Uint32 in_idx) const
+            Bool operator==(const FixStringBase& in_szrName) const
             {
-                if (this->_capacity <= in_idx)
+                return operator==(in_szrName.Str());
+            }
+            Bool operator!=(const Char* in_szName) const { return !operator==(in_szName); }
+            Bool operator!=(const FixStringBase& in_szrName) const
+            {
+                return !operator==(in_szrName);
+            }
+            Bool operator<(const Char* in_szName) const
+            {
+                return HE_STR_CMP(this->_cpBuff, in_szName) < 0;
+            }
+            Bool operator<(const FixStringBase& in_szrName) const
+            {
+                return HE_STR_CMP(this->_cpBuff, in_szrName.Str()) < 0;
+            }
+            Bool operator<=(const Char* in_szName) const
+            {
+                return HE_STR_CMP(this->_cpBuff, in_szName) <= 0;
+            }
+            Bool operator<=(const FixStringBase& in_szrName) const
+            {
+                return HE_STR_CMP(this->_cpBuff, in_szrName.Str()) <= 0;
+            }
+            Bool operator>(const Char* in_szName) const
+            {
+                return HE_STR_CMP(this->_cpBuff, in_szName) > 0;
+            }
+            Bool operator>(const FixStringBase& in_szrName) const
+            {
+                return HE_STR_CMP(this->_cpBuff, in_szrName.Str()) > 0;
+            }
+            Bool operator>=(const Char* in_szName) const
+            {
+                return HE_STR_CMP(this->_cpBuff, in_szName) >= 0;
+            }
+            Bool operator>=(const FixStringBase& in_szrName) const
+            {
+                return HE_STR_CMP(this->_cpBuff, in_szrName.Str()) >= 0;
+            }
+
+            const Char operator[](const Uint32 in_uCuIndex) const
+            {
+                if (this->_uCapacity <= in_uCuIndex)
                 {
                     return '\0';
                 }
 
-                return this->_pBuff[in_idx];
+                return this->_cpBuff[in_uCuIndex];
             }
 
         protected:
-            FixStringBase(const FixStringBase& r) { this->_Copy(r.Str(), r.Length()); }
+            FixStringBase(const FixStringBase& in_szrName)
+            {
+                this->_Copy(in_szrName.Str(), in_szrName.Length());
+            }
 
-            FixStringBase& _Copy(const Char* in_pStr, const Uint32 in_strLen);
+            FixStringBase& _Copy(const Char* in_szName, const Uint32 in_uLen);
 
         private:
-            void _Init(Char* pBuff, Uint32 in_size);
+            void _Init(Char* in_cpBuff, Uint32 in_uSize);
 
-            FixStringBase& _Add(const Char* in_pStr);
+            FixStringBase& _Add(const Char* in_szName);
             FixStringBase& _Add(Char c);
 
         private:
-            Char* _pBuff     = NULL;
-            Uint32 _capacity = 0;
+            Char* _cpBuff     = NULL;
+            Uint32 _uCapacity = 0;
         };
 
         /// <summary>
@@ -180,81 +193,80 @@ namespace Core
         template <Uint32 CAPACITY>
         class FixString : public FixStringBase
         {
-            E_CLASS_MOVE_CONSTRUCT_NG(FixString);
+            HE_CLASS_MOVE_CONSTRUCT_NG(FixString);
 
         public:
-            FixString() : FixStringBase(this->_fixBuff, CAPACITY) {}
-            FixString(const Char* in_pStr) : FixStringBase(this->_fixBuff, CAPACITY)
+            FixString() : FixStringBase(this->_caBuff, CAPACITY) {}
+            FixString(const Char* in_szName) : FixStringBase(this->_caBuff, CAPACITY)
             {
-                this->_Copy(in_pStr, E_STR_LEN(in_pStr));
+                this->_Copy(in_szName, HE_STR_LEN(in_szName));
             }
-            FixString(const FixString<CAPACITY>& r) : FixStringBase(this->_fixBuff, CAPACITY)
+            FixString(const FixString<CAPACITY>& r) : FixStringBase(this->_caBuff, CAPACITY)
             {
                 *this = r;
             }
 
-#ifdef _WIN
-            FixString(const Byte* in_pStr) : FixStringBase(this->_fixBuff, CAPACITY)
+#ifdef HE_WIN
+            FixString(const UTF8* in_szNameUTF8) : FixStringBase(this->_caBuff, CAPACITY)
             {
-                this->_ConvUTF8toWide(in_pStr, static_cast<Uint32>(::strlen(in_pStr)));
+                this->_ConvUTF8toWide(in_szNameUTF8, static_cast<Uint32>(::strlen(in_szNameUTF8)));
             }
 
-            FixString(const std::string_view& in_rStr) : FixStringBase(this->_fixBuff, CAPACITY)
+            FixString(const std::string_view& in_szrName) : FixStringBase(this->_caBuff, CAPACITY)
             {
-                this->_ConvUTF8toWide(in_rStr.data(), static_cast<Uint32>(in_rStr.length()));
+                this->_ConvUTF8toWide(in_szrName.data(), static_cast<Uint32>(in_szrName.length()));
             }
 #else
-            FixString(const std::string_view& in_rStr) : FixStringBase(_fixBuff, CAPACITY)
+            FixString(const std::string_view& in_rStr) : FixStringBase(this->_caBuff, CAPACITY)
             {
                 // TODO: 対応が必要
-                E_ASSERT(0);
+                HE_ASSERT(0);
             }
 #endif
 
-            FixString<CAPACITY>& operator=(const Char* in_pStr)
+            FixString<CAPACITY>& operator=(const Char* in_szName)
             {
-                this->_Copy(in_pStr, E_STR_LEN(in_pStr));
+                this->_Copy(in_szName, HE_STR_LEN(in_szName));
                 return *this;
             }
 
 // win版では文字列はwchar / charの二つの型がある
-#ifdef _WIN
-            FixString<CAPACITY>& operator=(const Byte* in_pStr)
+#ifdef HE_WIN
+            FixString<CAPACITY>& operator=(const Sint8* in_szName)
             {
-                this->_ConvUTF8toWide(in_pStr, CAPACITY);
+                this->_ConvUTF8toWide(in_szName, CAPACITY);
                 return *this;
             }
 #endif
 
             FixString<CAPACITY>& operator=(const FixString<CAPACITY>& r)
             {
-                this->_Copy(r._fixBuff, E_STR_LEN(r._fixBuff));
+                this->_Copy(r._caBuff, HE_STR_LEN(r._caBuff));
                 return *this;
             }
 
         private:
-#ifdef _WIN
+#ifdef HE_WIN
             /// <summary>
             /// UTF8の文字列からワイドの文字列に変えて設定
             /// </summary>
             /// <param name="in_pStr"></param>
             /// <param name="in_len"></param>
-            /// <returns></returns>
-            const Bool _ConvUTF8toWide(const Byte* in_pStr, const Uint32 in_len)
+            const Bool _ConvUTF8toWide(const UTF8* in_szNameUTF8, const Uint32 in_uLen)
             {
-                E_ASSERT(in_pStr);
-                E_ASSERT(in_len <= CAPACITY);
+                HE_ASSERT(in_szNameUTF8);
+                HE_ASSERT(in_uLen <= CAPACITY);
 
                 static Char w[CAPACITY] = {};
-                ::memset(w, 0, E_ARRAY_SIZE(w));
+                ::memset(w, 0, HE_ARRAY_SIZE(w));
 
                 // 利用する文字数を取得
-                Sint32 sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, in_pStr, in_len, NULL, 0);
+                Sint32 iUseSize = MultiByteToWideChar(CP_UTF8, 0, in_szNameUTF8, in_uLen, NULL, 0);
                 // 利用する文字数が制限を超えていないかチェック
-                E_ASSERT(sizeNeeded < CAPACITY);
+                HE_ASSERT(iUseSize < CAPACITY);
 
                 // UTF8文字列からUTF16の文字列に変える
-                MultiByteToWideChar(CP_UTF8, 0, in_pStr, CAPACITY, &w[0], sizeNeeded);
+                MultiByteToWideChar(CP_UTF8, 0, in_szNameUTF8, CAPACITY, &w[0], iUseSize);
 
                 (*this) = w;
 
@@ -262,7 +274,7 @@ namespace Core
             }
 #endif
         private:
-            Char _fixBuff[CAPACITY] = {};
+            Char _caBuff[CAPACITY] = {};
         };
 
         // 固定長の文字列型
@@ -282,29 +294,29 @@ namespace Core
         /// <param name="in_delim"></param>
         template <Uint32 SPLITE_COUNT>
         static void OutputSplitString(FastFixArray<FixString1024, SPLITE_COUNT>& out,
-                                      FixStringBase& in_rStr, const Char in_delim)
+                                      FixStringBase& in_szrName, const Char in_cDelim)
         {
-            FixString1024 item;
+            FixString1024 name;
             Uint32 i = 0;
-            Char ch  = in_rStr[i];
-            while (ch != '\0')
+            Char c   = in_szrName[i];
+            while (c != '\0')
             {
-                if (ch == in_delim)
+                if (c == in_cDelim)
                 {
-                    if (item.Empty() == FALSE) out.PushBack(item);
-                    item.Clear();
+                    if (name.Empty() == FALSE) out.PushBack(name);
+                    name.Clear();
                     // TODO: 配列要素数 -
                     // 1が文字列分割できる回数なので回数を上回ったたら分割処理は終了
                 }
                 else
                 {
-                    item += ch;
+                    name += c;
                 }
                 ++i;
-                ch = in_rStr[i];
+                c = in_szrName[i];
             }
 
-            if (item.Empty() == FALSE) out.PushBack(item);
+            if (name.Empty() == FALSE) out.PushBack(name);
         }
 
     }  // namespace Common

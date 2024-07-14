@@ -15,21 +15,22 @@ namespace Render
     class RenderModule final : public Module::ModuleBase
     {
     public:
-        RenderModule(const Char* in_pName) : ModuleBase(in_pName) {}
+        RenderModule(const Char* in_szName) : ModuleBase(in_szName) {}
 
         // 描画コマンドを追加
-        const Bool AddCmd(const Command&& in_cmd);
+        // コマンドデータは呼び出し元のものにするためにstd::move()で渡す
+        const Bool AddCmd(const Command&& in_rrCmd);
 
         /// <summary>
         /// コマンドをクリア
         /// </summary>
-        void ClearCmd() { this->_comBuff.Clear(); }
+        void ClearCmd() { this->_commandBuff.Clear(); }
 
         /// <summary>
         /// コマンド配列取得
         /// </summary>
         /// <returns></returns>
-        CommandBuffer* GetCmdBuff() { return &this->_comBuff; }
+        CommandBuffer* GetCmdBuff() { return &this->_commandBuff; }
 
     protected:
         /// <summary>
@@ -43,7 +44,7 @@ namespace Render
         virtual const Bool Release() override final;
 
     private:
-        CommandBuffer _comBuff;
+        CommandBuffer _commandBuff;
     };
 }  // namespace Render
 

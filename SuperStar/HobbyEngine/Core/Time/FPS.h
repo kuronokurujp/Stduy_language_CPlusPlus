@@ -18,6 +18,8 @@ namespace Core
         class FPS
         {
         public:
+            FPS(Platform::TimeSystemInterface* in_pTimeInterface);
+
             /// <summary>
             /// 指定時間待機(ミリ秒)
             /// </summary>
@@ -33,10 +35,12 @@ namespace Core
             const Float32 GetDeltaTimeSec(Platform::TimeSystemInterface* in_pTimeInterface) const;
             const Float32 GetDeltaTimeMSec(Platform::TimeSystemInterface* in_pTimeInterface) const;
 
+            inline const Uint32 GetFrameRate() const { return this->_uFrameRate; }
+
         private:
-            static const Uint32 _timeAvgMax   = 10;
-            Uint32 _previousTime[_timeAvgMax] = {0};
-            Uint32 _frameRate                 = 0;
+            static const Uint32 _uTimeAvgMax     = 5;
+            Uint32 _uaPreviousTime[_uTimeAvgMax] = {0};
+            Uint32 _uFrameRate                   = 0;
         };
     }  // namespace Time
 }  // namespace Core

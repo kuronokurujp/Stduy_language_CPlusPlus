@@ -12,7 +12,7 @@ namespace UI
     /// </summary>
     class UIWidgetComponent : public Actor::Component
     {
-        E_CLASS_COPY_CONSTRUCT_NG(UIWidgetComponent);
+        HE_CLASS_COPY_CONSTRUCT_NG(UIWidgetComponent);
         GENERATED_CLASS_BODY_HEADER(UIWidgetComponent, Actor::Component);
 
     public:

@@ -171,6 +171,10 @@ _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Common\Handle.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Common\RTTI.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\File\Path.cpp" />
+    <ClCompile Include="..\..\..\..\HobbyEngine\Core\Math\Math.cpp" />
+    <ClCompile Include="..\..\..\..\HobbyEngine\Core\Math\Matrix3.cpp" />
+    <ClCompile Include="..\..\..\..\HobbyEngine\Core\Math\Matrix4.cpp" />
+    <ClCompile Include="..\..\..\..\HobbyEngine\Core\Math\Quaternion.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Math\Random.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Math\Vector3.cpp" />
     <ClCompile Include="..\..\..\..\HobbyEngine\Core\Memory\Memory.cpp" />
@@ -220,6 +224,10 @@ _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     <ClInclude Include="..\..\..\..\Game\Program\Inc\Level\Title\TitleLevel.h" />
     <ClInclude Include="..\..\..\..\HobbyEngine\Core\Common\FixMap.h" />
     <ClInclude Include="..\..\..\..\HobbyEngine\Core\File\Path.h" />
+    <ClInclude Include="..\..\..\..\HobbyEngine\Core\Math\Matrix3.h" />
+    <ClInclude Include="..\..\..\..\HobbyEngine\Core\Math\Matrix4.h" />
+    <ClInclude Include="..\..\..\..\HobbyEngine\Core\Math\Quaternion.h" />
+    <ClInclude Include="..\..\..\..\HobbyEngine\Core\Math\Vector4.h" />
     <ClInclude Include="..\..\..\..\HobbyEngine\Core\Str.h" />
     <ClInclude Include="..\..\..\..\HobbyEngine\Core\Common\FixArray.h" />
     <ClInclude Include="..\..\..\..\HobbyEngine\Core\Common\FixString.h" />

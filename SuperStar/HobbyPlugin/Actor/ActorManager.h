@@ -34,7 +34,7 @@ namespace Actor
         /// 必ず最初に呼び出す
         /// </summary>
         /// <returns></returns>
-        const Bool Start(const Uint32 in_actorCapacity, const Uint32 in_actorGroupMax);
+        const Bool Start(const Uint32 in_uActorCapacity, const Uint32 in_uActorGroupMax);
 
         /// <summary>
         /// 終了
@@ -69,7 +69,7 @@ namespace Actor
             }
 
             Object* pObject = this->_taskManager.GetTask<Object>(handle);
-            E_ASSERT(pObject != NULL);
+            HE_ASSERT(pObject != NULL);
             pObject->SetManager(this);
 
             return handle;
@@ -100,13 +100,13 @@ namespace Actor
         /// <summary>
         /// アクターに入力状態を送信
         /// </summary>
-        void ProcessInput(const Float32 in_dt, Platform::InputSystemInterface* in_pInput);
+        void ProcessInput(const Float32 in_fDt, Platform::InputSystemInterface* in_pInput);
 
         /// <summary>
         /// アクター更新
         /// </summary>
         /// <param name="in_dt"></param>
-        void Update(const Float32 in_dt, const Core::TaskData&);
+        void Update(const Float32 in_fDt, const Core::TaskData&);
 
         /// <summary>
         /// 保留アクター更新
@@ -118,7 +118,7 @@ namespace Actor
         /// </summary>
         /// <param name="in_hHandle"></param>
         /// <param name="in_depth"></param>
-        void MoveDepth(const Core::Common::Handle& in_hHandle, const Uint32 in_depth);
+        void MoveDepth(const Core::Common::Handle& in_rHandle, const Uint32 in_uDepth);
 
         /*
         /// <summary>

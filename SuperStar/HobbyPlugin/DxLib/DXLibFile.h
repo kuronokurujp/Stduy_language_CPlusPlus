@@ -29,16 +29,16 @@ namespace DxLib
     {
     public:
         virtual const Core::Common::Handle FileOpen(const Core::File::Path& in_rPath) override;
-        virtual const Bool FileClose(const Core::Common::Handle& in_rHandle) override;
+        virtual const Bool FileClose(const Core::Common::Handle&) override;
 
-        virtual const Bool FileRead(const Core::Common::Handle& in_rHandle, void* out_pBuff,
+        virtual const Bool FileRead(void* out_pBuff, const Core::Common::Handle& in_rHandle,
                                     const Sint32 in_size) override;
-        virtual const Sint32 FileSize(const Core::Common::Handle& in_rHandle) override;
+        virtual const Sint32 FileSize(const Core::Common::Handle&) override;
 
     private:
         /// <summary>
         /// ファイルロードしたハンドルマップ
         /// </summary>
-        Core::Common::FixMap<Uint32, Core::Common::Handle, 2048> _fileHandleMap;
+        Core::Common::FixMap<Uint32, Core::Common::Handle, 2048> _mFileHandle;
     };
 }  // namespace DxLib

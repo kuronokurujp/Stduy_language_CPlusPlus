@@ -24,7 +24,7 @@ namespace Level
     class LevelModule final : public Module::ModuleBase
     {
     public:
-        LevelModule(const Char* in_pName) : ModuleBase(in_pName) {}
+        LevelModule(const Char* in_szName) : ModuleBase(in_szName) {}
 
         std::shared_ptr<Manager>& GetManager() { return this->_pLevelManager; }
 
@@ -36,16 +36,11 @@ namespace Level
         const Bool Start() final override;
 
         /// <summary>
-        /// モジュール終了
-        /// </summary>
-        /// <returns></returns>
-        // const Bool End() final override;
-        /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
         virtual const Bool Release() override final;
 
-        const Bool Update(const Float32 in_deltaTime) final override;
+        const Bool Update(const Float32 in_fDeltaTime) final override;
 
     private:
         std::shared_ptr<Manager> _pLevelManager = NULL;

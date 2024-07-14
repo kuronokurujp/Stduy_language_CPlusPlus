@@ -1,6 +1,6 @@
 ﻿// 以下のマクロ定義するとCatch2側でエントリーポイント(main)関数が定義される
 #define CATCH_CONFIG_MAIN
-#define _HOBBY_ENGINE_DEBUG
+#define HE_ENGINE_DEBUG
 
 #include "ThirdParty/Catch.hpp"
 

@@ -1,68 +1,229 @@
-# シューティングゲーム「SuperStar」の開発プロジェクトのリソース
+# ゲーム「SuperStar」開発プロジェクト
 
 ## ゲーム
-ジャンル | 描画
---- | ---
-シューティングゲーム | 2D
+
+| ジャンル             | 描画 |
+| -------------------- | ---- |
+| シューティングゲーム | 2D   |
 
 ## 開発環境
-OS | Version
---- | ---
-Windows | 2022
-<br>
-IDE | Version
---- | ---
-VisualStdio 2022 | 17.8.6
+
+| OS      | バージョン |
+| ------- | ---------- |
+| Windows | 2022       |
+
+| IDE              | バージョン |
+| ---------------- | ---------- |
+| VisualStdio 2022 | 17.8.6     |
+
+| 言語 | バージョン |
+| ---- | ---------- |
+| C++  | 17         |
 
 ## 開発目的
-- C++で利用したゲーム開発経験値をあげるため
 
-## clang-formatツールでc++のコードを整形
-### 自動整形の手順
-### 環境
-- VisualStudio2022
-    - インストール時に自動整形ツールclang-format.exeが入っているのでツール導入は不要
-        - clang-format.exeがある場所
-            - [VisualStudio2022のインストールフォルダ]\VC\Tools\Llvm\bin\clang-format.exe
-- 環境変数CLANG_FORMAT_PATHを追加
-    - バッチファイルで一括整形する場合に使う
-    - 環境変数にはclang-format.exeのパスを絶対パスで設定
+-   C++で利用したゲーム開発経験を詰むため
+-   エンジン開発経験を詰むため
+
+## clang-format ツールで c++のコードを整形
+
+### 環境構築
+
+1. インストール
+    - VisualStudio2022
+        - インストール時に自動整形ツール clang-format.exe が入っているのでツールインストールは不要
+        - clang-format.exe がある場所
+            - [VisualStudio2022 のインストールフォルダ]\VC\Tools\Llvm\bin\clang-format.exe
+1. 環境変数 CLANG_FORMAT_PATH を追加
+
+
+    -   バッチファイルで一括整形する場合に使う
+    -   環境変数には clang-format.exe のパスを絶対パスで設定
+
 ### 整形内容を記述
-1. プロジェクトのルートディレクトリにある.clang-formatファイルを編集
+
+1. プロジェクトのルートディレクトリにある.clang-format ファイルを編集
     - どういった編集をするのかは以下のサイトが参考になる
         - [公式ドキュメント](https://clang.llvm.org/docs/ClangFormatStyleOptions.html)
-        - [Clang-Formatの書式について](https://qiita.com/koyukitukimino/items/9b8f74d1ae307a7017d3)
+        - [Clang-Format の書式について](https://qiita.com/koyukitukimino/items/9b8f74d1ae307a7017d3)
 
 ### どういった整形内容になっているか
-- ファイルの改行コードをLFに統一
-- インデントはスペース
 
-### バッチファイルで一括して整形する場合
-1. HobbyEngine/Tool/CodeCleanup.batを実行
-    - 例: CodeClenupSampleディレクトリ内のcpp/h/hppファイルを全て自動整形
+-   ファイルの改行コードを LF に統一
+-   インデントはスペース
 
-        ```
-        >CodeCleanup.bat CodeClenaupSample\
-        ````
-        末尾に\をつけないとディレクトリとして認識されないので注意
+### 整形手段
+
+-   手動整形
+
+    -   ctrl + f でフォーカスしているファイルが整形
+
+-   バッチファイルで一括して整形する場合
+
+    1. HobbyEngine/Tool/CodeCleanup.bat を実行
+
+        - 例: CodeClenupSample ディレクトリ内の cpp/h/hpp ファイルを全て自動整形
+
+            ```
+            >CodeCleanup.bat CodeClenaupSample\
+            ```
+
+            末尾に\をつけないとディレクトリとして認識されないので注意
+
 ### 自動整形の非対象ディレクトリ
-1. ディレクトリに.clang-formatファイルを作成
+
+1. ディレクトリに.clang-format ファイルを作成
 1. 作成したファイル内容を以下にする
     ```
     ---
     DisbaleFormat: true
     ---
     ```
-    こうするとclang-formatはエラーになってファイルの自動整形は失敗する
+    こうすると clang-format はエラーになってファイルの自動整形は失敗する
+
+## コーディング規約
+
+### 目的
+
+コードを読むだけで処理内容をできるだけすばやく理解できるようにするため
+
+### 変数名
+
+変数名を見るだけで変数型を素早く理解するために<br>
+ハンガリアン記法を採用<br>
+型の記号はわかりやすくかつ変数名を読むのを邪魔にならない程度<br>
+
+-   変数名の先頭につける記号一覧
+    |データ型|プレフィックス|説明|
+    |----|----|----|
+    |Sint8|なし|使う機会がほとんどないから|
+    |UInt8|なし|使う機会がほとんどないから|
+    |Sint16|is||
+    |Uint16|us||
+    |Sint32|i||
+    |Uint32|u||
+    |Sint64|il||
+    |Uint64|ul||
+    |Float32|f||
+    |Float64|d||
+    |Bool|b||
+    |Char|c||
+    |Char[] or Char\* or std::string などの文字列|sz||
+    |ポインター|p||
+    |Ptr|p||
+    |参照|r||
+    |std::shared*ptr|sp||
+    |配列 または配列機能を持つクラス|a||
+    |std::vector または 同様の機能を持つクラス|v||
+    |std::list または 同様の機能を持つクラス|lst||
+    |std::map または 同様の機能を持つクラス|m||
+    |テンプレート|t|抽象型で分かりにくいので記号を入れて見てわかるようにした|
+    |メソッド引数の入力|in*||
+    |値をメソッド出力引数|out||
+    |クラスのメンバー変数|\_||
+    |構造体のメンバー変数|なし||
+    |const|なし|つける記号が増えると逆に見づらくなるので|
+    |enum|e||
+
+-   変数名の先頭につける記号のつけ方
+
+    記号は型を付けた左から右の順につける
+
+    -   例 1)
+        ```
+        // Uintなのでu
+        // *でポインターだからp
+        // なのでupの記号をつける
+        const Uint32* u32pCount;
+        ```
+    -   例 2)
+        ```
+            class Human
+            {
+            public:
+                // メンバー変数なので_
+                // Uint32型なのでuをつける
+                Uint32 _u32Count = 0;
+            };
+        ```
+    -   例 3)
+        ```
+        template(class TYPE)
+        void Func()
+        {
+            TYPE _taValue[32];
+        }
+        ```
+
+### クラスのメソッド名
+
+#### protected or private は外部公開ができない事を読んで判断できるようにするためにメソッド名の先頭に\_をつける
+
+```
+    class Object
+    {
+    private:
+        const Uint32 _GetIndex() { return 0; }
+    };
+```
+
+### ファイル名 / ディレクトリ名
+
+#### 大文字のキャメルケース
+
+```
+    TaskManager.cpp
+    TaskManager.h
+    TaskManager.hpp
+    ...
+```
+
+### マクロ
+
+-   マクロ名は全て大文字
+-   エンジン内のマクロ
+    -   プレフィックスは HE\_
+-   モジュールやゲーム内のマクロ
+    -   プレフィックスはなし
+
+### enum 名
+- 必ず名前を付ける
+    - 名前のプレフィックスにEをつける
+- 要素のプレフィックスにenumにつけた名前をつける
+
+例)
+```
+    enum EState
+    {
+        EState_Active = 0,
+    }
+```
+
+### クラス内でのメンバー変数の参照
+クラス内のメンバー変数を参照する時はthisをつける
+例)
+```
+    class Object
+    {
+    public:
+        const Uint32 Count() const { this->_count; }
+    private:
+        Uint32 _count;
+    }
+```
+
+    
 
 ## 注意点
-- gitの無視ファイルにDebugディレクトリを指定しているのでDディレクトリ名にDebugを使ってはいけない
+
+-   git の無視ファイルに Debug ディレクトリを指定しているのでディレクトリ名に Debug を使ってはいけない
 
 # 利用ライブラリ一覧
-Name | Version
---- | ---
-[Catch2](https://github.com/catchorg/Catch2) | v2.13.10
-[DxLib](https://dxlib.xsrv.jp/) | Ver 3.24d
-[tomlplusplus](https://github.com/marzer/tomlplusplus?tab=readme-ov-file) | V3.4.0
-[simdjson](https://github.com/simdjson/simdjson) | v3.9.4
 
+| Name                                                                      | Version   |
+| ------------------------------------------------------------------------- | --------- |
+| [Catch2](https://github.com/catchorg/Catch2)                              | v2.13.10  |
+| [DxLib](https://dxlib.xsrv.jp/)                                           | Ver 3.24d |
+| [tomlplusplus](https://github.com/marzer/tomlplusplus?tab=readme-ov-file) | V3.4.0    |
+| [simdjson](https://github.com/simdjson/simdjson)                          | v3.9.4    |
+| [pugixml](https://github.com/simdjson/simdjson)                           | v1.14     |

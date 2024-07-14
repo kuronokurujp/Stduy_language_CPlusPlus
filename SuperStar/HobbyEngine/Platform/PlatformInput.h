@@ -255,19 +255,19 @@ namespace Platform
         /// <summary>
         /// 指定キーを押しているか
         /// </summary>
-        const Bool GetKeyValue(const EKeyboard in_keyCode) const
+        const Bool GetKeyValue(const EKeyboard in_eKeyCode) const
         {
-            return (this->_currState[in_keyCode] != EInputState_NONE);
+            return (this->_aCurrState[in_eKeyCode] != EInputState_NONE);
         }
 
         /// <summary>
         /// 指定キーの入力状態
         /// </summary>
-        const EInputState GetKeyState(const EKeyboard in_keyCode) const;
+        const EInputState GetKeyState(const EKeyboard in_eKeyCode) const;
 
     public:
-        Uint8 _currState[EKeyboard::EKeyboard_MAX];
-        Uint8 _prevState[EKeyboard::EKeyboard_MAX];
+        Uint8 _aCurrState[EKeyboard::EKeyboard_MAX];
+        Uint8 _aPrevState[EKeyboard::EKeyboard_MAX];
     };
 
     /// <summary>
@@ -282,12 +282,12 @@ namespace Platform
         const EInputState GetTouchState(const EInputMouseType) const;
 
         // TODO: 指定した矩形がタッチ範囲かどうか
-        const Bool IsTouchInRect(const Core::Math::Rect2 in_rect) const;
+        const Bool IsTouchInRect(const Core::Math::Rect2&) const;
 
     public:
         Core::Math::Vector2 _pos;
-        Uint32 _currTouchState;
-        Uint32 _prevTouchState;
+        Uint32 _uCurrTouchState;
+        Uint32 _uPrevTouchState;
     };
 
     /// <summary>
@@ -306,10 +306,10 @@ namespace Platform
     class InputSystemInterface
     {
     public:
-        virtual void Init()                                   = 0;
-        virtual void BeforeUpdate(const Float32 in_deltaTime) = 0;
-        virtual void Update(const Float32 in_deltaTime)       = 0;
-        virtual void AfterUpdate(const Float32 in_deltaTime)  = 0;
+        virtual void Init()                                    = 0;
+        virtual void BeforeUpdate(const Float32 in_fDeltaTime) = 0;
+        virtual void Update(const Float32 in_fDeltaTime)       = 0;
+        virtual void AfterUpdate(const Float32 in_fDeltaTime)  = 0;
 
         const InputState& GetState() const { return this->_state; }
 

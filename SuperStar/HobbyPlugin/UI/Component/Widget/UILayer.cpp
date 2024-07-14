@@ -9,8 +9,7 @@ namespace UI
     /// コンポーネントの更新
     /// 必ず処理を記述
     /// </summary>
-    /// <param name="in_deltaTime">The in delta time.</param>
-    void UILayerComponent::Update(const Float32 in_deltaTime)
+    void UILayerComponent::Update(const Float32 in_fDeltaTime)
     {
     }
 }  // namespace UI
