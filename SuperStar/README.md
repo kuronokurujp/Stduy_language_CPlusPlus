@@ -20,6 +20,9 @@
 | ---- | ---------- |
 | C++  | 17         |
 
+| CMake | 3.30.0 |
+| ----- | ------ |
+
 ## 開発目的
 
 -   C++で利用したゲーム開発経験を詰むため
@@ -34,11 +37,22 @@
         - インストール時に自動整形ツール clang-format.exe が入っているのでツールインストールは不要
         - clang-format.exe がある場所
             - [VisualStudio2022 のインストールフォルダ]\VC\Tools\Llvm\bin\clang-format.exe
+    - CMake
+        - VS2022 のプロジェクト作成に使う
+        - [インストール先](https://cmake.org/download/)
+        - 項目 **Windows x64 Installer:** のインストーラーをダウンロード
+        - [参考となるインストール方法](https://qiita.com/matskeng/items/c466c4751e1352f97ce6)
+
+## VS2022 プロジェクト作成
+
+1. Build.bat ファイルを実行
+1. x86 か x64 のどちらかで作成するかの選択画面が出るの選択する
+1. 作成に成功したら Build ディレクトリが作られていてその中に SuperStar.sln ファイルがあるので開く
+
 1. 環境変数 CLANG_FORMAT_PATH を追加
 
-
-    -   バッチファイルで一括整形する場合に使う
-    -   環境変数には clang-format.exe のパスを絶対パスで設定
+    - バッチファイルで一括整形する場合に使う
+    - 環境変数には clang-format.exe のパスを絶対パスで設定
 
 ### 整形内容を記述
 
@@ -187,11 +201,13 @@
     -   プレフィックスはなし
 
 ### enum 名
-- 必ず名前を付ける
-    - 名前のプレフィックスにEをつける
-- 要素のプレフィックスにenumにつけた名前をつける
+
+-   必ず名前を付ける
+    -   名前のプレフィックスに E をつける
+-   要素のプレフィックスに enum につけた名前をつける
 
 例)
+
 ```
     enum EState
     {
@@ -200,8 +216,10 @@
 ```
 
 ### クラス内でのメンバー変数の参照
-クラス内のメンバー変数を参照する時はthisをつける
+
+クラス内のメンバー変数を参照する時は this をつける
 例)
+
 ```
     class Object
     {
@@ -211,8 +229,6 @@
         Uint32 _count;
     }
 ```
-
-    
 
 ## 注意点
 
@@ -229,4 +245,26 @@
 | [pugixml](https://github.com/simdjson/simdjson)                           | v1.14     |
 
 # 参考サイト
-- [Gitで管理しているソースの改行コード対応](https://zenn.dev/gekal/articles/git-line-endings-practices)
+
+## Git
+
+-   [Git で管理しているソースの改行コード対応](https://zenn.dev/gekal/articles/git-line-endings-practices)
+
+## CMake
+
+-   [C/C++プロジェクトを CMake でビルドする](https://qiita.com/Hiroya_W/items/049bfb4c6ad3dfe6ff0c)
+    -   CMake を使ってプロジェクトを構築方法をシンプルに記載している
+    -   初心者におすすめ
+-   [CMake 再入門メモ](https://zenn.dev/rjkuro/articles/054dab5b0e4f40)
+    -   CMake の基本機能説明をしている
+    -   初心者におすすめ
+-   [CMake: キャッシュ変数と環境変数](https://qiita.com/mrk_21/items/186439952a6665184444)
+    -   グローバル変数のようなもの
+    -   複数の CMakeLists.txt から変数を参照できた
+-   [Visual Studio 向けに使う CMake](https://hikita12312.hatenablog.com/entry/2018/09/13/101924)
+
+    -   VS のプリコンパイル済みのヘッダーファイルを CMake で作成する方法
+
+-   [Visual Studio ユーザーに送る CMake テクニック ☆ (1)](https://elda27.hatenablog.com/entry/2016/11/29/235301)
+    -   VS2022 プロジェクトのフィルタリングを CMake で作成する方法
+    -   プロジェクトのファイルを整理して見やすくするために必要
