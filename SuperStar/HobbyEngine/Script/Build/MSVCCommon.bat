@@ -54,22 +54,24 @@ if "%SELECTED%" equ "1" (
 )
 
 rem ランタイム入力.
-echo.
-echo Select which cubism core c runtime library to use
-echo **************************************************
-echo 1. use the multithread-specific and DLL-specific version of the run-time library (MD)
-echo 2. use the multithread, static version of the run-time library (MT)
-echo.
-choice /c:12 /n /m ">"
-set SELECTED=%errorlevel%
-if "%SELECTED%" equ "1" (
-  set CORE_CRL_MD=ON
-) else if "%SELECTED%" equ "2" (
-  set CORE_CRL_MD=OFF
-) else (
-  echo [GameProject] Invalid option.
-  exit /b 1
-)
+rem ランタイムを変えるケースが今ないのでマルチスレッドlibで固定にしておく
+rem echo.
+rem echo Select which cubism core c runtime library to use
+rem echo **************************************************
+rem echo 1. use the multithread-specific and DLL-specific version of the run-time library (MD)
+rem echo 2. use the multithread, static version of the run-time library (MT)
+rem echo.
+rem choice /c:12 /n /m ">"
+rem set SELECTED=%errorlevel%
+rem if "%SELECTED%" equ "1" (
+rem   set CORE_CRL_MD=ON
+rem ) else if "%SELECTED%" equ "2" (
+rem   set CORE_CRL_MD=OFF
+rem ) else (
+rem   echo [GameProject] Invalid option.
+rem   exit /b 1
+rem )
+set CORE_CRL_MD=OFF
 
 rem ------
 rem ビルド.
