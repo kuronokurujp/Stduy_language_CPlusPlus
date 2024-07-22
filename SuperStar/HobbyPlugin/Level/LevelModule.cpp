@@ -1,7 +1,7 @@
 ﻿#include "LevelModule.h"
 
-#include "Core/Memory/Memory.h"
-#include "LevelManager.h"
+#include "Code/LevelManager.h"
+#include "Memory/Memory.h"
 
 MODULE_GENRATE_DEFINITION(Level::LevelModule, Level);
 

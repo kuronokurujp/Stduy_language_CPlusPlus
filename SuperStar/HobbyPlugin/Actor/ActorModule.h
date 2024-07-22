@@ -1,14 +1,14 @@
 ﻿#pragma once
 
-#include "Core/Common/Handle.h"
-#include "Core/Core.h"
+#include "Common/Handle.h"
+#include "Core.h"
 #include "Module/Module.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
-#include "Actor.h"
-#include "ActorInterface.h"
-#include "ActorManager.h"
-#include "Component/Component.h"
+#include "Code/Actor.h"
+#include "Code/ActorInterface.h"
+#include "Code/ActorManager.h"
+#include "Code/Component/Component.h"
 
 namespace Actor
 {

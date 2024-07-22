@@ -1,8 +1,9 @@
 ﻿#include "AssetManagerModule.h"
 
+#include "Code/AssetDataBase.h"
+
 // 依存モジュール
-#include "AssetDataBase.h"
-#include "HobbyEngine/Platform/PlatformModule.h"
+#include "Platform/PlatformModule.h"
 
 MODULE_GENRATE_DEFINITION(AssetManager::AssetManagerModule, AssetManager);
 

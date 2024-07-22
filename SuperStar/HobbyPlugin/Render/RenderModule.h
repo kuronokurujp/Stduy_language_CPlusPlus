@@ -3,9 +3,9 @@
 #include "Module/Module.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
-#include "Color.h"
-#include "Command/Command.h"
-#include "CommandBuffer.h"
+#include "Code/Color.h"
+#include "Code/Command/Command.h"
+#include "Code/CommandBuffer.h"
 
 namespace Render
 {

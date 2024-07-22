@@ -3,13 +3,13 @@
 #include "DxLib.h"
 
 // 依存モジュール一覧
-#include "HobbyPlugin/Render/RenderModule.h"
+#include "RenderModule.h"
 
-MODULE_GENRATE_DEFINITION(DXLib::DxLibModule, Platform);
+MODULE_GENRATE_DEFINITION(DXLib::DXLibModule, Platform);
 
 namespace DXLib
 {
-    const Bool DxLibModule::Start()
+    const Bool DXLibModule::Start()
     {
         Bool bRet = TRUE;
         {
@@ -37,24 +37,24 @@ namespace DXLib
         return bRet;
     }
 
-    const Bool DxLibModule::Release()
+    const Bool DXLibModule::Release()
     {
         // DxLibの後始末
         DxLib_End();
 
         return TRUE;
     }
-    const Bool DxLibModule::CreateMainWindow()
+    const Bool DXLibModule::CreateMainWindow()
     {
         return FALSE;
     }
 
-    const Bool DxLibModule::ReleaseAllWindows()
+    const Bool DXLibModule::ReleaseAllWindows()
     {
         return FALSE;
     }
 
-    const Bool DxLibModule::BeforUpdate(const Float32 in_fDeltaTime)
+    const Bool DXLibModule::BeforUpdate(const Float32 in_fDeltaTime)
     {
         Bool bRet = TRUE;
         {
@@ -75,14 +75,14 @@ namespace DXLib
         return bRet;
     }
 
-    const Bool DxLibModule::Update(const Float32 in_fDeltaTime)
+    const Bool DXLibModule::Update(const Float32 in_fDeltaTime)
     {
         this->_input.Update(in_fDeltaTime);
 
         return TRUE;
     }
 
-    const Bool DxLibModule::AfterUpdate(const Float32 in_fDeltaTime)
+    const Bool DXLibModule::AfterUpdate(const Float32 in_fDeltaTime)
     {
         // 画面の反映
         ScreenFlip();
@@ -92,15 +92,17 @@ namespace DXLib
         return TRUE;
     }
 
-    void DxLibModule::BeginRender(void* in_pCmdBuff)
+    void DXLibModule::BeginRender()
     {
-        Render::CommandBuffer* pCmdBuff = reinterpret_cast<Render::CommandBuffer*>(in_pCmdBuff);
-        HE_ASSERT(pCmdBuff);
     }
 
-    void DxLibModule::Redner(void* in_pCmdBuff)
+    void DXLibModule::Redner()
     {
-        Render::CommandBuffer* pCmdBuff = reinterpret_cast<Render::CommandBuffer*>(in_pCmdBuff);
+        Render::RenderModule* pRenderModule = ModuleRender();
+        HE_ASSERT(pRenderModule);
+
+        Render::CommandBuffer* pCmdBuff =
+            reinterpret_cast<Render::CommandBuffer*>(pRenderModule->GetCmdBuff());
         HE_ASSERT(pCmdBuff);
 
         for (Uint32 i = 0; i < pCmdBuff->Size(); ++i)
@@ -141,10 +143,12 @@ namespace DXLib
         }
     }
 
-    void DxLibModule::EndRender(void* in_pCmdBuff)
+    void DXLibModule::EndRender()
     {
-        Render::CommandBuffer* pCmdBuff = reinterpret_cast<Render::CommandBuffer*>(in_pCmdBuff);
-        HE_ASSERT(pCmdBuff);
+        Render::RenderModule* pRenderModule = ModuleRender();
+        HE_ASSERT(pRenderModule);
+
+        pRenderModule->ClearCmd();
     }
 
 }  // namespace DXLib

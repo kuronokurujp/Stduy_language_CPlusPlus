@@ -1,31 +1,25 @@
 ﻿#pragma once
 
-#include "Core/Common/FixString.h"
-#include "Core/Common/Handle.h"
-#include "Core/Math/Math.h"
+#include "Common/CustomString.h"
+#include "Common/Handle.h"
+#include "Math/Math.h"
 #include "MiniEngine.h"
 #include "Module/Module.h"
 
 // プラットフォームモジュールを使う
 // 主にインプット入力の取得など
-#include "HobbyEngine/Platform/PlatformModule.h"
-
-// 外部モジュール
-#include "HobbyPlugin/Actor/ActorModule.h"
-#include "HobbyPlugin/AssetManager/AssetManagerModule.h"
-#include "HobbyPlugin/Level/LevelModule.h"
-#include "HobbyPlugin/Localization/LocalizationModule.h"
-#include "HobbyPlugin/Render/RenderModule.h"
+#include "LevelModule.h"
+#include "Platform/PlatformModule.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
-#include "Builder/UILayoutBuilder.h"
-#include "Builder/UILayoutData.h"
-#include "Component/Input/UIInputRouter.h"
-#include "Component/Input/UIInputTerminalTouch.h"
-#include "Component/Widget/UIButton.h"
-#include "Component/Widget/UILayer.h"
-#include "Component/Widget/UIText.h"
-#include "Widget.h"
+#include "Code/Builder/UILayoutBuilder.h"
+#include "Code/Builder/UILayoutData.h"
+#include "Code/Component/Input/UIInputRouter.h"
+#include "Code/Component/Input/UIInputTerminalTouch.h"
+#include "Code/Component/Widget/UIButton.h"
+#include "Code/Component/Widget/UILayer.h"
+#include "Code/Component/Widget/UIText.h"
+#include "Code/Widget.h"
 
 namespace UI
 {

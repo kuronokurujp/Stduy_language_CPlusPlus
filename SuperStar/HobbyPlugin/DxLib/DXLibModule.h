@@ -5,19 +5,19 @@
 
 // DxLibのシステム一覧
 // モジュールのヘッダーファイルは全てインクルードする
-#include "DXLibInput.h"
-#include "DXLibTime.h"
-#include "DxLibFile.h"
+#include "Code/DXLibInput.h"
+#include "Code/DXLibTime.h"
+#include "Code/DxLibFile.h"
 
 namespace DXLib
 {
     /// <summary>
     /// DxLibプラットフォームが利用できるモジュール
     /// </summary>
-    class DxLibModule final : public Platform::PlatformModule
+    class DXLibModule final : public Platform::PlatformModule
     {
     public:
-        DxLibModule(const Char* in_szName) : PlatformModule(in_szName) {}
+        DXLibModule(const Char* in_szName) : PlatformModule(in_szName) {}
 
         const bool CreateMainWindow() override final;
         const bool ReleaseAllWindows() override final;
@@ -57,9 +57,9 @@ namespace DXLib
         const bool AfterUpdate(const Float32 in_fDeltaTime) override final;
 
         // 描画
-        void BeginRender(void* in_pCmdBuff) override final;
-        void Redner(void* in_pCmdBuff) override final;
-        void EndRender(void* in_pCmdBuff) override final;
+        void BeginRender() override final;
+        void Redner() override final;
+        void EndRender() override final;
 
     private:
         TimeSystem _time;
@@ -68,4 +68,5 @@ namespace DXLib
     };
 }  // namespace DXLib
 
-MODULE_GENRATE_DECLARATION(DXLib::DxLibModule, Platform);
+// DXLibを実行プラットフォームモジュールとして指定
+MODULE_GENRATE_DECLARATION(DXLib::DXLibModule, Platform);

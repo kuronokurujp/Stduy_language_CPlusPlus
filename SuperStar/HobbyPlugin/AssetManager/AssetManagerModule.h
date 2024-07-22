@@ -1,13 +1,13 @@
 ﻿#pragma once
 
-#include "HobbyEngine/Core/Common/Handle.h"
-#include "HobbyEngine/Core/Common/PoolManager.h"
-#include "HobbyEngine/Core/File/Path.h"
-#include "HobbyEngine/MiniEngine.h"
-#include "HobbyEngine/Module/Module.h"
+#include "Common/Handle.h"
+#include "Common/PoolManager.h"
+#include "File/Path.h"
+#include "MiniEngine.h"
+#include "Module/Module.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
-#include "AssetDataBase.h"
+#include "Code/AssetDataBase.h"
 
 namespace AssetManager
 {

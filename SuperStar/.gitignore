@@ -414,4 +414,5 @@ Log.txt
 HobbyPlugin/DxLib/ThirdParty/DxLib_VC/*
 !HobbyPlugin/DxLib/ThirdParty/DxLib_VC/lib/
 User/*
-
+Build/*
+Bin/*

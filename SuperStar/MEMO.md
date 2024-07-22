@@ -1,5 +1,38 @@
 # 開発時に気づいたことや気になったことなどのメモ
 
+VSでインストールした情報を取得するツールがあった
+%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe
+vswhere.exeというのがそれ
+https://github.com/microsoft/vswhere
+インストールしたVSのディレクトリ絶対パスが一覧で取得できる
+バッチファイルなどで特定のVSのバージョンのツールなどにアクセスしたいときに使える
+
+以下のサイトが参考になる
+https://qiita.com/softgate/items/b9e04da8f8fc9f180855
+
+VSのビルド環境構築バッチ
+vsvarsall.bat
+https://learn.microsoft.com/ja-jp/cpp/build/building-on-the-command-line?view=msvc-170
+コマンドラインでVSのビルドを実行するには環境変数の設定などいろいろ準備が必要
+vsvarsall.batを使う事でこの準備が簡単にできる
+
+以下のサイトが参考になる
+https://qiita.com/softgate/items/b9e04da8f8fc9f180855
+
+VCのMDとMTについて
+ランタイムライブラリの設定
+MDはマルチスレッド対応またはDLLバージョンが使用
+コードにMSVCRT.iibが静的リンクされる
+
+MTはマルチスレッドの静的なランタイムライブラリを使用
+LIBCMT.libをobjファイルに挿入
+
+PremakeというVSやXcodeプロジェクトを出力するツールがある
+CMakeに変わるものかと思っていたが、普及していない
+ブリザードの人が利用しているといっているが、調べてみるとCMakeを使っているので嘘か使いがたくやめたかのどちらか
+普及でいうとCMakeの方が圧倒的
+現在もバージョンアップしている
+
 ## 開発環境
 ### VS2022にインストールしたプラグインVsVimの動作が重い
 - コピー処理が重い

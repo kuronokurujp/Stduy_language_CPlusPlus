@@ -1,7 +1,5 @@
 ﻿#include "ActorModule.h"
 
-#include "Core/Memory/Memory.h"
-
 MODULE_GENRATE_DEFINITION(Actor::ActorModule, Actor);
 
 namespace Actor

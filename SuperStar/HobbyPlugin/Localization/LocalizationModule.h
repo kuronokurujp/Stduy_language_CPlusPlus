@@ -1,12 +1,12 @@
 ﻿#pragma once
 
-#include "HobbyEngine/Core/Common/FixMap.h"
-#include "HobbyEngine/Core/File/Path.h"
-#include "HobbyEngine/MiniEngine.h"
-#include "HobbyEngine/Module/Module.h"
+#include "Common/CustomMap.h"
+#include "File/Path.h"
+#include "MiniEngine.h"
+#include "Module/Module.h"
 
 // 依存モジュール
-#include "HobbyPlugin/AssetManager/AssetManagerModule.h"
+#include "AssetManagerModule.h"
 
 namespace Localization
 {

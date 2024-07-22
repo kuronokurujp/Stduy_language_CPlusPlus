@@ -227,3 +227,6 @@
 | [tomlplusplus](https://github.com/marzer/tomlplusplus?tab=readme-ov-file) | V3.4.0    |
 | [simdjson](https://github.com/simdjson/simdjson)                          | v3.9.4    |
 | [pugixml](https://github.com/simdjson/simdjson)                           | v1.14     |
+
+# 参考サイト
+- [Gitで管理しているソースの改行コード対応](https://zenn.dev/gekal/articles/git-line-endings-practices)
