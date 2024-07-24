@@ -19,11 +19,10 @@ namespace Core
             // メモリサイズのイニシャライズ
             Core::Memory::Manager::PageSetupInfo memoryPageSetupInfoArray[] = {
                 // 複数ページのサイズ
-                {0, 3 * 1024 * 1024}
-            };
+                {0, 3 * 1024 * 1024}};
 
             CHECK(memoryManager.SetupMemoryPage(memoryPageSetupInfoArray,
-                                                  HE_ARRAY_NUM(memoryPageSetupInfoArray)));
+                                                HE_ARRAY_NUM(memoryPageSetupInfoArray)));
             CHECK(memoryManager.CheckAllMemoryBlock());
         }
 
@@ -55,11 +54,10 @@ namespace Core
             // メモリサイズのイニシャライズ
             Core::Memory::Manager::PageSetupInfo memoryPageSetupInfoArray[] = {
                 // 複数ページのサイズ
-                {0, 3 * 1024 * 1024}
-            };
+                {0, 3 * 1024 * 1024}};
 
             CHECK(memoryManager.SetupMemoryPage(memoryPageSetupInfoArray,
-                                                  HE_ARRAY_NUM(memoryPageSetupInfoArray)));
+                                                HE_ARRAY_NUM(memoryPageSetupInfoArray)));
             CHECK(memoryManager.CheckAllMemoryBlock());
         }
 
@@ -240,11 +238,10 @@ namespace Core
             // メモリサイズのイニシャライズ
             Core::Memory::Manager::PageSetupInfo memoryPageSetupInfoArray[] = {
                 // 複数ページのサイズ
-                {0, 3 * 1024 * 1024}
-            };
+                {0, 3 * 1024 * 1024}};
 
             CHECK(memoryManager.SetupMemoryPage(memoryPageSetupInfoArray,
-                                                  HE_ARRAY_NUM(memoryPageSetupInfoArray)));
+                                                HE_ARRAY_NUM(memoryPageSetupInfoArray)));
             CHECK(memoryManager.CheckAllMemoryBlock());
         }
         /// <summary>
@@ -352,7 +349,6 @@ namespace Core
         // タスクシステムが終了しているので解放されているか
         CHECK(manager.UseCount() == 0);
 
-
         CHECK(memoryManager.Release());
         memoryManager.Reset();
     }
@@ -366,11 +362,10 @@ namespace Core
             // メモリサイズのイニシャライズ
             Core::Memory::Manager::PageSetupInfo memoryPageSetupInfoArray[] = {
                 // 複数ページのサイズ
-                {0, 3 * 1024 * 1024}
-            };
+                {0, 3 * 1024 * 1024}};
 
             CHECK(memoryManager.SetupMemoryPage(memoryPageSetupInfoArray,
-                                                  HE_ARRAY_NUM(memoryPageSetupInfoArray)));
+                                                HE_ARRAY_NUM(memoryPageSetupInfoArray)));
             CHECK(memoryManager.CheckAllMemoryBlock());
         }
         /// <summary>

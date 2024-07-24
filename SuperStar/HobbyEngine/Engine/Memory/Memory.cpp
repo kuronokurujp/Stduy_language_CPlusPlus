@@ -20,8 +20,8 @@ void* operator new(size_t in_size, Uint8 in_page, Uint8 in_alignSize,
     // VSのx64だとsize_tがunsigned int64になるが, 8byteフルサイズでの確保はないと思うので,
     // Uint32でサイズを調整した
     Uint32 uMemSize = static_cast<Uint32>(in_size);
-    void* pMem = (Core::Memory::Manager::I().AllocateMemory(uMemSize, in_page, in_alignSize,
-                                                      in_eLocateType, in_pFile, in_uLine));
+    void* pMem      = (Core::Memory::Manager::I().AllocateMemory(uMemSize, in_page, in_alignSize,
+                                                                 in_eLocateType, in_pFile, in_uLine));
     return pMem;
 }
 
@@ -57,8 +57,8 @@ void* ::operator new[](size_t in_size, Uint8 in_page, Uint8 in_alignSize,
     // VSのx64だとsize_tがunsigned int64になるが, 8byteフルサイズでの確保はないと思うので,
     // Uint32でサイズを調整した
     Uint32 uMemSize = static_cast<Uint32>(in_size);
-    void* pMem = (Core::Memory::Manager::I().AllocateMemory(uMemSize, in_page, in_alignSize,
-                                                      in_eLocateType, in_pFile, in_uLine));
+    void* pMem      = (Core::Memory::Manager::I().AllocateMemory(uMemSize, in_page, in_alignSize,
+                                                                 in_eLocateType, in_pFile, in_uLine));
     return pMem;
 }
 
@@ -235,4 +235,3 @@ void* operator new[](std::size_t in_size) throw(std::bad_alloc)
 
 #endif
 */
-

@@ -180,7 +180,7 @@ namespace Core
 
                     // Tを継承したSクラスのインスタンスを生成
                     // NEWは用意したマクロを使う
-                    tpObject = HE_NEW(S, 0);// new S();
+                    tpObject = HE_NEW(S, 0);  // new S();
                 }
 
                 allocData._handle = handle;

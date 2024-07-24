@@ -570,7 +570,7 @@ namespace Core
 
             // 返すのは使用できる領域の先頭
             const Uint32 headerSize = this->_GetMemoryBlockHeaderSize();
-            Sint8* pAddr = reinterpret_cast<Sint8*>(pAllocateMemoryBlock) + headerSize;
+            Sint8* pAddr            = reinterpret_cast<Sint8*>(pAllocateMemoryBlock) + headerSize;
             return (reinterpret_cast<void*>(pAddr));
         }
 
@@ -581,8 +581,8 @@ namespace Core
         void Manager::FreeMemory(void* in_pAllocatedMemory)
         {
             // 受け取ったのは使用できるメモリの先頭
-            const Uint32 headerSize = this->_GetMemoryBlockHeaderSize();
-            Sint8* pAddr = reinterpret_cast<Sint8*>(in_pAllocatedMemory) - headerSize;
+            const Uint32 headerSize   = this->_GetMemoryBlockHeaderSize();
+            Sint8* pAddr              = reinterpret_cast<Sint8*>(in_pAllocatedMemory) - headerSize;
             BlockHeader* pMemoryBlock = reinterpret_cast<BlockHeader*>(pAddr);
 
             HE_ASSERT(this->_IsValidMemoryBlock(pMemoryBlock) &&
@@ -597,6 +597,9 @@ namespace Core
             pMemoryBlock->_paddingSize = 0;
 
 #ifdef HE_ENGINE_DEBUG
+            HE_LOG_LINE(HE_STR_TEXT("FreeMemory: ")
+                            HE_STR_FORMAT_PURE_TEXT HE_STR_TEXT(" Line: %d"),
+                        pMemoryBlock->_szFileName, pMemoryBlock->_uLine);
             ::memset(pMemoryBlock->_szFileName, 0, HE_ARRAY_SIZE(pMemoryBlock->_szFileName));
             pMemoryBlock->_uLine = 0;
 #endif

@@ -8,8 +8,8 @@
 
 // プラットフォームモジュールを使う
 // 主にインプット入力の取得など
-#include "LevelModule.h"
 #include "Engine/Platform/PlatformModule.h"
+#include "LevelModule.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
 #include "UI/Builder/UILayoutBuilder.h"

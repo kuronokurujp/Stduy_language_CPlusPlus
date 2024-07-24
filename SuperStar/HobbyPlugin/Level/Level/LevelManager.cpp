@@ -58,9 +58,9 @@ namespace Level
 
     const Bool Node::Begin()
     {
-        //Actor::ActorManager* pActorManager = HE_NEW(Actor::ActorManager, 0);
-        //this->_pActorManager               = std::shared_ptr<Actor::ActorManager>(pActorManager);
-        this->_pActorManager               = Core::Memory::MakeCustomShared<Actor::ActorManager>();
+        // Actor::ActorManager* pActorManager = HE_NEW(Actor::ActorManager, 0);
+        // this->_pActorManager               = std::shared_ptr<Actor::ActorManager>(pActorManager);
+        this->_pActorManager = Core::Memory::MakeCustomShared<Actor::ActorManager>();
         if (this->_pActorManager->Start(256, 32) == FALSE)
         {
             HE_ASSERT(FALSE && "レベルノードのアクター管理の初期化が失敗");

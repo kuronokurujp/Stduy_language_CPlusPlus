@@ -160,11 +160,6 @@ namespace Core
             /// 設定しているタスク数
             /// </summary>
             Uint32 _uCount = 0;
-
-/*
-            TaskGroup();
-            ~TaskGroup();
-            */
         };
 
         /// <summary>

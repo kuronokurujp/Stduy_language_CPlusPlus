@@ -2,7 +2,6 @@
 #include <cmath>
 
 #include "Engine/Core.h"
-
 #include "Matrix4.h"
 #include "Quaternion.h"
 #include "Rect2.h"

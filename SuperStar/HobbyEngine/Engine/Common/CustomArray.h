@@ -21,7 +21,7 @@ namespace Core
 
             inline const Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
             inline const Uint32 Size() const HE_NOEXCEPT { return this->_uNum; }
-            inline const Uint32 Empty() const HE_NOEXCEPT { return (this->_uNum <= 0); }
+            inline const Bool Empty() const HE_NOEXCEPT { return (this->_uNum <= 0); }
 
             void Clear() HE_NOEXCEPT { this->_uNum = 0; }
 

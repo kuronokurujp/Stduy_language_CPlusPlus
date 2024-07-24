@@ -18,6 +18,7 @@ namespace Core
         class FPS
         {
         public:
+            FPS() {}
             FPS(Platform::TimeSystemInterface* in_pTimeInterface);
 
             /// <summary>

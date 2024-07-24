@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "Engine/Core.h"
 #include "CustomArray.h"
+#include "Engine/Core.h"
 
 #ifdef HE_WIN
 

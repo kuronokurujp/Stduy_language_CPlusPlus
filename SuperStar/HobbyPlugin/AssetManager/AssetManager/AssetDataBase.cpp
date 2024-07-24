@@ -103,7 +103,7 @@ namespace AssetManager
                 // 開いたファイルのデータサイズを取得して読み込むメモリを確保
                 Sint32 iSize    = in_rFileSystem.FileSize(this->_fileHandle);
                 Sint32 iMemSize = iSize + 1;
-                pReadTmpBuff    =  HE_NEW_ARRAY(UTF8, iMemSize, 0);//new UTF8[iMemSize];
+                pReadTmpBuff    = HE_NEW_ARRAY(UTF8, iMemSize, 0);  // new UTF8[iMemSize];
                 ::memset(pReadTmpBuff, '\0', iMemSize);
 
                 // ファイルの読み込み
@@ -206,7 +206,7 @@ namespace AssetManager
                 // 開いたファイルのデータサイズを取得して読み込むメモリを確保
                 Sint32 iSize    = in_rFileSystem.FileSize(this->_fileHandle);
                 Sint32 iMemSize = iSize + 1;
-                pReadTmpBuff    = HE_NEW_ARRAY(UTF8, iMemSize, 0);//new UTF8[iMemSize];
+                pReadTmpBuff    = HE_NEW_ARRAY(UTF8, iMemSize, 0);  // new UTF8[iMemSize];
                 ::memset(pReadTmpBuff, '\0', iMemSize);
 
                 // ファイルの読み込み

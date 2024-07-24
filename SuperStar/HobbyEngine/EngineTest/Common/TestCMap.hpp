@@ -21,13 +21,11 @@ TEST_CASE("FixMap Test")
     // ページ確保テスト
     {
         // メモリサイズのイニシャライズ
-        Core::Memory::Manager::PageSetupInfo memoryPageSetupInfoArray[] = {
-            // 複数ページのサイズ
-            {0, 3 * 1024 * 1024}
-        };
+        Core::Memory::Manager::PageSetupInfo memoryPageSetupInfoArray[] = {// 複数ページのサイズ
+                                                                           {0, 3 * 1024 * 1024}};
 
         CHECK(memoryManager.SetupMemoryPage(memoryPageSetupInfoArray,
-                                              HE_ARRAY_NUM(memoryPageSetupInfoArray)));
+                                            HE_ARRAY_NUM(memoryPageSetupInfoArray)));
         CHECK(memoryManager.CheckAllMemoryBlock());
     }
 
@@ -128,7 +126,8 @@ TEST_CASE("FixMap Test")
 
         // イテレータの数はノードの数と一致しているか？
         CHECK(checked_count == ARRAY_NUM);
-        HE_LOG_LINE(HE_STR_TEXT("iterator ctime=%f sec"), (double)(clock() - ctime) / CLOCKS_PER_SEC);
+        HE_LOG_LINE(HE_STR_TEXT("iterator ctime=%f sec"),
+                    (double)(clock() - ctime) / CLOCKS_PER_SEC);
 
         HE_SAFE_DELETE_ARRAY(pCheckArray);
     }
@@ -148,7 +147,8 @@ TEST_CASE("FixMap Test")
             CHECK(bResult);
         }
 
-        HE_LOG_LINE(HE_STR_TEXT("iterator ctime=%f sec"), (double)(clock() - ctime) / CLOCKS_PER_SEC);
+        HE_LOG_LINE(HE_STR_TEXT("iterator ctime=%f sec"),
+                    (double)(clock() - ctime) / CLOCKS_PER_SEC);
     }
 
     // 全て削除が終わったので、空かどうかチェック

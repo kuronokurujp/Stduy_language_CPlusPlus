@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Render/Command/Command.h"
 #include "Engine/Common/CustomArray.h"
+#include "Render/Command/Command.h"
 
 namespace Render
 {

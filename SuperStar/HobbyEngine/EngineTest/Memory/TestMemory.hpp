@@ -33,7 +33,7 @@ TEST_CASE("Memory SetupMemory")
         };
 
         CHECK(memoryManager.SetupMemoryPage(memoryPageSetupInfoArray,
-                                              HE_ARRAY_NUM(memoryPageSetupInfoArray)));
+                                            HE_ARRAY_NUM(memoryPageSetupInfoArray)));
         CHECK(memoryManager.CheckAllMemoryBlock());
     }
 
@@ -74,7 +74,7 @@ TEST_CASE("Memory Allocate And Free")
         // メモリの前確保がうまくいっているか
         Uint8* pPtr = static_cast<Uint8*>(
             memoryManager.HE_ALLOCATE_MEMORY(0x10000, page,
-                                               Core::Memory::Manager::MinimumAlignSize));
+                                             Core::Memory::Manager::MinimumAlignSize));
         CHECK(pPtr);
         {
             *pPtr = static_cast<Uint8>(i);
@@ -84,7 +84,7 @@ TEST_CASE("Memory Allocate And Free")
         // メモリの後確保がうまくいっているか
         Uint32* pPtr2 = static_cast<Uint32*>(
             memoryManager.HE_ALLOCATE_MEMORY_LAST(1000, 1,
-                                                    Core::Memory::Manager::MinimumAlignSize));
+                                                  Core::Memory::Manager::MinimumAlignSize));
         CHECK(pPtr2);
         {
             *pPtr2 = i + 1234;
@@ -115,11 +115,15 @@ TEST_CASE("Memory New and Delete")
         };
 
         CHECK(memoryManager.SetupMemoryPage(memoryPageSetupInfoArray,
-                                              HE_ARRAY_NUM(memoryPageSetupInfoArray)));
+                                            HE_ARRAY_NUM(memoryPageSetupInfoArray)));
         CHECK(memoryManager.CheckAllMemoryBlock());
     }
 
-    struct Data { Data() {this->i = 0;}; Sint8 i = 0; };
+    struct Data
+    {
+        Data() { this->i = 0; };
+        Sint8 i = 0;
+    };
     Data* pData = HE_NEW_ARRAY(Data, 5, 0);
 
     HE_DELETE_ARRAY(pData);
@@ -127,5 +131,4 @@ TEST_CASE("Memory New and Delete")
     // TODO new と deleteがうまくいっているかチェック
     CHECK(memoryManager.Release());
     memoryManager.Reset();
-
 }

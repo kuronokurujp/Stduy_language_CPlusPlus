@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Engine/Core.h"
 #include "CustomString.h"
+#include "Engine/Core.h"
 
 namespace Core
 {

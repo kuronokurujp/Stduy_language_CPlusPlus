@@ -23,10 +23,9 @@ namespace Core
         for (Uint32 i = 0; i < in_groupNum; ++i)
         {
             // 先頭と終端タスクを作成して設定
-            this->_pTasks[i]._pRootTask = HE_NEW(Task,0);
+            this->_pTasks[i]._pRootTask = HE_NEW(Task, 0);
             this->_pTasks[i]._pTailTask = this->_pTasks[i]._pRootTask;
             this->_pTasks[i]._uFlags    = 0;
-
         }
         HE_ASSERT(this->_pTasks && "タスクグループのメモリ確保に失敗");
 

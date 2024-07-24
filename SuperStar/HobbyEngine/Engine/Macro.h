@@ -17,6 +17,7 @@
 #ifdef HE_WIN
 
 #include <Windows.h>
+
 #include <iostream>
 
 #define HE_LOG_MSG_SIZE (2046)
@@ -36,7 +37,7 @@
         Char c[HE_LOG_MSG_SIZE] = {};                                           \
         _snwprintf_s(c, HE_LOG_MSG_SIZE, HE_LOG_MSG_SIZE, format, __VA_ARGS__); \
         OutputDebugString(c);                                                   \
-        wprintf(c); \
+        wprintf(c);                                                             \
     } while (0)
 
 // ログ出力(改行をする)
@@ -50,8 +51,8 @@
         _snwprintf_s(c, HE_LOG_MSG_SIZE, HE_LOG_MSG_SIZE, format, __VA_ARGS__); \
         OutputDebugString(c);                                                   \
         OutputDebugString(L"\n");                                               \
-        wprintf(c); \
-        wprintf(L"\n"); \
+        wprintf(c);                                                             \
+        wprintf(L"\n");                                                         \
     } while (0)
 
 // プログラムが把握する情報を付与したログ出力
@@ -67,8 +68,8 @@
                      __LINE__, c);                                                           \
         OutputDebugString(c2);                                                               \
         OutputDebugString(L"\n");                                                            \
-        wprintf(c2); \
-        wprintf(L"\n"); \
+        wprintf(c2);                                                                         \
+        wprintf(L"\n");                                                                      \
     } while (0)
 
 #else

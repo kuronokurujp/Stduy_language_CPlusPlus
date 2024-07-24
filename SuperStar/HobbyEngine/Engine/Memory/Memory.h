@@ -47,7 +47,6 @@ void* operator new[](size_t in_size, Uint8 in_page, Uint8 in_alignSize,
 
 #endif
 
-
 #ifdef HE_ENGINE_DEBUG
 
 // NEWマクロ
@@ -181,10 +180,7 @@ extern void FreeMemory(void*);
 // メモリ解放をラップする構造体
 struct DeleterFreeMemory
 {
-    void operator()(void* ptr) const
-    {
-        FreeMemory(ptr);
-    }
+    void operator()(void* ptr) const { FreeMemory(ptr); }
 };
 
 // deleteのマクロ
@@ -197,13 +193,13 @@ struct DeleterFreeMemory
 
 // deleteを安全する実行するためのマクロ
 // ポインターチェックをしてすでに解放済みの場合でもエラーにはならないようにしている
-#define HE_SAFE_DELETE(pPtr) \
-    {                        \
-        if (pPtr)            \
-        {                    \
-            FreeMemory(pPtr);   \
-            (pPtr) = NULL;   \
-        }                    \
+#define HE_SAFE_DELETE(pPtr)  \
+    {                         \
+        if (pPtr)             \
+        {                     \
+            FreeMemory(pPtr); \
+            (pPtr) = NULL;    \
+        }                     \
     }
 
 // 確保した配列メモリをdeleteで安全する実行するためのマクロ
@@ -212,7 +208,7 @@ struct DeleterFreeMemory
     {                              \
         if (pPtr)                  \
         {                          \
-            FreeMemory(pPtr);       \
+            FreeMemory(pPtr);      \
             (pPtr) = NULL;         \
         }                          \
     }
@@ -221,20 +217,29 @@ namespace Core
 {
     namespace Memory
     {
-        // 任意の型Tのスマートポインタをカスタムアロケータとデリータで作成する関数
+        /// <summary>
+        /// 任意の型Tのスマートポインタをカスタムアロケータとデリータで作成する関数
+        /// クラスの場合はデフォルトコンストラクターが必要
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="...Args"></typeparam>
+        /// <param name="...args"></param>
+        /// <returns></returns>
         template <typename T, typename... Args>
         std::shared_ptr<T> MakeCustomShared(Args&&... args)
         {
             // メモリ確保
             void* mem = HE_NEW(T, 0);
-            if (!mem) {
+            if (!mem)
+            {
                 throw std::bad_alloc();
             }
 
             try
             {
                 // 配列の要素を構築し、shared_ptrを作成する
-                return std::shared_ptr<T>(new (mem) T(std::forward<Args>(args)...), DeleterFreeMemory());
+                return std::shared_ptr<T>(new (mem) T(std::forward<Args>(args)...),
+                                          DeleterFreeMemory());
             }
             catch (...)
             {
@@ -243,5 +248,5 @@ namespace Core
                 throw;
             }
         }
-    }
-}
+    }  // namespace Memory
+}  // namespace Core

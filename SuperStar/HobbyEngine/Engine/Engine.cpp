@@ -1,10 +1,10 @@
 ﻿#include "Engine.h"
 
-#include "GameMain.h"
 #include "Engine/Memory/Memory.h"
 #include "Engine/MiniEngine.h"
 #include "Engine/Platform/PlatformModule.h"
 #include "Engine/Time/FPS.h"
+#include "GameMain.h"
 
 /// <summary>
 /// 事前初期化
@@ -72,10 +72,7 @@ const Bool Engine::Start()
     auto pPlatformModule = this->GetPlatformModule();
     if (pPlatformModule)
     {
-        Core::Time::FPS* pFPS = new Core::Time::FPS(pPlatformModule->Time());
-        HE_ASSERT(pFPS);
-
-        this->_spFPS = std::shared_ptr<Core::Time::FPS>(pFPS);
+        this->_spFPS = Core::Memory::MakeCustomShared<Core::Time::FPS>(pPlatformModule->Time());
     }
 
     this->_bStart = TRUE;

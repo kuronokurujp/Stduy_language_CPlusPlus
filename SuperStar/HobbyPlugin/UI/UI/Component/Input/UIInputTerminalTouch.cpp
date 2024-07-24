@@ -1,8 +1,8 @@
 ﻿#include "UIInputTerminalTouch.h"
 
-#include "UI/Widget.h"
-#include "UI/Component/Widget/UIWidget.h"
 #include "Engine/Common/CustomArray.h"
+#include "UI/Component/Widget/UIWidget.h"
+#include "UI/Widget.h"
 
 namespace UI
 {

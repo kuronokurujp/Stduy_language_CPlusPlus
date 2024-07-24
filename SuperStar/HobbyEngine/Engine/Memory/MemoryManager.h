@@ -184,7 +184,6 @@ namespace Core
             // しかしページ内に使用中のメモリが残っていると失敗してしまう
             const Bool RemapMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_uNum);
 
-
             // メモリが管理対象のメモリかそうでないか
             const Bool IsValidMemory(void* in_pAllocatedMemory);
 
