@@ -1,25 +1,25 @@
 ﻿#pragma once
 
-#include "Common/CustomString.h"
-#include "Common/Handle.h"
-#include "Math/Math.h"
-#include "MiniEngine.h"
-#include "Module/Module.h"
+#include "Engine/Common/CustomString.h"
+#include "Engine/Common/Handle.h"
+#include "Engine/Math/Math.h"
+#include "Engine/MiniEngine.h"
+#include "Engine/Module/Module.h"
 
 // プラットフォームモジュールを使う
 // 主にインプット入力の取得など
 #include "LevelModule.h"
-#include "Platform/PlatformModule.h"
+#include "Engine/Platform/PlatformModule.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
-#include "Code/Builder/UILayoutBuilder.h"
-#include "Code/Builder/UILayoutData.h"
-#include "Code/Component/Input/UIInputRouter.h"
-#include "Code/Component/Input/UIInputTerminalTouch.h"
-#include "Code/Component/Widget/UIButton.h"
-#include "Code/Component/Widget/UILayer.h"
-#include "Code/Component/Widget/UIText.h"
-#include "Code/Widget.h"
+#include "UI/Builder/UILayoutBuilder.h"
+#include "UI/Builder/UILayoutData.h"
+#include "UI/Component/Input/UIInputRouter.h"
+#include "UI/Component/Input/UIInputTerminalTouch.h"
+#include "UI/Component/Widget/UIButton.h"
+#include "UI/Component/Widget/UILayer.h"
+#include "UI/Component/Widget/UIText.h"
+#include "UI/Widget.h"
 
 namespace UI
 {

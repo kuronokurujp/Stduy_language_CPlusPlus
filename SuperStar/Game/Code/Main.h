@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "GameMain.h"
+#include "Engine/GameMain.h"
 #include "resource.h"
 
 /// <summary>

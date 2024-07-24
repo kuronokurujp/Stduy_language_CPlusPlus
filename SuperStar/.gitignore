@@ -411,8 +411,8 @@ FodyWeavers.xsd
 Log.txt
 
 # Project Only Setting
-HobbyPlugin/DxLib/ThirdParty/DxLib_VC/*
-!HobbyPlugin/DxLib/ThirdParty/DxLib_VC/lib/
+HobbyPlugin/DxLib/DxLib/ThirdParty/DxLib_VC/*
+!HobbyPlugin/DxLib/DxLib/ThirdParty/DxLib_VC/lib/
 User/*
 Build/*
 Bin/*

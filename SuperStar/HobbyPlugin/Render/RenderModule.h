@@ -1,11 +1,11 @@
 ﻿#pragma once
 
-#include "Module/Module.h"
+#include "Engine/Module/Module.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
-#include "Code/Color.h"
-#include "Code/Command/Command.h"
-#include "Code/CommandBuffer.h"
+#include "Render/Color.h"
+#include "Render/Command/Command.h"
+#include "Render/CommandBuffer.h"
 
 namespace Render
 {

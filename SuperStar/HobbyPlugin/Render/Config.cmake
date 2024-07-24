@@ -10,9 +10,9 @@ set(RENDER_PLUGIN_TARGET_FILES
     RenderModule.cpp
     RenderModule.h
     
-    Code/Color.h
-    Code/CommandBuffer.h
+    Render/Color.h
+    Render/CommandBuffer.h
 
-    Code/Command/Command.h
-    Code/Command/Command.cpp
+    Render/Command/Command.h
+    Render/Command/Command.cpp
 )

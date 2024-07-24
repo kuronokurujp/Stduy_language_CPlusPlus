@@ -10,13 +10,13 @@ set(ASSET_MANAGER_PLUGIN_TARGET_FILES
     AssetManagerModule.cpp
     AssetManagerModule.h
     
-    Code/AssetDataBase.h
-    Code/AssetDataBase.cpp
+    AssetManager/AssetDataBase.h
+    AssetManager/AssetDataBase.cpp
     
-    ThirdParty/pugixml/pugiconfig.hpp
-    ThirdParty/pugixml/pugixml.cpp
-    ThirdParty/pugixml/pugixml.hpp
-    ThirdParty/simidjson/simdjson.h
-    ThirdParty/simidjson/simdjson.cpp
-    ThirdParty/tomlplusplus/toml.hpp
+    AssetManager/ThirdParty/pugixml/pugiconfig.hpp
+    AssetManager/ThirdParty/pugixml/pugixml.cpp
+    AssetManager/ThirdParty/pugixml/pugixml.hpp
+    AssetManager/ThirdParty/simidjson/simdjson.h
+    AssetManager/ThirdParty/simidjson/simdjson.cpp
+    AssetManager/ThirdParty/tomlplusplus/toml.hpp
 )

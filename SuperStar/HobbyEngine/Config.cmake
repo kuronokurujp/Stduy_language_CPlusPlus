@@ -8,67 +8,67 @@ set(ENGINE_TARGET_FILES
     README.md
     ThirdPartyNotices.txt
 
-    Code/Engine.cpp
-    Code/Engine.h
-    Code/framework.h
-    Code/GameMain.h
-    Code/MiniEngine.h
+    Engine/Engine.cpp
+    Engine/Engine.h
+    Engine/framework.h
+    Engine/GameMain.h
+    Engine/MiniEngine.h
 
-    Code/Config.h
-    Code/Core.h
-    Code/Generated.h
-    Code/Macro.h
-    Code/Str.h
-    Code/Type.h
+    Engine/Config.h
+    Engine/Core.h
+    Engine/Generated.h
+    Engine/Macro.h
+    Engine/Str.h
+    Engine/Type.h
 
-    Code/Common/CustomArray.h
-    Code/Common/CustomMap.h
-    Code/Common/CustomString.cpp
-    Code/Common/CustomString.h
-    Code/Common/Handle.cpp
-    Code/Common/Handle.h
-    Code/Common/PoolManager.h
-    Code/Common/RTTI.cpp
-    Code/Common/RTTI.h
-    Code/Common/Singleton.h
+    Engine/Common/CustomArray.h
+    Engine/Common/CustomMap.h
+    Engine/Common/CustomString.cpp
+    Engine/Common/CustomString.h
+    Engine/Common/Handle.cpp
+    Engine/Common/Handle.h
+    Engine/Common/PoolManager.h
+    Engine/Common/RTTI.cpp
+    Engine/Common/RTTI.h
+    Engine/Common/Singleton.h
     
-    Code/File/Path.cpp
-    Code/File/Path.h
+    Engine/File/Path.cpp
+    Engine/File/Path.h
     
-    Code/Math/Math.cpp
-    Code/Math/Math.h
-    Code/Math/Matrix3.cpp
-    Code/Math/Matrix3.h
-    Code/Math/Matrix4.cpp
-    Code/Math/Matrix4.h
-    Code/Math/Quaternion.cpp
-    Code/Math/Quaternion.h
-    Code/Math/Random.cpp
-    Code/Math/Random.h
-    Code/Math/Rect2.h
-    Code/Math/Vector2.h
-    Code/Math/Vector3.h
-    Code/Math/Vector3.cpp
-    Code/Math/Vector4.h
+    Engine/Math/Math.cpp
+    Engine/Math/Math.h
+    Engine/Math/Matrix3.cpp
+    Engine/Math/Matrix3.h
+    Engine/Math/Matrix4.cpp
+    Engine/Math/Matrix4.h
+    Engine/Math/Quaternion.cpp
+    Engine/Math/Quaternion.h
+    Engine/Math/Random.cpp
+    Engine/Math/Random.h
+    Engine/Math/Rect2.h
+    Engine/Math/Vector2.h
+    Engine/Math/Vector3.h
+    Engine/Math/Vector3.cpp
+    Engine/Math/Vector4.h
     
-    Code/Memory/Memory.cpp
-    Code/Memory/Memory.h
-    Code/Memory/MemoryManager.cpp
-    Code/Memory/MemoryManager.h
+    Engine/Memory/Memory.cpp
+    Engine/Memory/Memory.h
+    Engine/Memory/MemoryManager.cpp
+    Engine/Memory/MemoryManager.h
     
-    Code/Task/Task.cpp
-    Code/Task/Task.h
-    Code/Task/TaskManager.cpp
-    Code/Task/TaskManager.h
+    Engine/Task/Task.cpp
+    Engine/Task/Task.h
+    Engine/Task/TaskManager.cpp
+    Engine/Task/TaskManager.h
     
-    Code/Time/FPS.cpp
-    Code/Time/FPS.h
+    Engine/Time/FPS.cpp
+    Engine/Time/FPS.h
     
-    Code/Module/Module.cpp
-    Code/Module/Module.h
+    Engine/Module/Module.cpp
+    Engine/Module/Module.h
     
-    Code/Platform/PlatformFile.h
-    Code/Platform/PlatformInput.cpp
-    Code/Platform/PlatformInput.h
-    Code/Platform/PlatformModule.h
+    Engine/Platform/PlatformFile.h
+    Engine/Platform/PlatformInput.cpp
+    Engine/Platform/PlatformInput.h
+    Engine/Platform/PlatformModule.h
 )

@@ -10,10 +10,10 @@ set(DXLIB_PLUGIN_TARGET_FILES
     DXLibModule.cpp
     DXLibModule.h
 
-    Code/DXLibFile.cpp
-    Code/DXLibFile.h
-    Code/DXLibInput.cpp
-    Code/DXLibInput.h
-    Code/DXLibTime.cpp
-    Code/DXLibTime.h
+    DxLib/DXLibFile.cpp
+    DxLib/DXLibFile.h
+    DxLib/DXLibInput.cpp
+    DxLib/DXLibInput.h
+    DxLib/DXLibTime.cpp
+    DxLib/DXLibTime.h
 )

@@ -10,26 +10,26 @@ set(UI_PLUGIN_TARGET_FILES
     UIModule.cpp
     UIModule.h
     
-    Code/Widget.h
-    Code/Widget.cpp
+    UI/Widget.h
+    UI/Widget.cpp
     
-    Code/Builder/UILayoutBuilder.h
-    Code/Builder/UILayoutBuilder.cpp
-    Code/Builder/UILayoutData.h
-    Code/Builder/UILayoutData.cpp
+    UI/Builder/UILayoutBuilder.h
+    UI/Builder/UILayoutBuilder.cpp
+    UI/Builder/UILayoutData.h
+    UI/Builder/UILayoutData.cpp
     
-    Code/Component/Input/UIInputInterface.h
-    Code/Component/Input/UIInputRouter.h
-    Code/Component/Input/UIInputRouter.cpp
-    Code/Component/Input/UIInputTerminalTouch.h
-    Code/Component/Input/UIInputTerminalTouch.cpp
+    UI/Component/Input/UIInputInterface.h
+    UI/Component/Input/UIInputRouter.h
+    UI/Component/Input/UIInputRouter.cpp
+    UI/Component/Input/UIInputTerminalTouch.h
+    UI/Component/Input/UIInputTerminalTouch.cpp
 
-    Code/Component/Widget/UIButton.h
-    Code/Component/Widget/UIButton.cpp
-    Code/Component/Widget/UILayer.h
-    Code/Component/Widget/UILayer.cpp
-    Code/Component/Widget/UIText.h
-    Code/Component/Widget/UIText.cpp
-    Code/Component/Widget/UIWidget.h
-    Code/Component/Widget/UIWidget.cpp
+    UI/Component/Widget/UIButton.h
+    UI/Component/Widget/UIButton.cpp
+    UI/Component/Widget/UILayer.h
+    UI/Component/Widget/UILayer.cpp
+    UI/Component/Widget/UIText.h
+    UI/Component/Widget/UIText.cpp
+    UI/Component/Widget/UIWidget.h
+    UI/Component/Widget/UIWidget.cpp
 )

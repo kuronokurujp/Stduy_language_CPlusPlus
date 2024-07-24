@@ -1,11 +1,11 @@
-﻿#include "MiniEngine.h"
+﻿#include "Engine/MiniEngine.h"
 
 // デバッグ用なのでリリース版には含めない
 #ifdef HE_ENGINE_DEBUG
 
-#include "Common/CustomMap.h"
+#include "Engine/Common/CustomMap.h"
 #include "Level/LevelLauncher.h"
-#include "Math/Math.h"
+#include "Engine/Math/Math.h"
 
 // UIモジュール
 #include "UIModule.h"

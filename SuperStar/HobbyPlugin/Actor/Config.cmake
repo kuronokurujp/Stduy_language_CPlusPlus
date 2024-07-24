@@ -10,12 +10,12 @@ set(ACTOR_PLUGIN_TARGET_FILES
     ActorModule.cpp
     ActorModule.h
     
-    Code/Actor.h
-    Code/Actor.cpp
-    Code/ActorInterface.h
-    Code/ActorManager.h
-    Code/ActorManager.cpp
+    Actor/Actor.h
+    Actor/Actor.cpp
+    Actor/ActorInterface.h
+    Actor/ActorManager.h
+    Actor/ActorManager.cpp
     
-    Code/Component/Component.h
-    Code/Component/Component.cpp
+    Actor/Component/Component.h
+    Actor/Component/Component.cpp
 )

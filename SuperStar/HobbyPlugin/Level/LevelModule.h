@@ -2,16 +2,16 @@
 
 #include <memory>
 
-#include "MiniEngine.h"
-#include "Module/Module.h"
+#include "Engine/MiniEngine.h"
+#include "Engine/Module/Module.h"
 
 // 依存モジュール
 #include "ActorModule.h"
-#include "Platform/PlatformModule.h"
+#include "Engine/Platform/PlatformModule.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
-#include "Code/Component/LevelUserInputReceive.h"
-#include "Code/LevelManager.h"
+#include "Level/Component/LevelUserInputReceive.h"
+#include "Level/LevelManager.h"
 
 namespace Level
 {

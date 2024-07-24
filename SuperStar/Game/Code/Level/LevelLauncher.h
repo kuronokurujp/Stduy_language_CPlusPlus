@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "MiniEngine.h"
+#include "Engine/MiniEngine.h"
 
 // 外部モジュール
 #include "LevelModule.h"

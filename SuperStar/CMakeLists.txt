@@ -97,6 +97,10 @@ add_subdirectory(HobbyPlugin/AssetManager EXCLUDE_FROM_ALL)
 add_subdirectory(HobbyPlugin/Level EXCLUDE_FROM_ALL)
 add_subdirectory(HobbyPlugin/Localization EXCLUDE_FROM_ALL)
 add_subdirectory(HobbyPlugin/UI EXCLUDE_FROM_ALL)
+
+# テストプロジェクトを作る
+include(${CMAKE_CURRENT_SOURCE_DIR}/Test/Config.cmake NO_POLICTY_SCOPE)
+
 add_subdirectory(Game)
 
 # スタートプロジェクトの設定.
@@ -128,3 +132,19 @@ target_link_libraries(${APP_NAME}
   ${DXLIB_PLUGIN_NAME}
   ${ENGINE_NAME}
 )
+
+# テストプロジェクト作成
+add_subdirectory(Test)
+
+# テストしたいライブラリを設定
+target_link_libraries(${TEST_APP_NAME}
+  ${UI_PLUGIN_NAME}
+  ${LOCALIZATION_PLUGIN_NAME}
+  ${LEVEL_PLUGIN_NAME}
+  ${ASSET_MANAGER_PLUGIN_NAME}
+  ${RENDER_PLUGIN_NAME}
+  ${ACTOR_PLUGIN_NAME}
+  ${DXLIB_PLUGIN_NAME}
+  ${ENGINE_NAME}
+)
+

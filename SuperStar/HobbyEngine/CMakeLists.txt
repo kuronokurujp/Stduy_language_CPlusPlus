@@ -3,7 +3,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake NO_POLICTY_SCOPE)
 
 message("build engine lib!")
 
-set(CACHE_ENGINE_INCLUDE_CODE ${CMAKE_CURRENT_SOURCE_DIR}/Code CACHE STRING global_engine_include_code)
+set(CACHE_ENGINE_INCLUDE_CODE ${CMAKE_CURRENT_SOURCE_DIR}/ CACHE STRING global_engine_include_code)
 
 # 共有ライブラリとして生成するためのオプションの定義.
 option(ENGINE_BUILD_SHARED_LIBS "build engine as a shared library" OFF)
@@ -34,13 +34,13 @@ if (MSVC)
 endif()
 
 # プロジェクトが参照できるインクルードディレクトリのパス.
-target_include_directories(${ENGINE_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Code)
+target_include_directories(${ENGINE_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # ランタイムライブラリを設定
 target_compile_options(
-  ${ENGINE_NAME}
-  PRIVATE
-  $<IF:$<CONFIG:Debug>,/MTd,/MT>
+    ${ENGINE_NAME}
+    PRIVATE
+    $<IF:$<CONFIG:Debug>,/MTd,/MT>
 )
 
 # ビルドのマルチプロセス設定.

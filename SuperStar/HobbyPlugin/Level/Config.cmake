@@ -10,8 +10,8 @@ set(LEVEL_PLUGIN_TARGET_FILES
     LevelModule.h
     LevelModule.cpp
     
-    Code/LevelManager.h
-    Code/LevelManager.cpp
-    Code/Component/LevelUserInputReceive.h
-    Code/Component/LevelUserInputReceive.cpp
+    Level/LevelManager.h
+    Level/LevelManager.cpp
+    Level/Component/LevelUserInputReceive.h
+    Level/Component/LevelUserInputReceive.cpp
 )

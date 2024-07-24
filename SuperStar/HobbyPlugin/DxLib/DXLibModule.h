@@ -1,13 +1,13 @@
 ﻿#pragma once
 
 // プラットフォームモジュールを使ってDxLibのプラットフォームモジュールを作成
-#include "Platform/PlatformModule.h"
+#include "Engine/Platform/PlatformModule.h"
 
 // DxLibのシステム一覧
 // モジュールのヘッダーファイルは全てインクルードする
-#include "Code/DXLibInput.h"
-#include "Code/DXLibTime.h"
-#include "Code/DxLibFile.h"
+#include "DxLib/DXLibInput.h"
+#include "DxLib/DXLibTime.h"
+#include "DxLib/DxLibFile.h"
 
 namespace DXLib
 {
