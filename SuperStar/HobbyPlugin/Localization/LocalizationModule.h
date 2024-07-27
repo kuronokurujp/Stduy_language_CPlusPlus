@@ -34,7 +34,7 @@ namespace Localization
         };
 
 #define SYSTEM_ASSET_LOCATE_MAP \
-    Core::Common::FixMap<Core::Common::FixString128, SystemAssetData::LocateData, 32>
+    Core::Common::CustomFixMap<Core::Common::FixString128, SystemAssetData::LocateData, 32>
 
         virtual const Bool _Load(Platform::FileSystemInterface& in_rFileSystem) override;
 
@@ -51,7 +51,7 @@ namespace Localization
         /// <summary>
         /// 各言語毎のデータ
         /// </summary>
-        Core::Common::FixMap<Core::Common::FixString128, SYSTEM_ASSET_LOCATE_MAP, 32>
+        Core::Common::CustomFixMap<Core::Common::FixString128, SYSTEM_ASSET_LOCATE_MAP, 32>
             _locateDataMap;
     };
 
@@ -69,7 +69,7 @@ namespace Localization
         const Core::Common::FixString1024& GetText(const Char* in_szKey);
 
     private:
-        Core::Common::FixMap<Core::Common::FixString128, Core::Common::FixString1024, 128>
+        Core::Common::CustomFixMap<Core::Common::FixString128, Core::Common::FixString1024, 128>
             _textBuffMap;
     };
 
@@ -83,19 +83,19 @@ namespace Localization
 
         // ローカライズ設定データをロード(テキストファイル版)
         // バイナリファイル版も用意する
-        const Bool LoadSystemFile(const Core::Common::FixStringBase&);
+        const Bool LoadSystemFile(const Core::Common::StringBase&);
         // ローカライズ設定データをアンロード
         const Bool UnloadSystemFile();
 
         // ローカライズデータをロード
-        const Bool LoadTextAll(const Core::Common::FixStringBase&);
+        const Bool LoadTextAll(const Core::Common::StringBase&);
         // ローカライズデータをアンロード
-        const Bool UnloadTextAll(const Core::Common::FixStringBase&);
+        const Bool UnloadTextAll(const Core::Common::StringBase&);
 
         // ローカライズテキストを取得
-        const Char* Text(const Core::Common::FixStringBase& in_szrLocateName,
-                         const Core::Common::FixStringBase& in_szrGroupName,
-                         const Core::Common::FixStringBase& in_szrKey);
+        const Char* Text(const Core::Common::StringBase& in_szrLocateName,
+                         const Core::Common::StringBase& in_szrGroupName,
+                         const Core::Common::StringBase& in_szrKey);
 
     protected:
         /// <summary>
@@ -111,10 +111,11 @@ namespace Localization
         const Bool Update(const Float32 in_fDeltaTime) final override;
 
     private:
-#define LOCATE_TEXT_MAP Core::Common::FixMap<Core::Common::FixString128, Core::Common::Handle, 64>
+#define LOCATE_TEXT_MAP \
+    Core::Common::CustomFixMap<Core::Common::FixString128, Core::Common::Handle, 64>
 
         Core::Common::Handle _sysAssetDataHandle;
-        Core::Common::FixMap<Core::Common::FixString128, LOCATE_TEXT_MAP, 16> _locateDataMap;
+        Core::Common::CustomFixMap<Core::Common::FixString128, LOCATE_TEXT_MAP, 16> _locateDataMap;
     };
 }  // namespace Localization
 

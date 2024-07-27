@@ -93,21 +93,16 @@ namespace Level
         Actor::Object* GetActor(const Core::Common::Handle&);
 
         /// <summary>
-        /// アクターに親アクターを追加
+        /// アクター同士の関連付け設定
         /// </summary>
-        const Bool AddParentActor(const Core::Common::Handle& in_rActor,
-                                  const Core::Common::Handle& in_rParentActor);
+        const Bool ChainActor(const Core::Common::Handle& in_rActor,
+                              const Core::Common::Handle& in_rParentActor);
 
     private:
         /// <summary>
         /// レベルに紐づけるアクター管理
         /// </summary>
         std::shared_ptr<Actor::ActorManager> _pActorManager;
-
-        /// <summary>
-        /// UIオブジェクトのコリジョン配列
-        /// </summary>
-        Core::Common::FastFixArray<Core::Common::Handle, 256> _aCollision;
     };
 
     /// <summary>
@@ -149,6 +144,9 @@ namespace Level
             static_assert(std::is_base_of<Node, T>::value,
                           "Tクラスはレベルのノードクラスを継承していない");
 
+            HE_ASSERT(this->_currentLevel.Null() &&
+                      "初回起動のみ利用かレベルが存在しない時に利用できる");
+
             // レベルのノードは使いまわさない
             Core::Common::Handle handle = this->_nodeManager.Add<T>();
             if (handle.Null()) return FALSE;
@@ -162,12 +160,7 @@ namespace Level
         /// カレントレベルを取得
         /// </summary>
         /// <returns></returns>
-        Level::Node* CurrentLevel()
-        {
-            Level::Node* pNode =
-                reinterpret_cast<Level::Node*>(this->_nodeManager.Get(this->_currentLevel));
-            return pNode;
-        }
+        Level::Node* CurrentLevel();
 
         // TODO: レベルを切り替える
 

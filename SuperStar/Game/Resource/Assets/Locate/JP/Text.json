@@ -1,12 +1,23 @@
 {
-    "test": {
+    "GameTitle": {
         "font": "",
         "size": 10,
         "color": 0,
         "items": {
             "0": {
                 "type": 0,
-                "text": "test"
+                "text": "STG"
+            }
+        }
+    },
+    "GameTitleInputHelp": {
+        "font": "",
+        "size": 10,
+        "color": 0,
+        "items": {
+            "0": {
+                "type": 0,
+                "text": "Space : GAME START a : GAME END"
             }
         }
     }

@@ -4,8 +4,8 @@
 
 namespace Render
 {
-    void Cmd2DText(const Core::Math::Vector2& in_rPos,
-                   const Core::Common::FixStringBase& in_szrName, const Color& in_rColor)
+    void Cmd2DText(const Core::Math::Vector2& in_rPos, const Core::Common::StringBase& in_szrName,
+                   const Color& in_rColor)
     {
         // TODO: 必要なコマンド情報を作る
         Command cmd;

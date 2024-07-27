@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Engine/Common/CustomArray.h"
 #include "Engine/Memory/MemoryManager.h"
 
 /// <summary>
@@ -132,3 +133,48 @@ TEST_CASE("Memory New and Delete")
     CHECK(memoryManager.Release());
     memoryManager.Reset();
 }
+
+#if 0
+TEST_CASE("Memory Custom Shader Ptr")
+{
+    Core::Memory::Manager memoryManager;
+    CHECK(memoryManager.Start(0x1000000));
+
+    // ページ確保テスト
+    {
+        // メモリサイズのイニシャライズ
+        Core::Memory::Manager::PageSetupInfo memoryPageSetupInfoArray[] = {
+            // 複数ページのサイズ
+            {0, 3 * 1024 * 1024}, {1, 4 * 1024 * 1024}, {2, 2 * 1024 * 1024},
+            {3, 2 * 1024 * 1024}, {4, 2 * 1024 * 1024}, {5, 3 * 1024 * 1024},
+        };
+
+        CHECK(memoryManager.SetupMemoryPage(memoryPageSetupInfoArray,
+                                            HE_ARRAY_NUM(memoryPageSetupInfoArray)));
+        CHECK(memoryManager.CheckAllMemoryBlock());
+    }
+
+    struct Data
+    {
+        Data() { this->i = 0; };
+        Sint8 i = 0;
+    };
+
+    Core::Common::FastFixArray<std::shared_ptr<Data>, 10> memArray;
+    for (Uint32 i = 0; i < 10; ++i)
+    {
+        auto p = Core::Memory::MakeCustomShared<Data>();
+        memArray.PushBack(p);
+    }
+    Uint32 memIdx[10] = {1, 3, 4, 2, 5, 9, 7, 8, 0, 6};
+    for (Uint32 i = 0; i < 10; ++i)
+    {
+        memArray.RemoveAt(i);
+//        memArray[i].reset();
+    }
+
+    // TODO new と deleteがうまくいっているかチェック
+    CHECK(memoryManager.Release());
+    memoryManager.Reset();
+}
+#endif

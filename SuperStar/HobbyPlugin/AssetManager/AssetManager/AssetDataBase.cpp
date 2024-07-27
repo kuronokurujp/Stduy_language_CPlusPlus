@@ -170,15 +170,20 @@ namespace AssetManager
             UTF8 szKey[256] = {0};
             str.OutputUTF8(szKey, HE_ARRAY_SIZE(szKey));
 
-            auto v = this->_doc.find_field(szKey);
+            auto v = this->_doc[szKey];
             HE_ASSERT(v.error() == simdjson::error_code::SUCCESS);
 
+            // TODO: 未対応
+            // 複数の取得は未対応
             for (Uint32 i = 1; i < in_uCount; ++i)
             {
+                HE_ASSERT(FALSE);
+                /*
                 Core::Common::FixString256 str(in_szaName[i]);
                 str.OutputUTF8(szKey, HE_ARRAY_SIZE(szKey));
-                v = v.find_field(szKey);
+                v = v[szKey];
                 HE_ASSERT(v.error() == simdjson::error_code::SUCCESS);
+                */
             }
             // 要素を出力
             v.get(*out);

@@ -22,16 +22,21 @@ namespace Actor
     class ActorManager final : public ActorManagerPubliclnterface
     {
     private:
+        /// <summary>
+        /// 更新中に作成した保留アクター情報
+        /// </summary>
         struct PendingData
         {
             Core::Common::Handle handle;
-            Sint32 moveGroupId;
+            Sint32 sMoveGroupId;
         };
 
     public:
         /// <summary>
         /// 起動する
         /// 必ず最初に呼び出す
+        /// グループ最大数は2以上にする
+        /// 保留のアクターを管理する専用グループを作るため
         /// </summary>
         /// <returns></returns>
         const Bool Start(const Uint32 in_uActorCapacity, const Uint32 in_uActorGroupMax);
@@ -46,8 +51,6 @@ namespace Actor
         /// <summary>
         /// Adds the actor.
         /// </summary>
-        /// <param name="in_pActor">The in p actor.</param>
-        /// <returns></returns>
         template <class T>
         Core::Common::Handle Add()
         {
@@ -120,45 +123,22 @@ namespace Actor
         /// <param name="in_depth"></param>
         void MoveDepth(const Core::Common::Handle& in_rHandle, const Uint32 in_uDepth);
 
-        /*
-        /// <summary>
-        /// Gets the actors.
-        /// </summary>
-        /// <returns></returns>
-        const std::vector<Actor*> GetActors();
-
-        /// <summary>
-        /// Deletes the objects.
-        /// </summary>
-        /// <param name="in_rActors">The in r actors.</param>
-        /// <param name="pValidate">The p validate.</param>
-        /// <returns></returns>
-        void DeleteAllActorsAndMemFree(std::vector<Actor*> &in_rActors, bool(*pValidate)(Actor*));
-
-        /// <summary>
-        /// Deletes all actors and memory free.
-        /// </summary>
-        void DeleteAllActorsAndMemFree();
-        */
-
     protected:
         inline const Sint32 _GetPendingGroupId() const
         {
             return this->_taskManager.GetMaxGroup() - 1;
         }
-        inline const Uint32 _GetGroupMax() const { return this->_taskManager.GetMaxGroup() - 1; }
+
+        /// <summary>
+        /// 最後のグループが保留グループなので更新グループ数は最大グループ数-1になる
+        /// </summary>
+        /// <returns></returns>
+        inline const Uint32 _GetUpdateGroupMax() const
+        {
+            return this->_taskManager.GetMaxGroup() - 1;
+        }
 
     protected:
-        /*
-        // Actor登録リスト
-        std::vector<Actor*> actors;
-
-        // Actor::Update()で新しいActorを登録時のキャッシュ用
-        // なぜこうしたか?
-        // actorsのループ処理中に登録・解除すると個数が変化してループバグが起こるから
-        std::vector<Actor*> pendingActors;
-        */
-
         Bool _bUpdatingActors = FALSE;
 
     private:
@@ -170,6 +150,6 @@ namespace Actor
         /// <summary>
         /// 更新保留アクターのデータ
         /// </summary>
-        Core::Common::FixMap<Uint64, PendingData, 256> _pendingDataMap;
+        Core::Common::CustomFixMap<Uint64, PendingData, 256> _pendingDataMap;
     };
 }  // namespace Actor

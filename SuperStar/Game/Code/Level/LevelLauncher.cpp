@@ -5,7 +5,8 @@
 
 #include "Engine/Common/CustomMap.h"
 #include "Engine/Math/Math.h"
-#include "Level/LevelLauncher.h"
+#include "LevelLauncher.h"
+#include "LevelTitle.h"
 
 // UIモジュール
 #include "UIModule.h"
@@ -24,17 +25,25 @@ namespace Level
             auto h    = this->AddComponent<Level::LevelUserInputReceiveComponent>(0);
             auto comp = this->GetComponent<Level::LevelUserInputReceiveComponent>(h);
 
+            // auto handler = Core::Memory::MakeCustomUniqueShared<Level::LevelUserInputMessage>(//
+            // std::make_unique<Level::LevelUserInputMessage>(
             auto handler = std::make_unique<Level::LevelUserInputMessage>(
                 [this](const Char* in_pMsg)
                 {
                     HE_LOG_LINE(in_pMsg);
                     // TODO: 次のレベルへ遷移
+                    if (HE_STR_CMP(in_pMsg, HE_STR_TEXT("C_TitleSeq")) == 0)
+                    {
+                        // TODO: タイトルへ遷移する
+                        // レベル更新中なのにレベルを破棄してしまうので例外エラーになる
+                        // レベル切り替えを考えないといけない
+                        // ModuleLevel()->GetManager()->StartLevel<Level::LevelTitle>();
+                    }
                 });
             comp->SetReceiver(std::move(handler));
         }
 
-        // TODO: UIのBuilderファイルからレイアウト作成
-        // 破棄処理を入れていない
+        // UIのBuilderファイルからレイアウト作成
         this->_layoutAssetHandle = ModuleUI()->LoadAssetWithLayoutBuild(
             Core::File::Path(HE_STR_TEXT("UI"), HE_STR_TEXT("Builder"), HE_STR_TEXT("Debug"),
                              HE_STR_TEXT("Launcher.xml")));
@@ -47,7 +56,7 @@ namespace Level
 
     const Bool LevelLauncher::End()
     {
-        // TODO: ロードしたアセットを破棄
+        // ロードしたアセットを破棄
         ModuleUI()->UnloadAssetWithLayoutBuild(this->_layoutAssetHandle);
 
         const Bool bRet = Level::Node::End();

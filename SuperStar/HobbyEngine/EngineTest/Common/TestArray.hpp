@@ -2,31 +2,22 @@
 
 #include "Engine/Common/CustomArray.h"
 
-TEST_CASE("FastFixArray Use")
+TEST_CASE("Test Array Use")
 {
-    Core::Common::FastFixArray<Sint32, 32> arr;
+    Core::Common::CustomArray<Sint32, 32> arr;
 
     CHECK(arr.Capacity() == 32);
-    CHECK(arr.Size() == 0);
-    CHECK(arr.Empty() == TRUE);
 
-    arr.PushBack(10);
-    CHECK(arr.Size() == 1);
-    CHECK(arr.Empty() == FALSE);
-
-    arr.RemoveAt(0);
-    CHECK(arr.Size() == 0);
-    CHECK(arr.Empty() == TRUE);
-
-    arr.PushBack(10);
-    arr.PushBack(20);
-    arr.PushBack(30);
-    arr.PushBack(40);
-    CHECK(arr.Size() == 4);
-
+    arr.Set(0, 10);
     CHECK(arr[0] == 10);
-    arr.RemoveAt(0);
-    CHECK(arr[0] == 20);
-    CHECK(arr[1] == 30);
-    CHECK(arr[2] == 40);
+
+    arr.Set(1, 20);
+    CHECK(arr[1] == 20);
+    arr.Set(2, 30);
+    CHECK(arr[2] == 30);
+    arr.Set(3, 40);
+    CHECK(arr[3] == 40);
+
+    arr.Set(0, 5);
+    CHECK(arr[0] == 5);
 }

@@ -19,6 +19,7 @@ namespace Level
         HE_CLASS_COPY_CONSTRUCT_NG(LevelUserInputMessage);
 
     public:
+        LevelUserInputMessage() {}
         LevelUserInputMessage(LevelUserInputEventHandler in_func) : _eventHandler(in_func) {}
 
         void Message(const Char* in_szMsg) { this->_eventHandler(in_szMsg); }

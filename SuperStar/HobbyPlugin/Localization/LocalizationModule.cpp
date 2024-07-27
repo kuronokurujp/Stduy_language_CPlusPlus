@@ -27,7 +27,7 @@ namespace Localization
         return TRUE;
     }
 
-    const Bool LocalizationModule::LoadSystemFile(const Core::Common::FixStringBase& in_szrFilePath)
+    const Bool LocalizationModule::LoadSystemFile(const Core::Common::StringBase& in_szrFilePath)
     {
         // tomlファイルをロード
         auto szAssetName = HE_STR_TEXT("LSystem");
@@ -45,7 +45,7 @@ namespace Localization
         return TRUE;
     }
 
-    const Bool LocalizationModule::LoadTextAll(const Core::Common::FixStringBase& in_szLocateName)
+    const Bool LocalizationModule::LoadTextAll(const Core::Common::StringBase& in_szLocateName)
     {
         SystemAssetData& a =
             ModuleAssetManager()->GetAsset<SystemAssetData>(this->_sysAssetDataHandle);
@@ -70,7 +70,7 @@ namespace Localization
         return TRUE;
     }
 
-    const Bool LocalizationModule::UnloadTextAll(const Core::Common::FixStringBase& in_szLocateName)
+    const Bool LocalizationModule::UnloadTextAll(const Core::Common::StringBase& in_szLocateName)
     {
         auto pMap = &this->_locateDataMap[in_szLocateName.Str()];
         for (auto it = pMap->Begin(); it != pMap->End(); ++it)
@@ -82,9 +82,9 @@ namespace Localization
         return TRUE;
     }
 
-    const Char* LocalizationModule::Text(const Core::Common::FixStringBase& in_szLocateName,
-                                         const Core::Common::FixStringBase& in_szGroupName,
-                                         const Core::Common::FixStringBase& in_szKey)
+    const Char* LocalizationModule::Text(const Core::Common::StringBase& in_szLocateName,
+                                         const Core::Common::StringBase& in_szGroupName,
+                                         const Core::Common::StringBase& in_szKey)
     {
         auto locateIter = this->_locateDataMap.Find(in_szLocateName.Str());
         HE_ASSERT(locateIter.IsValid());
@@ -120,7 +120,7 @@ namespace Localization
             Core::Common::FixString128 locateStr(it->_tKey.Str());
             locateStr.ToUpper();
 
-            Core::Common::FixMap<Core::Common::FixString128, LocateData, 32> mData;
+            Core::Common::CustomFixMap<Core::Common::FixString128, LocateData, 32> mData;
 
             mGroupNode.Clear();
             it->_tData.OutputNodeMap(&mGroupNode, HE_STR_EMPTY);

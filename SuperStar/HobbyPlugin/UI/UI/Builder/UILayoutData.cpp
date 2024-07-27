@@ -2,6 +2,9 @@
 
 #include <string.h>
 
+#include "Engine/Common/CustomArray.h"
+#include "Engine/Common/CustomVector.h"
+
 // 依存モジュール
 #include "RenderModule.h"
 
@@ -150,15 +153,14 @@ namespace UI
                         Core::Common::FixString1024 szTmp(t);
                         if (pLabel->bLoc)
                         {
-                            Core::Common::FastFixArray<Core::Common::FixString1024, 3> szaSplitName;
+                            Core::Common::CustomArray<Core::Common::FixString1024, 3> aSplitName;
 
-                            Core::Common::OutputSplitString(szaSplitName, szTmp,
-                                                            s_locGroupDelimita);
+                            Core::Common::OutputSplitString(aSplitName, szTmp, s_locGroupDelimita);
                             HE_STR_CPY_S(pLabel->szLoc, HE_ARRAY_NUM(pLabel->szLoc),
-                                         szaSplitName[0].Str(), szaSplitName[0].Length());
+                                         aSplitName[0].Str(), aSplitName[0].Length());
 
                             HE_STR_CPY_S(pLabel->szText, HE_ARRAY_NUM(pLabel->szText),
-                                         szaSplitName[1].Str(), szaSplitName[1].Length());
+                                         aSplitName[1].Str(), aSplitName[1].Length());
                         }
                         else
                         {
@@ -216,7 +218,7 @@ namespace UI
             return TRUE;
         }
 
-        void UILayoutData::OutputNodeChildren(Core::Common::FastFixArrayBase<Node>* out,
+        void UILayoutData::OutputNodeChildren(Core::Common::StackBase<Node>* out,
                                               const Node& in_rParentNode)
         {
             HE_ASSERT(out);

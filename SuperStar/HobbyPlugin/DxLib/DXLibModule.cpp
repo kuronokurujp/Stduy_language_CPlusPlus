@@ -107,15 +107,15 @@ namespace DXLib
 
         for (Uint32 i = 0; i < pCmdBuff->Size(); ++i)
         {
-            Render::Command* pCmd = pCmdBuff->GetPtr(i);
+            const Render::Command& pCmd = (*pCmdBuff)[i];
 
             // TODO: コマンドに応じた描画処理をする
-            switch (pCmd->uType)
+            switch (pCmd.uType)
             {
                 // TODO: 矩形を描画
                 case Render::CMD_TYPE_2D_RECT:
                 {
-                    Render::ComRect2D* pRect2D = &pCmd->data.rect2D;
+                    const Render::ComRect2D* pRect2D = &pCmd.data.rect2D;
 
                     Uint32 uColor =
                         GetColor(pRect2D->color.c32.r, pRect2D->color.c32.g, pRect2D->color.c32.b);
@@ -127,7 +127,7 @@ namespace DXLib
                 // TODO: 2Dテキストを描画
                 case Render::CMD_TYPE_2D_TEXT:
                 {
-                    Render::ComText2D* pText2D = &pCmd->data.text2D;
+                    const Render::ComText2D* pText2D = &pCmd.data.text2D;
 
                     Uint32 uColor =
                         GetColor(pText2D->color.c32.r, pText2D->color.c32.g, pText2D->color.c32.b);

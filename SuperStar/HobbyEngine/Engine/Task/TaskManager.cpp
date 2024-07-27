@@ -87,6 +87,7 @@ namespace Core
 
                 // タスク更新
                 pTask->Update(in_dt, in_rData);
+                pTask->_UpdateChild(in_dt, in_rData);
             }
         }
 
@@ -100,7 +101,7 @@ namespace Core
             // 死亡フラグが付いてたら消す
             if (pTask->_bKill)
             {
-                this->Remove(pTask->GetHandle());
+                this->RemoveTask(pTask->GetHandle());
             }
 
             // 逃がしておいた次のポインタを得る
@@ -108,7 +109,7 @@ namespace Core
         }
     }
 
-    void TaskManager::Remove(const Common::Handle& in_hTask)
+    void TaskManager::RemoveTask(const Common::Handle& in_hTask)
     {
         // タスクのインスタンスを取得
         // 既に削除済みのハンドルだったらNULLが返される
@@ -118,8 +119,10 @@ namespace Core
         // 終了を呼ぶ
         pTask->End();
 
-        Sint32 groupId = this->_Dettach(pTask);
-        if (groupId == Task::iNoneGroupId) return;
+        // タスクの連結を解除
+        this->_Dettach(pTask);
+
+        pTask->_pManager = NULL;
 
         // タスクがメモリ削除されると,
         // タスク内にある解放ハンドルも一緒に消えるのでコピーして保存
@@ -143,7 +146,7 @@ namespace Core
             // RemoveでタスクのpPrev/pNextの入れ替えが起きてしまうので,
             // 次に実行するタスクを事前に取得しておく
             Task* pNextTask = pTask->_pNext;
-            this->Remove(pTask->GetHandle());
+            this->RemoveTask(pTask->GetHandle());
 
             // 逃がしておいた次のポインタを得る
             pTask = pNextTask;
@@ -216,7 +219,7 @@ namespace Core
         return pTask;
     }
 
-    void TaskManager::EnableFlag(const Sint32 in_groupId, const Uint32 in_flags)
+    void TaskManager::EnableFlagWithGroup(const Sint32 in_groupId, const Uint32 in_flags)
     {
         HE_ASSERT(in_groupId < this->_iGroupNum);
 
@@ -224,14 +227,14 @@ namespace Core
         pGroup->_uFlags |= in_flags;
     }
 
-    void TaskManager::DisableFlag(const Sint32 in_groupId, const Uint32 in_flags)
+    void TaskManager::DisableFlagWithGroup(const Sint32 in_groupId, const Uint32 in_flags)
     {
         HE_ASSERT(in_groupId < this->_iGroupNum);
         TaskGroup* pGroup = &this->_pTasks[in_groupId];
         pGroup->_uFlags &= ~in_flags;
     }
 
-    const Uint32 TaskManager::Flag(const Sint32 in_groupId) const
+    const Uint32 TaskManager::FlagWithGroup(const Sint32 in_groupId) const
     {
         HE_ASSERT(in_groupId < this->_iGroupNum);
         TaskGroup* pGroup = &this->_pTasks[in_groupId];
@@ -287,22 +290,27 @@ namespace Core
         // タスクの前後付け替え
         Task* pPrevTask = in_pTask->_pPrev;
         Task* pNextTask = in_pTask->_pNext;
-        if (pPrevTask != NULL) pPrevTask->_pNext = pNextTask;
 
+        // タスクの前後連結情報がない場合はタスクのつけ外しはできないので終了
+        if ((pPrevTask == NULL) && (pNextTask == NULL)) return Task::iNoneGroupId;
+
+        if (pPrevTask != NULL) pPrevTask->_pNext = pNextTask;
         if (pNextTask != NULL) pNextTask->_pPrev = pPrevTask;
 
         // 今回削除するのが終端タスクか
         Sint32 iGroupId = in_pTask->_iGroupId;
-        if (0 <= iGroupId && iGroupId < this->_iGroupNum)
+        if (iGroupId != Task::iNoneGroupId)
         {
-            TaskGroup* pGroup = &this->_pTasks[iGroupId];
-            if (pGroup->_pTailTask == in_pTask)
-                // つなぎなおす
-                pGroup->_pTailTask = pPrevTask;
-        }
+            if (0 <= iGroupId && iGroupId < this->_iGroupNum)
+            {
+                TaskGroup* pGroup = &this->_pTasks[iGroupId];
+                if (pGroup->_pTailTask == in_pTask)
+                    // つなぎなおす
+                    pGroup->_pTailTask = pPrevTask;
+            }
 
-        in_pTask->_pManager = NULL;
-        --this->_pTasks[iGroupId]._uCount;
+            --this->_pTasks[iGroupId]._uCount;
+        }
 
         return iGroupId;
     }

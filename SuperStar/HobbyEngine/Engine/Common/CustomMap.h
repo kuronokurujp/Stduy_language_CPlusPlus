@@ -23,9 +23,9 @@ namespace Core
         /// <typeparam name="SIZE">SIZEで指定した値が最大要素数,
         /// 最大要素数を超えたらエラーとなる</typeparam>
         template <typename KEY, typename DATA, Sint32 SIZE>
-        class FixMap
+        class CustomFixMap
         {
-            HE_CLASS_MOVE_CONSTRUCT_NG(FixMap);
+            HE_CLASS_MOVE_CONSTRUCT_NG(CustomFixMap);
 
         public:
             // 前方宣言
@@ -100,18 +100,18 @@ namespace Core
                 }
 
             private:
-                friend class FixMap;
+                friend class CustomFixMap;
 
                 Node* _pNode = NULL;
             };
 
         public:
             // コンストラクタ
-            FixMap() : _iteratorTail(&this->_tTail) { this->_Init(); }
+            CustomFixMap() : _iteratorTail(&this->_tTail) { this->_Init(); }
 
             // コピーのコンストラクタ
             // ディープコピーにする
-            FixMap(const FixMap& in_mrOther) : _iteratorTail(&this->_tTail)
+            CustomFixMap(const CustomFixMap& in_mrOther) : _iteratorTail(&this->_tTail)
             {
                 this->_Init();
                 this->_DeepCopy(&in_mrOther);
@@ -119,20 +119,20 @@ namespace Core
 
             // コピー処理
             // ディープコピーにする
-            FixMap& operator=(FixMap& in_mrOther)
+            CustomFixMap& operator=(CustomFixMap& in_mrOther)
             {
                 this->_DeepCopy(&in_mrOther);
                 return *this;
             }
 
-            FixMap& operator=(const FixMap& in_mrOther)
+            CustomFixMap& operator=(const CustomFixMap& in_mrOther)
             {
                 this->_DeepCopy(&in_mrOther);
                 return *this;
             }
 
             // デストラクタ
-            ~FixMap()
+            ~CustomFixMap()
             {
                 // ツリーを全て破棄する
                 this->Clear();
@@ -604,7 +604,7 @@ namespace Core
             /// ディープコピー処理
             /// </summary>
             /// <param name="other"></param>
-            void _DeepCopy(const FixMap* in_mpOther)
+            void _DeepCopy(const CustomFixMap* in_mpOther)
             {
                 HE_ASSERT(in_mpOther);
                 for (const Node* p                                = in_mpOther->_tHead._pNext;

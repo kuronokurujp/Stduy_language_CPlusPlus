@@ -27,16 +27,17 @@ namespace Actor
 
     const Bool Object::Begin()
     {
+        Task::Begin();
+
         return TRUE;
     }
 
     const Bool Object::End()
     {
+        Task::End();
+
         // 設定しているコンポーネントを全て破棄
         this->RemoveAllComponent();
-
-        // 設定している子アクターを全て外す
-        this->_aChildObject.Clear();
 
         this->_pDataAccess = NULL;
 
@@ -86,28 +87,39 @@ namespace Actor
                 // Actor内で更新した座標を含めて更新
                 this->_ComputeWorldTransform();
 
-                // 存在しない親アクターがあるかチェックして整理
-                if (this->_parentActorHandle.Null() == FALSE)
-                {
-                    Object* pParentActor = this->_pDataAccess->Get(this->_parentActorHandle);
-                    if (pParentActor == NULL) this->_parentActorHandle.Clear();
-                }
+                /*
+                                // 存在しない親アクターがあるかチェックして整理
+                                if (this->_parentActorHandle.Null() == FALSE)
+                                {
+                                    Object* pParentActor =
+                   this->_pDataAccess->Get(this->_parentActorHandle); if (pParentActor == NULL)
+                   this->_parentActorHandle.Clear();
+                                }
+                                */
 
                 break;
             }
         }
     }
 
-    const Bool Object::SetParentActor(const Core::Common::Handle& in_rHandle,
-                                      const Uint32 in_uDepth)
-    {
-        HE_ASSERT(in_rHandle.Null() == FALSE);
+    /*
+        /// <summary>
+        /// 親アクターを設定
+        /// </summary>
+        /// <param name="in_rHandle"></param>
+        /// <param name="in_uDepth"></param>
+        /// <returns></returns>
+        const Bool Object::SetParentActor(const Core::Common::Handle& in_rHandle,
+                                          const Uint32 in_uDepth)
+        {
+            HE_ASSERT(in_rHandle.Null() == FALSE);
 
-        this->_parentActorHandle = in_rHandle;
-        this->_uDepth            = in_uDepth + 1;
+            //this->_parentActorHandle = in_rHandle;
+            this->_uDepth            = in_uDepth + 1;
 
-        return TRUE;
-    }
+            return TRUE;
+        }
+        */
 
     /// <summary>
     /// くっつている全てのコンポーネント削除.
@@ -123,19 +135,21 @@ namespace Actor
     const Bool Object::RemoveComponent(Core::Common::Handle& in_rHandle)
     {
         HE_ASSERT(in_rHandle.Null() == FALSE);
-        this->_components.Remove(in_rHandle);
+        this->_components.RemoveTask(in_rHandle);
         return TRUE;
     }
-
+#if 0
     /// <summary>
     /// 子アクターが追加された時に呼ばれるイベント
     /// </summary>
-    void Object::OnAddChildActor(Actor::Object* in_pChildActor)
+    void Object::OnAddChildActor(const Core::Common::Handle& in_rChildActor)//Actor::Object* in_pChildActor)
     {
-        HE_ASSERT(in_pChildActor != NULL);
-        HE_ASSERT(this != in_pChildActor);
+        //HE_ASSERT(in_pChildActor != NULL);
+        //HE_ASSERT(this != in_pChildActor);
+        //this->_aChildObject.PushBack(in_pChildActor);
 
-        this->_aChildObject.PushBack(in_pChildActor);
+        HE_ASSERT(in_rChildActor.Null() == FALSE);
+        this->_aChildObject.PushBack(ChildObjectNode(in_rChildActor));
     }
 
     /// <summary>
@@ -146,11 +160,12 @@ namespace Actor
         HE_ASSERT(in_pChildActor != NULL);
         this->_aChildObject.Remove(in_pChildActor);
     }
+#endif
 
     /// <summary>
     /// アクター自身, 子アクターに設定しているコンポーネントを全て出力
     /// </summary>
-    void Object::OutputChildrenComponent(Core::Common::FastFixArrayBase<Component*>* out,
+    void Object::OutputChildrenComponent(Core::Common::StackBase<Component*>* out,
                                          const Core::Common::RTTI* in_pRtti)
     {
         auto c = this->GetComponentHandle(in_pRtti);
@@ -159,36 +174,88 @@ namespace Actor
             out->PushBack(this->GetComponent<Component>(c));
         }
 
-        const Uint32 uSize = this->_aChildObject.Size();
-        if (uSize <= 0) return;
+        if (this->_lstChildTask.Empty()) return;
+        auto itr    = this->_lstChildTask.BeginItr();
+        auto endItr = this->_lstChildTask.EndItr();
 
-        Core::Common::FastFixArray<Object*, 32> stack;
+        Core::Common::CustomFixStack<Core::Common::CustomList<ChildTaskNode>::Iterator, 32>
+            listItrStack;
 
-        // 子アクターがあれば再帰処理する
-        for (Uint32 i = 0; i < uSize; ++i)
+        while (itr != endItr)
         {
-            stack.PushBack(this->_aChildObject[i]);
-            while (stack.Empty())
-            {
-                auto obj = stack.PopBack();
-                {
-                    auto slot = obj->_components.GetUserDataList();
-                    for (auto b = slot->begin(); b != slot->end(); ++b)
-                    {
-                        auto c = reinterpret_cast<Actor::Component*>(b->second);
-                        if (c->GetRTTI().DerivesFrom(in_pRtti))
-                        {
-                            out->PushBack(c);
-                        }
-                    }
-                }
+            auto pChildActor = this->_pManager->GetTask<Object>(itr->GetHandle());
+            HE_ASSERT(pChildActor);
 
-                for (Uint32 j = 0; j < obj->_aChildObject.Size(); ++j)
+            auto slot = pChildActor->_components.GetUserDataList();
+            for (auto b = slot->begin(); b != slot->end(); ++b)
+            {
+                auto c = reinterpret_cast<Actor::Component*>(b->second);
+                if (c->GetRTTI().DerivesFrom(in_pRtti))
                 {
-                    stack.PushBack(obj);
+                    out->PushBack(c);
+                }
+            }
+
+            ++itr;
+
+            // タスクに子タスクがあれば,処理するタスクリストを子タスクのに変える
+            // リスト精査が終わったら,タスクリストを親タスクのリストに戻すので更新前のイテレータをスタックで保存しておく
+            if (pChildActor->_lstChildTask.Empty() == FALSE)
+            {
+                listItrStack.PushBack(itr);
+                listItrStack.PushBack(endItr);
+
+                itr    = pChildActor->_lstChildTask.BeginItr();
+                endItr = pChildActor->_lstChildTask.EndItr();
+            }
+            else
+            {
+                // リストの精査が終わった
+                if (itr == endItr)
+                {
+                    // スタックに保存したイテレータがある場合は
+                    // タスクリストを親タスクのリストに戻す
+                    if (listItrStack.Empty() == FALSE)
+                    {
+                        endItr = listItrStack.PopBack();
+                        itr    = listItrStack.PopBack();
+                    }
                 }
             }
         }
+
+        /*
+                const Uint32 uSize = this->_aChildObject.Size();
+                if (uSize <= 0) return;
+
+                Core::Common::FastFixArray<Object*, 32> stack;
+
+                // 子アクターがあれば再帰処理する
+                for (Uint32 i = 0; i < uSize; ++i)
+                {
+                    stack.PushBack(this->_aChildObject[i]);
+                    while (stack.Empty())
+                    {
+                        auto obj = stack.PopBack();
+                        {
+                            auto slot = obj->_components.GetUserDataList();
+                            for (auto b = slot->begin(); b != slot->end(); ++b)
+                            {
+                                auto c = reinterpret_cast<Actor::Component*>(b->second);
+                                if (c->GetRTTI().DerivesFrom(in_pRtti))
+                                {
+                                    out->PushBack(c);
+                                }
+                            }
+                        }
+
+                        for (Uint32 j = 0; j < obj->_aChildObject.Size(); ++j)
+                        {
+                            stack.PushBack(obj);
+                        }
+                    }
+                }
+                */
     }
 
     Core::Common::Handle Object::GetComponentHandle(const Core::Common::RTTI* in_pRtti)
@@ -212,16 +279,22 @@ namespace Actor
     {
         Core::Math::Vector3 pos = this->_pos;
         // 親アクターがあれば座標を取得
-        Core::Common::Handle handle = this->_parentActorHandle;
-        while (handle.Null() == FALSE)
+        if (this->_bChild)
         {
-            Object* pParentActor = this->_pDataAccess->Get(handle);
-            if (pParentActor == NULL) break;
+            Core::Common::Handle handle = this->_chainNode.GetParentHandle();
+            while (handle.Null() == FALSE)
+            {
+                Object* pParentActor = this->_pDataAccess->Get(handle);
+                if (pParentActor == NULL) break;
 
-            pos += pParentActor->GetWorldPos();
+                pos += pParentActor->GetWorldPos();
 
-            // 親アクターに更に親アクターがあれば処理を続ける
-            handle = pParentActor->_parentActorHandle;
+                // 親アクターに更に親アクターがあれば処理を続ける
+                if (pParentActor->_bChild)
+                    handle = pParentActor->_chainNode.GetParentHandle();
+                else
+                    handle.Clear();
+            }
         }
 
         return pos;

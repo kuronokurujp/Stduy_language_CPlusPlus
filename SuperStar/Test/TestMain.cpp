@@ -66,12 +66,19 @@ int main(int argc, char* const argv[])
 // マクロテストコード
 #include "EngineTest/Common/TestMacro.hpp"
 
-// 簡易配列のテストコード
+// カスタム配列のテストコード
 #include "EngineTest/Common/TestArray.hpp"
+// カスタムVectorのテストコード
+#include "EngineTest/Common/TestVector.hpp"
+// カスタムStackのテストコード
+#include "EngineTest/Common/TestStack.hpp"
+// 文カスタム字列のテストコード
 #include "EngineTest/Common/TestString.hpp"
+// カスタムリストのテストコード
+#include "EngineTest/Common/TestList.hpp"
 
-// CMapテストコード
-#include "EngineTest/Common/TestCMap.hpp"
+// Mapテストコード
+#include "EngineTest/Common/TestMap.hpp"
 
 // ランダム処理のテストコード
 #include "EngineTest/Math/TestRandom.hpp"

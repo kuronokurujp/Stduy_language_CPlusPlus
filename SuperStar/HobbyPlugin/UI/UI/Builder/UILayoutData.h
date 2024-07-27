@@ -2,6 +2,7 @@
 
 // UILayoutのデータファイルからUILayoutを構築するデータを生成
 #include "Engine/Common/CustomMap.h"
+#include "Engine/Common/CustomStack.h"
 #include "Engine/Common/CustomString.h"
 
 // 依存モジュール
@@ -89,8 +90,7 @@ namespace UI
             /// <summary>
             /// 指定したノード下にあるノード群を取得
             /// </summary>
-            void OutputNodeChildren(Core::Common::FastFixArrayBase<Node>* out,
-                                    const Node& in_rParentNode);
+            void OutputNodeChildren(Core::Common::StackBase<Node>* out, const Node& in_rParentNode);
         };
 
     }  // namespace Builder

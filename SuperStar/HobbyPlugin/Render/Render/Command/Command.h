@@ -29,7 +29,7 @@ namespace Render
     };
 
     extern void Cmd2DText(const Core::Math::Vector2& in_rPos,
-                          const Core::Common::FixStringBase& in_str, const Color& in_rColor);
+                          const Core::Common::StringBase& in_str, const Color& in_rColor);
 
     /// <summary>
     /// 2D画面に矩形を表示

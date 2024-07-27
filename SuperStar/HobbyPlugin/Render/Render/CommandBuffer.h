@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Engine/Common/CustomArray.h"
+#include "Engine/Common/CustomVector.h"
 #include "Render/Command/Command.h"
 
 namespace Render
@@ -8,7 +8,7 @@ namespace Render
     /// <summary>
     /// コマンドバッファ
     /// </summary>
-    class CommandBuffer : public Core::Common::FastFixArray<Command, 128>
+    class CommandBuffer : public Core::Common::CustomFixVector<Command, 128>
     {
     };
 }  // namespace Render

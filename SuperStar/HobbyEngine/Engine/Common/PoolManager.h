@@ -4,7 +4,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Engine/Common/CustomArray.h"
+#include "Engine/Common/CustomStack.h"
+#include "Engine/Common/CustomVector.h"
 #include "Engine/Common/Handle.h"
 #include "Engine/Core.h"
 #include "Engine/Memory/Memory.h"
@@ -196,7 +197,7 @@ namespace Core
             /// 割り当てデータを解放
             /// </summary>
             /// <param name="handle"></param>
-            void _Free(const Handle& in_rHandle, const Bool in_bCache)
+            void _Free(Handle& in_rHandle, const Bool in_bCache)
             {
                 HE_ASSERT(in_rHandle.Null() == FALSE && "解放するデータがないとだめ");
 
@@ -214,6 +215,8 @@ namespace Core
                     // キャッシュしたのを破棄する
                     HE_SAFE_DELETE(tpRemoveObj);
                 }
+                // ハンドルを無効化
+                in_rHandle.Clear();
             }
 
             // データの参照(非const版)
@@ -260,14 +263,12 @@ namespace Core
             /// データ使用個数
             /// </summary>
             /// <returns></returns>
-            const Uint32 Size() const HE_NOEXCEPT { return this->_aUserSlot.Size(); }
-
-            const Uint32 Capacity() const HE_NOEXCEPT { return this->_aMagicNum.Capacity(); }
+            const Uint32 Size() const HE_NOEXCEPT { return this->_vUserSlot.Size(); }
 
             const bool Empty() const HE_NOEXCEPT { return (this->Size() <= 0); }
 
             // 現在利用しているデータリストを取得
-            const std::list<T*>& GetUserDataList() const HE_NOEXCEPT { return this->_aUserSlot; }
+            const std::list<T*>& GetUserDataList() const HE_NOEXCEPT { return this->_vUserSlot; }
 
             /// <summary>
             /// プールしているデータの中で利用できるデータ枠を取得
@@ -279,23 +280,23 @@ namespace Core
                 HE_ASSERT(out != NULL);
 
                 Uint32 uIndex = 0;
-                if (this->_aFreeSlot.Empty())
+                if (this->_sFreeSlot.Empty())
                 {
-                    this->_aUserSlot.PushBack(T());
+                    this->_vUserSlot.PushBack(T());
 
-                    uIndex = this->_aMagicNum.Size();
+                    uIndex = this->_vMagicNum.Size();
                     out->Init(uIndex);
-                    this->_aMagicNum.PushBack(out->Magic());
+                    this->_vMagicNum.PushBack(out->Magic());
                 }
                 else
                 {
-                    uIndex = this->_aFreeSlot.Back();
+                    uIndex = this->_sFreeSlot.PopBack();
                     out->Init(uIndex);
 
-                    (*this->_aMagicNum.GetPtr(uIndex)) = out->Magic();
+                    (*this->_vMagicNum.GetPtr(uIndex)) = out->Magic();
                 }
 
-                return this->_aUserSlot.GetPtr(uIndex);
+                return this->_vUserSlot.GetPtr(uIndex);
             }
 
             /// <summary>
@@ -307,12 +308,12 @@ namespace Core
                 if (in_rHandle.Null()) return;
 
                 const Uint32 uIndex = in_rHandle.Index();
-                HE_ASSERT(this->_aMagicNum[uIndex] != NON_MAGIC_NUMBER);
-                HE_ASSERT(this->_aMagicNum[uIndex] == in_rHandle.Magic());
-                HE_ASSERT(uIndex < this->_aUserSlot.Size());
+                HE_ASSERT(this->_vMagicNum[uIndex] != NON_MAGIC_NUMBER);
+                HE_ASSERT(this->_vMagicNum[uIndex] == in_rHandle.Magic());
+                HE_ASSERT(uIndex < this->_vUserSlot.Size());
 
-                (*this->_aMagicNum.GetPtr(uIndex)) = NON_MAGIC_NUMBER;
-                this->_aFreeSlot.PushBack(uIndex);
+                (*this->_vMagicNum.GetPtr(uIndex)) = NON_MAGIC_NUMBER;
+                this->_sFreeSlot.PushBack(uIndex);
             }
 
             // データの参照(非const版)
@@ -321,9 +322,11 @@ namespace Core
                 if (in_rHandle.Null()) return NULL;
 
                 Uint32 uIndex = in_rHandle.Index();
-                if ((this->_aMagicNum[uIndex] != in_rHandle.Magic())) return NULL;
+                // マジックナンバーが空値ならハンドルは解放済み
+                if ((this->_vMagicNum[uIndex] == NON_MAGIC_NUMBER)) return NULL;
+                if ((this->_vMagicNum[uIndex] != in_rHandle.Magic())) return NULL;
 
-                return this->_aUserSlot[uIndex];
+                return this->_vUserSlot[uIndex];
             }
 
             // データの参照(const版)
@@ -334,9 +337,9 @@ namespace Core
             }
 
         private:
-            FastFixArray<T, CAPACITY> _aUserSlot;
-            FastFixArray<Uint32, CAPACITY> _aFreeSlot;
-            FastFixArray<Uint32, CAPACITY> _aMagicNum;
+            CustomFixVector<T, CAPACITY> _vUserSlot;
+            CustomFixStack<Uint32, CAPACITY> _sFreeSlot;
+            CustomFixVector<Uint32, CAPACITY> _vMagicNum;
         };
     }  // namespace Common
 };     // namespace Core

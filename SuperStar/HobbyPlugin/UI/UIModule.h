@@ -54,7 +54,7 @@ namespace UI
 
         // UIのLayerを作成する
         // 描画ソート機能は未実装
-        Core::Common::Handle NewLayer(const Core::Common::FixStringBase& in_szrName,
+        Core::Common::Handle NewLayer(const Core::Common::StringBase& in_szrName,
                                       const Uint32 in_sort);
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace UI
         /// </summary>
         /// <param name="in_bLoc">ローカライズテキスト対象フラグ</param>
         /// <returns></returns>
-        Core::Common::Handle NewLabelWidget(const Core::Common::FixStringBase& in_szrName,
+        Core::Common::Handle NewLabelWidget(const Core::Common::StringBase& in_szrName,
                                             const Uint32 in_sort, const Char* in_pLocGroupName,
                                             const Char* in_szText,
                                             const Core::Math::Rect2& in_rTextRect,
@@ -71,14 +71,14 @@ namespace UI
         /// <summary>
         /// ボタンWidget作成
         /// </summary>
-        Core::Common::Handle NewButtonWidget(const Core::Common::FixStringBase& in_szrName,
+        Core::Common::Handle NewButtonWidget(const Core::Common::StringBase& in_szrName,
                                              const Uint32 in_sort,
                                              const Core::Math::Rect2& in_rBtnRect,
                                              const Uint32 in_uBtnColor);
 
         // TODO: UIのWidgetを作成する
         // TODO: 描画ソート機能は未実装
-        Core::Common::Handle NewWidget(const Core::Common::FixStringBase& in_szName,
+        Core::Common::Handle NewWidget(const Core::Common::StringBase& in_szName,
                                        const Uint32 in_uSort);
 
         // 親Widgetに子Widgetを追加

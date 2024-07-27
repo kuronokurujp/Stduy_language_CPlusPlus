@@ -6,6 +6,7 @@ current_dir="Locate"
 # 日本語の各テキストグループ
 [locate.JP.default]
 json="Text.json"
+
 # デバッグ用のテキスト
 # TODO: リリースの場合はロードしないようにする
 [locate.JP.debug]

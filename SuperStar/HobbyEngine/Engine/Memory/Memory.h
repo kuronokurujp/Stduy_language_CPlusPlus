@@ -248,5 +248,30 @@ namespace Core
                 throw;
             }
         }
+
+        template <typename T, typename... Args>
+        std::unique_ptr<T> MakeCustomUniqueShared(Args&&... args)
+        {
+            // メモリ確保
+            void* mem = HE_NEW(T, 0);
+            if (!mem)
+            {
+                throw std::bad_alloc();
+            }
+
+            try
+            {
+                // 配列の要素を構築し、shared_ptrを作成する
+                return std::unique_ptr<T>(new (mem) T(std::forward<Args>(args)...),
+                                          DeleterFreeMemory());
+            }
+            catch (...)
+            {
+                // コンストラクタが失敗した場合はメモリを解放する
+                FreeMemory(mem);
+                throw;
+            }
+        }
+
     }  // namespace Memory
 }  // namespace Core

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Engine/Common/CustomArray.h"
+#include "Engine/Common/CustomVector.h"
 #include "UIInputInterface.h"
 
 namespace UI
@@ -19,6 +19,6 @@ namespace UI
         /// Processes the input.
         /// </summary>
         void ProcessInput(Platform::InputSystemInterface*,
-                          Core::Common::FastFixArrayBase<Actor::Component*>&);
+                          Core::Common::StackBase<Actor::Component*>&);
     };
 }  // namespace UI

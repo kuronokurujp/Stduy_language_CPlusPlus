@@ -13,12 +13,12 @@ namespace Core
 {
     namespace Common
     {
-        FixStringBase::FixStringBase(Char* in_cpBuff, Uint32 in_uSize)
+        StringBase::StringBase(Char* in_cpBuff, Uint32 in_uSize)
         {
             this->_Init(in_cpBuff, in_uSize);
         }
 
-        void FixStringBase::_Init(Char* in_cpBuff, Uint32 in_uSize)
+        void StringBase::_Init(Char* in_cpBuff, Uint32 in_uSize)
         {
             HE_ASSERT(in_cpBuff && in_uSize);
 
@@ -27,7 +27,7 @@ namespace Core
             this->_cpBuff[0] = HE_STR_TEXT('\0');
         }
 
-        FixStringBase& FixStringBase::Replace(const Char* in_cszOld, const Char* in_cszNew)
+        StringBase& StringBase::Replace(const Char* in_cszOld, const Char* in_cszNew)
         {
             if (in_cszOld == NULL) return *this;
 
@@ -57,7 +57,7 @@ namespace Core
             return *this;
         }
 
-        FixStringBase& FixStringBase::Insert(Uint32 in_uIndex, const Char* in_szInsert)
+        StringBase& StringBase::Insert(Uint32 in_uIndex, const Char* in_szInsert)
         {
             Char* szBuffEnd   = this->_cpBuff + this->_uCapacity - 1;
             Uint32 uOriginLen = this->Length();
@@ -110,7 +110,7 @@ namespace Core
             return *this;
         }
 
-        FixStringBase& FixStringBase::Remove(Uint32 in_uIndex, Uint32 in_uCount)
+        StringBase& StringBase::Remove(Uint32 in_uIndex, Uint32 in_uCount)
         {
             Uint32 uSize = this->Capacity();
             Char* szDst  = this->_cpBuff + ((in_uIndex > uSize) ? uSize : in_uIndex);
@@ -124,7 +124,7 @@ namespace Core
             return *this;
         }
 
-        FixStringBase& FixStringBase::Format(const Char* in_szFormat, ...)
+        StringBase& StringBase::Format(const Char* in_szFormat, ...)
         {
             va_list vlist;
             va_start(vlist, in_szFormat);
@@ -134,7 +134,7 @@ namespace Core
             return *this;
         }
 
-        FixStringBase& FixStringBase::FormatV(const Char* in_szFormat, va_list in_vlist)
+        StringBase& StringBase::FormatV(const Char* in_szFormat, va_list in_vlist)
         {
             if (in_szFormat && this->_uCapacity > 1)
             {
@@ -150,7 +150,7 @@ namespace Core
             return *this;
         }
 
-        Sint32 FixStringBase::Find(const Char* in_szName, Uint32 in_uStart) const
+        Sint32 StringBase::Find(const Char* in_szName, Uint32 in_uStart) const
         {
             const Uint32 uLen = this->Length();
             if (uLen <= in_uStart) return -1;
@@ -161,7 +161,7 @@ namespace Core
             return static_cast<Sint32>(szFind - this->_cpBuff);
         }
 
-        const Uint32 FixStringBase::Length() const
+        const Uint32 StringBase::Length() const
         {
 #ifdef HE_WIN
             return static_cast<Uint32>(HE_STR_LEN(this->_cpBuff));
@@ -209,7 +209,7 @@ namespace Core
         /// 文字列をハッシュ化して返す
         /// </summary>
         /// <returns></returns>
-        const Uint64 FixStringBase::Hash()
+        const Uint64 StringBase::Hash()
         {
 #ifdef HE_WIN
             std::hash<std::wstring> hasher;
@@ -225,7 +225,7 @@ namespace Core
         /// </summary>
         /// <param name="out"></param>
         /// <param name="in_size"></param>
-        void FixStringBase::OutputUTF8(UTF8* out, const Uint32 in_uSize) const
+        void StringBase::OutputUTF8(UTF8* out, const Uint32 in_uSize) const
         {
             HE_ASSERT(out);
             HE_ASSERT(in_uSize <= this->Capacity());
@@ -243,7 +243,7 @@ namespace Core
 #endif
         }
 
-        FixStringBase& FixStringBase::_Copy(const Char* in_szName, const Uint32 in_uLen)
+        StringBase& StringBase::_Copy(const Char* in_szName, const Uint32 in_uLen)
         {
             HE_ASSERT(in_szName && "コピーしたい文字列がない");
             HE_ASSERT(0 < this->_uCapacity && "コピー先のバッファサイズがない");
@@ -260,7 +260,7 @@ namespace Core
             return *this;
         }
 
-        FixStringBase& FixStringBase::_Add(const Char* in_szName)
+        StringBase& StringBase::_Add(const Char* in_szName)
         {
             if (in_szName && this->_uCapacity > 0)
             {
@@ -287,7 +287,7 @@ namespace Core
             return *this;
         }
 
-        FixStringBase& FixStringBase::_Add(Char c)
+        StringBase& StringBase::_Add(Char c)
         {
             Uint32 uLen = this->Length();
             HE_ASSERT(uLen + 1 < this->_uCapacity &&

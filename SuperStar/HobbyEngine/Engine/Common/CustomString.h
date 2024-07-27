@@ -17,24 +17,22 @@ namespace Core
     {
         /// <summary>
         /// 文字列制御の基本クラス
-        /// std::stringのようにクラス内部でメモリ確保する事はしない
-        /// 固定長文字列のクラス生成を前提
         /// </summary>
-        class FixStringBase
+        class StringBase
         {
-            HE_CLASS_DEFAULT_CONSTRUCT_NG(FixStringBase);
-            HE_CLASS_MOVE_CONSTRUCT_NG(FixStringBase);
+            HE_CLASS_DEFAULT_CONSTRUCT_NG(StringBase);
+            HE_CLASS_MOVE_CONSTRUCT_NG(StringBase);
 
         public:
-            FixStringBase(Char* in_cpBuff, Uint32 in_uSize);
+            StringBase(Char* in_cpBuff, Uint32 in_uSize);
 
-            virtual ~FixStringBase() {}
+            virtual ~StringBase() {}
 
-            FixStringBase& Replace(const Char* in_szOld, const Char* in_szNew);
-            FixStringBase& Insert(Uint32 in_uIndex, const Char* in_szInsert);
-            FixStringBase& Remove(Uint32 in_uIndex, Uint32 in_uCount = 1);
-            FixStringBase& Format(const Char* in_cszFormat, ...);
-            FixStringBase& FormatV(const Char* in_szFormat, va_list in_vlist);
+            StringBase& Replace(const Char* in_szOld, const Char* in_szNew);
+            StringBase& Insert(Uint32 in_uIndex, const Char* in_szInsert);
+            StringBase& Remove(Uint32 in_uIndex, Uint32 in_uCount = 1);
+            StringBase& Format(const Char* in_cszFormat, ...);
+            StringBase& FormatV(const Char* in_szFormat, va_list in_vlist);
             void Clear() HE_NOEXCEPT { this->_cpBuff[0] = '\0'; }
 
             Sint32 Find(const Char* in_szName, Uint32 in_uStart = 0) const;
@@ -68,29 +66,29 @@ namespace Core
             void ToLower() { HE_STR_LOWER(this->_cpBuff); }
             void ToUpper() { HE_STR_UPPER(this->_cpBuff); }
 
-            FixStringBase& operator=(const Char* in_szName)
+            StringBase& operator=(const Char* in_szName)
             {
                 this->_Copy(in_szName, this->_uCapacity);
                 return *this;
             }
 
-            FixStringBase& operator=(const FixStringBase& r)
+            StringBase& operator=(const StringBase& r)
             {
                 this->_Copy(r.Str(), this->_uCapacity);
                 return *this;
             }
 
-            FixStringBase& operator+=(Char c)
+            StringBase& operator+=(Char c)
             {
                 this->_Add(c);
                 return *this;
             }
-            FixStringBase& operator+=(const Char* in_szName)
+            StringBase& operator+=(const Char* in_szName)
             {
                 this->_Add(in_szName);
                 return *this;
             }
-            FixStringBase& operator+=(const FixStringBase& r)
+            StringBase& operator+=(const StringBase& r)
             {
                 this->_Add(r.Str());
                 return *this;
@@ -115,20 +113,17 @@ namespace Core
                 return (in_szName && (HE_STR_CMP(this->_cpBuff, in_szName) == 0));
             }
 
-            Bool operator==(const FixStringBase& in_szrName) const
+            Bool operator==(const StringBase& in_szrName) const
             {
                 return operator==(in_szrName.Str());
             }
             Bool operator!=(const Char* in_szName) const { return !operator==(in_szName); }
-            Bool operator!=(const FixStringBase& in_szrName) const
-            {
-                return !operator==(in_szrName);
-            }
+            Bool operator!=(const StringBase& in_szrName) const { return !operator==(in_szrName); }
             Bool operator<(const Char* in_szName) const
             {
                 return HE_STR_CMP(this->_cpBuff, in_szName) < 0;
             }
-            Bool operator<(const FixStringBase& in_szrName) const
+            Bool operator<(const StringBase& in_szrName) const
             {
                 return HE_STR_CMP(this->_cpBuff, in_szrName.Str()) < 0;
             }
@@ -136,7 +131,7 @@ namespace Core
             {
                 return HE_STR_CMP(this->_cpBuff, in_szName) <= 0;
             }
-            Bool operator<=(const FixStringBase& in_szrName) const
+            Bool operator<=(const StringBase& in_szrName) const
             {
                 return HE_STR_CMP(this->_cpBuff, in_szrName.Str()) <= 0;
             }
@@ -144,7 +139,7 @@ namespace Core
             {
                 return HE_STR_CMP(this->_cpBuff, in_szName) > 0;
             }
-            Bool operator>(const FixStringBase& in_szrName) const
+            Bool operator>(const StringBase& in_szrName) const
             {
                 return HE_STR_CMP(this->_cpBuff, in_szrName.Str()) > 0;
             }
@@ -152,7 +147,7 @@ namespace Core
             {
                 return HE_STR_CMP(this->_cpBuff, in_szName) >= 0;
             }
-            Bool operator>=(const FixStringBase& in_szrName) const
+            Bool operator>=(const StringBase& in_szrName) const
             {
                 return HE_STR_CMP(this->_cpBuff, in_szrName.Str()) >= 0;
             }
@@ -168,18 +163,18 @@ namespace Core
             }
 
         protected:
-            FixStringBase(const FixStringBase& in_szrName)
+            StringBase(const StringBase& in_szrName)
             {
                 this->_Copy(in_szrName.Str(), in_szrName.Length());
             }
 
-            FixStringBase& _Copy(const Char* in_szName, const Uint32 in_uLen);
+            StringBase& _Copy(const Char* in_szName, const Uint32 in_uLen);
 
         private:
             void _Init(Char* in_cpBuff, Uint32 in_uSize);
 
-            FixStringBase& _Add(const Char* in_szName);
-            FixStringBase& _Add(Char c);
+            StringBase& _Add(const Char* in_szName);
+            StringBase& _Add(Char c);
 
         private:
             Char* _cpBuff     = NULL;
@@ -191,28 +186,28 @@ namespace Core
         /// </summary>
         /// <typeparam name="SIZE"></typeparam>
         template <Uint32 CAPACITY>
-        class FixString : public FixStringBase
+        class FixString : public StringBase
         {
             HE_CLASS_MOVE_CONSTRUCT_NG(FixString);
 
         public:
-            FixString() : FixStringBase(this->_caBuff, CAPACITY) {}
-            FixString(const Char* in_szName) : FixStringBase(this->_caBuff, CAPACITY)
+            FixString() : StringBase(this->_caBuff, CAPACITY) {}
+            FixString(const Char* in_szName) : StringBase(this->_caBuff, CAPACITY)
             {
                 this->_Copy(in_szName, HE_STR_LEN(in_szName));
             }
-            FixString(const FixString<CAPACITY>& r) : FixStringBase(this->_caBuff, CAPACITY)
+            FixString(const FixString<CAPACITY>& r) : StringBase(this->_caBuff, CAPACITY)
             {
                 *this = r;
             }
 
 #ifdef HE_WIN
-            FixString(const UTF8* in_szNameUTF8) : FixStringBase(this->_caBuff, CAPACITY)
+            FixString(const UTF8* in_szNameUTF8) : StringBase(this->_caBuff, CAPACITY)
             {
                 this->_ConvUTF8toWide(in_szNameUTF8, static_cast<Uint32>(::strlen(in_szNameUTF8)));
             }
 
-            FixString(const std::string_view& in_szrName) : FixStringBase(this->_caBuff, CAPACITY)
+            FixString(const std::string_view& in_szrName) : StringBase(this->_caBuff, CAPACITY)
             {
                 this->_ConvUTF8toWide(in_szrName.data(), static_cast<Uint32>(in_szrName.length()));
             }
@@ -292,18 +287,22 @@ namespace Core
         /// <param name="out"></param>
         /// <param name="in_rStr"></param>
         /// <param name="in_delim"></param>
-        template <Uint32 SPLITE_COUNT>
-        static void OutputSplitString(FastFixArray<FixString1024, SPLITE_COUNT>& out,
-                                      FixStringBase& in_szrName, const Char in_cDelim)
+        static void OutputSplitString(ArrayBase<FixString1024>& out, StringBase& in_szrName,
+                                      const Char in_cDelim)
         {
             FixString1024 name;
-            Uint32 i = 0;
-            Char c   = in_szrName[i];
+            Uint32 i          = 0;
+            Uint32 arrayIndex = 0;
+            Char c            = in_szrName[i];
             while (c != '\0')
             {
                 if (c == in_cDelim)
                 {
-                    if (name.Empty() == FALSE) out.PushBack(name);
+                    if (name.Empty() == FALSE)
+                    {
+                        out.Set(arrayIndex, name);
+                        ++arrayIndex;
+                    }
                     name.Clear();
                     // TODO: 配列要素数 -
                     // 1が文字列分割できる回数なので回数を上回ったたら分割処理は終了
@@ -316,7 +315,11 @@ namespace Core
                 c = in_szrName[i];
             }
 
-            if (name.Empty() == FALSE) out.PushBack(name);
+            if (name.Empty() == FALSE)
+            {
+                out.Set(arrayIndex, name);
+                ++arrayIndex;
+            }
         }
 
     }  // namespace Common

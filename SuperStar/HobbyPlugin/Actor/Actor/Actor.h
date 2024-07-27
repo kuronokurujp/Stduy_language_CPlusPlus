@@ -2,7 +2,8 @@
 
 #include "Actor/Component/component.h"
 #include "ActorInterface.h"
-#include "Engine/Common/CustomArray.h"
+#include "Engine/Common/CustomList.h"
+#include "Engine/Common/CustomStack.h"
 #include "Engine/Common/CustomString.h"
 #include "Engine/Common/Handle.h"
 #include "Engine/Math/Math.h"
@@ -61,11 +62,6 @@ namespace Actor
         }
 
         /// <summary>
-        /// 親アクターを設定
-        /// </summary>
-        const Bool SetParentActor(const Core::Common::Handle& in_rHandle, const Uint32 in_uDepth);
-
-        /// <summary>
         /// 生成直後の設定処理
         /// データ初期化はここで行う
         /// </summary>
@@ -119,8 +115,6 @@ namespace Actor
             return handle;
         }
 
-        const Uint32 GetDepth() const { return this->_uDepth; }
-
         /// <summary>
         /// くっつている全てのコンポーネント外す
         /// </summary>
@@ -168,11 +162,11 @@ namespace Actor
         /// <summary>
         /// オブジェクト名を設定 / 取得
         /// </summary>
-        void SetName(const Core::Common::FixStringBase& in_szrName)
+        void SetName(const Core::Common::StringBase& in_szrName)
         {
             this->_szName = in_szrName.Str();
         }
-        const Core::Common::FixStringBase& GetName() const { return this->_szName; }
+        const Core::Common::StringBase& GetName() const { return this->_szName; }
 
         /// <summary>
         /// 取得コンポーネント(ハンドル)
@@ -193,7 +187,7 @@ namespace Actor
         /// アクター自身, 子アクターに設定しているコンポーネントを全て出力
         /// アクターの階層構造が深くなると再帰処理が多くなるので注意
         /// </summary>
-        void OutputChildrenComponent(Core::Common::FastFixArrayBase<Component*>* out,
+        void OutputChildrenComponent(Core::Common::StackBase<Component*>* out,
                                      const Core::Common::RTTI*);
         /// <summary>
         /// RTTIから目的のコンポーネントを取得
@@ -220,17 +214,19 @@ namespace Actor
         /// <returns></returns>
         inline void SetPos(const Core::Math::Vector3& in_rPosition) { this->_pos = in_rPosition; }
 
+#if 0
         /// <summary>
         /// 子アクターが追加された時に呼ばれるイベント
         /// </summary>
         /// <param name="in_pChildActor"></param>
-        virtual void OnAddChildActor(Actor::Object* in_pChildActor);
+        virtual void OnAddChildActor(const Core::Common::Handle& in_rChildActor);// Actor::Object* in_pChildActor);
 
         /// <summary>
         /// 子アクター外す時に呼ばれるイベント
         /// </summary>
         /// <param name="in_pChildActor"></param>
         virtual void OnRemoveChildActor(Actor::Object* in_pChildActor);
+#endif
 
         // TODO: コリジョンイベント
 
@@ -326,18 +322,27 @@ namespace Actor
             this->_scale.Clear();
             this->_bComputeTransform = FALSE;
 
-            this->_aChildObject.Clear();
-            this->_parentActorHandle.Clear();
             this->_pDataAccess = NULL;
             this->_components.RemoveAll();
-
-            this->_bStart = FALSE;
-            this->_uDepth = 0;
         }
 
     protected:
+#if 0
         // 子アクターリスト
-        Core::Common::FastFixArray<Actor::Object*, 512> _aChildObject;
+        // TODO: リストにする
+        // リスト用のノード
+        class ChildObjectNode : public Core::Common::LinkedListNode<Core::Common::Handle>
+        {
+        public:
+            ChildObjectNode(const Core::Common::Handle& in_rHandle) : _handle(in_rHandle) {}
+
+        private:
+            Core::Common::Handle _handle;
+        };
+
+        // Core::Common::CustomList<Actor::Object*, 512> _aChildObject;
+        Core::Common::CustomList<Core::Common::Handle> _aChildObject;
+#endif
 
     private:
         // Actorの状態
@@ -351,12 +356,8 @@ namespace Actor
         Bool _bComputeTransform = FALSE;
 
         Core::TaskManager _components;
-        Core::Common::Handle _parentActorHandle;
 
         ActorManagerPubliclnterface* _pDataAccess = NULL;
-
-        Bool _bStart   = FALSE;
-        Uint32 _uDepth = 0;
 
         // オブジェクト名
         Core::Common::FixString128 _szName;

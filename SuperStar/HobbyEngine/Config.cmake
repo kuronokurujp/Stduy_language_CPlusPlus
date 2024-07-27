@@ -22,6 +22,9 @@ set(ENGINE_TARGET_FILES
     Engine/Type.h
 
     Engine/Common/CustomArray.h
+    Engine/Common/CustomVector.h
+    Engine/Common/CustomList.h
+    Engine/Common/CustomStack.h
     Engine/Common/CustomMap.h
     Engine/Common/CustomString.cpp
     Engine/Common/CustomString.h

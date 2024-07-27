@@ -47,7 +47,8 @@ namespace Module
         Core::Common::FixString128 _szName;
 
     private:
-        static inline Core::Common::FixMap<Core::Common::FixString128, ModuleBase*, 64> _mModule;
+        static inline Core::Common::CustomFixMap<Core::Common::FixString128, ModuleBase*, 64>
+            _mModule;
 
         friend class ModuleManager;
     };

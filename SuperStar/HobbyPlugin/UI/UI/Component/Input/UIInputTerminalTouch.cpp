@@ -1,6 +1,6 @@
 ﻿#include "UIInputTerminalTouch.h"
 
-#include "Engine/Common/CustomArray.h"
+#include "Engine/Common/CustomVector.h"
 #include "UI/Component/Widget/UIWidget.h"
 #include "UI/Widget.h"
 
@@ -18,14 +18,14 @@ namespace UI
         HE_ASSERT(pWidget != NULL);
 
         // Widgetアクターに設定しているUIWidgetコンポーネントを全て取得
-        Core::Common::FastFixArray<Actor::Component*, 128> aWidgetComponent;
-        pWidget->OutputChildrenComponent(&aWidgetComponent, &UIWidgetComponent::CLASS_RTTI);
+        Core::Common::CustomFixStack<Actor::Component*, 128> sWidgetComponent;
+        pWidget->OutputChildrenComponent(&sWidgetComponent, &UIWidgetComponent::CLASS_RTTI);
 
-        Uint32 uSize = aWidgetComponent.Size();
+        Uint32 uSize = sWidgetComponent.Size();
         Core::Common::Handle handle;
-        for (Uint32 i = 0; i < uSize; ++i)
+        while (sWidgetComponent.Empty() == FALSE)
         {
-            UIWidgetComponent* c = reinterpret_cast<UIWidgetComponent*>(aWidgetComponent[i]);
+            UIWidgetComponent* c = reinterpret_cast<UIWidgetComponent*>(sWidgetComponent.PopBack());
             c->OnTouch(rState._touch);
         }
     }

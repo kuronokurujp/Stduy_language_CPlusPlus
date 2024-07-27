@@ -2,119 +2,68 @@
 
 #include "Engine/Core.h"
 
+/// <summary>
+/// 配列制御クラス
+/// 配列制御をクラスで行う事ができる
+/// Uint32 nums[32]
+/// 上記のC++標準の配列を使うのではなく配列制御クラスを使って配列を扱うようにしてほしい
+/// Uint32 nums[32]
+/// ↓
+/// CustomArray<Uint32, 32> nums;
+/// </summary>
 namespace Core
 {
     namespace Common
     {
         /// <summary>
         /// 固定長配列の基本クラス
-        /// 削除すると配列の要素とインデックスの結びつけが変わるのでインデックスは保有していはいけない
         /// </summary>
         template <class TYPE>
-        class FastFixArrayBase
+        class ArrayBase
         {
+            HE_CLASS_COPY_CONSTRUCT_NG(ArrayBase);
+            HE_CLASS_MOVE_CONSTRUCT_NG(ArrayBase);
+
         public:
-            FastFixArrayBase(TYPE* in_tpArrayAddr, Uint32 in_uSize)
-                : _tpBuff(in_tpArrayAddr), _uCapacity(in_uSize)
+            ArrayBase(TYPE* in_pArrayAddr, Uint32 in_uSize)
+                : _pBuff(in_pArrayAddr), _uCapacity(in_uSize)
             {
             }
 
             inline const Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
-            inline const Uint32 Size() const HE_NOEXCEPT { return this->_uNum; }
-            inline const Bool Empty() const HE_NOEXCEPT { return (this->_uNum <= 0); }
 
-            void Clear() HE_NOEXCEPT { this->_uNum = 0; }
-
-            void PushBack(const TYPE in_tData)
+            /// <summary>
+            /// 指定した要素に値をコピーして設定
+            /// </summary>
+            inline void Set(const Uint32 in_uIndex, const TYPE& in_data) HE_NOEXCEPT
             {
-                HE_ASSERT(this->_uNum < this->Capacity());
-                this->_tpBuff[this->_uNum++] = in_tData;
+                HE_ASSERT(in_uIndex < this->_uCapacity);
+                this->_pBuff[in_uIndex] = in_data;
             }
 
-            TYPE PopBack()
+            TYPE& operator[](const Uint32 in_uIndex) const
             {
-                Sint32 i = this->_uNum - 1;
-                if (this->_uNum > 0) --this->_uNum;
-
-                i = HE_MAX(i, 0);
-                return this->_tpBuff[i];
-            }
-
-            const Bool Remove(const TYPE in_tData)
-            {
-                for (Uint32 i = 0; i < this->_uNum; ++i)
-                {
-                    if (this->_tpBuff[i] == in_tData)
-                    {
-                        this->RemoveAt(i);
-                        return TRUE;
-                    }
-                }
-
-                return FALSE;
-            }
-
-            void RemoveAt(const Uint32 in_uIndex)
-            {
-                HE_ASSERT(in_uIndex < this->_uNum);
-                HE_ASSERT(0 < this->_uNum);
-
-                Uint32 uLastIndex = this->_uNum - 1;
-                if (in_uIndex < uLastIndex)
-                {
-                    // 削除する要素位置に上書きして削除
-                    // メモリ移動のみで高速削除できる
-                    Uint32 uSize = (uLastIndex - in_uIndex) * sizeof(TYPE);
-                    ::memmove(&this->_tpBuff[in_uIndex], &this->_tpBuff[in_uIndex + 1], uSize);
-                }
-                else
-                {
-                    // 末尾の削除は要素数を減らすだけでよい
-                }
-
-                --this->_uNum;
-            }
-
-            TYPE Back()
-            {
-                HE_ASSERT(0 < this->_uNum);
-
-                Uint32 uIndex = this->_uNum - 1;
-                --this->_uNum;
-
-                return this->_tpBuff[uIndex];
-            }
-
-            TYPE operator[](const Uint32 in_uIndex) const
-            {
-                HE_ASSERT(0 < this->_uNum);
-                return this->_tpBuff[in_uIndex];
-            }
-
-            TYPE* GetPtr(const Uint32 in_uIndex) const
-            {
-                HE_ASSERT(0 < this->_uNum);
-                return &this->_tpBuff[in_uIndex];
+                HE_ASSERT(0 < this->_uCapacity);
+                return this->_pBuff[in_uIndex];
             }
 
         private:
-            TYPE* _tpBuff     = NULL;
-            Uint32 _uNum      = 0;
+            TYPE* _pBuff      = NULL;
             Uint32 _uCapacity = 0;
         };
 
         /// <summary>
-        /// 固定長の高速処理の配列
+        /// 固定長配列
         /// テンプレートで要素を決めている
         /// </summary>
         template <class TYPE, Uint32 CAPACITY>
-        class FastFixArray : public FastFixArrayBase<TYPE>
+        class CustomArray : public ArrayBase<TYPE>
         {
         public:
-            FastFixArray() : FastFixArrayBase<TYPE>(_taBuff, CAPACITY) {}
+            CustomArray() : ArrayBase<TYPE>(this->_aBuff, CAPACITY) {}
 
         private:
-            TYPE _taBuff[CAPACITY];
+            TYPE _aBuff[CAPACITY];
         };
     }  // namespace Common
 }  // namespace Core

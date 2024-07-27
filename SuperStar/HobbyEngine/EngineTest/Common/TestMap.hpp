@@ -7,7 +7,7 @@
 #include "Engine/Memory/Memory.h"
 
 // 標準のメモリ確保を使用する<文字列, 整数>のマップ
-typedef Core::Common::FixMap<Core::Common::FixString16, Sint32, 2048> BASICMAP;
+typedef Core::Common::CustomFixMap<Core::Common::FixString16, Sint32, 2048> BASICMAP;
 std::ostream& operator<<(std::ostream& out, const BASICMAP::Iterator& r)
 {
     (void)r;

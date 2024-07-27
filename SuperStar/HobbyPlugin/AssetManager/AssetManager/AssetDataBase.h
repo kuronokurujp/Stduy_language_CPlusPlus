@@ -43,7 +43,7 @@ namespace AssetManager
     {
     public:
 #define TOML_NODE_MAP_TYPE \
-    Core::Common::FixMap<Core::Common::FixString128, class AssetDataToml::Node, 128>
+    Core::Common::CustomFixMap<Core::Common::FixString128, class AssetDataToml::Node, 128>
 
         class Node
         {

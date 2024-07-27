@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Engine/Common/CustomList.h"
 #include "Engine/Common/Handle.h"
 #include "Engine/Core.h"
 
@@ -30,6 +31,37 @@ namespace Core
         HE_CLASS_COPY_CONSTRUCT_NG(Task);
 
     public:
+        // 子タスクのリストノード
+        class ChildTaskNode : public Core::Common::LinkedListNode<ChildTaskNode>
+        {
+        public:
+            ChildTaskNode() { this->Clear(); }
+            ChildTaskNode(const Core::Common::Handle& in_rParentHandle,
+                          const Core::Common::Handle& in_rHandle)
+                : _parentHandle(in_rParentHandle), _handle(in_rHandle)
+            {
+            }
+
+            inline Core::Common::Handle& GetParentHandle() { return this->_parentHandle; }
+            inline Core::Common::Handle& GetHandle() { return this->_handle; }
+
+            void Clear()
+            {
+                this->_handle.Clear();
+                this->_parentHandle.Clear();
+            }
+
+            inline const Bool Empty() const
+            {
+                return (this->_handle.Null()) && (this->_parentHandle.Null());
+            }
+
+        private:
+            Core::Common::Handle _parentHandle;
+            Core::Common::Handle _handle;
+        };
+
+    public:
         static const Uint32 uNoneId      = 0;
         static const Sint32 iNoneGroupId = -1;
 
@@ -55,7 +87,7 @@ namespace Core
         /// <summary>
         /// タスク終了
         /// </summary>
-        virtual const Bool End() { return TRUE; }
+        virtual const Bool End();
 
         /// <summary>
         /// 更新用で継承先が実装しないとだめ
@@ -74,26 +106,49 @@ namespace Core
         /// <returns></returns>
         inline const Sint32 GetGropuId() const { return this->_iGroupId; }
 
+        /// <summary>
+        /// 子タスクの追加
+        /// </summary>
+        /// <param name="in_rHandle"></param>
+        const Bool AddChildTask(const Core::Common::Handle&);
+
+        /// <summary>
+        /// 子タスクを外す
+        /// </summary>
+        /// <param name="in_rHandle"></param>
+        const Core::Common::CustomList<ChildTaskNode>::Iterator RemoveChildTask(
+            const Core::Common::Handle&);
+
     private:
         void _Clear()
         {
             this->_bStart = TRUE;
             this->_bKill  = FALSE;
+            this->_bChild = FALSE;
 
             this->_iGroupId    = Task::iNoneGroupId;
             this->_pPrev       = NULL;
             this->_pNext       = NULL;
             this->_bReleaseMem = FALSE;
+            this->_lstChildTask.Clear();
+            this->_chainNode.Clear();
         }
+
+        void _UpdateChild(const Float32 in_fDt, const TaskData&);
 
     protected:
         TaskManager* _pManager = NULL;
 
+        Core::Common::CustomList<ChildTaskNode> _lstChildTask;
+        ChildTaskNode _chainNode;
+
+        Bool _bStart = TRUE;
+        Bool _bChild = FALSE;
+
     private:
         Sint32 _iGroupId = Task::iNoneGroupId;
         Common::Handle _hSelf;
-        Bool _bStart = TRUE;
-        Bool _bKill  = FALSE;
+        Bool _bKill = FALSE;
         // タスクを解放した時にメモリからも解放するか
         // 解放しない場合はキャッシュして使いまわすことになる
         Bool _bReleaseMem = FALSE;

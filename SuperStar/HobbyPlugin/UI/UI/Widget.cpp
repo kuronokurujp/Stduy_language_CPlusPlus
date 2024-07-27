@@ -20,16 +20,6 @@ namespace UI
         return TRUE;
     }
 
-    void Widget::OnAddChildActor(Actor::Object* in_pChildActor)
-    {
-        Actor::Object::OnAddChildActor(in_pChildActor);
-    }
-
-    void Widget::OnRemoveChildActor(Actor::Object* in_pChildActor)
-    {
-        Actor::Object::OnRemoveChildActor(in_pChildActor);
-    }
-
     void Widget::_ProcessInput(const Float32 in_fDt, Platform::InputSystemInterface* in_pInput)
     {
         // 入力ルーターに入力情報を渡して子の入力端末の入力情報を更新
@@ -39,17 +29,12 @@ namespace UI
             UIInputRouterComponent* pInputRouter =
                 this->GetComponent<UIInputRouterComponent>(this->_inputHandle);
 
-            Core::Common::FastFixArray<Actor::Component*, 32> inputTerminalComArray;
+            Core::Common::CustomFixStack<Actor::Component*, 32> sInputTerminalCom;
 
-            for (Uint32 i = 0; i < this->_aChildObject.Size(); ++i)
-            {
-                inputTerminalComArray.Clear();
-
-                auto childObject = this->_aChildObject[i];
-                childObject->OutputChildrenComponent(&inputTerminalComArray,
-                                                     &UIInputIComponentInterface::CLASS_RTTI);
-                pInputRouter->ProcessInput(in_pInput, inputTerminalComArray);
-            }
+            sInputTerminalCom.Clear();
+            this->OutputChildrenComponent(&sInputTerminalCom,
+                                          &UIInputIComponentInterface::CLASS_RTTI);
+            pInputRouter->ProcessInput(in_pInput, sInputTerminalCom);
         }
     }
 }  // namespace UI

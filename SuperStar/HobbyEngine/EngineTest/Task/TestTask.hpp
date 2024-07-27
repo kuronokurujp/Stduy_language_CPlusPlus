@@ -261,9 +261,9 @@ namespace Core
         public:
             EffectTask() : Task() {}
 
-            void Update(const Float32 dt)
+            void Update(const Float32 in_fDt, const TaskData&) override
             {
-                this->_time += dt;
+                this->_time += in_fDt;
                 HE_LOG(HE_STR_TEXT("F"));
 
                 // 3秒経過したら自動的に死ぬ
@@ -279,13 +279,13 @@ namespace Core
         public:
             ObjectTask() : Task() {}
 
-            void Update(const Float32 dt)
+            void Update(const Float32 in_fDt, const TaskData&) override
             {
-                this->_time += dt;
+                this->_time += in_fDt;
                 HE_LOG(HE_STR_TEXT("P"));
 
                 // 1/30の確率でエフェクトを発生させる
-                if (rand() % 30 == 0) new EffectTask();
+                if (rand() % 30 == 0) this->_pManager->CreateAndAdd<EffectTask>(0, FALSE);
             }
 
         private:
@@ -384,9 +384,9 @@ namespace Core
         public:
             EffectTask() : Task() {}
 
-            void Update(const Float32 dt)
+            void Update(const Float32 in_fDt, const TaskData&) override
             {
-                this->_time += dt;
+                this->_time += in_fDt;
                 HE_LOG(HE_STR_TEXT("F"));
 
                 // 3秒経過したら自動的に死ぬ
@@ -402,13 +402,13 @@ namespace Core
         public:
             ObjectTask() : Task() {}
 
-            void Update(const Float32 dt)
+            void Update(const Float32 in_fDt, const TaskData&) override
             {
-                this->_time += dt;
+                this->_time += in_fDt;
                 HE_LOG(HE_STR_TEXT("P"));
 
                 // 1/30の確率でエフェクトを発生させる
-                if (rand() % 30 == 0) new EffectTask();
+                if (rand() % 30 == 0) this->_pManager->CreateAndAdd<EffectTask>(0, TRUE);
             }
 
         private:
@@ -427,26 +427,26 @@ namespace Core
 
         // タスクを起動する
         // 削除した時にメモリから解放
-        auto h1 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
+        auto h1 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, TRUE);
         CHECK(!h1.Null());
-        auto h2 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
+        auto h2 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, TRUE);
         CHECK(!h2.Null());
-        auto h3 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, FALSE);
+        auto h3 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, FALSE);
         CHECK(!h3.Null());
 
         // タスクの利用数が意図通りか
         CHECK(manager.UseCount() == 3);
 
-        manager.Remove(h1);
+        manager.RemoveTask(h1);
         CHECK(manager.UseCount() == 2);
         CHECK(manager.GetTask(h1) == NULL);
         CHECK(manager.CacheCount() == 0);
 
-        manager.Remove(h3);
+        manager.RemoveTask(h3);
         CHECK(manager.CacheCount() == 1);
         CHECK(manager.UseCount() == 1);
 
-        auto h4 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
+        auto h4 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, TRUE);
         CHECK(!h4.Null());
         CHECK(manager.CacheCount() == 0);
         // タスクの利用数が意図通りか
@@ -460,6 +460,132 @@ namespace Core
 
         CHECK(memoryManager.Release());
         memoryManager.Reset();
+    }
+
+    TEST_CASE("Testg Child Task")
+    {
+        Core::Memory::Manager memoryManager;
+        CHECK(memoryManager.Start(0x1000000));
+        // ページ確保テスト
+        {
+            // メモリサイズのイニシャライズ
+            Core::Memory::Manager::PageSetupInfo memoryPageSetupInfoArray[] = {
+                // 複数ページのサイズ
+                {0, 3 * 1024 * 1024}};
+
+            CHECK(memoryManager.SetupMemoryPage(memoryPageSetupInfoArray,
+                                                HE_ARRAY_NUM(memoryPageSetupInfoArray)));
+            CHECK(memoryManager.CheckAllMemoryBlock());
+        }
+        /// <summary>
+        /// タスクグループ一覧
+        /// </summary>
+        enum
+        {
+            GROUP_SYSTEM,
+            GROUP_PLAYER,
+            GROUP_NUM
+        };
+
+        // テスト用のタスクたち
+        class EffectTask : public Task
+        {
+        public:
+            EffectTask() : Task() {}
+
+            void Update(const Float32 in_fDt, const TaskData&) override
+            {
+                this->_time += in_fDt;
+                HE_LOG(HE_STR_TEXT("F"));
+
+                // 3秒経過したら自動的に死ぬ
+                if (this->_time >= 3000.0f) this->Kill();
+            }
+
+        private:
+            Float32 _time = 0.0f;
+        };
+
+        class ObjectTask : public Task
+        {
+        public:
+            ObjectTask() : Task() {}
+
+            void Update(const Float32 in_fDt, const TaskData&) override
+            {
+                this->_time += in_fDt;
+                HE_LOG(HE_STR_TEXT("P"));
+            }
+
+        private:
+            Float32 _time = 0.0f;
+        };
+
+        static TaskManager manager;
+        static const Uint32 taskNum = 32;
+
+        // タスクシステムの初期化
+        CHECK(manager.Init(taskNum, GROUP_NUM));
+        // タスクの確保数が意図通りか
+        CHECK(manager.Max() == taskNum);
+        // タスクの利用数が意図通りか
+        CHECK(manager.UseCount() == 0);
+
+        // タスクを起動する
+        // 削除した時にメモリから解放
+        auto h1 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, TRUE);
+        CHECK_FALSE(h1.Null());
+        auto h2 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
+        CHECK_FALSE(h2.Null());
+        auto h3 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, FALSE);
+        CHECK_FALSE(h3.Null());
+
+        // タスクの利用数が意図通りか
+        CHECK(manager.UseCount() == 3);
+        auto pTask = manager.GetTask(h1);
+        CHECK_FALSE(pTask->AddChildTask(h1));
+        CHECK(pTask->AddChildTask(h2));
+        CHECK(manager.UseCount() == 3);
+        manager.UpdateAll(0, DEFAULT_TASK_DATA);
+        HE_LOG(HE_STR_TEXT(" (%d / %d)\n"), manager.UseCount(), manager.Max());
+
+        // 親タスクが外したのだから子タスクも同時に外れているはず
+        manager.RemoveTask(h1);
+        CHECK(manager.UseCount() == 1);
+        CHECK(manager.GetTask(h1) == NULL);
+        CHECK(manager.GetTask(h2) == NULL);
+        CHECK(manager.GetTask(h3));
+        CHECK(manager.CacheCount() == 0);
+
+        auto h4 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, FALSE);
+        CHECK_FALSE(h4.Null());
+
+        auto h5 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, FALSE);
+        CHECK_FALSE(h5.Null());
+
+        pTask = manager.GetTask(h3);
+        pTask->AddChildTask(h4);
+        pTask = manager.GetTask(h4);
+        pTask->AddChildTask(h5);
+
+        manager.UpdateAll(0, DEFAULT_TASK_DATA);
+        HE_LOG(HE_STR_TEXT(" (%d / %d)\n"), manager.UseCount(), manager.Max());
+
+        // タスクシステムの終了
+        manager.End();
+
+        // タスクシステムが終了したのだから今まで確保したタスクがないとおかしい
+        CHECK(manager.GetTask(h1) == NULL);
+        CHECK(manager.GetTask(h2) == NULL);
+        CHECK(manager.GetTask(h3) == NULL);
+
+        // タスクシステムが終了しているので解放されているか
+        CHECK(manager.UseCount() == 0);
+
+        CHECK(memoryManager.Release());
+        memoryManager.Reset();
+
+        HE_LOG_LINE(HE_STR_TEXT(""));
     }
 
 }  // namespace Core

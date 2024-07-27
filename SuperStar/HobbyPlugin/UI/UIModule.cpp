@@ -40,7 +40,7 @@ namespace UI
         ModuleAssetManager()->Unload(in_rHandle);
     }
 
-    Core::Common::Handle UIModule::NewLayer(const Core::Common::FixStringBase& in_szrName,
+    Core::Common::Handle UIModule::NewLayer(const Core::Common::StringBase& in_szrName,
                                             const Uint32 in_uSort)
     {
         Core::Common::Handle handle = this->NewWidget(in_szrName, in_uSort);
@@ -77,18 +77,18 @@ namespace UI
 
         // レイアウトノード下にあるWidgetを取得
         // MEMO: 要素数が1000を超えるとスタックサイズが足りずにスタックオーバーフローになるので注意
-        Core::Common::FastFixArray<UI::Builder::Node, 64> stack;
+        Core::Common::CustomFixStack<UI::Builder::Node, 64> stack;
 
         Uint32 sort = 0;
-        Core::Common::FastFixArray<UI::Builder::Node, 64> nodeChildren;
-        asset.OutputNodeChildren(&nodeChildren, layoutNode);
+        Core::Common::CustomFixStack<UI::Builder::Node, 64> sNodeChildren;
+        asset.OutputNodeChildren(&sNodeChildren, layoutNode);
 
-        for (Uint32 i = 0; i < nodeChildren.Size(); ++i)
+        while (sNodeChildren.Empty() == FALSE)
         {
             Core::Common::Handle hParentWidget = hLayout;
 
             // 再帰処理をしている
-            stack.PushBack(nodeChildren[i]);
+            stack.PushBack(sNodeChildren.PopBack());
             while (stack.Empty() == FALSE)
             {
                 auto widgetNode                       = stack.PopBack();
@@ -179,11 +179,11 @@ namespace UI
                     }
                 }
 
-                Core::Common::FastFixArray<UI::Builder::Node, 64> tmpNodeChildren;
-                asset.OutputNodeChildren(&tmpNodeChildren, widgetNode);
-                for (Uint32 i2 = 0; i2 < tmpNodeChildren.Size(); ++i2)
+                Core::Common::CustomFixStack<UI::Builder::Node, 64> sTmpNodeChildren;
+                asset.OutputNodeChildren(&sTmpNodeChildren, widgetNode);
+                while (sTmpNodeChildren.Empty() == FALSE)
                 {
-                    stack.PushBack(tmpNodeChildren[i2]);
+                    stack.PushBack(sTmpNodeChildren.PopBack());
                 }
             }
         }
@@ -191,7 +191,7 @@ namespace UI
         return hLayout;
     }
 
-    Core::Common::Handle UIModule::NewLabelWidget(const Core::Common::FixStringBase& in_szrName,
+    Core::Common::Handle UIModule::NewLabelWidget(const Core::Common::StringBase& in_szrName,
                                                   const Uint32 in_uSort,
                                                   const Char* in_szLocGroupName,
                                                   const Char* in_szText,
@@ -218,7 +218,7 @@ namespace UI
         return handle;
     }
 
-    Core::Common::Handle UIModule::NewButtonWidget(const Core::Common::FixStringBase& in_szrName,
+    Core::Common::Handle UIModule::NewButtonWidget(const Core::Common::StringBase& in_szrName,
                                                    const Uint32 in_uSort,
                                                    const Core::Math::Rect2& in_rBtnRect,
                                                    const Uint32 in_uBtnColor)
@@ -247,7 +247,7 @@ namespace UI
         return handle;
     }
 
-    Core::Common::Handle UIModule::NewWidget(const Core::Common::FixStringBase& in_szrName,
+    Core::Common::Handle UIModule::NewWidget(const Core::Common::StringBase& in_szrName,
                                              const Uint32 in_uSort)
     {
         Core::Common::Handle handle;
@@ -268,7 +268,7 @@ namespace UI
     const Bool UIModule::AddChildWidget(Core::Common::Handle& in_rParent,
                                         Core::Common::Handle& in_rWidget)
     {
-        return LEVEL_MODULE_CURRENT_LEVEL->AddParentActor(in_rWidget, in_rParent);
+        return LEVEL_MODULE_CURRENT_LEVEL->ChainActor(in_rWidget, in_rParent);
     }
 
     const Bool UIModule::Release()

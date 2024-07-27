@@ -48,6 +48,17 @@ namespace Level
         this->_nodeManager.UpdatePending();
     }
 
+    /// <summary>
+    /// カレントレベルを取得
+    /// </summary>
+    /// <returns></returns>
+    Level::Node* Manager::CurrentLevel()
+    {
+        Level::Node* pNode =
+            reinterpret_cast<Level::Node*>(this->_nodeManager.Get(this->_currentLevel));
+        return pNode;
+    }
+
     // ここから先は
     // レベルノードの実装
 
@@ -58,10 +69,8 @@ namespace Level
 
     const Bool Node::Begin()
     {
-        // Actor::ActorManager* pActorManager = HE_NEW(Actor::ActorManager, 0);
-        // this->_pActorManager               = std::shared_ptr<Actor::ActorManager>(pActorManager);
         this->_pActorManager = Core::Memory::MakeCustomShared<Actor::ActorManager>();
-        if (this->_pActorManager->Start(256, 32) == FALSE)
+        if (this->_pActorManager->Start(256, 2) == FALSE)
         {
             HE_ASSERT(FALSE && "レベルノードのアクター管理の初期化が失敗");
             return FALSE;
@@ -138,31 +147,15 @@ namespace Level
         return this->_pActorManager->Get(in_rActor);
     }
 
-    const Bool Node::AddParentActor(const Core::Common::Handle& in_rChildActor,
-                                    const Core::Common::Handle& in_rParentActor)
+    const Bool Node::ChainActor(const Core::Common::Handle& in_rChildActor,
+                                const Core::Common::Handle& in_rParentActor)
     {
         HE_ASSERT(in_rChildActor.Null() == FALSE);
         HE_ASSERT(in_rParentActor.Null() == FALSE);
 
-        Actor::Object* pChildActor  = this->GetActor(in_rChildActor);
         Actor::Object* pParentActor = this->GetActor(in_rParentActor);
         // 子アクターに親アクターを設定する
-        const Bool bRet = pChildActor->SetParentActor(in_rParentActor, pParentActor->GetDepth());
-        if (bRet)
-        {
-            // 子アクターの更新順を変える
-            this->_pActorManager->MoveDepth(in_rChildActor, pChildActor->GetDepth());
-
-            pParentActor->OnAddChildActor(pChildActor);
-        }
-
-        return TRUE;
+        return pParentActor->AddChildTask(in_rChildActor);
     }
 
-    /*
-        Actor::ActorManagerlnterface* Node::GetActorManagerDataAccess()
-        {
-            return this->_pActorManager.get();
-        }
-        */
 }  // namespace Level
