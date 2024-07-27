@@ -190,7 +190,7 @@ namespace Core
                             // サイズが違う場合は大きくなる分には問題ないし
                             // 小さくなる場合も使用していない部分なら問題ないけど
                             // さらにリマップして問題が発生した際に原因が見つけにくくなりそうなのでとりあえずこうしておく
-                            if (this->_ExistUsedMemoryBlock(pTempSetupInfo->_chPage))
+                            if (this->UsedMemoryBlock(pTempSetupInfo->_chPage))
                             {
                                 HE_ASSERT(0 &&
                                           "オフセットもしくはサイズの変更が指定されているが、使用中"
@@ -219,7 +219,7 @@ namespace Core
                 if (uaSize[i] == 0)
                 {
                     // 消すのにごみが残っていてはだめ
-                    if (this->_ExistUsedMemoryBlock(i))
+                    if (this->UsedMemoryBlock(i))
                     {
                         HE_ASSERT(0 &&
                                   "ページを消去するのに、使用中のメモリブロックが存在している．");
@@ -249,7 +249,7 @@ namespace Core
             return TRUE;
         }
 
-        const Bool Manager::IsValidMemory(void* in_pAllocatedMemory)
+        const Bool Manager::ValidMemory(void* in_pAllocatedMemory)
         {
             // 受け取ったのは使用できるメモリの先頭
             BlockHeader* pMemoryBlock = reinterpret_cast<BlockHeader*>(
@@ -258,14 +258,37 @@ namespace Core
             return this->_IsValidMemoryBlock(pMemoryBlock);
         }
 
+        const Bool Manager::UsedAllMemoryBlock() const
+        {
+            for (Uint8 i = 0; i < HE_ARRAY_NUM(this->_aMemoryPageInfoArray); ++i)
+            {
+                if (this->UsedMemoryBlock(i)) return TRUE;
+            }
+            return FALSE;
+        }
+
+        const Bool Manager::UsedMemoryBlock(const Uint8 in_page) const
+        {
+            // ページのメモリブロック先頭にデータがなければ存在しない
+            if (this->_aMemoryPageInfoArray[in_page]._pMemoryBlockTop == NULL) return FALSE;
+
+            // 最初のメモリブロックが使用中
+            if (this->_aMemoryPageInfoArray[in_page]._pMemoryBlockTop->_useFlag == 1) return TRUE;
+
+            // メモリブロックが2つ以上あるならなにかしら使っている
+            if (this->_aMemoryPageInfoArray[in_page]._pMemoryBlockTop->_pNext != NULL) return TRUE;
+
+            return FALSE;
+        }
+
         /// <summary>
         /// メモリページの初期化
         /// </summary>
         /// <param name="in_page">メモリページ指定</param>
         /// <param
-        /// name="in_heepOffset">メモリページをどこから取るか(メモリマネージャー管理領域先頭からのオフセット。MINIMUM_ALIGN_SIZEの倍数であること)</param>
+        /// name="in_uHeepOffset">メモリページをどこから取るか(メモリマネージャー管理領域先頭からのオフセット。MINIMUM_ALIGN_SIZEの倍数であること)</param>
         /// <param
-        /// name="in_useHeepSize">メモリページのサイズ（MINIMUM_ALIGN_SIZEの倍数であること）</param>
+        /// name="in_uUseHeepSize">メモリページのサイズ（MINIMUM_ALIGN_SIZEの倍数であること）</param>
         const Bool Manager::_InitMemoryPage(Uint8 in_page, Uint32 in_uHeepOffset,
                                             Uint32 in_uUseHeepSize)
         {
@@ -577,7 +600,6 @@ namespace Core
         /// <summary>
         /// メモリ解放
         /// </summary>
-        /// <param name="in_pAllocatedMemory">管理側で確保したメモリのポインタ</param>
         void Manager::FreeMemory(void* in_pAllocatedMemory)
         {
             // 受け取ったのは使用できるメモリの先頭

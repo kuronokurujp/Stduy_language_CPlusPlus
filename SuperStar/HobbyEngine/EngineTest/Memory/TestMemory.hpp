@@ -134,7 +134,6 @@ TEST_CASE("Memory New and Delete")
     memoryManager.Reset();
 }
 
-#if 0
 TEST_CASE("Memory Custom Shader Ptr")
 {
     Core::Memory::Manager memoryManager;
@@ -160,21 +159,22 @@ TEST_CASE("Memory Custom Shader Ptr")
         Sint8 i = 0;
     };
 
-    Core::Common::FastFixArray<std::shared_ptr<Data>, 10> memArray;
+    Core::Common::CustomArray<std::shared_ptr<Data>, 10> memArray;
     for (Uint32 i = 0; i < 10; ++i)
     {
         auto p = Core::Memory::MakeCustomShared<Data>();
-        memArray.PushBack(p);
+        memArray.Set(i, p);
     }
+
     Uint32 memIdx[10] = {1, 3, 4, 2, 5, 9, 7, 8, 0, 6};
     for (Uint32 i = 0; i < 10; ++i)
     {
-        memArray.RemoveAt(i);
-//        memArray[i].reset();
+        memArray[i].reset();
     }
 
     // TODO new と deleteがうまくいっているかチェック
+    CHECK(memoryManager.UsedAllMemoryBlock() == FALSE);
+
     CHECK(memoryManager.Release());
     memoryManager.Reset();
 }
-#endif

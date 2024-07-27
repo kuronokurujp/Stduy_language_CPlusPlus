@@ -79,9 +79,11 @@ namespace Core
             /// </summary>
             struct BlockHeader
             {
-                // メモリブロックのサイズ（ヘッダやパディングも含む）
+                // メモリブロックのサイズ
+                // ヘッダやパディングも含む
                 Uint32 _uSize = 0;
-                // メモリブロックでアロケーションされるサイズ（実際に使用できるサイズ）
+                // メモリブロックでアロケーションされるサイズ
+                // 実際に使用できるサイズ
                 Uint32 _uAllocateSize = 0;
                 // 前のメモリブロックアドレス
                 BlockHeader* _pPrev = NULL;
@@ -185,7 +187,18 @@ namespace Core
             const Bool RemapMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_uNum);
 
             // メモリが管理対象のメモリかそうでないか
-            const Bool IsValidMemory(void* in_pAllocatedMemory);
+            const Bool ValidMemory(void* in_pAllocatedMemory);
+
+            /// <summary>
+            /// 全ページ内に利用中のメモリがあるか
+            /// </summary>
+            /// <returns></returns>
+            const Bool UsedAllMemoryBlock() const;
+
+            /// <summary>
+            /// 指定ページに利用中のメモリがあるか
+            /// </summary>
+            const Bool UsedMemoryBlock(const Uint8 in_page) const;
 
         private:
             /// <summary>
@@ -201,24 +214,7 @@ namespace Core
                 return (this->_aMemoryPageInfoArray[in_page]._pTopAddr != NULL);
             }
 
-            /// <summary>
-            /// 指定ページに利用中のメモリブロックが存在するか
-            /// </summary>
-            const Bool _ExistUsedMemoryBlock(const Uint8 in_page) const
-            {
-                // ページのメモリブロック先頭にデータがなければ存在しない
-                if (this->_aMemoryPageInfoArray[in_page]._pMemoryBlockTop == NULL) return FALSE;
 
-                // 最初のメモリブロックが使用中
-                if (this->_aMemoryPageInfoArray[in_page]._pMemoryBlockTop->_useFlag == 1)
-                    return TRUE;
-
-                // メモリブロックが2つ以上あるならなにかしら使っている
-                if (this->_aMemoryPageInfoArray[in_page]._pMemoryBlockTop->_pNext != NULL)
-                    return TRUE;
-
-                return FALSE;
-            }
 
             /// <summary>
             /// メモリブロックのヘッダーサイズを取得

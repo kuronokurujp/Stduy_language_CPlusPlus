@@ -56,6 +56,11 @@ void* operator new[](size_t in_size, Uint8 in_page, Uint8 in_alignSize,
     new (page, Core::Memory::Manager::MinimumAlignSize, \
          Core::Memory::Manager::EAllocateLocateType_Top, __FILE__, __LINE__)(type)
 
+// マクロの引数で__FILE__と__LINE__を指定
+#define HE_NEW_INFO(type, page, file, line)                              \
+    new (page, Core::Memory::Manager::MinimumAlignSize, \
+         Core::Memory::Manager::EAllocateLocateType_Top, file, line)(type)
+
 // NEWの配列マクロ
 // メモリアライメント設定版
 // 通常はこちらを利用
@@ -229,6 +234,7 @@ namespace Core
         std::shared_ptr<T> MakeCustomShared(Args&&... args)
         {
             // メモリ確保
+            // クラスだとデフォルトコンストラクタが必要
             void* mem = HE_NEW(T, 0);
             if (!mem)
             {
@@ -275,3 +281,4 @@ namespace Core
 
     }  // namespace Memory
 }  // namespace Core
+
