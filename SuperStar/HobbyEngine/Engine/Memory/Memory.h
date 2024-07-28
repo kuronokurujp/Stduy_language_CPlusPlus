@@ -57,7 +57,7 @@ void* operator new[](size_t in_size, Uint8 in_page, Uint8 in_alignSize,
          Core::Memory::Manager::EAllocateLocateType_Top, __FILE__, __LINE__)(type)
 
 // マクロの引数で__FILE__と__LINE__を指定
-#define HE_NEW_INFO(type, page, file, line)                              \
+#define HE_NEW_INFO(type, page, file, line)             \
     new (page, Core::Memory::Manager::MinimumAlignSize, \
          Core::Memory::Manager::EAllocateLocateType_Top, file, line)(type)
 
@@ -254,31 +254,5 @@ namespace Core
                 throw;
             }
         }
-
-        template <typename T, typename... Args>
-        std::unique_ptr<T> MakeCustomUniqueShared(Args&&... args)
-        {
-            // メモリ確保
-            void* mem = HE_NEW(T, 0);
-            if (!mem)
-            {
-                throw std::bad_alloc();
-            }
-
-            try
-            {
-                // 配列の要素を構築し、shared_ptrを作成する
-                return std::unique_ptr<T>(new (mem) T(std::forward<Args>(args)...),
-                                          DeleterFreeMemory());
-            }
-            catch (...)
-            {
-                // コンストラクタが失敗した場合はメモリを解放する
-                FreeMemory(mem);
-                throw;
-            }
-        }
-
     }  // namespace Memory
 }  // namespace Core
-

@@ -214,8 +214,6 @@ namespace Core
                 return (this->_aMemoryPageInfoArray[in_page]._pTopAddr != NULL);
             }
 
-
-
             /// <summary>
             /// メモリブロックのヘッダーサイズを取得
             /// </summary>
