@@ -15,6 +15,34 @@ namespace DXLib
         {
             // WindowModeにしている
             ChangeWindowMode(TRUE);
+            // ウィンドウサイズを自由に変える事はしない
+            SetWindowSizeChangeEnableFlag(FALSE);
+
+            // TODO: サイズは適当
+            {
+                auto result = SetGraphMode(640, 480, 32);
+                switch (result)
+                {
+                    case DX_CHANGESCREEN_OK:
+                    {
+                        HE_LOG_LINE(HE_STR_TEXT("画面モード変更成功"));
+                        break;
+                    }
+                    case DX_CHANGESCREEN_RETURN:
+                    {
+                        HE_LOG_LINE(HE_STR_TEXT(" 画面の変更は失敗し元の画面モードに戻された"));
+                        break;
+                    }
+                    case DX_CHANGESCREEN_DEFAULT:
+                    {
+                        HE_LOG_LINE(HE_STR_TEXT("画面の変更は失敗し標準の画面モードに変更された"));
+                        break;
+                    }
+                }
+            }
+
+            // 描画先を裏画面にセット
+            SetDrawScreen(DX_SCREEN_BACK);
 
             // DxLib初期化
             if (DxLib_Init() == -1)
@@ -61,14 +89,10 @@ namespace DXLib
             // 入力の前更新
             this->_input.BeforeUpdate(in_fDeltaTime);
 
+            // 0以外だと画面終了メッセージとみなしている
             if ((ProcessMessage() != 0))
             {
                 bRet = FALSE;
-            }
-            else
-            {
-                // 画面の描画クリア
-                ClsDrawScreen();
             }
         }
 
@@ -84,9 +108,6 @@ namespace DXLib
 
     const Bool DXLibModule::AfterUpdate(const Float32 in_fDeltaTime)
     {
-        // 画面の反映
-        ScreenFlip();
-
         this->_input.AfterUpdate(in_fDeltaTime);
 
         return TRUE;
@@ -94,6 +115,8 @@ namespace DXLib
 
     void DXLibModule::BeginRender()
     {
+        // 画面の描画クリア
+        ClearDrawScreen();
     }
 
     void DXLibModule::Redner()
@@ -149,6 +172,9 @@ namespace DXLib
         HE_ASSERT(pRenderModule);
 
         pRenderModule->ClearCmd();
+
+        // 画面の反映
+        ScreenFlip();
     }
 
 }  // namespace DXLib
