@@ -51,7 +51,7 @@ namespace UI
             Platform::EInputState::EInputState_PRESSED)
         {
             Core::Math::Rect2 rect;
-            Core::Math::Rect2 orgRect(0.0f, 0.0f, this->_fWidth, this->_fWidth,
+            Core::Math::Rect2 orgRect(0.0f, 0.0f, this->_fWidth, this->_fHeight,
                                       Core::Math::Rect2::EPivot_Left);
             this->TransformLocalToWorldRect2D(&rect, orgRect);
 
