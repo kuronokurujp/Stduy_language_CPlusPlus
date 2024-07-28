@@ -143,6 +143,9 @@ const Bool Engine::BeforUpdateLoop()
     if (pPlatform->BeforUpdate(this->_spFPS->GetDeltaTimeSec(pPlatform->Time())) == FALSE)
         return FALSE;
 
+    // 描画の前準備
+    pPlatform->BeginRender();
+
     return TRUE;
 }
 
@@ -152,10 +155,12 @@ const Bool Engine::WaitFrameLoop()
     if (pPlatform == NULL) return FALSE;
 
     // 1 / 60 秒経過しないと更新しない
+    // TODO: FPS設定できるようにした方がいい
     if (this->_spFPS != NULL)
     {
         while (this->_spFPS->UpdateWait(pPlatform->Time(), 16))
         {
+            // TODO: 待機する時間を正確に計算した方がいい
             pPlatform->Time()->SleepMSec(1);
         }
 
@@ -170,19 +175,23 @@ const Bool Engine::MainUpdateLoop(const Float32 in_fDeltaSec)
     // モジュール更新
     this->_moduleManager.Update(in_fDeltaSec);
 
+    // 描画処理
+    auto pPlatformModule = this->GetPlatformModule();
+    if (pPlatformModule != NULL) pPlatformModule->Redner();
+
     return TRUE;
 }
 
 const Bool Engine::AfterUpdateLoop(const Float32 in_fDeltaSec)
 {
-    // 描画処理
-    this->_Redner();
-
     auto pPlatform = this->GetPlatformModule();
     if (pPlatform == NULL) return FALSE;
 
     if (pPlatform->AfterUpdate(this->_spFPS->GetDeltaTimeSec(pPlatform->Time())) == FALSE)
         return FALSE;
+
+    // 描画終了
+    pPlatform->EndRender();
 
     return TRUE;
 }
@@ -203,18 +212,4 @@ const Float32 Engine::GetDeltaTimeSec()
     if (pPlatform == NULL) return 0.0f;
 
     return this->_spFPS->GetDeltaTimeSec(pPlatform->Time());
-}
-
-/// <summary>
-/// Generates the output.
-/// </summary>
-void Engine::_Redner()
-{
-    auto pPlatformModule = this->GetPlatformModule();
-    if (pPlatformModule == NULL) return;
-
-    // 描画実行
-    pPlatformModule->BeginRender();
-    pPlatformModule->Redner();
-    pPlatformModule->EndRender();
 }

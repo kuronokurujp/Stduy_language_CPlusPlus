@@ -106,11 +106,6 @@ private:
     /// <returns></returns>
     void _Colision() {}
 
-    /// <summary>
-    /// 処理結果を出力.
-    /// </summary>
-    void _Redner();
-
 private:
     Bool _bInit  = FALSE;
     Bool _bStart = FALSE;
