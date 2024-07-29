@@ -231,12 +231,12 @@ namespace Core
         /// <param name="...args"></param>
         /// <returns></returns>
         template <typename T, typename... Args>
-        std::shared_ptr<T> MakeCustomShared(Args&&... args)
+        std::shared_ptr<T> MakeCustomSharedPtr(Args&&... args)
         {
             // メモリ確保
             // クラスだとデフォルトコンストラクタが必要
-            void* mem = HE_NEW(T, 0);
-            if (!mem)
+            void* pMem = HE_NEW(T, 0);
+            if (pMem == NULL)
             {
                 throw std::bad_alloc();
             }
@@ -244,15 +244,47 @@ namespace Core
             try
             {
                 // 配列の要素を構築し、shared_ptrを作成する
-                return std::shared_ptr<T>(new (mem) T(std::forward<Args>(args)...),
+                return std::shared_ptr<T>(new (pMem) T(std::forward<Args>(args)...),
                                           DeleterFreeMemory());
             }
             catch (...)
             {
                 // コンストラクタが失敗した場合はメモリを解放する
-                FreeMemory(mem);
+                FreeMemory(pMem);
                 throw;
             }
         }
+
+        /// <summary>
+        /// std::make_unique内で独自メモリシステムを利用
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="...Args"></typeparam>
+        /// <param name="...args"></param>
+        /// <returns></returns>
+        template <typename T, typename... Args>
+        std::unique_ptr<T, DeleterFreeMemory> MakeCustomUniquePtr(Args&&... args)
+        {
+            T* pMem = HE_NEW(T, 0);
+            if (pMem == NULL)
+            {
+                throw std::bad_alloc();
+            }
+
+            try
+            {
+                // Placement newでオブジェクトを構築
+                new (pMem) T(std::forward<Args>(args)...);
+            }
+            catch (...)
+            {
+                // コンストラクタが失敗した場合はメモリを解放する
+                FreeMemory(pMem);
+                throw;
+            }
+
+            return std::unique_ptr<T, DeleterFreeMemory>(pMem);
+        }
+
     }  // namespace Memory
 }  // namespace Core

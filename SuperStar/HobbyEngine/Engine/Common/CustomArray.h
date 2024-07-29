@@ -41,6 +41,12 @@ namespace Core
                 this->_pBuff[in_uIndex] = in_data;
             }
 
+            inline void Set(const Uint32 in_uIndex, TYPE&& in_data) HE_NOEXCEPT
+            {
+                HE_ASSERT(in_uIndex < this->_uCapacity);
+                this->_pBuff[in_uIndex] = std::move(in_data);
+            }
+
             TYPE& operator[](const Uint32 in_uIndex) const
             {
                 HE_ASSERT(0 < this->_uCapacity);

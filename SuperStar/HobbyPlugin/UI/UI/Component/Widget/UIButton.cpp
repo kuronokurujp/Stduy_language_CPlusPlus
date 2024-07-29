@@ -8,7 +8,6 @@
 
 namespace UI
 {
-
     void UIButtonComponent::Setup(const Bool in_bAutoDelete)
     {
         UIWidgetComponent::Setup(in_bAutoDelete);
@@ -58,7 +57,7 @@ namespace UI
             // ボタンにタッチしたらコールバックを呼ぶ
             if (in_rTouch.IsTouchInRect(rect))
             {
-                HE_LOG_LINE(HE_STR_TEXT("Button Pressed"));
+                // HE_LOG_LINE(HE_STR_TEXT("Button Pressed"));
                 this->_pushHandler->OnPush();
             }
         }

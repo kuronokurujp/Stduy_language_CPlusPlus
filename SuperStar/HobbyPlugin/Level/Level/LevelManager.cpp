@@ -69,7 +69,7 @@ namespace Level
 
     const Bool Node::Begin()
     {
-        this->_pActorManager = Core::Memory::MakeCustomShared<Actor::ActorManager>();
+        this->_pActorManager = Core::Memory::MakeCustomSharedPtr<Actor::ActorManager>();
         if (this->_pActorManager->Start(256, 2) == FALSE)
         {
             HE_ASSERT(FALSE && "レベルノードのアクター管理の初期化が失敗");

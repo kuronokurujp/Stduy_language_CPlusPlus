@@ -156,19 +156,70 @@ TEST_CASE("Memory Custom Shader Ptr")
     struct Data
     {
         Data() { this->i = 0; };
+        Data(Uint32 a) { this->i = a; }
         Sint8 i = 0;
     };
 
     Core::Common::CustomArray<std::shared_ptr<Data>, 10> memArray;
     for (Uint32 i = 0; i < 10; ++i)
     {
-        auto p = Core::Memory::MakeCustomShared<Data>();
+        auto p = Core::Memory::MakeCustomSharedPtr<Data>(i);
         memArray.Set(i, p);
     }
 
     Uint32 memIdx[10] = {1, 3, 4, 2, 5, 9, 7, 8, 0, 6};
     for (Uint32 i = 0; i < 10; ++i)
     {
+        HE_LOG(HE_STR_TEXT("%d"), memArray[i]->i);
+        CHECK(i == memArray[i]->i);
+        memArray[i].reset();
+    }
+
+    // TODO new と deleteがうまくいっているかチェック
+    CHECK(memoryManager.UsedAllMemoryBlock() == FALSE);
+
+    CHECK(memoryManager.Release());
+    memoryManager.Reset();
+}
+
+TEST_CASE("Memory Custom Uniqe Ptr")
+{
+    Core::Memory::Manager memoryManager;
+    CHECK(memoryManager.Start(0x1000000));
+
+    // ページ確保テスト
+    {
+        // メモリサイズのイニシャライズ
+        Core::Memory::Manager::PageSetupInfo memoryPageSetupInfoArray[] = {
+            // 複数ページのサイズ
+            {0, 3 * 1024 * 1024}, {1, 4 * 1024 * 1024}, {2, 2 * 1024 * 1024},
+            {3, 2 * 1024 * 1024}, {4, 2 * 1024 * 1024}, {5, 3 * 1024 * 1024},
+        };
+
+        CHECK(memoryManager.SetupMemoryPage(memoryPageSetupInfoArray,
+                                            HE_ARRAY_NUM(memoryPageSetupInfoArray)));
+        CHECK(memoryManager.CheckAllMemoryBlock());
+    }
+
+    struct Data
+    {
+        Data() { this->i = 0; };
+        Data(Uint32 a) { this->i = a; }
+        Sint8 i = 0;
+    };
+
+    Core::Common::CustomArray<std::unique_ptr<Data, DeleterFreeMemory>, 10> memArray;
+    for (Uint32 i = 0; i < 10; ++i)
+    {
+        auto p = Core::Memory::MakeCustomUniquePtr<Data>(i);
+        memArray.Set(i, std::move(p));
+    }
+
+    Uint32 memIdx[10] = {1, 3, 4, 2, 5, 9, 7, 8, 0, 6};
+    for (Uint32 i = 0; i < 10; ++i)
+    {
+        HE_LOG_LINE(HE_STR_TEXT("%d"), memArray[i]->i);
+        CHECK(i == memArray[i]->i);
         memArray[i].reset();
     }
 

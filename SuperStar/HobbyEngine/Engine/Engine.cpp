@@ -72,7 +72,7 @@ const Bool Engine::Start()
     auto pPlatformModule = this->GetPlatformModule();
     if (pPlatformModule)
     {
-        this->_spFPS = Core::Memory::MakeCustomShared<Core::Time::FPS>(pPlatformModule->Time());
+        this->_spFPS = Core::Memory::MakeCustomSharedPtr<Core::Time::FPS>(pPlatformModule->Time());
     }
 
     this->_bStart = TRUE;
