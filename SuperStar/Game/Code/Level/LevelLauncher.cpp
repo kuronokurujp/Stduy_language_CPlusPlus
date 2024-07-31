@@ -35,7 +35,7 @@ namespace Level
                         // TODO: タイトルへ遷移する
                         // レベル更新中なのにレベルを破棄してしまうので例外エラーになる
                         // レベル切り替えを考えないといけない
-                        // ModuleLevel()->GetManager()->StartLevel<Level::LevelTitle>();
+                        ModuleLevel()->GetManager()->StartLevel<Level::LevelTitle>();
                     }
                 });
             comp->SetReceiver(std::move(handler));

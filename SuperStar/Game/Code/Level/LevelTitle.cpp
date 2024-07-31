@@ -60,7 +60,7 @@ namespace Level
     const Bool LevelTitle::End()
     {
         // ロードしたアセットを破棄
-        ModuleUI()->UnloadAssetWithLayoutBuild(this->_layoutAssetHandle);
+        // ModuleUI()->UnloadAssetWithLayoutBuild(this->_layoutAssetHandle);
 
         const Bool bRet = Level::Node::End();
         HE_ASSERT(bRet);

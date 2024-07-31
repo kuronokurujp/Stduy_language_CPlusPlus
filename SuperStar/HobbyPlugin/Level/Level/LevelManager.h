@@ -144,12 +144,12 @@ namespace Level
             static_assert(std::is_base_of<Node, T>::value,
                           "Tクラスはレベルのノードクラスを継承していない");
 
-            HE_ASSERT(this->_currentLevel.Null() &&
-                      "初回起動のみ利用かレベルが存在しない時に利用できる");
-
             // レベルのノードは使いまわさない
             Core::Common::Handle handle = this->_nodeManager.Add<T>();
             if (handle.Null()) return FALSE;
+
+            // 変更前のレベルを保存してカレントレベルに切り替わったら破棄する
+            this->_prevLevel = this->_currentLevel;
 
             this->_currentLevel = handle;
 
@@ -162,8 +162,6 @@ namespace Level
         /// <returns></returns>
         Level::Node* CurrentLevel();
 
-        // TODO: レベルを切り替える
-
     private:
         // レベルのノードをアクターとして管理
         Actor::ActorManager _nodeManager;
@@ -172,6 +170,11 @@ namespace Level
         /// カレントレベルのハンドル
         /// </summary>
         Core::Common::Handle _currentLevel;
+
+        /// <summary>
+        /// 前カレントレベルのハンドル
+        /// </summary>
+        Core::Common::Handle _prevLevel;
     };
 
 }  // namespace Level

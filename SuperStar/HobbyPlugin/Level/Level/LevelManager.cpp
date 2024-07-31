@@ -46,6 +46,10 @@ namespace Level
         }
 
         this->_nodeManager.UpdatePending();
+        if (this->_prevLevel.Null() == FALSE)
+        {
+            this->_nodeManager.Remove(this->_prevLevel);
+        }
     }
 
     /// <summary>
