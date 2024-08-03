@@ -2,7 +2,7 @@
 
 setlocal
 
-rem ~をつけると二重引用符が外れて変数に代入される.
+REM ~をつけると二重引用符が外れて変数に代入される.
 set MSVC_VERSION=%~2
 set MSVC_NUMBER=%~3
 set VCVARSALL=%~4
@@ -10,7 +10,7 @@ set GENERATOR=%~1
 set CMAKE_FILE_ROOT_DIR_FULLPATH=%~5
 set BUILD_DIR_FULLPATH=%~6
 
-rem 変数チェック.
+REM 変数チェック.
 set VARIABLE_EXISTS=TRUE
 if "%MSVC_VERSION%" equ "" set VARIABLE_EXISTS=FALSE
 if "%MSVC_NUMBER%" equ "" set VARIABLE_EXISTS=FALSE
@@ -23,17 +23,17 @@ if "%VARIABLE_EXISTS%" equ "FALSE" (
   exit /b 1
 )
 
-rem VCが用意したビルド環境構築バッチファイルがあるかチェック.
+REM VCが用意したビルド環境構築バッチファイルがあるかチェック.
 if not exist "%VCVARSALL%" (
   echo [GameProject] Visual C++ Compiler %MSVC_VERSION% not found.
   exit /b 1
 )
 
-rem ----------------
-rem ユーザー入力開始.
-rem ----------------
+REM ----------------
+REM ユーザー入力開始.
+REM ----------------
 
-rem アーキテクチャ入力.
+REM アーキテクチャ入力.
 echo.
 echo Select which architecture to use.
 echo **************************************************
@@ -53,52 +53,52 @@ if "%SELECTED%" equ "1" (
   exit /b 1
 )
 
-rem ランタイム入力.
-rem ランタイムを変えるケースが今ないのでマルチスレッドlibで固定にしておく
-rem echo.
-rem echo Select which cubism core c runtime library to use
-rem echo **************************************************
-rem echo 1. use the multithread-specific and DLL-specific version of the run-time library (MD)
-rem echo 2. use the multithread, static version of the run-time library (MT)
-rem echo.
-rem choice /c:12 /n /m ">"
-rem set SELECTED=%errorlevel%
-rem if "%SELECTED%" equ "1" (
-rem   set CORE_CRL_MD=ON
-rem ) else if "%SELECTED%" equ "2" (
-rem   set CORE_CRL_MD=OFF
-rem ) else (
-rem   echo [GameProject] Invalid option.
-rem   exit /b 1
-rem )
+REM ランタイム入力.
+REM ランタイムを変えるケースが今ないのでマルチスレッドlibで固定にしておく
+REM echo.
+REM echo Select which cubism core c runtime library to use
+REM echo **************************************************
+REM echo 1. use the multithread-specific and DLL-specific version of the run-time library (MD)
+REM echo 2. use the multithread, static version of the run-time library (MT)
+REM echo.
+REM choice /c:12 /n /m ">"
+REM set SELECTED=%errorlevel%
+REM if "%SELECTED%" equ "1" (
+REM   set CORE_CRL_MD=ON
+REM ) else if "%SELECTED%" equ "2" (
+REM   set CORE_CRL_MD=OFF
+REM ) else (
+REM   echo [GameProject] Invalid option.
+REM   exit /b 1
+REM )
 set CORE_CRL_MD=OFF
 
-rem ------
-rem ビルド.
-rem ------
+REM ------
+REM ビルド.
+REM ------
 
 echo Building %ARCHITECTURE% with Visual C++ Compiler %MSVC_VERSION%...
 
-rem 指定したビルドアーキテクチャからvcvarsall.batでプロジェクトを作成するビルド環境構築.
+REM 指定したビルドアーキテクチャからvcvarsall.batでプロジェクトを作成するビルド環境構築.
 call "%VCVARSALL%" %ARCHITECTURE%
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-rem ランタイムライブラリのタイプを設定.
-rem md: マルチスレッドのdll対応.
-rem mt: マルチスレッドのlib対応.
+REM ランタイムライブラリのタイプを設定.
+REM md: マルチスレッドのdll対応.
+REM mt: マルチスレッドのlib対応.
 if "%CORE_CRL_MD%" equ "ON" (
   set CORE_CRL=md
 ) else (
   set CORE_CRL=mt
 )
 
-rem ビルドを出力するディレクトリパス.
+REM ビルドを出力するディレクトリパス.
 set BUILD_PATH=%BUILD_DIR_FULLPATH%\Build\%GENERATOR%MSVC%MSVC_VERSION%_%ARCHITECTURE%_%CORE_CRL%
 
-rem cmakeを実行するためにCMakeLists.txtがあるディレクトリに移動.
+REM cmakeを実行するためにCMakeLists.txtがあるディレクトリに移動.
 cd %CMAKE_FILE_ROOT_DIR_FULLPATH%
 
-rem CMakeコマンドを実行してMSVCプロジェクトを生成.
+REM CMakeコマンドを実行してMSVCプロジェクトを生成.
 cmake -S . -B "%BUILD_PATH%" ^
   -G "Visual Studio %MSVC_NUMBER% %MSVC_VERSION%" ^
   -A %CMAKE_A_OPTION% ^

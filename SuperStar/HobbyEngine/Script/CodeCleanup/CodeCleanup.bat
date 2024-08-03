@@ -41,7 +41,7 @@ for /r "%PROJECT_ROOT%" %%f in (*.cpp *.h *.hpp) do (
         REM 0にすると0以外の値でも条件がTRUEになってしまう
         if ERRORLEVEL 1 (
             REM clang-tidyの整形を実行
-            REM "%CLANG_TIDY_PATH%" -checks='-*,modernize-concat-nested-namespaces' --fix-errors %%f
+            REM  "%CLANG_TIDY_PATH%" -checks=-*,modernize-concat-nested-namespaces -fix-notes "%%f"
             echo "Success."
         ) else (
             echo "Error."
@@ -56,4 +56,3 @@ for /r "%PROJECT_ROOT%" %%f in (*.cpp *.h *.hpp) do (
 echo All files have been formatted.
 
 endlocal
-
