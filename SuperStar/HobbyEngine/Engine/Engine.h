@@ -7,13 +7,11 @@
 #include "Engine/Module/Module.h"
 
 // 前方宣言
-namespace Core
+
+namespace Core::Time
 {
-    namespace Time
-    {
-        class FPS;
-    }
-}  // namespace Core
+    class FPS;
+}
 
 namespace Platform
 {

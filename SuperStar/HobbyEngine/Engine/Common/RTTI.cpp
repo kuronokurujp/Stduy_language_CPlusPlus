@@ -1,20 +1,17 @@
 ﻿#include "RTTI.h"
 
-namespace Core
+namespace Core::Common
 {
-    namespace Common
+    Bool RTTI::DerivesFrom(const RTTI* in_pRtti) const
     {
-        Bool RTTI::DerivesFrom(const RTTI* in_pRtti) const
+        const RTTI* pCompare = this;
+        while (pCompare != NULL)
         {
-            const RTTI* pCompare = this;
-            while (pCompare != NULL)
-            {
-                if (pCompare == in_pRtti) return TRUE;
+            if (pCompare == in_pRtti) return TRUE;
 
-                pCompare = pCompare->_pBaseRTTI;
-            }
-
-            return FALSE;
+            pCompare = pCompare->_pBaseRTTI;
         }
-    }  // namespace Common
-}  // namespace Core
+
+        return FALSE;
+    }
+}  // namespace Core::Common

@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "Engine/GameMain.h"
-#include "resource.h"
+#include "Resource.h"
 
 /// <summary>
 /// アプリのゲームメインのエントリー

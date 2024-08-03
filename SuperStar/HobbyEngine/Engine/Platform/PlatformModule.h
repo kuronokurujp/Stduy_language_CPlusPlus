@@ -5,13 +5,11 @@
 #include "Engine/Module/Module.h"
 
 // 前方宣言
-namespace Core
+
+namespace Core::Memory
 {
-    namespace Memory
-    {
-        class Manager;
-    }
-}  // namespace Core
+    class Manager;
+}
 
 class Engine;
 
@@ -87,6 +85,6 @@ namespace Platform
         virtual void EndRender()   = 0;
 
     private:
-        friend class Engine;
+        friend class ::Engine;
     };
 }  // namespace Platform

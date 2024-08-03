@@ -11,65 +11,63 @@
 /// ↓
 /// CustomArray<Uint32, 32> nums;
 /// </summary>
-namespace Core
+
+namespace Core::Common
 {
-    namespace Common
+    /// <summary>
+    /// 固定長配列の基本クラス
+    /// </summary>
+    template <class TYPE>
+    class ArrayBase
     {
-        /// <summary>
-        /// 固定長配列の基本クラス
-        /// </summary>
-        template <class TYPE>
-        class ArrayBase
+        HE_CLASS_COPY_CONSTRUCT_NG(ArrayBase);
+        HE_CLASS_MOVE_CONSTRUCT_NG(ArrayBase);
+
+    public:
+        ArrayBase(TYPE* in_pArrayAddr, Uint32 in_uSize)
+            : _pBuff(in_pArrayAddr), _uCapacity(in_uSize)
         {
-            HE_CLASS_COPY_CONSTRUCT_NG(ArrayBase);
-            HE_CLASS_MOVE_CONSTRUCT_NG(ArrayBase);
+        }
 
-        public:
-            ArrayBase(TYPE* in_pArrayAddr, Uint32 in_uSize)
-                : _pBuff(in_pArrayAddr), _uCapacity(in_uSize)
-            {
-            }
-
-            inline const Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
-
-            /// <summary>
-            /// 指定した要素に値をコピーして設定
-            /// </summary>
-            inline void Set(const Uint32 in_uIndex, const TYPE& in_data) HE_NOEXCEPT
-            {
-                HE_ASSERT(in_uIndex < this->_uCapacity);
-                this->_pBuff[in_uIndex] = in_data;
-            }
-
-            inline void Set(const Uint32 in_uIndex, TYPE&& in_data) HE_NOEXCEPT
-            {
-                HE_ASSERT(in_uIndex < this->_uCapacity);
-                this->_pBuff[in_uIndex] = std::move(in_data);
-            }
-
-            TYPE& operator[](const Uint32 in_uIndex) const
-            {
-                HE_ASSERT(0 < this->_uCapacity);
-                return this->_pBuff[in_uIndex];
-            }
-
-        private:
-            TYPE* _pBuff      = NULL;
-            Uint32 _uCapacity = 0;
-        };
+        inline const Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
 
         /// <summary>
-        /// 固定長配列
-        /// テンプレートで要素を決めている
+        /// 指定した要素に値をコピーして設定
         /// </summary>
-        template <class TYPE, Uint32 CAPACITY>
-        class CustomArray : public ArrayBase<TYPE>
+        inline void Set(const Uint32 in_uIndex, const TYPE& in_data) HE_NOEXCEPT
         {
-        public:
-            CustomArray() : ArrayBase<TYPE>(this->_aBuff, CAPACITY) {}
+            HE_ASSERT(in_uIndex < this->_uCapacity);
+            this->_pBuff[in_uIndex] = in_data;
+        }
 
-        private:
-            TYPE _aBuff[CAPACITY];
-        };
-    }  // namespace Common
-}  // namespace Core
+        inline void Set(const Uint32 in_uIndex, TYPE&& in_data) HE_NOEXCEPT
+        {
+            HE_ASSERT(in_uIndex < this->_uCapacity);
+            this->_pBuff[in_uIndex] = std::move(in_data);
+        }
+
+        TYPE& operator[](const Uint32 in_uIndex) const
+        {
+            HE_ASSERT(0 < this->_uCapacity);
+            return this->_pBuff[in_uIndex];
+        }
+
+    private:
+        TYPE* _pBuff      = NULL;
+        Uint32 _uCapacity = 0;
+    };
+
+    /// <summary>
+    /// 固定長配列
+    /// テンプレートで要素を決めている
+    /// </summary>
+    template <class TYPE, Uint32 CAPACITY>
+    class CustomArray : public ArrayBase<TYPE>
+    {
+    public:
+        CustomArray() : ArrayBase<TYPE>(this->_aBuff, CAPACITY) {}
+
+    private:
+        TYPE _aBuff[CAPACITY];
+    };
+}  // namespace Core::Common

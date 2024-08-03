@@ -1,16 +1,15 @@
 ﻿#pragma once
 
+#include "Engine/Core.h"
+
 // TODO: UILayoutDataからUILayoutを作成
 
-namespace UI
+namespace UI::Builder
 {
-    namespace Builder
+    /// <summary>
+    /// TODO: LayoutDataからLayoutを作る構築者
+    /// </summary>
+    class UILayoutBuilder
     {
-        /// <summary>
-        /// TODO: LayoutDataからLayoutを作る構築者
-        /// </summary>
-        class UILayoutBuilder
-        {
-        };
-    }  // namespace Builder
-}  // namespace UI
+    };
+}  // namespace UI::Builder

@@ -227,7 +227,7 @@ namespace AssetManager
                     {
                         HE_LOG_LINE(HE_STR_TEXT("Error description: ") HE_STR_FORMAT_PURE_TEXT,
                                     result.description());
-                        HE_LOG_LINE(HE_STR_TEXT("Error offset: %lld (error at [... ")
+                        HE_LOG_LINE(HE_STR_TEXT("Error offset: %td (error at [... ")
                                         HE_STR_FORMAT_PURE_TEXT HE_STR_TEXT("] "),
                                     result.offset, (pReadTmpBuff + result.offset));
                     }

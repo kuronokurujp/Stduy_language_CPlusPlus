@@ -5,9 +5,9 @@
 
 // DxLibのシステム一覧
 // モジュールのヘッダーファイルは全てインクルードする
+#include "DxLib/DXLibFile.h"
 #include "DxLib/DXLibInput.h"
 #include "DxLib/DXLibTime.h"
-#include "DxLib/DxLibFile.h"
 
 namespace DXLib
 {

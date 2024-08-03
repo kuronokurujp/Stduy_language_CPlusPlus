@@ -1,7 +1,7 @@
 ﻿#include "Actor.h"
 
 #include "Actor/ActorManager.h"
-#include "Actor/Component/component.h"
+#include "Actor/Component/Component.h"
 
 namespace Actor
 {

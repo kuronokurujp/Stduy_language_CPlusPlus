@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Actor/Component/component.h"
+#include "Actor/Component/Component.h"
 #include "ActorInterface.h"
 #include "Engine/Common/CustomList.h"
 #include "Engine/Common/CustomStack.h"

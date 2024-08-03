@@ -2,22 +2,18 @@
 
 #include "Engine/Core.h"
 
-namespace Core
+namespace Core::Math
 {
-    namespace Math
+    class Matrix3
     {
-        class Matrix3
-        {
-        public:
-            Float32 _faaMat[3][3];
+    public:
+        Float32 _faaMat[3][3];
 
-            Matrix3();
+        Matrix3();
 
-            /// <summary>
-            /// 行列式を取得.
-            /// </summary>
-            Float32 GetDet();
-        };
-    }  // namespace Math
-
-}  // namespace Core
+        /// <summary>
+        /// 行列式を取得.
+        /// </summary>
+        Float32 GetDet();
+    };
+}  // namespace Core::Math

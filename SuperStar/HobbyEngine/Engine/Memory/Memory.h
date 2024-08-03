@@ -218,73 +218,70 @@ struct DeleterFreeMemory
         }                          \
     }
 
-namespace Core
+namespace Core::Memory
 {
-    namespace Memory
+    /// <summary>
+    /// 任意の型Tのスマートポインタをカスタムアロケータとデリータで作成する関数
+    /// クラスの場合はデフォルトコンストラクターが必要
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="...Args"></typeparam>
+    /// <param name="...args"></param>
+    /// <returns></returns>
+    template <typename T, typename... Args>
+    std::shared_ptr<T> MakeCustomSharedPtr(Args&&... args)
     {
-        /// <summary>
-        /// 任意の型Tのスマートポインタをカスタムアロケータとデリータで作成する関数
-        /// クラスの場合はデフォルトコンストラクターが必要
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="...Args"></typeparam>
-        /// <param name="...args"></param>
-        /// <returns></returns>
-        template <typename T, typename... Args>
-        std::shared_ptr<T> MakeCustomSharedPtr(Args&&... args)
+        // メモリ確保
+        // クラスだとデフォルトコンストラクタが必要
+        void* pMem = HE_NEW(T, 0);
+        if (pMem == NULL)
         {
-            // メモリ確保
-            // クラスだとデフォルトコンストラクタが必要
-            void* pMem = HE_NEW(T, 0);
-            if (pMem == NULL)
-            {
-                throw std::bad_alloc();
-            }
-
-            try
-            {
-                // 配列の要素を構築し、shared_ptrを作成する
-                return std::shared_ptr<T>(new (pMem) T(std::forward<Args>(args)...),
-                                          DeleterFreeMemory());
-            }
-            catch (...)
-            {
-                // コンストラクタが失敗した場合はメモリを解放する
-                FreeMemory(pMem);
-                throw;
-            }
+            throw std::bad_alloc();
         }
 
-        /// <summary>
-        /// std::make_unique内で独自メモリシステムを利用
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="...Args"></typeparam>
-        /// <param name="...args"></param>
-        /// <returns></returns>
-        template <typename T, typename... Args>
-        std::unique_ptr<T, DeleterFreeMemory> MakeCustomUniquePtr(Args&&... args)
+        try
         {
-            T* pMem = HE_NEW(T, 0);
-            if (pMem == NULL)
-            {
-                throw std::bad_alloc();
-            }
+            // 配列の要素を構築し、shared_ptrを作成する
+            return std::shared_ptr<T>(new (pMem) T(std::forward<Args>(args)...),
+                                      DeleterFreeMemory());
+        }
+        catch (...)
+        {
+            // コンストラクタが失敗した場合はメモリを解放する
+            FreeMemory(pMem);
+            throw;
+        }
+    }
 
-            try
-            {
-                // Placement newでオブジェクトを構築
-                new (pMem) T(std::forward<Args>(args)...);
-            }
-            catch (...)
-            {
-                // コンストラクタが失敗した場合はメモリを解放する
-                FreeMemory(pMem);
-                throw;
-            }
-
-            return std::unique_ptr<T, DeleterFreeMemory>(pMem);
+    /// <summary>
+    /// std::make_unique内で独自メモリシステムを利用
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="...Args"></typeparam>
+    /// <param name="...args"></param>
+    /// <returns></returns>
+    template <typename T, typename... Args>
+    std::unique_ptr<T, DeleterFreeMemory> MakeCustomUniquePtr(Args&&... args)
+    {
+        T* pMem = HE_NEW(T, 0);
+        if (pMem == NULL)
+        {
+            throw std::bad_alloc();
         }
 
-    }  // namespace Memory
-}  // namespace Core
+        try
+        {
+            // Placement newでオブジェクトを構築
+            new (pMem) T(std::forward<Args>(args)...);
+        }
+        catch (...)
+        {
+            // コンストラクタが失敗した場合はメモリを解放する
+            FreeMemory(pMem);
+            throw;
+        }
+
+        return std::unique_ptr<T, DeleterFreeMemory>(pMem);
+    }
+
+}  // namespace Core::Memory
