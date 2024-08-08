@@ -29,7 +29,7 @@ namespace UI
             UIInputRouterComponent* pInputRouter =
                 this->GetComponent<UIInputRouterComponent>(this->_inputHandle);
 
-            Core::Common::CustomFixStack<Actor::Component*, 32> sInputTerminalCom;
+            Core::Common::CustomFixStack<Actor::Component*, 64> sInputTerminalCom;
 
             sInputTerminalCom.Clear();
             this->OutputChildrenComponent(&sInputTerminalCom,

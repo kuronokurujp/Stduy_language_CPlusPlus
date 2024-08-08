@@ -300,16 +300,14 @@ namespace Platform
     };
 
     /// <summary>
-    /// TODO: プラットフォームのインプットシステム
+    /// プラットフォームのインプットシステム
     /// マウス, キーボード, コントローラーを対応
     /// </summary>
     class InputSystemInterface
     {
     public:
-        virtual void Init()                                    = 0;
-        virtual void BeforeUpdate(const Float32 in_fDeltaTime) = 0;
-        virtual void Update(const Float32 in_fDeltaTime)       = 0;
-        virtual void AfterUpdate(const Float32 in_fDeltaTime)  = 0;
+        virtual void Init()                              = 0;
+        virtual void Update(const Float32 in_fDeltaTime) = 0;
 
         const InputState& GetState() const { return this->_state; }
 

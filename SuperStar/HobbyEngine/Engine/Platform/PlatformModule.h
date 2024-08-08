@@ -37,8 +37,10 @@ namespace Platform
     /// </summary>
     class PlatformModule : public Module::ModuleBase
     {
+        HE_MODULE_GENRATE_DECLARATION(PlatformModule);
+
     public:
-        PlatformModule(const Char* in_szName) : ModuleBase(in_szName) {}
+        PlatformModule() : ModuleBase(ModuleName()) {}
 
         virtual const Bool CreateMainWindow() { return FALSE; }
         virtual const Bool ReleaseAllWindows() { return FALSE; }
@@ -66,7 +68,7 @@ namespace Platform
         /// モジュール開始
         /// </summary>
         /// <returns></returns>
-        virtual const Bool Start() override { return FALSE; }
+        virtual const Bool _Start() override { return FALSE; }
 
         /// <summary>
         /// このモジュールだけ更新前処理と後処理が必要なので用意している
@@ -77,7 +79,7 @@ namespace Platform
         virtual const Bool BeforUpdate(const Float32 in_fDeltaTime) { return FALSE; }
         virtual const Bool AfterUpdate(const Float32 in_fDeltaTime) { return FALSE; }
 
-        virtual const Bool Update(const Float32 in_fDeltaTime) override { return FALSE; }
+        virtual const Bool _Update(const Float32 in_fDeltaTime) override { return FALSE; }
 
         // 描画
         virtual void BeginRender() = 0;

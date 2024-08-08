@@ -1,14 +1,12 @@
 ﻿#include "ActorModule.h"
 
-MODULE_GENRATE_DEFINITION(Actor::ActorModule, Actor);
-
 namespace Actor
 {
     /// <summary>
     /// モジュール初期化
     /// </summary>
     /// <returns></returns>
-    const Bool ActorModule::Start()
+    const Bool ActorModule::_Start()
     {
         return TRUE;
     }
@@ -17,7 +15,7 @@ namespace Actor
     /// インスタンス破棄時に呼ばれる
     /// </summary>
     /// <returns></returns>
-    const Bool ActorModule::Release()
+    const Bool ActorModule::_Release()
     {
         return TRUE;
     }

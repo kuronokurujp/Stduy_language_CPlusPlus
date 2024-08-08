@@ -46,6 +46,12 @@ namespace Core::Common
             this->_pBuff[in_uIndex] = std::move(in_data);
         }
 
+        void DeepCopy(const ArrayBase& in_arArray)
+        {
+            const Uint32 uMinCapacity = HE_MIN(this->_uCapacity, in_arArray_uCapacity);
+            std::copy(this->_pBuff, this->_pBuff + uMinCapacity, this->_pBuff);
+        }
+
         TYPE& operator[](const Uint32 in_uIndex) const
         {
             HE_ASSERT(0 < this->_uCapacity);
@@ -66,6 +72,16 @@ namespace Core::Common
     {
     public:
         CustomArray() : ArrayBase<TYPE>(this->_aBuff, CAPACITY) {}
+        // コンストラクタ (initializer_listを受け取る)
+        CustomArray(std::initializer_list<TYPE> in_initList)
+            : : ArrayBase<TYPE>(this->_aBuff, CAPACITY)
+        {
+            const Uint32 uMinCapacity = HE_MIN(this->_uCapacity, in_initList.size());
+            for (Uint32 i = 0; i < uMinCapacity; ++i)
+            {
+                this->_aBuff[i] = in_initList[i];
+            }
+        }
 
     private:
         TYPE _aBuff[CAPACITY];

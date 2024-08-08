@@ -17,7 +17,6 @@ namespace Level
 
         const Bool Begin() override final;
         const Bool End() override final;
-        void Update(const Float32 in_fDt, const Core::TaskData&) override final;
 
     private:
         Core::Common::Handle _layoutAssetHandle;

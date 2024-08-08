@@ -87,13 +87,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
     // 利用プラグインをインポート
     {
-        MODULE_IMPORT(Platform);
-        MODULE_IMPORT(Render);
-        MODULE_IMPORT(Actor);
-        MODULE_IMPORT(UI);
-        MODULE_IMPORT(AssetManager);
-        MODULE_IMPORT(Level);
-        MODULE_IMPORT(Localization);
+        MODULE_IMPORT(DXLib::DXLibModule);
+        MODULE_IMPORT(Render::RenderModule);
+        MODULE_IMPORT(Actor::ActorModule);
+        MODULE_IMPORT(UI::UIModule);
+        MODULE_IMPORT(AssetManager::AssetManagerModule);
+        MODULE_IMPORT(Level::LevelModule);
+        MODULE_IMPORT(Localization::LocalizationModule);
     }
 
     const Bool bInitRet = HOBBY_ENGINE.Start();
@@ -125,17 +125,19 @@ const Bool AppEntryGameMain::Start(const Bool in_bDebug)
     // TODO: ゲームのみで利用するライブラリを初期化
     //		LuaStateManager::Init();
     // リソースの起点ディレクトリを設定
-    ModuleAssetManager()->SetMountDir(HE_STR_TEXT("Assets"));
+    auto pAssetManagerModule = Module::ModuleManager::I().Get<AssetManager::AssetManagerModule>();
+    pAssetManagerModule->SetMountDir(HE_STR_TEXT("Assets"));
 
-    ModuleLocalization()->LoadSystemFile(
-        Core::Common::FixString256(HE_STR_TEXT("Locate/System.toml")));
-    ModuleLocalization()->LoadTextAll(Core::Common::FixString16(HE_STR_TEXT("JP")));
+    auto pLocateModule = Module::ModuleManager::I().Get<Localization::LocalizationModule>();
+    pLocateModule->LoadSystemFile(Core::Common::FixString256(HE_STR_TEXT("Locate/System.toml")));
+    pLocateModule->LoadTextAll(Core::Common::FixString16(HE_STR_TEXT("JP")));
 
+    auto pLevelModule = Module::ModuleManager::I().Get<Level::LevelModule>();
 #ifdef HE_ENGINE_DEBUG
     if (in_bDebug)
     {
         // デバッグレベルを開始
-        ModuleLevel()->GetManager()->StartLevel<Level::LevelLauncher>();
+        pLevelModule->GetManager()->StartLevel<Level::LevelLauncher>();
     }
 #endif
 

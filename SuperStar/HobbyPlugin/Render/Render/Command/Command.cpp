@@ -5,7 +5,7 @@
 namespace Render
 {
     void Cmd2DText(const Core::Math::Vector2& in_rPos, const Core::Common::StringBase& in_szrName,
-                   const Color& in_rColor)
+                   const Color& in_rColor, const Core::Math::Rect2::EAnchor in_eAnchor)
     {
         // TODO: 必要なコマンド情報を作る
         Command cmd;
@@ -16,12 +16,14 @@ namespace Render
             pText2D->fX        = in_rPos._fX;
             pText2D->fY        = in_rPos._fY;
             pText2D->color     = in_rColor;
+            pText2D->anchor    = in_eAnchor;
             HE_STR_ERRNO e     = HE_STR_CPY_S(pText2D->szChars, HE_ARRAY_NUM(pText2D->szChars),
                                               in_szrName.Str(), in_szrName.Capacity());
             HE_ASSERT(HE_STR_SUCCESS(e) && "文字列コピーに失敗");
         }
 
-        ModuleRender()->AddCmd(std::move(cmd));
+        auto pModule = Module::ModuleManager::I().Get<RenderModule>();
+        pModule->AddCmd(std::move(cmd));
     }
 
     void Cmd2DRect(const Core::Math::Rect2& in_rRect, const Color& in_rColor)
@@ -38,6 +40,7 @@ namespace Render
             pRect2D->color     = in_rColor;
         }
 
-        ModuleRender()->AddCmd(std::move(cmd));
+        auto pModule = Module::ModuleManager::I().Get<RenderModule>();
+        pModule->AddCmd(std::move(cmd));
     }
 }  // namespace Render

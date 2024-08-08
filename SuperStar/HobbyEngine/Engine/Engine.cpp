@@ -69,7 +69,7 @@ const Bool Engine::Start()
 
     // FPSタイマーを作成
     // ゲームを固定フレームレートにするため
-    auto pPlatformModule = this->GetPlatformModule();
+    auto pPlatformModule = this->_PlatformModule();
     if (pPlatformModule)
     {
         this->_spFPS = Core::Memory::MakeCustomSharedPtr<Core::Time::FPS>(pPlatformModule->Time());
@@ -114,7 +114,7 @@ const Bool Engine::CreateGameWindow()
 {
     HE_ASSERT(this->_bStart);
 
-    auto pPlatform = this->GetPlatformModule();
+    auto pPlatform = this->_PlatformModule();
     if (pPlatform == NULL) return FALSE;
 
     // windowを作成
@@ -129,7 +129,7 @@ const Bool Engine::CreateGameWindow()
 /// <returns></returns>
 void Engine::ReleseGameWindow()
 {
-    auto pPlatform = this->GetPlatformModule();
+    auto pPlatform = this->_PlatformModule();
     if (pPlatform == NULL) return;
 
     pPlatform->ReleaseAllWindows();
@@ -137,7 +137,7 @@ void Engine::ReleseGameWindow()
 
 const Bool Engine::BeforUpdateLoop()
 {
-    auto pPlatform = this->GetPlatformModule();
+    auto pPlatform = this->_PlatformModule();
     if (pPlatform == NULL) return FALSE;
 
     if (pPlatform->BeforUpdate(this->_spFPS->GetDeltaTimeSec(pPlatform->Time())) == FALSE)
@@ -151,7 +151,7 @@ const Bool Engine::BeforUpdateLoop()
 
 const Bool Engine::WaitFrameLoop()
 {
-    auto pPlatform = this->GetPlatformModule();
+    auto pPlatform = this->_PlatformModule();
     if (pPlatform == NULL) return FALSE;
 
     // 1 / 60 秒経過しないと更新しない
@@ -176,7 +176,7 @@ const Bool Engine::MainUpdateLoop(const Float32 in_fDeltaSec)
     this->_moduleManager.Update(in_fDeltaSec);
 
     // 描画処理
-    auto pPlatformModule = this->GetPlatformModule();
+    auto pPlatformModule = this->_PlatformModule();
     if (pPlatformModule != NULL) pPlatformModule->Redner();
 
     return TRUE;
@@ -184,7 +184,7 @@ const Bool Engine::MainUpdateLoop(const Float32 in_fDeltaSec)
 
 const Bool Engine::AfterUpdateLoop(const Float32 in_fDeltaSec)
 {
-    auto pPlatform = this->GetPlatformModule();
+    auto pPlatform = this->_PlatformModule();
     if (pPlatform == NULL) return FALSE;
 
     if (pPlatform->AfterUpdate(this->_spFPS->GetDeltaTimeSec(pPlatform->Time())) == FALSE)
@@ -196,19 +196,16 @@ const Bool Engine::AfterUpdateLoop(const Float32 in_fDeltaSec)
     return TRUE;
 }
 
-Platform::PlatformModule* Engine::GetPlatformModule()
+Platform::PlatformModule* Engine::_PlatformModule()
 {
-    auto pPlatform = reinterpret_cast<Platform::PlatformModule*>(
-        this->_moduleManager.Get(HE_STR_TEXT("Platform")));
-
-    return pPlatform;
+    return this->_moduleManager.Get<Platform::PlatformModule>();
 }
 
 const Float32 Engine::GetDeltaTimeSec()
 {
     if (this->_spFPS == NULL) return 0.0f;
 
-    auto pPlatform = this->GetPlatformModule();
+    auto pPlatform = this->_PlatformModule();
     if (pPlatform == NULL) return 0.0f;
 
     return this->_spFPS->GetDeltaTimeSec(pPlatform->Time());

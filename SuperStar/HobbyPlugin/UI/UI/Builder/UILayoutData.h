@@ -10,6 +10,13 @@
 
 namespace UI::Builder
 {
+    enum EAnchor
+    {
+        EAnchor_Left = 0,
+        EPosAnchor_Center,
+        EPosAnchor_Max
+    };
+
     enum EWidget
     {
         EWidget_None = 0,
@@ -36,7 +43,7 @@ namespace UI::Builder
         /// </summary>
         struct Data
         {
-            Char szId[256]      = {0};
+            Char szId[64]       = {0};
             EWidget eWidgetType = EWidget::EWidget_None;
 
             union ExData
@@ -48,15 +55,17 @@ namespace UI::Builder
 
                 struct Label
                 {
+                    EAnchor eAnchor;
                     Bool bLoc;
                     Float32 fX, fY;
-                    Char szLoc[256];
-                    Char szText[256];
+                    Char szLoc[64];
+                    Char szText[64];
                     Style style;
                 } label;
 
                 struct Button
                 {
+                    EAnchor eAnchor;
                     Float32 fX, fY;
                     Style style;
                 } button;

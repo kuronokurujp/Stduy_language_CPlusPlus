@@ -39,33 +39,49 @@ namespace UI
         /// テキスト設定
         /// </summary>
         /// <param name="in_pText"></param>
-        void SetText(const Char* in_szText) { this->_szText = in_szText; }
+        inline void SetText(const Char* in_szText) { this->_szText = in_szText; }
 
         /// <summary>
         /// ローカライズグループ名
         /// </summary>
         /// <param name="in_pName"></param>
-        void SetLocGroupName(const Char* in_szName) { this->_szLocGroup = in_szName; }
+        inline void SetLocGroupName(const Char* in_szName) { this->_szLocGroup = in_szName; }
 
         /// <summary>
         /// テキストの描画矩形を設定
         /// </summary>
         /// <param name="in_rect"></param>
-        void SetRect(const Core::Math::Rect2& in_rRect) { this->_rect = in_rRect; }
+        inline void SetRect(const Core::Math::Rect2& in_rRect) { this->_rect = in_rRect; }
 
         /// <summary>
         /// ローカライズグループ名を設定
         /// 文字列がある == ローカライズテキスト
         /// </summary>
         /// <param name="in_pGroupName"></param>
-        void SetLogGroup(const Char* in_szGroupName) { this->_szLocGroup = in_szGroupName; }
+        inline void SetLogGroup(const Char* in_szGroupName) { this->_szLocGroup = in_szGroupName; }
+
+        inline void SetAnchor(const Core::Math::Rect2::EAnchor in_eAnchor)
+        {
+            this->_eAnchor = in_eAnchor;
+        }
+        inline void SetFontSize(const Uint32 in_fontSize) { this->_fontSize = in_fontSize; }
 
     private:
-        void _Clear() { this->_szText.Clear(); }
+        void _Clear()
+        {
+            this->_szText.Clear();
+            this->_szDrawText.Clear();
+            this->_szLocGroup.Clear();
+            this->_rect.Clear();
+            this->_eAnchor = Core::Math::Rect2::EAnchor_Left;
+        }
 
     private:
         Core::Common::FixString1024 _szText;
+        Core::Common::FixString1024 _szDrawText;
         Core::Common::FixString128 _szLocGroup;
         Core::Math::Rect2 _rect;
+        Core::Math::Rect2::EAnchor _eAnchor = Core::Math::Rect2::EAnchor_Left;
+        Uint32 _fontSize                    = 32;
     };
 }  // namespace UI

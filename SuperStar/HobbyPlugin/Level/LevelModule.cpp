@@ -3,15 +3,22 @@
 #include "Engine/Memory/Memory.h"
 #include "Level/LevelManager.h"
 
-MODULE_GENRATE_DEFINITION(Level::LevelModule, Level);
-
 namespace Level
 {
+    LevelModule::LevelModule() : ModuleBase(ModuleName())
+    {
+        // 依存しているモジュールを設定
+        // モジュールの依存設定していないと依存したモジュールが使えない
+        this->_AppendDependenceModule<Level::LevelModule>();
+        this->_AppendDependenceModule<Actor::ActorModule>();
+        this->_AppendDependenceModule<Platform::PlatformModule>();
+    }
+
     /// <summary>
     /// モジュール初期化
     /// </summary>
     /// <returns></returns>
-    const Bool LevelModule::Start()
+    const Bool LevelModule::_Start()
     {
         // レベル関連の準備
         {
@@ -22,14 +29,16 @@ namespace Level
         return TRUE;
     }
 
-    const Bool LevelModule::Update(const Float32 in_fDeltaTime)
+    const Bool LevelModule::_Update(const Float32 in_fDeltaTime)
     {
+        auto pPlatformModule = this->GetDependenceModule<Platform::PlatformModule>();
+
         // マウスやキーボードなどの各入力を渡す
-        this->_pLevelManager->Update(in_fDeltaTime, this->GetPlatformModule()->Input());
+        this->_pLevelManager->Update(in_fDeltaTime, pPlatformModule->Input());
 
         return TRUE;
     }
-    const Bool LevelModule::Release()
+    const Bool LevelModule::_Release()
     {
         this->_pLevelManager->End();
         this->_pLevelManager.reset();

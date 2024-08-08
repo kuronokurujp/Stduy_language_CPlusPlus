@@ -49,6 +49,7 @@ set(ENGINE_TARGET_FILES
     Engine/Math/Random.cpp
     Engine/Math/Random.h
     Engine/Math/Rect2.h
+    Engine/Math/Rect2.cpp
     Engine/Math/Vector2.h
     Engine/Math/Vector3.h
     Engine/Math/Vector3.cpp

@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ui id="root">
   <l id="Layer" style="color: black;">
-    <t loc="1" text="default.GameTitle" style="color: white;"/>
-    <b  x="50" y="0" style="w: 200; h: 100; color: black;">
-      <t loc="1" text="default.GameTitleInputHelp" style="color: white;"/>
-    </b>
+    <t id="TitleLabel" x="300" y ="200" loc="1" text="default.GameTitle" style="color: white;"/>
+    <t id="PushBtnLabel" x="300" y="400" loc="1" text="default.GameTitleInputHelp" anchor="center" style="color: white;"/>
   </l>
 </ui>

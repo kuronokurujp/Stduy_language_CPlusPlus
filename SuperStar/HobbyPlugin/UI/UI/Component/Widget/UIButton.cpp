@@ -35,8 +35,7 @@ namespace UI
     /// </summary>
     void UIButtonComponent::Update(const Float32 in_fDeltaTime)
     {
-        Core::Math::Rect2 srcRect(0.0f, 0.0f, this->_fWidth, this->_fHeight,
-                                  Core::Math::Rect2::EPivot_Left);
+        Core::Math::Rect2 srcRect(0.0f, 0.0f, this->_fWidth, this->_fHeight, this->_eAnchor);
         Core::Math::Rect2 rect;
         this->TransformLocalToWorldRect2D(&rect, srcRect);
 
@@ -50,14 +49,12 @@ namespace UI
             Platform::EInputState::EInputState_PRESSED)
         {
             Core::Math::Rect2 rect;
-            Core::Math::Rect2 orgRect(0.0f, 0.0f, this->_fWidth, this->_fHeight,
-                                      Core::Math::Rect2::EPivot_Left);
+            Core::Math::Rect2 orgRect(0.0f, 0.0f, this->_fWidth, this->_fHeight, this->_eAnchor);
             this->TransformLocalToWorldRect2D(&rect, orgRect);
 
             // ボタンにタッチしたらコールバックを呼ぶ
             if (in_rTouch.IsTouchInRect(rect))
             {
-                // HE_LOG_LINE(HE_STR_TEXT("Button Pressed"));
                 this->_pushHandler->OnPush();
             }
         }

@@ -22,25 +22,26 @@ namespace Render
     {
         Float32 fX = 0.0f;
         Float32 fY = 0.0f;
-
         Color color;
+        Core::Math::Rect2::EAnchor anchor = Core::Math::Rect2::EAnchor_Left;
 
         Char szChars[128] = {0};
     };
 
     extern void Cmd2DText(const Core::Math::Vector2& in_rPos,
-                          const Core::Common::StringBase& in_str, const Color& in_rColor);
+                          const Core::Common::StringBase& in_str, const Color& in_rColor,
+                          const Core::Math::Rect2::EAnchor in_eAnchor);
 
     /// <summary>
     /// 2D画面に矩形を表示
     /// </summary>
     struct ComRect2D
     {
-        Float32 fLeftX;
-        Float32 fLeftY;
+        Float32 fLeftX = 0.0f;
+        Float32 fLeftY = 0.0f;
 
-        Float32 fRightX;
-        Float32 fRightY;
+        Float32 fRightX = 0.0f;
+        Float32 fRightY = 0.0f;
 
         Color color;
     };
@@ -59,6 +60,7 @@ namespace Render
             // バッファ
             Uint64 ulaWork[128] = {};
 
+            // TODO: バッファ超えていた場合はコンパイルエラーを出すことはできるのだろうか？
             ComText2D text2D;
             ComRect2D rect2D;
 

@@ -72,14 +72,6 @@ public:
     Module::ModuleManager& ModuleManager() { return this->_moduleManager; }
 
     /// <summary>
-    /// プラットフォームのモジュールを取得
-    /// windows / android / iosなどのプラットフォームが扱える予定
-    /// 現在はwindowsのみ
-    /// </summary>
-    /// <returns></returns>
-    Platform::PlatformModule* GetPlatformModule();
-
-    /// <summary>
     /// デバッグモードかどうか
     /// </summary>
     /// <returns></returns>
@@ -103,6 +95,14 @@ private:
     /// </summary>
     /// <returns></returns>
     void _Colision() {}
+
+    /// <summary>
+    /// プラットフォームのモジュールを取得
+    /// windows / android / iosなどのプラットフォームが扱える予定
+    /// 現在はwindowsのみ
+    /// </summary>
+    /// <returns></returns>
+    Platform::PlatformModule* _PlatformModule();
 
 private:
     Bool _bInit  = FALSE;

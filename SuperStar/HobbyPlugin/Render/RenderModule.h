@@ -14,8 +14,10 @@ namespace Render
     /// </summary>
     class RenderModule final : public Module::ModuleBase
     {
+        HE_MODULE_GENRATE_DECLARATION(RenderModule);
+
     public:
-        RenderModule(const Char* in_szName) : ModuleBase(in_szName) {}
+        RenderModule() : ModuleBase(ModuleName()) {}
 
         // 描画コマンドを追加
         // コマンドデータは呼び出し元のものにするためにstd::move()で渡す
@@ -32,20 +34,20 @@ namespace Render
         /// <returns></returns>
         CommandBuffer* GetCmdBuff() { return &this->_commandBuff; }
 
+        const Sint32 Prioryty() const override final { return 10; }
+
     protected:
         /// <summary>
         /// モジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool Start() final override;
+        const Bool _Start() final override;
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool Release() override final;
+        virtual const Bool _Release() override final;
 
     private:
         CommandBuffer _commandBuff;
     };
 }  // namespace Render
-
-MODULE_GENRATE_DECLARATION(Render::RenderModule, Render);

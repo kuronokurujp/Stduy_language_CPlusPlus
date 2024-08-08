@@ -14,6 +14,8 @@ namespace UI
     /// </summary>
     class UIButtonMessageHandler
     {
+        HE_CLASS_COPY_CONSTRUCT_NG(UIButtonMessageHandler);
+
     public:
         UIButtonMessageHandler()          = default;
         virtual ~UIButtonMessageHandler() = default;
@@ -24,7 +26,7 @@ namespace UI
         virtual void _OnPushInternal() = 0;
     };
 
-    using UIButtonMessageHandlerImpOnPush = std::function<void(Core::Common::FixString128&)>;
+    using UIButtonMessageHandlerImpOnPush = std::function<void(Core::Common::StringBase&)>;
 
     /// <summary>
     /// ボタンのプッシュ通知
@@ -33,13 +35,11 @@ namespace UI
     class UIButtonMessageHandlerDefault : public UIButtonMessageHandler
     {
     public:
-        UIButtonMessageHandlerDefault(Core::Common::FixString128 in_szMsg,
-                                      UIButtonMessageHandlerImpOnPush in_func)
+        UIButtonMessageHandlerDefault() = default;
+        UIButtonMessageHandlerDefault(const Char* in_szMsg, UIButtonMessageHandlerImpOnPush in_func)
             : _onPush(in_func), _msg(in_szMsg)
         {
         }
-
-        virtual ~UIButtonMessageHandlerDefault() = default;
 
     protected:
         void _OnPushInternal() override final { this->_onPush(this->_msg); }
@@ -83,13 +83,14 @@ namespace UI
         /// プッシュ通知のハンドラーを設定
         /// ユニークポインタで所有権を移譲している
         /// </summary>
-        void SetPushHandler(std::unique_ptr<UIButtonMessageHandler> in_spHandler)
+        void SetPushHandler(std::unique_ptr<UIButtonMessageHandler, DeleterFreeMemory> in_spHandler)
         {
             this->_pushHandler = std::move(in_spHandler);
         }
 
         void SetWidth(const Float32 in_fW) { this->_fWidth = in_fW; }
         void SetHeight(const Float32 in_fH) { this->_fHeight = in_fH; }
+        void SetAnchor(const Core::Math::Rect2::EAnchor in_eAnchor) { this->_eAnchor = in_eAnchor; }
 
         /// <summary>
         /// タッチイベント
@@ -103,11 +104,13 @@ namespace UI
             this->_pushHandler.release();
             this->_fWidth  = 0.0f;
             this->_fHeight = 0.0f;
+            this->_eAnchor = Core::Math::Rect2::EAnchor_Left;
         }
 
     private:
-        std::unique_ptr<UIButtonMessageHandler> _pushHandler;
-        Float32 _fWidth  = 0.0f;
-        Float32 _fHeight = 0.0f;
+        std::unique_ptr<UIButtonMessageHandler, DeleterFreeMemory> _pushHandler;
+        Float32 _fWidth                     = 0.0f;
+        Float32 _fHeight                    = 0.0f;
+        Core::Math::Rect2::EAnchor _eAnchor = Core::Math::Rect2::EAnchor_Left;
     };
 }  // namespace UI

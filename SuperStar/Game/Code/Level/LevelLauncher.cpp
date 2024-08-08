@@ -11,8 +11,7 @@
 // UIモジュール
 #include "UIModule.h"
 
-// TODO: デバッグ画面を表示してレベルを切り替える
-
+// デバッグ画面を表示してレベルを切り替える
 namespace Level
 {
     const Bool LevelLauncher::Begin()
@@ -29,33 +28,36 @@ namespace Level
                 [this](const Char* in_pMsg)
                 {
                     HE_LOG_LINE(in_pMsg);
-                    // TODO: 次のレベルへ遷移
+                    // 次のレベルへ遷移
                     if (HE_STR_CMP(in_pMsg, HE_STR_TEXT("C_TitleSeq")) == 0)
                     {
-                        // TODO: タイトルへ遷移する
-                        // レベル更新中なのにレベルを破棄してしまうので例外エラーになる
-                        // レベル切り替えを考えないといけない
-                        ModuleLevel()->GetManager()->StartLevel<Level::LevelTitle>();
+                        auto pLevelModule = Module::ModuleManager::I().Get<Level::LevelModule>();
+                        // タイトルへ遷移する
+                        pLevelModule->GetManager()->StartLevel<Level::LevelTitle>();
                     }
                 });
             comp->SetReceiver(std::move(handler));
         }
 
         // UIのBuilderファイルからレイアウト作成
-        this->_layoutAssetHandle = ModuleUI()->LoadAssetWithLayoutBuild(
+
+        auto pUIModule = Module::ModuleManager::I().Get<UI::UIModule>();
+        // this->_layoutAssetHandle = ModuleUI()->LoadAssetWithLayoutBuild(
+        this->_layoutAssetHandle = pUIModule->LoadAssetWithLayoutBuild(
             Core::File::Path(HE_STR_TEXT("UI"), HE_STR_TEXT("Builder"), HE_STR_TEXT("Debug"),
                              HE_STR_TEXT("Launcher.xml")));
         // widgetを作成
         // レベルが切り替わると自動的にwidgetは破棄される
-        this->_uIWidgetHandle = ModuleUI()->NewLayoutByLayotuAsset(this->_layoutAssetHandle, 0);
+        this->_uIWidgetHandle = pUIModule->NewLayoutByLayotuAsset(this->_layoutAssetHandle, 0);
 
         return TRUE;
     }
 
     const Bool LevelLauncher::End()
     {
+        auto pUIModule = Module::ModuleManager::I().Get<UI::UIModule>();
         // ロードしたアセットを破棄
-        ModuleUI()->UnloadAssetWithLayoutBuild(this->_layoutAssetHandle);
+        pUIModule->UnloadAssetWithLayoutBuild(this->_layoutAssetHandle);
 
         const Bool bRet = Level::Node::End();
         HE_ASSERT(bRet);

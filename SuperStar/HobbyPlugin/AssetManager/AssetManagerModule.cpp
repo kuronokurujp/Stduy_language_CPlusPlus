@@ -1,15 +1,17 @@
 ﻿#include "AssetManagerModule.h"
 
 #include "AssetManager/AssetDataBase.h"
-
-// 依存モジュール
 #include "Engine/Platform/PlatformModule.h"
-
-MODULE_GENRATE_DEFINITION(AssetManager::AssetManagerModule, AssetManager);
 
 namespace AssetManager
 {
-    const Bool AssetManagerModule::Start()
+    AssetManagerModule::AssetManagerModule() : ModuleBase(ModuleName())
+    {
+        // 依存モジュール
+        this->_AppendDependenceModule<Platform::PlatformModule>();
+    }
+
+    const Bool AssetManagerModule::_Start()
     {
         // 利用するアセット数を設定
         this->_Reserve(1024);
@@ -17,7 +19,7 @@ namespace AssetManager
         return TRUE;
     }
 
-    const Bool AssetManagerModule::Update(const Float32 in_fDeltaTime)
+    const Bool AssetManagerModule::_Update(const Float32 in_fDeltaTime)
     {
         return TRUE;
     }
@@ -36,7 +38,8 @@ namespace AssetManager
 
     const Bool AssetManagerModule::_Load(AssetDataBase* out)
     {
-        Platform::FileSystemInterface* pFileSystem = this->GetPlatformModule()->File();
+        auto pPlatformModule = this->GetDependenceModule<Platform::PlatformModule>();
+        Platform::FileSystemInterface* pFileSystem = pPlatformModule->File();
         if (out->_Load(*pFileSystem) == FALSE)
         {
             return FALSE;
@@ -45,7 +48,7 @@ namespace AssetManager
         return TRUE;
     }
 
-    const Bool AssetManagerModule::Release()
+    const Bool AssetManagerModule::_Release()
     {
         // アセットハンドルがあれば解放する
         {

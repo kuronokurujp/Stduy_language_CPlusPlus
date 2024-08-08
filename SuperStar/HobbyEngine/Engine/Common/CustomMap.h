@@ -32,8 +32,8 @@ namespace Core::Common
         // キーとデータのペア構造体
         struct Pair
         {
-            KEY _tKey;
-            DATA _tData;
+            KEY key;
+            DATA data;
         };
 
         // カスタムマップのイテレーター
@@ -115,6 +115,17 @@ namespace Core::Common
             this->_DeepCopy(&in_mrOther);
         }
 
+        // コンストラクタ (initializer_listを受け取る)
+        CustomFixMap(std::initializer_list<std::pair<KEY, DATA>> in_initList)
+            : _iteratorTail(&this->_tTail)
+        {
+            this->_Init();
+            for (const auto& item : in_initList)
+            {
+                this->Add(item.first, item.second);
+            }
+        }
+
         // コピー処理
         // ディープコピーにする
         CustomFixMap& operator=(CustomFixMap& in_mrOther)
@@ -158,12 +169,33 @@ namespace Core::Common
         /// <summary>
         /// キーからデータ検索
         /// </summary>
-        Iterator Find(const KEY& in_trKey)
+        Iterator FindKey(const KEY& in_trKey)
         {
             // ツリーが空なら終端を返す
             if (this->Empty()) return this->End();
 
-            Node* tpNode = this->_Find(this->_tpRoot, in_trKey);
+            Node* tpNode = this->_FindKey(this->_tpRoot, in_trKey);
+            if (tpNode == NULL)
+            {
+                // 見つからなかった
+                return this->End();
+            }
+            else
+            {
+                // 見つかった
+                return Iterator(tpNode);
+            }
+        }
+
+        /// <summary>
+        /// データからキー検索
+        /// </summary>
+        Iterator FindData(const DATA& in_rData)
+        {
+            // ツリーが空なら終端を返す
+            if (this->Empty()) return this->End();
+
+            Node* tpNode = this->_FindData(this->_tpRoot, in_rData);
             if (tpNode == NULL)
             {
                 // 見つからなかった
@@ -179,12 +211,12 @@ namespace Core::Common
         /// <summary>
         /// 指定キーの要素があるか
         /// </summary>
-        const Bool Contains(const KEY& in_trKey)
+        const Bool Contains(const KEY& in_rKey)
         {
             // ツリーが空なのでキーの要素はない
             if (this->Empty()) return FALSE;
 
-            Node* tpNode = this->_Find(this->_tpRoot, in_trKey);
+            Node* tpNode = this->_FindKey(this->_tpRoot, in_rKey);
             if (tpNode == NULL) return FALSE;
 
             return TRUE;
@@ -193,10 +225,10 @@ namespace Core::Common
         /// <summary>
         /// データ削除(キー版)
         /// </summary>
-        const Bool Erase(const KEY& in_trKey)
+        const Bool Erase(const KEY& in_rKey)
         {
             // ツリーを辿って削除 &再構築
-            this->_tpRoot = this->_Erase(this->_tpRoot, in_trKey);
+            this->_tpRoot = this->_Erase(this->_tpRoot, in_rKey);
 
             // まだツリーが存在するなら、ルートノードを黒にしておく
             if (this->_tpRoot) this->_tpRoot->_uColor = Node::BLACK;
@@ -213,7 +245,7 @@ namespace Core::Common
             if (in_iter == this->End()) return FALSE;
 
             // ツリーを辿って削除 &再構築
-            this->_tpRoot = this->_Erase(this->_tpRoot, in_iter._pNode->_pair._tKey);
+            this->_tpRoot = this->_Erase(this->_tpRoot, in_iter._pNode->_pair.key);
 
             // まだツリーが存在するなら、ルートノードを黒にしておく
             if (this->_tpRoot) this->_tpRoot->_uColor = Node::BLACK;
@@ -257,7 +289,7 @@ namespace Core::Common
         /// KEYを添え字にしてデータアクセス
         /// KEYがなければそのKEYでデータを追加して参照を返す
         /// </summary>
-        DATA& operator[](const KEY& in_trKey) { return this->FindOrAdd(in_trKey); }
+        DATA& operator[](const KEY& in_trKey) { return this->FindOrAddKey(in_trKey); }
 
     protected:
         /// <summary>
@@ -282,9 +314,9 @@ namespace Core::Common
             this->_poolObject.Free(in_rHandle);
         }
 
-        inline DATA& FindOrAdd(const KEY& in_trKey)
+        inline DATA& FindOrAddKey(const KEY& in_trKey)
         {
-            Iterator it = this->Find(in_trKey);
+            Iterator it = this->FindKey(in_trKey);
             if (it == this->End())
             {
                 // 無ければ追加する
@@ -293,7 +325,7 @@ namespace Core::Common
             }
 
             // データの参照を返す
-            return it->_tData;
+            return it->data;
         }
 
 #ifdef HE_ENGINE_DEBUG
@@ -316,12 +348,12 @@ namespace Core::Common
 
             // 左ノードがあればコンペア
             if (in_pNode->_pLeft &&
-                this->_Compare(in_pNode->_pair._tKey, in_pNode->_pLeft->_pair._tKey) != -1)
+                this->_CompareByKey(in_pNode->_pair.key, in_pNode->_pLeft->_pair.key) != -1)
                 return FALSE;
 
             // 右ノードがあればコンペア
             if (in_pNode->_pRight &&
-                this->_Compare(in_pNode->_pair._tKey, in_pNode->_pRight->_pair._tKey) != 1)
+                this->_CompareByKey(in_pNode->_pair.key, in_pNode->_pRight->_pair.key) != 1)
                 return FALSE;
 
             // 自分の左ノードをチェック
@@ -416,12 +448,12 @@ namespace Core::Common
             Node* pNode = this->_NewNode();
             if (pNode == NULL) return this->End();
 
-            pNode->_pair._tKey = in_trKey;
+            pNode->_pair.key = in_trKey;
             if (in_tpData != NULL)
             {
                 // 添え字アクセスで作る場合はデータが無い
                 // コピーして渡す
-                pNode->_pair._tData = *in_tpData;
+                pNode->_pair.data = *in_tpData;
             }
 
             // ルートを親として追加
@@ -445,7 +477,7 @@ namespace Core::Common
             if (in_pNode == NULL) return in_pAdd;
 
             // キーの比較
-            Sint32 iCmpResult = this->_Compare(in_pNode->_pair._tKey, in_pAdd->_pair._tKey);
+            Sint32 iCmpResult = this->_CompareByKey(in_pNode->_pair.key, in_pAdd->_pair.key);
 
             // ノード挿入
             if (iCmpResult == 0)
@@ -491,14 +523,35 @@ namespace Core::Common
 
         // キーの大小比較
         // クラスをキーにする場合、比較演算子( >, < )を用意してください。
-        virtual Sint32 _Compare(KEY in_tLeft, KEY in_tRight) const HE_NOEXCEPT
+        Sint32 _CompareByKey(const KEY& in_rLeft, const KEY& in_rRight) const HE_NOEXCEPT
         {
-            if (in_tLeft < in_tRight)
+            if (in_rLeft < in_rRight)
             {
                 // 右に付ける
                 return 1;
             }
-            else if (in_tLeft > in_tRight)
+            else if (in_rLeft > in_rRight)
+            {
+                // 左に付ける
+                return -1;
+            }
+
+            // 全く同じ内容
+            return 0;
+        }
+
+        // データの大小比較
+        // クラスをデータにする場合、比較演算子( >, < )を用意してください。
+        Sint32 _CompareByData(const DATA& in_rLeft, const DATA& in_rRight) const HE_NOEXCEPT
+        {
+            // TODO:
+            // 比較演算しを対応しているかどうかチェックして対応していない場合はスキップできるか？
+            if (in_rLeft < in_rRight)
+            {
+                // 右に付ける
+                return 1;
+            }
+            else if (in_rLeft > in_rRight)
             {
                 // 左に付ける
                 return -1;
@@ -509,13 +562,13 @@ namespace Core::Common
         }
 
         // キーに対応したノードを探す
-        Node* _Find(Node* in_pNode, const KEY& in_trKey) const
+        Node* _FindKey(Node* in_pNode, const KEY& in_rKey) const
         {
             // 見つからないまま終端
             if (in_pNode == NULL) return NULL;
 
             // 比較する
-            Sint32 iCmpResult = this->_Compare(in_pNode->_pair._tKey, in_trKey);
+            Sint32 iCmpResult = this->_CompareByKey(in_pNode->_pair.key, in_rKey);
             if (iCmpResult == 0)
             {
                 // 探しているノードだった
@@ -524,19 +577,44 @@ namespace Core::Common
             else if (iCmpResult < 0)
             {
                 // 左へ探しに行く
-                return this->_Find(in_pNode->_pLeft, in_trKey);
+                return this->_FindKey(in_pNode->_pLeft, in_rKey);
             }
             else
             {
                 // 右へ探しに行く
-                return this->_Find(in_pNode->_pRight, in_trKey);
+                return this->_FindKey(in_pNode->_pRight, in_rKey);
+            }
+        }
+
+        // データに対応したノードを探す
+        Node* _FindData(Node* in_pNode, const DATA& in_rData) const
+        {
+            // 見つからないまま終端
+            if (in_pNode == NULL) return NULL;
+
+            // 比較する
+            Sint32 iCmpResult = this->_CompareByData(in_pNode->_pair.data, in_rData);
+            if (iCmpResult == 0)
+            {
+                // 探しているノードだった
+                return in_pNode;
+            }
+            else if (iCmpResult < 0)
+            {
+                // 左へ探しに行く
+                return this->_FindData(in_pNode->_pLeft, in_rData);
+            }
+            else
+            {
+                // 右へ探しに行く
+                return this->_FindData(in_pNode->_pRight, in_rData);
             }
         }
 
         // キーに対応したノードを探して削除
         Node* _Erase(Node* in_pNode, const KEY& in_trKey)
         {
-            if (this->_Compare(in_pNode->_pair._tKey, in_trKey) < 0)
+            if (this->_CompareByKey(in_pNode->_pair.key, in_trKey) < 0)
             {
                 // 削除ノードは左にある
                 if (!this->_IsRed(in_pNode->_pLeft) && !this->_IsRed(in_pNode->_pLeft->_pLeft))
@@ -553,7 +631,7 @@ namespace Core::Common
                     in_pNode = this->_RotateRight(in_pNode);
                 }
 
-                if (this->_Compare(in_pNode->_pair._tKey, in_trKey) == 0 &&
+                if (this->_CompareByKey(in_pNode->_pair.key, in_trKey) == 0 &&
                     (in_pNode->_pRight == NULL))
                 {
                     // NULLを返すことで、親からこのpNodeを外させる
@@ -566,7 +644,7 @@ namespace Core::Common
                     in_pNode = this->_MoveRedRight(in_pNode);
                 }
 
-                if (this->_Compare(in_pNode->_pair._tKey, in_trKey) == 0)
+                if (this->_CompareByKey(in_pNode->_pair.key, in_trKey) == 0)
                 {
                     // このノードを削除したいが、左右に別のノードがくっついている
                     // 自分の値に一番近いノードを探す
@@ -608,7 +686,7 @@ namespace Core::Common
             for (const Node* p                                = in_mpOther->_tHead._pNext;
                  (p != &in_mpOther->_tTail) && (p != NULL); p = p->_pNext)
             {
-                this->Add(p->_pair._tKey, p->_pair._tData);
+                this->Add(p->_pair.key, p->_pair.data);
             }
         }
 

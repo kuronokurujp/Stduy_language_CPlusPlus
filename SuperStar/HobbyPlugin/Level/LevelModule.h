@@ -22,31 +22,29 @@ namespace Level
     /// </summary>
     class LevelModule final : public Module::ModuleBase
     {
+        HE_MODULE_GENRATE_DECLARATION(LevelModule);
+
     public:
-        LevelModule(const Char* in_szName) : ModuleBase(in_szName) {}
+        LevelModule();
 
         std::shared_ptr<Manager>& GetManager() { return this->_pLevelManager; }
+        Node& GetCurrneLevel() const { return *(this->_pLevelManager->CurrentLevel()); }
 
     protected:
         /// <summary>
         /// モジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool Start() final override;
+        const Bool _Start() final override;
 
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool Release() override final;
+        virtual const Bool _Release() override final;
 
-        const Bool Update(const Float32 in_fDeltaTime) final override;
+        const Bool _Update(const Float32 in_fDeltaTime) final override;
 
     private:
         std::shared_ptr<Manager> _pLevelManager = NULL;
     };
 }  // namespace Level
-
-MODULE_GENRATE_DECLARATION(Level::LevelModule, Level);
-
-// カレントレベルを取得
-#define LEVEL_MODULE_CURRENT_LEVEL (ModuleLevel()->GetManager()->CurrentLevel())

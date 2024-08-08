@@ -13,9 +13,7 @@ namespace DXLib
     {
     public:
         void Init() final override;
-        void BeforeUpdate(const Float32 in_fDeltaTime) final override;
         void Update(const Float32 in_fDeltaTime) final override;
-        void AfterUpdate(const Float32 in_fDeltaTime) final override;
 
     private:
         Uint32 _uCurrButton = 0;

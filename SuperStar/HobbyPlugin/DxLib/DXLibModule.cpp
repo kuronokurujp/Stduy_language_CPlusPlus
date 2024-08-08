@@ -5,11 +5,14 @@
 // 依存モジュール一覧
 #include "RenderModule.h"
 
-MODULE_GENRATE_DEFINITION(DXLib::DXLibModule, Platform);
-
 namespace DXLib
 {
-    const Bool DXLibModule::Start()
+    DXLibModule::DXLibModule() : PlatformModule()
+    {
+        this->_AppendDependenceModule<Render::RenderModule>();
+    }
+
+    const Bool DXLibModule::_Start()
     {
         Bool bRet = TRUE;
         {
@@ -65,7 +68,7 @@ namespace DXLib
         return bRet;
     }
 
-    const Bool DXLibModule::Release()
+    const Bool DXLibModule::_Release()
     {
         // DxLibの後始末
         DxLib_End();
@@ -86,8 +89,8 @@ namespace DXLib
     {
         Bool bRet = TRUE;
         {
-            // 入力の前更新
-            this->_input.BeforeUpdate(in_fDeltaTime);
+            // 入力更新
+            this->_input.Update(in_fDeltaTime);
 
             // 0以外だと画面終了メッセージとみなしている
             if ((ProcessMessage() != 0))
@@ -99,17 +102,13 @@ namespace DXLib
         return bRet;
     }
 
-    const Bool DXLibModule::Update(const Float32 in_fDeltaTime)
+    const Bool DXLibModule::_Update(const Float32 in_fDeltaTime)
     {
-        this->_input.Update(in_fDeltaTime);
-
         return TRUE;
     }
 
     const Bool DXLibModule::AfterUpdate(const Float32 in_fDeltaTime)
     {
-        this->_input.AfterUpdate(in_fDeltaTime);
-
         return TRUE;
     }
 
@@ -121,7 +120,7 @@ namespace DXLib
 
     void DXLibModule::Redner()
     {
-        Render::RenderModule* pRenderModule = ModuleRender();
+        auto pRenderModule = this->GetDependenceModule<Render::RenderModule>();
         HE_ASSERT(pRenderModule);
 
         Render::CommandBuffer* pCmdBuff =
@@ -132,10 +131,10 @@ namespace DXLib
         {
             const Render::Command& pCmd = (*pCmdBuff)[i];
 
-            // TODO: コマンドに応じた描画処理をする
+            // コマンドに応じた描画処理をする
             switch (pCmd.uType)
             {
-                // TODO: 矩形を描画
+                // 矩形を描画
                 case Render::CMD_TYPE_2D_RECT:
                 {
                     const Render::ComRect2D* pRect2D = &pCmd.data.rect2D;
@@ -147,7 +146,7 @@ namespace DXLib
                             uColor, TRUE);
                     break;
                 }
-                // TODO: 2Dテキストを描画
+                // 2Dテキストを描画
                 case Render::CMD_TYPE_2D_TEXT:
                 {
                     const Render::ComText2D* pText2D = &pCmd.data.text2D;
@@ -155,9 +154,32 @@ namespace DXLib
                     Uint32 uColor =
                         GetColor(pText2D->color.c32.r, pText2D->color.c32.g, pText2D->color.c32.b);
                     Core::Common::FixString1024 str(pText2D->szChars);
+                    int x = static_cast<int>(pText2D->fX);
+                    int y = static_cast<int>(pText2D->fY);
+                    // 配置指定で配置座標を変更
+                    switch (pText2D->anchor)
+                    {
+                        // 中央位置
+                        case Core::Math::Rect2::EAnchor_Center:
+                        {
+                            const int sWidth =
+                                GetDrawStringWidth(pText2D->szChars, HE_STR_LEN(pText2D->szChars));
+                            const int sHeight = GetDrawStringWidth(pText2D->szChars, 1);
+                            if ((sWidth != -1) && (sHeight != -1))
+                            {
+                                x -= sWidth / 2;
+                                y -= sHeight / 2;
+                            }
+                            break;
+                        }
+                        // 左上位置
+                        case Core::Math::Rect2::EAnchor_Left:
+                        {
+                            break;
+                        }
+                    }
 
-                    DrawString(static_cast<int>(pText2D->fX), static_cast<int>(pText2D->fY),
-                               pText2D->szChars, uColor);
+                    DrawString(x, y, pText2D->szChars, uColor);
                     break;
                 }
                 default:
@@ -168,7 +190,7 @@ namespace DXLib
 
     void DXLibModule::EndRender()
     {
-        Render::RenderModule* pRenderModule = ModuleRender();
+        auto pRenderModule = this->GetDependenceModule<Render::RenderModule>();
         HE_ASSERT(pRenderModule);
 
         pRenderModule->ClearCmd();

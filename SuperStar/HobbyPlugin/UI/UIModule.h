@@ -8,8 +8,11 @@
 
 // プラットフォームモジュールを使う
 // 主にインプット入力の取得など
+#include "ActorModule.h"
 #include "Engine/Platform/PlatformModule.h"
 #include "LevelModule.h"
+#include "LocalizationModule.h"
+#include "RenderModule.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
 #include "UI/Builder/UILayoutBuilder.h"
@@ -28,8 +31,10 @@ namespace UI
     /// </summary>
     class UIModule final : public Module::ModuleBase
     {
+        HE_MODULE_GENRATE_DECLARATION(UIModule);
+
     public:
-        UIModule(const Char* in_pName) : ModuleBase(in_pName) {}
+        UIModule();
 
         /// <summary>
         /// BuildFileをロード
@@ -90,8 +95,12 @@ namespace UI
         Core::Common::Handle AddComponent(Core::Common::Handle& in_rWidget,
                                           const Sint32 in_iUpdateOrder)
         {
+            auto pLevelModule = this->GetDependenceModule<Level::LevelModule>();
+            HE_ASSERT(pLevelModule);
+
             Actor::Object* pActor = NULL;
-            pActor                = LEVEL_MODULE_CURRENT_LEVEL->GetActor(in_rWidget);
+            // pActor                =  LEVEL_MODULE_CURRENT_LEVEL->GetActor(in_rWidget);
+            pActor = pLevelModule->GetCurrneLevel().GetActor(in_rWidget);
             HE_ASSERT(pActor);
 
             // アクターにコンポーネント追加
@@ -103,19 +112,12 @@ namespace UI
         /// UIのモジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool Start() final override;
+        const Bool _Start() final override;
 
-        /// <summary>
-        /// UIのモジュール終了
-        /// </summary>
-        /// <returns></returns>
-        // const Bool End() final override;
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool Release() override final;
+        virtual const Bool _Release() override final;
     };
 
 }  // namespace UI
-
-MODULE_GENRATE_DECLARATION(UI::UIModule, UI);

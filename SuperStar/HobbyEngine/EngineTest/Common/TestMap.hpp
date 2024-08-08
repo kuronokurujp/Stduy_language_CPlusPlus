@@ -94,10 +94,10 @@ TEST_CASE("FixMap Test")
             strKey.Format(HE_STR_TEXT("0x%04x"), ii);
 
             // 検索
-            BASICMAP::Iterator it = testmap.Find(strKey.Str());
+            BASICMAP::Iterator it = testmap.FindKey(strKey.Str());
             CHECK(it != testmap.End());
-            CHECK(it->_tKey == strKey);
-            CHECK(it->_tData == ii);
+            CHECK(it->key == strKey);
+            CHECK(it->data == ii);
         }
         HE_LOG_LINE(HE_STR_TEXT("find ctime=%f sec"), (double)(clock() - ctime) / CLOCKS_PER_SEC);
     }
@@ -115,11 +115,11 @@ TEST_CASE("FixMap Test")
         ctime = clock();
         for (BASICMAP::Iterator it = testmap.Begin(); it != testmap.End(); ++it)
         {
-            CHECK((0 <= it->_tData && it->_tData < ARRAY_NUM));
-            CHECK((pCheckArray[it->_tData] == FALSE));
+            CHECK((0 <= it->data && it->data < ARRAY_NUM));
+            CHECK((pCheckArray[it->data] == FALSE));
 
             // チェック済み
-            pCheckArray[it->_tData] = TRUE;
+            pCheckArray[it->data] = TRUE;
             // チェック済みカウント
             checked_count++;
         }
@@ -140,7 +140,7 @@ TEST_CASE("FixMap Test")
             // キーを作って
             strKey.Format(HE_STR_TEXT("0x%04x"), ii);
             // 探す
-            BASICMAP::Iterator it = testmap.Find(strKey.Str());
+            BASICMAP::Iterator it = testmap.FindKey(strKey.Str());
             Bool bResult;
             // 削除する
             bResult = testmap.Erase(it);
@@ -208,10 +208,10 @@ TEST_CASE("FixMap Copy")
 
     for (Uint32 i = 0; i < HE_ARRAY_NUM(s_aArray); ++i)
     {
-        auto iter = dstmap.Find(s_aArray[i].pKey);
+        auto iter = dstmap.FindKey(s_aArray[i].pKey);
         CHECK(iter.IsValid());
-        CHECK(iter->_tData == s_aArray[i].num);
+        CHECK(iter->data == s_aArray[i].num);
 
-        HE_LOG_LINE(HE_STR_TEXT("key(%s) / data(%d)"), iter->_tKey.Str(), iter->_tData);
+        HE_LOG_LINE(HE_STR_TEXT("key(%s) / data(%d)"), iter->key.Str(), iter->data);
     }
 }

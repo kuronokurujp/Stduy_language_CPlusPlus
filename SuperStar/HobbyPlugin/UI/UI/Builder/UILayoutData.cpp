@@ -47,6 +47,19 @@ namespace UI::Builder
                                       StyleColor("magenta", Render::RGB::Magenta),
                                       StyleColor("ornage", Render::RGB::Orange)};
 
+        static const EAnchor _GetPosAnchor(const pugi::xml_node& in_rNode)
+        {
+            const pugi::char_t* s = in_rNode.attribute("anchor").as_string();
+            if (s == NULL) return EAnchor_Left;
+
+            if (::strcmp(s, "center") == 0)
+            {
+                return EPosAnchor_Center;
+            }
+
+            return EAnchor_Left;
+        }
+
         static void _ParseStyle(Style* out, const UTF8* in_szName, const Uint32 in_uSize)
         {
             static UTF8 buff[1024] = {0};
@@ -128,6 +141,7 @@ namespace UI::Builder
                 auto pBtn          = &pData->exData.button;
                 pBtn->fX           = in_rNode.attribute("x").as_float();
                 pBtn->fY           = in_rNode.attribute("y").as_float();
+                pBtn->eAnchor      = _GetPosAnchor(in_rNode);
 
                 auto s = in_rNode.attribute("style").value();
                 _ParseStyle(&pBtn->style, s, static_cast<Uint32>(::strlen(s)));
@@ -138,6 +152,7 @@ namespace UI::Builder
                 auto pLabel        = &pData->exData.label;
                 pLabel->fX         = in_rNode.attribute("x").as_float();
                 pLabel->fY         = in_rNode.attribute("y").as_float();
+                pLabel->eAnchor    = _GetPosAnchor(in_rNode);
 
                 // ローカライズテキストか
                 if (in_rNode.attribute("loc").as_bool())
@@ -210,7 +225,6 @@ namespace UI::Builder
         pugi::xml_node libNode(in_rParentNode.pNode);
         libNode = libNode.child(in_szName);
 
-        Node node;
         Local::ApplyNode(out, libNode);
 
         return TRUE;

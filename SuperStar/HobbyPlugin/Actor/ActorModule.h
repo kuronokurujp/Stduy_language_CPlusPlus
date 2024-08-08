@@ -17,21 +17,21 @@ namespace Actor
     /// </summary>
     class ActorModule final : public Module::ModuleBase
     {
+        HE_MODULE_GENRATE_DECLARATION(ActorModule);
+
     public:
-        ActorModule(const Char* in_szName) : ModuleBase(in_szName) {}
+        ActorModule() : ModuleBase(ModuleName()) {}
 
     protected:
         /// <summary>
         /// モジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool Start() final override;
+        const Bool _Start() final override;
 
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool Release() override final;
+        virtual const Bool _Release() override final;
     };
 }  // namespace Actor
-
-MODULE_GENRATE_DECLARATION(Actor::ActorModule, Actor);

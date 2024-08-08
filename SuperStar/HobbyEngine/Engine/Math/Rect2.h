@@ -12,70 +12,24 @@ namespace Core::Math
         /// <summary>
         /// 矩形の基準位置タイプ
         /// </summary>
-        enum EPivot
+        enum EAnchor
         {
-            EPivot_Left = 0,
-            EPivot_Center,
+            EAnchor_Left = 0,
+            EAnchor_Center,
         };
 
-        Rect2() {}
+        Rect2() { this->Clear(); }
 
         Rect2(const Float32 in_fX, const Float32 in_fY, const Float32 in_fW, const Float32 in_fH,
-              const EPivot in_ePivot)
-        {
-            this->Clear();
+              const EAnchor in_eAnchor);
 
-            switch (in_ePivot)
-            {
-                case EPivot_Left:
-                {
-                    this->_fLeft   = in_fX;
-                    this->_fRight  = in_fX + in_fW;
-                    this->_fTop    = in_fY;
-                    this->_fBottom = in_fY + in_fH;
-
-                    break;
-                }
-                case EPivot_Center:
-                {
-                    auto halfW = in_fW * 0.5f;
-                    auto halfH = in_fH * 0.5f;
-
-                    this->_fLeft   = in_fX - halfW;
-                    this->_fRight  = in_fX + halfW;
-                    this->_fTop    = in_fY - halfH;
-                    this->_fBottom = in_fY + halfH;
-
-                    break;
-                }
-            }
-            this->_ePivot = in_ePivot;
-        }
+        void Set(const Float32 in_fX, const Float32 in_fY, const Float32 in_fW, const Float32 in_fH,
+                 const EAnchor in_eAnchor);
 
         /// <summary>
         /// Gets the position.
         /// </summary>
-        const Vector2 Pos() const HE_NOEXCEPT
-        {
-            Float32 fX, fY;
-            switch (this->_ePivot)
-            {
-                case EPivot_Left:
-                {
-                    fX = this->_fLeft;
-                    fY = this->_fTop;
-                    break;
-                }
-                case EPivot_Center:
-                {
-                    fX = this->_fLeft + (this->Width() * 0.5f);
-                    fY = this->_fTop + (this->Height() * 0.5f);
-
-                    break;
-                }
-            }
-            return (Vector2(fX, fY));
-        }
+        const Vector2 Pos() const;
 
         /// <summary>
         /// Widthes this instance.
@@ -106,49 +60,26 @@ namespace Core::Math
         /// <summary>
         /// Ins the side rect.
         /// </summary>
-        const Bool InSideRect(Rect2& in_rOrderRect) HE_NOEXCEPT
-        {
-            const Vector2&& crrPos  = this->Pos();
-            const Vector2&& crrLine = Vector2::Sub(crrPos, in_rOrderRect.Pos());
-
-            const Float32 cfW = this->WidthHalf() + in_rOrderRect.WidthHalf();
-            const Float32 cfH = this->HeightHalf() + in_rOrderRect.HeightHalf();
-
-            if (cfW < fabs(crrLine._fX)) return FALSE;
-
-            if (cfH < fabs(crrLine._fY)) return FALSE;
-
-            return TRUE;
-        }
+        const Bool InSideRect(Rect2& in_rOrderRect);
 
         /// <summary>
         /// 座標が矩形の中に入っているか
         /// </summary>
-        const Bool InSidePoint(const Vector2& in_rPos) const HE_NOEXCEPT
-        {
-            if (this->_fRight < in_rPos._fX) return FALSE;
-
-            if (in_rPos._fX < this->_fLeft) return FALSE;
-
-            if (this->_fBottom < in_rPos._fY) return FALSE;
-
-            if (in_rPos._fY < this->_fTop) return FALSE;
-
-            return TRUE;
-        }
+        const Bool InSidePoint(const Vector2& in_rPos) const;
 
         /// <summary>
         /// Clears this instance.
         /// </summary>
-        void Clear() HE_NOEXCEPT
+        inline void Clear() HE_NOEXCEPT
         {
             this->_fLeft = this->_fRight = this->_fTop = this->_fBottom = 0.0f;
+            this->_eAnchor                                              = EAnchor_Left;
         }
 
         /// <summary>
         /// Operator=s the specified a.
         /// </summary>
-        void operator=(const Vector2& in_rVec) HE_NOEXCEPT
+        inline void operator=(const Vector2& in_rVec) HE_NOEXCEPT
         {
             this->_SetPos(in_rVec._fX, in_rVec._fY);
         }
@@ -169,37 +100,12 @@ namespace Core::Math
         Float32 _fTop    = 0.0f;
         Float32 _fRight  = 0.0f;
         Float32 _fBottom = 0.0f;
-        EPivot _ePivot   = EPivot_Left;
+        EAnchor _eAnchor = EAnchor_Left;
 
     private:
         /// <summary>
         /// Sets the position.
         /// </summary>
-        void _SetPos(const Float32 in_fX, const Float32 in_fY) HE_NOEXCEPT
-        {
-            switch (this->_ePivot)
-            {
-                case EPivot_Left:
-                {
-                    this->_fLeft   = in_fX;
-                    this->_fRight  = in_fX + this->Width();
-                    this->_fTop    = in_fY;
-                    this->_fBottom = in_fY + this->Height();
-                    break;
-                }
-                case EPivot_Center:
-                {
-                    const Float32 halfW = this->WidthHalf();
-                    const Float32 halfH = this->HeightHalf();
-
-                    this->_fLeft   = in_fX - halfW;
-                    this->_fRight  = in_fX + halfW;
-                    this->_fTop    = in_fY - halfH;
-                    this->_fBottom = in_fY + halfH;
-
-                    break;
-                }
-            }
-        }
+        void _SetPos(const Float32 in_fX, const Float32 in_fY);
     };
 }  // namespace Core::Math

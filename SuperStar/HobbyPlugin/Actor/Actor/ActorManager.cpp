@@ -77,7 +77,7 @@ namespace Actor
         // 保留グループに設定したタスクを更新グループに移動
         for (auto b = this->_pendingDataMap.Begin(); b != this->_pendingDataMap.End(); ++b)
         {
-            const auto pData = &b->_tData;
+            const auto pData = &b->data;
             const Bool bRet  = this->_taskManager.MoveGropuTask(pData->handle, pData->sMoveGroupId);
             HE_ASSERT(bRet && "保留中のタスクを稼働中に切り替え失敗した");
         }
@@ -94,9 +94,9 @@ namespace Actor
         if (pTask->GetGropuId() == this->_GetPendingGroupId())
         {
             // 保留中のタスクなので移動させるグループIDのみ切り替える
-            auto it = this->_pendingDataMap.Find(in_rActorHandle);
+            auto it = this->_pendingDataMap.FindKey(in_rActorHandle);
             HE_ASSERT(it.IsValid());
-            it->_tData.sMoveGroupId = iGroupId;
+            it->data.sMoveGroupId = iGroupId;
         }
         else
         {

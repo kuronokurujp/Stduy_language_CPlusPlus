@@ -4,22 +4,27 @@
 
 namespace Module
 {
-    ModuleBase::ModuleBase(const Char* in_szName)
+    namespace Local
     {
-        this->_szName = in_szName;
-        _mModule.Add(in_szName, this);
+        static Core::Common::CustomFixMap<Core::Common::FixString128, ModuleBase*, 64> mModule;
     }
 
-    Platform::PlatformModule* ModuleBase::GetPlatformModule() const
+    ModuleBase::ModuleBase(const UTF8* in_szName) : _szName(in_szName)
     {
-        return HOBBY_ENGINE.GetPlatformModule();
+        Local::mModule.Add(this->_szName.Str(), this);
     }
 
-    ModuleBase* ModuleManager::Get(const Char* in_szName)
+    ModuleBase::~ModuleBase()
     {
-        if (ModuleBase::_mModule.Contains(in_szName))
+        auto it = Local::mModule.FindKey(this->_szName);
+        if (it != Local::mModule.End()) Local::mModule.Erase(it);
+    }
+
+    ModuleBase* ModuleManager::Get(const Char* in_szName) const
+    {
+        if (Local::mModule.Contains(in_szName))
         {
-            return ModuleBase::_mModule[in_szName];
+            return Local::mModule[in_szName];
         }
         else
         {
@@ -33,12 +38,12 @@ namespace Module
     {
         // 全モジュール解放
         {
-            for (auto b = ModuleBase::_mModule.Begin(); b != ModuleBase::_mModule.End(); ++b)
+            for (auto b = Local::mModule.Begin(); b != Local::mModule.End(); ++b)
             {
-                b->_tData->Release();
+                b->data->_Release();
             }
-            // this->_modules.Empty();
-            ModuleBase::_mModule.Clear();
+            Local::mModule.Clear();
+            this->_vModule.Clear();
         }
 
         return TRUE;
@@ -46,25 +51,60 @@ namespace Module
 
     void ModuleManager::Update(const Float32 in_fDeltaTime)
     {
-        // 更新処理は優先順位をつけて処理順を変える対応が必要かも
+        for (Uint32 i = 0; i < this->_vModule.Size(); ++i)
         {
-            for (auto b = ModuleBase::_mModule.Begin(); b != ModuleBase::_mModule.End(); ++b)
-            {
-                // TODO: 依存しているモジュールが存在しているかチェック
-                b->_tData->Update(in_fDeltaTime);
-            }
+            this->_vModule[i]->_Update(in_fDeltaTime);
         }
     }
 
     const Bool ModuleManager::Start()
     {
-        for (auto b = ModuleBase::_mModule.Begin(); b != ModuleBase::_mModule.End(); ++b)
+        for (auto b = Local::mModule.Begin(); b != Local::mModule.End(); ++b)
         {
             HE_LOG_LINE(HE_STR_TEXT("Start Module(") HE_STR_FORMAT_TEXT HE_STR_TEXT(")"),
-                        b->_tData->Name());
-            if (b->_tData->Start() == FALSE)
+                        b->data->Name());
+            if (b->data->_Start() == FALSE)
             {
                 HE_ASSERT(FALSE && "モジュール開始に失敗");
+            }
+
+            // モジュール処理の配列に追加
+            this->_vModule.PushBack(b->data);
+
+            // 依存情報を見る
+            auto vDependenceModuleNames = b->data->GetDependenceModuleNames();
+            if (vDependenceModuleNames.Size() <= 0)
+            {
+                continue;
+            }
+
+            // 依存しているモジュールリストを作成
+            for (Uint32 i = 0; i < vDependenceModuleNames.Size(); ++i)
+            {
+                auto szName            = vDependenceModuleNames[i];
+                auto pDependenceModule = this->Get(szName.Str());
+                if (pDependenceModule == NULL) continue;
+
+                b->data->_vDependenceModule.PushBack(b->data);
+            }
+        }
+
+        // 優先度に従ってソートする
+        // モジュール数が3桁もいかないので高速ソートは不要
+        {
+            for (Uint32 i = 0; i < this->_vModule.Size() - 1; ++i)
+            {
+                Sint32 nowPriority = this->_vModule[i]->Prioryty();
+                for (Uint32 j = i; j < this->_vModule.Size(); ++j)
+                {
+                    Sint32 cmpPriority = this->_vModule[j]->Prioryty();
+                    if (cmpPriority < nowPriority)
+                    {
+                        auto tmp          = this->_vModule[i];
+                        this->_vModule[i] = this->_vModule[j];
+                        this->_vModule[j] = tmp;
+                    }
+                }
             }
         }
 

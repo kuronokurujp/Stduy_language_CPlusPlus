@@ -17,7 +17,7 @@
         "items": {
             "0": {
                 "type": 0,
-                "text": "Space : GAME START a : GAME END"
+                "text": "GAME START: Space Key\nGAME END: a Key"
             }
         }
     }

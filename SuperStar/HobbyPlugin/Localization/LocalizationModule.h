@@ -78,8 +78,10 @@ namespace Localization
     /// </summary>
     class LocalizationModule final : public Module::ModuleBase
     {
+        HE_MODULE_GENRATE_DECLARATION(LocalizationModule);
+
     public:
-        LocalizationModule(const Char* in_szName) : ModuleBase(in_szName) {}
+        LocalizationModule();
 
         // ローカライズ設定データをロード(テキストファイル版)
         // バイナリファイル版も用意する
@@ -102,13 +104,13 @@ namespace Localization
         /// モジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool Start() final override;
+        const Bool _Start() final override;
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool Release() override final;
+        virtual const Bool _Release() override final;
 
-        const Bool Update(const Float32 in_fDeltaTime) final override;
+        const Bool _Update(const Float32 in_fDeltaTime) final override;
 
     private:
 #define LOCATE_TEXT_MAP \
@@ -118,5 +120,3 @@ namespace Localization
         Core::Common::CustomFixMap<Core::Common::FixString128, LOCATE_TEXT_MAP, 16> _locateDataMap;
     };
 }  // namespace Localization
-
-MODULE_GENRATE_DECLARATION(Localization::LocalizationModule, Localization);

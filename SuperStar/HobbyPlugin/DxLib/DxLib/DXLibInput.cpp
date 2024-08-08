@@ -63,7 +63,7 @@ namespace DXLib
         }
     }
 
-    void InputSystem::BeforeUpdate(const Float32 in_fDeltaTime)
+    void InputSystem::Update(const Float32 in_fDeltaTime)
     {
         // キー入力の処理
         {
@@ -105,11 +105,4 @@ namespace DXLib
         }
     }
 
-    void InputSystem::Update(const Float32 in_fDeltaTime)
-    {
-    }
-
-    void InputSystem::AfterUpdate(const Float32 in_fDeltaTime)
-    {
-    }
 }  // namespace DXLib

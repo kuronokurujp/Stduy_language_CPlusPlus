@@ -20,8 +20,10 @@ namespace AssetManager
     class AssetManagerModule final : public Module::ModuleBase,
                                      Core::Common::BasePoolManager<AssetDataBase>
     {
+        HE_MODULE_GENRATE_DECLARATION(AssetManagerModule);
+
     public:
-        AssetManagerModule(const Char* in_szName) : ModuleBase(in_szName) {}
+        AssetManagerModule();
 
         template <class T>
         typename std::enable_if<std::is_base_of<AssetDataBase, T>::value,
@@ -71,15 +73,15 @@ namespace AssetManager
         /// モジュール開始
         /// </summary>
         /// <returns></returns>
-        const Bool Start() final override;
+        const Bool _Start() final override;
 
         /// <summary>
         /// モジュール解放
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool Release() override final;
+        virtual const Bool _Release() override final;
 
-        const Bool Update(const Float32 in_fDeltaTime) final override;
+        const Bool _Update(const Float32 in_fDeltaTime) final override;
 
     private:
         const Bool _Load(AssetDataBase* out_pAssetData);
@@ -88,5 +90,3 @@ namespace AssetManager
         Core::File::Path _mountDirPath;
     };
 }  // namespace AssetManager
-
-MODULE_GENRATE_DECLARATION(AssetManager::AssetManagerModule, AssetManager);

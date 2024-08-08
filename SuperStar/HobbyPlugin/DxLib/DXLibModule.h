@@ -13,11 +13,15 @@ namespace DXLib
 {
     /// <summary>
     /// DxLibプラットフォームが利用できるモジュール
+    /// 特殊モジュール
+    /// プラットフォームモジュールを継承した特殊モジュール
+    /// 一つしか継承できない
+    /// モジュール参照名は基本クラスにある
     /// </summary>
     class DXLibModule final : public Platform::PlatformModule
     {
     public:
-        DXLibModule(const Char* in_szName) : PlatformModule(in_szName) {}
+        DXLibModule();
 
         const bool CreateMainWindow() override final;
         const bool ReleaseAllWindows() override final;
@@ -45,15 +49,15 @@ namespace DXLib
         /// モジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool Start() override final;
+        const Bool _Start() override final;
 
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool Release() override final;
+        virtual const Bool _Release() override final;
 
         const bool BeforUpdate(const Float32 in_fDeltaTime) override final;
-        const bool Update(const Float32 in_fDeltaTime) override final;
+        const bool _Update(const Float32 in_fDeltaTime) override final;
         const bool AfterUpdate(const Float32 in_fDeltaTime) override final;
 
         // 描画
@@ -67,6 +71,3 @@ namespace DXLib
         FileSystem _file;
     };
 }  // namespace DXLib
-
-// DXLibを実行プラットフォームモジュールとして指定
-MODULE_GENRATE_DECLARATION(DXLib::DXLibModule, Platform);
