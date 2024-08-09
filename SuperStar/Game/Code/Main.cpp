@@ -13,6 +13,7 @@
 #include "LocalizationModule.h"
 #include "RenderModule.h"
 #include "UIModule.h"
+#include "EnhancedInputModule.h"
 
 #define MAX_LOADSTRING 100
 
@@ -94,6 +95,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
         MODULE_IMPORT(AssetManager::AssetManagerModule);
         MODULE_IMPORT(Level::LevelModule);
         MODULE_IMPORT(Localization::LocalizationModule);
+        MODULE_IMPORT(EnhancedInput::EnhancedInputModule);
     }
 
     const Bool bInitRet = HOBBY_ENGINE.Start();

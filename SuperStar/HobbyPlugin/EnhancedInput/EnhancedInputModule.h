@@ -18,6 +18,13 @@ namespace EnhancedInput
     public:
         EnhancedInputModule();
 
+        /// <summary>
+        /// モジュール更新の優先度
+        /// 入力を最優先にしている
+        /// </summary>
+        /// <returns></returns>
+        const Sint32 Prioryty() const override final { return -10; }
+
     protected:
         /// <summary>
         /// モジュール初期化
