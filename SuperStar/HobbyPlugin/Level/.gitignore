@@ -409,9 +409,3 @@ FodyWeavers.xsd
 *.db
 
 Log.txt
-
-# Project Only Setting
-HobbyPlugin/DxLib/ThirdParty/DxLib_VC/*
-!HobbyPlugin/DxLib/ThirdParty/DxLib_VC/lib/
-User/*
-

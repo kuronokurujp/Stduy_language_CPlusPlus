@@ -3,8 +3,6 @@
 #include "Engine/Common/CustomMap.h"
 #include "Engine/Memory/Memory.h"
 
-// MODULE_GENRATE_DEFINITION(UI::UIModule, UI);
-
 namespace UI
 {
 
