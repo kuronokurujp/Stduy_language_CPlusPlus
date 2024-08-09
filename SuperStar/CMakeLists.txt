@@ -21,6 +21,8 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/HobbyPlugin/Level/Config.cmake NO_POLICTY_SC
 include(${CMAKE_CURRENT_SOURCE_DIR}/HobbyPlugin/Localization/Config.cmake NO_POLICTY_SCOPE)
 # UIプラグイン
 include(${CMAKE_CURRENT_SOURCE_DIR}/HobbyPlugin/UI/Config.cmake NO_POLICTY_SCOPE)
+# EnhancedInputプラグイン
+include(${CMAKE_CURRENT_SOURCE_DIR}/HobbyPlugin/EnhancedInput/Config.cmake NO_POLICTY_SCOPE)
 
 option(
   CORE_CRL_MD
@@ -97,6 +99,7 @@ add_subdirectory(HobbyPlugin/AssetManager EXCLUDE_FROM_ALL)
 add_subdirectory(HobbyPlugin/Level EXCLUDE_FROM_ALL)
 add_subdirectory(HobbyPlugin/Localization EXCLUDE_FROM_ALL)
 add_subdirectory(HobbyPlugin/UI EXCLUDE_FROM_ALL)
+add_subdirectory(HobbyPlugin/EnhancedInput EXCLUDE_FROM_ALL)
 
 # テストプロジェクトを作る
 include(${CMAKE_CURRENT_SOURCE_DIR}/Test/Config.cmake NO_POLICTY_SCOPE)
@@ -112,6 +115,7 @@ set_target_properties(${APP_NAME} PROPERTIES
     ${CMAKE_CURRENT_SOURCE_DIR}/Bin/${WORKSPACE_NAME}/${CMAKE_CFG_INTDIR}
 )
 
+check_variable(ENHANCED_INPUT_PLUGIN_NAME)
 check_variable(UI_PLUGIN_NAME)
 check_variable(LOCALIZATION_PLUGIN_NAME)
 check_variable(LEVEL_PLUGIN_NAME)
@@ -123,6 +127,7 @@ check_variable(ENGINE_NAME)
 
 # ゲームアプリがリンクするライブラリ
 target_link_libraries(${APP_NAME}
+  ${ENHANCED_INPUT_PLUGIN_NAME}
   ${UI_PLUGIN_NAME}
   ${LOCALIZATION_PLUGIN_NAME}
   ${LEVEL_PLUGIN_NAME}
@@ -138,6 +143,7 @@ add_subdirectory(Test)
 
 # テストしたいライブラリを設定
 target_link_libraries(${TEST_APP_NAME}
+  ${ENHANCED_INPUT_PLUGIN_NAME}
   ${UI_PLUGIN_NAME}
   ${LOCALIZATION_PLUGIN_NAME}
   ${LEVEL_PLUGIN_NAME}
@@ -147,4 +153,3 @@ target_link_libraries(${TEST_APP_NAME}
   ${DXLIB_PLUGIN_NAME}
   ${ENGINE_NAME}
 )
-
