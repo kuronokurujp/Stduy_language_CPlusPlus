@@ -27,6 +27,12 @@ namespace DXLib
         const bool ReleaseAllWindows() override final;
 
         /// <summary>
+        /// やめる状態になっているか
+        /// </summary>
+        /// <returns></returns>
+        const Bool IsQuit() override final { return this->_bQuit; }
+
+        /// <summary>
         /// 時間システム
         /// </summary>
         /// <returns></returns>
@@ -56,18 +62,16 @@ namespace DXLib
         /// </summary>
         virtual const Bool _Release() override final;
 
-        const bool BeforUpdate(const Float32 in_fDeltaTime) override final;
+        const bool _BeforeUpdate(const Float32 in_fDeltaTime) override final;
         const bool _Update(const Float32 in_fDeltaTime) override final;
-        const bool AfterUpdate(const Float32 in_fDeltaTime) override final;
-
-        // 描画
-        void BeginRender() override final;
-        void Redner() override final;
-        void EndRender() override final;
+        const bool _LateUpdate(const Float32 in_fDeltaTime) override final;
 
     private:
         TimeSystem _time;
         InputSystem _input;
         FileSystem _file;
+
+        Bool _bQuit = FALSE;
     };
+
 }  // namespace DXLib

@@ -28,6 +28,13 @@ namespace Actor
         this->_Clear();
     }
 
+    const Bool Component::End()
+    {
+        this->_Clear();
+
+        return TRUE;
+    }
+
     void Component::TransformLocalToWorldPos2D(Core::Math::Vector2* out,
                                                const Core::Math::Vector2& in_rOffsetPos)
     {

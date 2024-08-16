@@ -32,32 +32,27 @@ namespace UI
         /// コンポーネントの更新
         /// 必ず処理を記述
         /// </summary>
-        /// <param name="in_deltaTime">The in delta time.</param>
-        void Update(const Float32 in_fDeltaTime) final override;
+        void Update(const Float32 in_fDeltaTime) override;
 
         /// <summary>
         /// テキスト設定
         /// </summary>
-        /// <param name="in_pText"></param>
         inline void SetText(const Char* in_szText) { this->_szText = in_szText; }
 
         /// <summary>
         /// ローカライズグループ名
         /// </summary>
-        /// <param name="in_pName"></param>
         inline void SetLocGroupName(const Char* in_szName) { this->_szLocGroup = in_szName; }
 
         /// <summary>
         /// テキストの描画矩形を設定
         /// </summary>
-        /// <param name="in_rect"></param>
         inline void SetRect(const Core::Math::Rect2& in_rRect) { this->_rect = in_rRect; }
 
         /// <summary>
         /// ローカライズグループ名を設定
         /// 文字列がある == ローカライズテキスト
         /// </summary>
-        /// <param name="in_pGroupName"></param>
         inline void SetLogGroup(const Char* in_szGroupName) { this->_szLocGroup = in_szGroupName; }
 
         inline void SetAnchor(const Core::Math::Rect2::EAnchor in_eAnchor)

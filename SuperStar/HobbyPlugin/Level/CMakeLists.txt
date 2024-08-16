@@ -16,4 +16,5 @@ target_include_directories(${LEVEL_PLUGIN_NAME}
         # プラグインに依存しているプラグインコード
         # ライブラリのリンクはcmakeで指定したCMakeLists.txtでやっている
         ${CMAKE_CURRENT_SOURCE_DIR}/../Actor/
+        ${CMAKE_CURRENT_SOURCE_DIR}/../EnhancedInput/
 )

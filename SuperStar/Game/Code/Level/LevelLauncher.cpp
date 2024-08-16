@@ -8,7 +8,7 @@
 #include "LevelLauncher.h"
 #include "LevelTitle.h"
 
-// UIモジュール
+// モジュール
 #include "UIModule.h"
 
 // デバッグ画面を表示してレベルを切り替える
@@ -41,8 +41,7 @@ namespace Level
 
         // UIのBuilderファイルからレイアウト作成
 
-        auto pUIModule = Module::ModuleManager::I().Get<UI::UIModule>();
-        // this->_layoutAssetHandle = ModuleUI()->LoadAssetWithLayoutBuild(
+        auto pUIModule           = Module::ModuleManager::I().Get<UI::UIModule>();
         this->_layoutAssetHandle = pUIModule->LoadAssetWithLayoutBuild(
             Core::File::Path(HE_STR_TEXT("UI"), HE_STR_TEXT("Builder"), HE_STR_TEXT("Debug"),
                              HE_STR_TEXT("Launcher.xml")));

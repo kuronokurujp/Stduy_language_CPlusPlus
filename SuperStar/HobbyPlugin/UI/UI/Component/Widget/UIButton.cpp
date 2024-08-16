@@ -43,20 +43,16 @@ namespace UI
         Render::Cmd2DRect(rect, {this->_color});
     }
 
-    void UIButtonComponent::OnTouch(const Platform::TouchInput& in_rTouch)
+    void UIButtonComponent::OnTouch(const EnhancedInput::InputData::Item::Touch& in_rTouch)
     {
-        if (in_rTouch.GetTouchState(Platform::EInputMouseType_All) ==
-            Platform::EInputState::EInputState_PRESSED)
-        {
-            Core::Math::Rect2 rect;
-            Core::Math::Rect2 orgRect(0.0f, 0.0f, this->_fWidth, this->_fHeight, this->_eAnchor);
-            this->TransformLocalToWorldRect2D(&rect, orgRect);
+        Core::Math::Rect2 rect;
+        Core::Math::Rect2 orgRect(0.0f, 0.0f, this->_fWidth, this->_fHeight, this->_eAnchor);
+        this->TransformLocalToWorldRect2D(&rect, orgRect);
 
-            // ボタンにタッチしたらコールバックを呼ぶ
-            if (in_rTouch.IsTouchInRect(rect))
-            {
-                this->_pushHandler->OnPush();
-            }
+        if (rect.InSidePoint(Core::Math::Vector2(in_rTouch.fX, in_rTouch.fY)))
+        {
+            this->_pushHandler->OnPush();
         }
     }
+
 }  // namespace UI

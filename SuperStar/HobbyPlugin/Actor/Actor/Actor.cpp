@@ -53,21 +53,6 @@ namespace Actor
 
         switch (in_rData.uId)
         {
-            // 入力処理
-            case Object::ETaskUpdateId_Input:
-            {
-                HE_ASSERT(in_rData.pData != NULL);
-                {
-                    Platform::InputSystemInterface* pInput =
-                        reinterpret_cast<Platform::InputSystemInterface*>(in_rData.pData);
-                    HE_ASSERT(pInput != NULL);
-
-                    // 入力送信する
-                    this->_ProcessInput(in_fDt, pInput);
-                }
-
-                break;
-            }
             // オブジェクト更新
             case Object::ETaskUpdateId_Object:
             {
@@ -87,39 +72,10 @@ namespace Actor
                 // Actor内で更新した座標を含めて更新
                 this->_ComputeWorldTransform();
 
-                /*
-                                // 存在しない親アクターがあるかチェックして整理
-                                if (this->_parentActorHandle.Null() == FALSE)
-                                {
-                                    Object* pParentActor =
-                   this->_pDataAccess->Get(this->_parentActorHandle); if (pParentActor == NULL)
-                   this->_parentActorHandle.Clear();
-                                }
-                                */
-
                 break;
             }
         }
     }
-
-    /*
-        /// <summary>
-        /// 親アクターを設定
-        /// </summary>
-        /// <param name="in_rHandle"></param>
-        /// <param name="in_uDepth"></param>
-        /// <returns></returns>
-        const Bool Object::SetParentActor(const Core::Common::Handle& in_rHandle,
-                                          const Uint32 in_uDepth)
-        {
-            HE_ASSERT(in_rHandle.Null() == FALSE);
-
-            //this->_parentActorHandle = in_rHandle;
-            this->_uDepth            = in_uDepth + 1;
-
-            return TRUE;
-        }
-        */
 
     /// <summary>
     /// くっつている全てのコンポーネント削除.
@@ -132,10 +88,13 @@ namespace Actor
     /// <summary>
     /// Removes the component.
     /// </summary>
-    const Bool Object::RemoveComponent(Core::Common::Handle& in_rHandle)
+    const Bool Object::RemoveComponent(Core::Common::Handle* in_pHandle)
     {
-        HE_ASSERT(in_rHandle.Null() == FALSE);
-        this->_components.RemoveTask(in_rHandle);
+        HE_ASSERT(in_pHandle);
+        HE_ASSERT(in_pHandle->Null() == FALSE);
+
+        this->_components.RemoveTask(in_pHandle);
+
         return TRUE;
     }
 #if 0

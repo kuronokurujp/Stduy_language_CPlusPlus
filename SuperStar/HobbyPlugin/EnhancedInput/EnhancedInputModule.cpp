@@ -3,11 +3,30 @@
 #include "Engine/Common/CustomMap.h"
 #include "Engine/Memory/Memory.h"
 
+// 依存モジュール
+#include "Engine/Platform/PlatformModule.h"
+
 namespace EnhancedInput
 {
 
     EnhancedInputModule::EnhancedInputModule() : ModuleBase(ModuleName())
     {
+        // 依存しているモジュールを設定
+        // モジュールの依存設定していないと依存したモジュールが使えない
+        this->_AppendDependenceModule<Platform::PlatformModule>();
+    }
+
+    void EnhancedInputModule::SetCommonMappingAction(const ActionMap& in_mrAction)
+    {
+        this->_mMappingAction = in_mrAction;
+    }
+
+    void EnhancedInputModule::AddCommonMappingAction(const ActionMap& in_mrAction)
+    {
+        for (auto it = in_mrAction.Begin(); it != in_mrAction.End(); ++it)
+        {
+            this->_mMappingAction.Add(it->key, it->data);
+        }
     }
 
     /// <summary>
@@ -23,4 +42,64 @@ namespace EnhancedInput
     {
         return TRUE;
     }
+
+    const Bool EnhancedInputModule::_BeforeUpdate(const Float32 in_fDeltaTime)
+    {
+        this->_mInputAction.Clear();
+        return TRUE;
+    }
+
+    const Bool EnhancedInputModule::_Update(const Float32 in_fDeltaTime)
+    {
+        auto pPlatformModule = this->GetDependenceModule<Platform::PlatformModule>();
+        HE_ASSERT(pPlatformModule);
+
+        auto pInput = pPlatformModule->Input();
+        HE_ASSERT(pInput);
+
+        // 入力処理をする
+        if (this->_mMappingAction.Empty()) return TRUE;
+
+        auto& inputState = pInput->GetState();
+
+        // 登録した入力アクションが発生しているかチェック
+        for (auto it = this->_mMappingAction.Begin(); it != this->_mMappingAction.End(); ++it)
+        {
+            // 発生している場合は発生リストに登録
+            for (Uint32 i = 0; i < it->data.aKeyboardKeys.Size(); ++i)
+            {
+                const auto eKey = it->data.aKeyboardKeys[i];
+                if (inputState._keyboard.GetKeyState(eKey))
+                {
+                    InputData inputData;
+                    inputData.eType              = eInputType_Keyboard;
+                    inputData.item.keyboard.eKey = eKey;
+
+                    this->_mInputAction[it->key].PushBack(inputData);
+                }
+            }
+
+            for (Uint32 i = 0; i < it->data.aTouchs.Size(); ++i)
+            {
+                const auto eTouch      = it->data.aTouchs[i];
+                const auto eTouchState = inputState._touch.GetTouchState(it->data.aTouchs[i]);
+                if (eTouchState == Platform::EInputState::EInputState_PRESSED)
+                {
+                    const auto pos = inputState._touch.GetWorldPos();
+
+                    InputData inputData;
+                    inputData.eType            = eInputType_Touch;
+                    inputData.item.touch.fX    = pos._fX;
+                    inputData.item.touch.fY    = pos._fY;
+                    inputData.item.touch.eType = eTouch;
+
+                    auto& r = this->_mInputAction[it->key];
+                    r.PushBack(inputData);
+                }
+            }
+        }
+
+        return TRUE;
+    }
+
 }  // namespace EnhancedInput

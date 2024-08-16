@@ -11,7 +11,7 @@ namespace Core::Common
     class RTTI
     {
         HE_CLASS_DEFAULT_CONSTRUCT_NG(RTTI);
-        HE_CLASS_COPY_CONSTRUCT_NG(RTTI);
+        HE_CLASS_COPY_NG(RTTI);
 
     public:
         RTTI(const Char* in_szClass) : _szClass(in_szClass), _pBaseRTTI(NULL)

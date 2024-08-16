@@ -20,8 +20,8 @@ namespace Core::Common
     template <class TYPE>
     class ArrayBase
     {
-        HE_CLASS_COPY_CONSTRUCT_NG(ArrayBase);
-        HE_CLASS_MOVE_CONSTRUCT_NG(ArrayBase);
+        HE_CLASS_COPY_NG(ArrayBase);
+        HE_CLASS_MOVE_NG(ArrayBase);
 
     public:
         ArrayBase(TYPE* in_pArrayAddr, Uint32 in_uSize)
@@ -48,7 +48,7 @@ namespace Core::Common
 
         void DeepCopy(const ArrayBase& in_arArray)
         {
-            const Uint32 uMinCapacity = HE_MIN(this->_uCapacity, in_arArray_uCapacity);
+            const Uint32 uMinCapacity = HE_MIN(this->_uCapacity, in_arArray._uCapacity);
             std::copy(this->_pBuff, this->_pBuff + uMinCapacity, this->_pBuff);
         }
 
@@ -73,13 +73,15 @@ namespace Core::Common
     public:
         CustomArray() : ArrayBase<TYPE>(this->_aBuff, CAPACITY) {}
         // コンストラクタ (initializer_listを受け取る)
-        CustomArray(std::initializer_list<TYPE> in_initList)
-            : : ArrayBase<TYPE>(this->_aBuff, CAPACITY)
+        CustomArray(const std::initializer_list<TYPE>& in_rInitList)
+            : ArrayBase<TYPE>(this->_aBuff, CAPACITY)
         {
-            const Uint32 uMinCapacity = HE_MIN(this->_uCapacity, in_initList.size());
+            const Uint32 uMinCapacity = HE_MIN(CAPACITY, in_rInitList.size());
+
+            auto it = in_rInitList.begin();
             for (Uint32 i = 0; i < uMinCapacity; ++i)
             {
-                this->_aBuff[i] = in_initList[i];
+                this->_aBuff[i] = *it;
             }
         }
 

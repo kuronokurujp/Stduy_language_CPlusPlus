@@ -28,7 +28,7 @@ namespace Core
         // タスクマネージャには非公開メンバを操作させる
         friend class TaskManager;
 
-        HE_CLASS_COPY_CONSTRUCT_NG(Task);
+        HE_CLASS_COPY_NG(Task);
 
     public:
         // 子タスクのリストノード
@@ -117,7 +117,7 @@ namespace Core
         /// </summary>
         /// <param name="in_rHandle"></param>
         const Core::Common::CustomList<ChildTaskNode>::Iterator RemoveChildTask(
-            const Core::Common::Handle&);
+            Core::Common::Handle*);
 
     private:
         void _Clear()

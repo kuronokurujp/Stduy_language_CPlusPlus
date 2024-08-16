@@ -1,12 +1,11 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "ActorModule.h"
 #include "Engine/Common/CustomArray.h"
 #include "Engine/MiniEngine.h"
 #include "Engine/Task/Task.h"
 #include "Engine/Task/TaskManager.h"
+#include "EnhancedInputModule.h"
 
 // 前方宣言
 namespace Platform
@@ -26,7 +25,29 @@ namespace Level
     /// </summary>
     class Node : public Actor::Object
     {
-        HE_CLASS_COPY_CONSTRUCT_NG(Node);
+        HE_CLASS_COPY_NG(Node);
+
+    private:
+        /// <summary>
+        /// レベルノードに管理する専用アクター管理クラス
+        /// </summary>
+        class CustomActorManager final : public Actor::ActorManager
+        {
+        public:
+            /// <summary>
+            /// 管理下にあるアクターに入力状態を送信
+            /// </summary>
+            void ProcessInput(const Float32 in_fDt, const EnhancedInput::InputMap*);
+
+            /// <summary>
+            /// 入力コンポーネントの登録・解除
+            /// </summary>
+            void RegistInputComponent(Actor::InputComponent&) override final;
+            void UnRegistInputComponent(Actor::InputComponent&) override final;
+
+        private:
+            Core::Common::CustomList<Actor::InputComponent> _lstInputComponent;
+        };
 
     public:
         enum ETaskUpdateId
@@ -40,32 +61,25 @@ namespace Level
         Node() : Actor::Object() {}
 
         /// <summary>
-        /// タスク利用した設定をした最初に実行
-        /// 登録に必要な情報を設定
-        /// </summary>
-        /// <param name="bAutoDelete">TRUEだとタスク破棄と同時にタ
-        virtual void Setup(const Bool in_bReleaseMem) override;
-
-        /// <summary>
         /// タスク開始
         /// 継承先は必ず基底クラスのメソッドを最初に呼び出す
         /// 呼ばないとエラーになるので注意
         /// </summary>
-        virtual const Bool Begin() override;
+        const Bool Begin() override;
 
         /// <summary>
         /// タスク終了
         /// 継承先は必ず基底クラスのメソッドを最初に呼び出す
         /// 呼ばないとエラーになるので注意
         /// </summary>
-        virtual const Bool End() override;
+        const Bool End() override;
 
         /// <summary>
         /// 更新用で継承先が実装しないとだめ
         /// 継承先は必ず基底クラスのメソッドを最初に呼び出す
         /// 呼ばないとエラーになるので注意
         /// </summary>
-        virtual void Update(const Float32 in_fDt, const Core::TaskData&) override;
+        void Update(const Float32 in_fDt, const Core::TaskData&) override;
 
         /// <summary>
         /// レベルにアクターを追加
@@ -82,8 +96,8 @@ namespace Level
             return handle;
         }
 
-        // TODO: レベルに追加されたアクターを削除
-        void RemoveActor(const Core::Common::Handle&);
+        // レベルに追加されたアクターを削除
+        void RemoveActor(Core::Common::Handle*);
 
         /// <summary>
         /// レベルのアクターを取得
@@ -102,7 +116,7 @@ namespace Level
         /// <summary>
         /// レベルに紐づけるアクター管理
         /// </summary>
-        std::shared_ptr<Actor::ActorManager> _pActorManager;
+        std::shared_ptr<CustomActorManager> _pActorManager;
     };
 
     /// <summary>
@@ -111,7 +125,7 @@ namespace Level
     /// </summary>
     class Manager
     {
-        HE_CLASS_COPY_CONSTRUCT_NG(Manager);
+        HE_CLASS_COPY_NG(Manager);
 
     public:
         Manager() {}
@@ -129,15 +143,16 @@ namespace Level
         /// <returns></returns>
         const Bool End();
 
+        void ProcessInput(const Float32 in_fDt, const EnhancedInput::InputMap&);
+
         /// <summary>
         /// 更新
         /// </summary>
-        void Update(const Float32 in_fDt, Platform::InputSystemInterface* in_pInput);
+        void Update(const Float32 in_fDt);
 
         /// <summary>
         /// 起動するレベルを設定
         /// </summary>
-        /// <param name="in_pNode"></param>
         template <class T>
         const Bool StartLevel()
         {

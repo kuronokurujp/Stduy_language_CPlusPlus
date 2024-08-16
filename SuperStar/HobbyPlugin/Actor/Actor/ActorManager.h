@@ -2,6 +2,7 @@
 
 #include "Actor.h"
 #include "ActorInterface.h"
+#include "Component/InputComponent.h"
 #include "Engine/Common/CustomMap.h"
 #include "Engine/Common/Handle.h"
 #include "Engine/MiniEngine.h"
@@ -19,7 +20,7 @@ namespace Actor
     /// アクターの管理
     /// アクター登録 / 削除 / 更新などアクター個々の挙動を制御
     /// </summary>
-    class ActorManager final : public ActorManagerPubliclnterface
+    class ActorManager : public ActorManagerPubliclnterface
     {
     private:
         /// <summary>
@@ -29,6 +30,15 @@ namespace Actor
         {
             Core::Common::Handle handle;
             Sint32 sMoveGroupId;
+        };
+
+        class InputCompontContent : public Core::Common::LinkedListNode<InputCompontContent>
+        {
+        public:
+            InputCompontContent(InputComponent* in_pCompoent) { this->_pComponent = in_pCompoent; }
+
+        private:
+            InputComponent* _pComponent = NULL;
         };
 
     public:
@@ -73,7 +83,7 @@ namespace Actor
 
             Object* pObject = this->_taskManager.GetTask<Object>(handle);
             HE_ASSERT(pObject != NULL);
-            pObject->SetManager(this);
+            pObject->SetManagerAccessor(this);
 
             return handle;
         }
@@ -84,7 +94,7 @@ namespace Actor
         /// <param name="in_pActor">The in p actor.</param>
         /// <returns></returns>
         // void RemoveActor(Actor *in_pActor);
-        void Remove(const Core::Common::Handle&) override final;
+        void Remove(Core::Common::Handle*) override final;
 
         /// <summary>
         /// アクター取得
@@ -101,9 +111,10 @@ namespace Actor
         const Bool IsActor(const Core::Common::Handle&) override final;
 
         /// <summary>
-        /// アクターに入力状態を送信
+        /// 入力コンポーネントの登録・解除
         /// </summary>
-        void ProcessInput(const Float32 in_fDt, Platform::InputSystemInterface* in_pInput);
+        void RegistInputComponent(InputComponent&) override { HE_ASSERT(FALSE); }
+        void UnRegistInputComponent(InputComponent&) override { HE_ASSERT(FALSE); }
 
         /// <summary>
         /// アクター更新

@@ -3,6 +3,7 @@
 #include "ActorModule.h"
 #include "Engine/Math/Math.h"
 #include "Engine/Platform/PlatformInput.h"
+#include "EnhancedInputModule.h"
 
 namespace UI
 {
@@ -12,7 +13,7 @@ namespace UI
     /// </summary>
     class UIWidgetComponent : public Actor::Component
     {
-        HE_CLASS_COPY_CONSTRUCT_NG(UIWidgetComponent);
+        HE_CLASS_COPY_NG(UIWidgetComponent);
         GENERATED_CLASS_BODY_HEADER(UIWidgetComponent, Actor::Component);
 
     public:
@@ -25,8 +26,8 @@ namespace UI
         /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
         virtual void Setup(const Bool in_bReleaseMem = TRUE) override;
 
-        virtual void OnTouch(const Platform::TouchInput& in_rTouch) {}
-        virtual void OnKey(const Platform::KeyboardInput& in_rKeyboard) {}
+        virtual void OnTouch(const EnhancedInput::InputData::Item::Touch& in_rTouch) {}
+        virtual void OnKey(const EnhancedInput::InputData::Item::Key& in_rKeyboard) {}
 
         void SetColor(const Uint32 in_color) { this->_color = in_color; }
 

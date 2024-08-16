@@ -9,6 +9,7 @@
 #include "Actor/ActorInterface.h"
 #include "Actor/ActorManager.h"
 #include "Actor/Component/Component.h"
+#include "Actor/Component/InputComponent.h"
 
 namespace Actor
 {
@@ -27,7 +28,7 @@ namespace Actor
         /// モジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool _Start() final override;
+        const Bool _Start() override final;
 
         /// <summary>
         /// インスタンス破棄時に呼ばれる

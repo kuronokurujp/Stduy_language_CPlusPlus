@@ -16,6 +16,8 @@ namespace Core::Common
         {
         }
 
+        virtual ~StackBase() { this->Clear(); }
+
         inline const Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
         inline const Uint32 Size() const HE_NOEXCEPT { return this->_uNum; }
         inline const Bool Empty() const HE_NOEXCEPT { return (this->_uNum <= 0); }
@@ -57,4 +59,17 @@ namespace Core::Common
     private:
         TYPE _taBuff[CAPACITY];
     };
+
+    // テンプレートクラス CustomFixVector の部分的な型特性
+    template <typename T>
+    struct IsCustomFixStack : std::false_type
+    {
+    };
+
+    // CustomFixVector のインスタンスに対する特殊化
+    template <typename TYPE, Uint32 CAPACITY>
+    struct IsCustomFixStack<CustomFixStack<TYPE, CAPACITY>> : std::true_type
+    {
+    };
+
 }  // namespace Core::Common

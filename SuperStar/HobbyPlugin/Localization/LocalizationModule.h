@@ -104,13 +104,13 @@ namespace Localization
         /// モジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool _Start() final override;
+        const Bool _Start() override final;
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
         virtual const Bool _Release() override final;
 
-        const Bool _Update(const Float32 in_fDeltaTime) final override;
+        const Bool _Update(const Float32 in_fDeltaTime) override final;
 
     private:
 #define LOCATE_TEXT_MAP \

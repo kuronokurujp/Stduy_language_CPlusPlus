@@ -437,12 +437,12 @@ namespace Core
         // タスクの利用数が意図通りか
         CHECK(manager.UseCount() == 3);
 
-        manager.RemoveTask(h1);
+        manager.RemoveTask(&h1);
         CHECK(manager.UseCount() == 2);
         CHECK(manager.GetTask(h1) == NULL);
         CHECK(manager.CacheCount() == 0);
 
-        manager.RemoveTask(h3);
+        manager.RemoveTask(&h3);
         CHECK(manager.CacheCount() == 1);
         CHECK(manager.UseCount() == 1);
 
@@ -550,7 +550,7 @@ namespace Core
         HE_LOG(HE_STR_TEXT(" (%d / %d)\n"), manager.UseCount(), manager.Max());
 
         // 親タスクが外したのだから子タスクも同時に外れているはず
-        manager.RemoveTask(h1);
+        manager.RemoveTask(&h1);
         CHECK(manager.UseCount() == 1);
         CHECK(manager.GetTask(h1) == NULL);
         CHECK(manager.GetTask(h2) == NULL);

@@ -9,8 +9,6 @@
 // プラットフォームモジュールを使う
 // 主にインプット入力の取得など
 #include "ActorModule.h"
-#include "Engine/Platform/PlatformModule.h"
-#include "LevelModule.h"
 #include "LocalizationModule.h"
 #include "RenderModule.h"
 
@@ -81,7 +79,7 @@ namespace UI
                                              const Core::Math::Rect2& in_rBtnRect,
                                              const Uint32 in_uBtnColor);
 
-        // TODO: UIのWidgetを作成する
+        // UIのWidgetを作成する
         // TODO: 描画ソート機能は未実装
         Core::Common::Handle NewWidget(const Core::Common::StringBase& in_szName,
                                        const Uint32 in_uSort);
@@ -95,24 +93,19 @@ namespace UI
         Core::Common::Handle AddComponent(Core::Common::Handle& in_rWidget,
                                           const Sint32 in_iUpdateOrder)
         {
-            auto pLevelModule = this->GetDependenceModule<Level::LevelModule>();
-            HE_ASSERT(pLevelModule);
-
-            Actor::Object* pActor = NULL;
-            // pActor                =  LEVEL_MODULE_CURRENT_LEVEL->GetActor(in_rWidget);
-            pActor = pLevelModule->GetCurrneLevel().GetActor(in_rWidget);
-            HE_ASSERT(pActor);
-
+            auto pActor = this->GetWidget(in_rWidget);
             // アクターにコンポーネント追加
             return pActor->AddComponent<T>(in_iUpdateOrder);
         }
+
+        Widget* GetWidget(const Core::Common::Handle&);
 
     protected:
         /// <summary>
         /// UIのモジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool _Start() final override;
+        const Bool _Start() override final;
 
         /// <summary>
         /// インスタンス破棄時に呼ばれる

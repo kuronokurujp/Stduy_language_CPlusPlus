@@ -25,9 +25,6 @@ namespace UI
         /// </summary>
         virtual const Bool End() override;
 
-    protected:
-        virtual void _ProcessInput(const Float32, Platform::InputSystemInterface*) final override;
-
     private:
         Core::Common::Handle _inputHandle;
     };

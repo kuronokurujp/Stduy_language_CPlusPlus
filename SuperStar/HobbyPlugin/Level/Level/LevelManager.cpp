@@ -23,17 +23,19 @@ namespace Level
         return TRUE;
     }
 
-    void Manager::Update(const Float32 in_fDt, Platform::InputSystemInterface* in_pInput)
+    void Manager::ProcessInput(const Float32 in_fDt, const EnhancedInput::InputMap& in_rInputMap)
     {
-        HE_ASSERT(in_pInput != NULL);
-
         // 入力更新
         {
-            Core::TaskData taskData{Node::ETaskUpdateId_Input, reinterpret_cast<void*>(in_pInput)};
+            EnhancedInput::InputMap& rInputMap = const_cast<EnhancedInput::InputMap&>(in_rInputMap);
+            Core::TaskData taskData{Node::ETaskUpdateId_Input, reinterpret_cast<void*>(&rInputMap)};
 
             this->_nodeManager.Update(in_fDt, taskData);
         }
+    }
 
+    void Manager::Update(const Float32 in_fDt)
+    {
         // アクター更新
         // コンポーネントの更新もやっている
         {
@@ -48,7 +50,7 @@ namespace Level
         this->_nodeManager.UpdatePending();
         if (this->_prevLevel.Null() == FALSE)
         {
-            this->_nodeManager.Remove(this->_prevLevel);
+            this->_nodeManager.Remove(&this->_prevLevel);
         }
     }
 
@@ -66,14 +68,9 @@ namespace Level
     // ここから先は
     // レベルノードの実装
 
-    void Node::Setup(const Bool in_bAutoDelete)
-    {
-        Task::Setup(in_bAutoDelete);
-    }
-
     const Bool Node::Begin()
     {
-        this->_pActorManager = Core::Memory::MakeCustomSharedPtr<Actor::ActorManager>();
+        this->_pActorManager = Core::Memory::MakeCustomSharedPtr<CustomActorManager>();
         if (this->_pActorManager->Start(256, 2) == FALSE)
         {
             HE_ASSERT(FALSE && "レベルノードのアクター管理の初期化が失敗");
@@ -99,14 +96,13 @@ namespace Level
     {
         switch (in_rData.uId)
         {
-            // TODO: 入力送信
+            // 入力送信
             case Node::ETaskUpdateId_Input:
             {
-                Platform::InputSystemInterface* pInput =
-                    reinterpret_cast<Platform::InputSystemInterface*>(in_rData.pData);
-                HE_ASSERT(pInput != NULL);
+                HE_ASSERT(in_rData.pData);
+                const auto pInputMap = reinterpret_cast<EnhancedInput::InputMap*>(in_rData.pData);
 
-                this->_pActorManager->ProcessInput(in_fDt, pInput);
+                this->_pActorManager->ProcessInput(in_fDt, pInputMap);
 
                 break;
             }
@@ -138,11 +134,12 @@ namespace Level
     }
 
     // TODO: レベルに追加されたアクターを削除
-    void Node::RemoveActor(const Core::Common::Handle& in_rActor)
+    void Node::RemoveActor(Core::Common::Handle* in_pActor)
     {
-        if (in_rActor.Null()) return;
+        HE_ASSERT(in_pActor);
+        if (in_pActor->Null()) return;
 
-        this->_pActorManager->Remove(in_rActor);
+        this->_pActorManager->Remove(in_pActor);
     }
 
     Actor::Object* Node::GetActor(const Core::Common::Handle& in_rActor)
@@ -160,6 +157,29 @@ namespace Level
         Actor::Object* pParentActor = this->GetActor(in_rParentActor);
         // 子アクターに親アクターを設定する
         return pParentActor->AddChildTask(in_rChildActor);
+    }
+
+    void Node::CustomActorManager::ProcessInput(const Float32 in_fDt,
+                                                const EnhancedInput::InputMap* in_pInputMap)
+    {
+        HE_ASSERT(in_pInputMap);
+
+        const void* pInputMap = reinterpret_cast<const void*>(in_pInputMap);
+        for (auto it = this->_lstInputComponent.BeginItr(); it != this->_lstInputComponent.EndItr();
+             ++it)
+        {
+            it->ProcessInput(pInputMap);
+        }
+    }
+
+    void Node::CustomActorManager::RegistInputComponent(Actor::InputComponent& in_rInputComponent)
+    {
+        this->_lstInputComponent.PushBack(in_rInputComponent);
+    }
+
+    void Node::CustomActorManager::UnRegistInputComponent(Actor::InputComponent& in_rInputComponent)
+    {
+        this->_lstInputComponent.Erase(&in_rInputComponent);
     }
 
 }  // namespace Level

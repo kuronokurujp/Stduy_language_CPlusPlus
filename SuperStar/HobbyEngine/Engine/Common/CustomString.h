@@ -19,12 +19,11 @@ namespace Core::Common
     class StringBase
     {
         HE_CLASS_DEFAULT_CONSTRUCT_NG(StringBase);
-        HE_CLASS_MOVE_CONSTRUCT_NG(StringBase);
+        HE_CLASS_MOVE_NG(StringBase);
 
     public:
         StringBase(Char* in_cpBuff, Uint32 in_uSize);
-
-        virtual ~StringBase() {}
+        virtual ~StringBase() { this->Clear(); }
 
         StringBase& Replace(const Char* in_szOld, const Char* in_szNew);
         StringBase& Insert(Uint32 in_uIndex, const Char* in_szInsert);
@@ -183,7 +182,7 @@ namespace Core::Common
     template <Uint32 CAPACITY>
     class FixString : public StringBase
     {
-        HE_CLASS_MOVE_CONSTRUCT_NG(FixString);
+        HE_CLASS_MOVE_NG(FixString);
 
     public:
         FixString() : StringBase(this->_caBuff, CAPACITY) {}
@@ -313,5 +312,17 @@ namespace Core::Common
             ++arrayIndex;
         }
     }
+
+    // テンプレートクラス CustomFixVector の部分的な型特性
+    template <typename T>
+    struct IsCustomFixString : std::false_type
+    {
+    };
+
+    // CustomFixVector のインスタンスに対する特殊化
+    template <Uint32 CAPACITY>
+    struct IsCustomFixString<FixString<CAPACITY>> : std::true_type
+    {
+    };
 
 }  // namespace Core::Common

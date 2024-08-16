@@ -9,11 +9,11 @@
 #include "ActorModule.h"
 #include "AssetManagerModule.h"
 #include "DXLibModule.h"
+#include "EnhancedInputModule.h"
 #include "LevelModule.h"
 #include "LocalizationModule.h"
 #include "RenderModule.h"
 #include "UIModule.h"
-#include "EnhancedInputModule.h"
 
 #define MAX_LOADSTRING 100
 
@@ -46,29 +46,36 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
     LoadStringW(hInstance, IDC_SUPERSTAR, szWindowClass, MAX_LOADSTRING);
 
     // アプリケーション初期化の実行:
-    if (!InitInstance(hInstance, nCmdShow)) return FALSE;
-
-    // エンジンに設定したアプリを開始
-    s_app.Start(HOBBY_ENGINE.IsDebugMode());
-
-    // ゲームループ
-    while (1)
+    if (InitInstance(hInstance, nCmdShow))
     {
-        if (HOBBY_ENGINE.BeforUpdateLoop() == FALSE) break;
+        // エンジンに設定したアプリを開始
+        s_app.Start(HOBBY_ENGINE.IsDebugMode());
 
-        if (HOBBY_ENGINE.WaitFrameLoop() == FALSE) break;
+        // ゲームループ
+        while (HOBBY_ENGINE.IsAppQuit() == FALSE)
+        {
+            // 前処理
+            {
+                const Float32 d = HOBBY_ENGINE.GetDeltaTimeSec();
+                if (HOBBY_ENGINE.BeforeUpdateLoop(d) == FALSE) break;
+            }
 
-        const Float32 d = HOBBY_ENGINE.GetDeltaTimeSec();
+            if (HOBBY_ENGINE.WaitFrameLoop() == FALSE) break;
 
-        // アプリメイン
-        if (s_app.Update(d) == FALSE) break;
+            {
+                const Float32 d = HOBBY_ENGINE.GetDeltaTimeSec();
 
-        if (HOBBY_ENGINE.MainUpdateLoop(d) == FALSE) break;
+                // アプリメイン
+                if (s_app.Update(d) == FALSE) break;
 
-        if (HOBBY_ENGINE.AfterUpdateLoop(d) == FALSE) break;
+                if (HOBBY_ENGINE.MainUpdateLoop(d) == FALSE) break;
+
+                if (HOBBY_ENGINE.LateUpdateLoop(d) == FALSE) break;
+            }
+        }
+
+        s_app.End();
     }
-
-    s_app.End();
 
     EndInstance(hInstance);
 
@@ -101,6 +108,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     const Bool bInitRet = HOBBY_ENGINE.Start();
     HE_ASSERT(bInitRet && "初期化に失敗");
 
+    // ゲームウィンドウを作成
+    if (HOBBY_ENGINE.CreateGameWindow() == FALSE) return FALSE;
+
     return TRUE;
 }
 
@@ -123,6 +133,20 @@ void EndInstance(HINSTANCE hInstance)
 const Bool AppEntryGameMain::Start(const Bool in_bDebug)
 {
     HE_LOG_LINE(HE_STR_TEXT("game start"));
+
+    // ユーザー共通入力割り当て設定
+    {
+        Core::Common::CustomFixVector<Platform::EKeyboard, 4> aKeys(
+            {Platform::EKeyboard::EKeyboard_A});
+        Core::Common::CustomFixVector<Platform::EInputMouseType, 4> aTouchs(
+            {Platform::EInputMouseType::EInputMouseType_Left});
+
+        EnhancedInput::ActionMap mInputAction;
+        mInputAction.Add(HE_STR_TEXT("UIButton"), EnhancedInput::ActionData(aKeys, aTouchs));
+
+        auto pInputModule = Module::ModuleManager::I().Get<EnhancedInput::EnhancedInputModule>();
+        pInputModule->SetCommonMappingAction(mInputAction);
+    }
 
     // TODO: ゲームのみで利用するライブラリを初期化
     //		LuaStateManager::Init();

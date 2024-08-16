@@ -18,4 +18,7 @@ set(ACTOR_PLUGIN_TARGET_FILES
     
     Actor/Component/Component.h
     Actor/Component/Component.cpp
+
+    Actor/Component/InputComponent.h
+    Actor/Component/InputComponent.cpp
 )

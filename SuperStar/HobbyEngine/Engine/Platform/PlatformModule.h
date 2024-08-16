@@ -40,10 +40,17 @@ namespace Platform
         HE_MODULE_GENRATE_DECLARATION(PlatformModule);
 
     public:
-        PlatformModule() : ModuleBase(ModuleName()) {}
+        // プラットフォームモジュールはOS固有なのでモジュールレイヤーはアプリに
+        PlatformModule() : ModuleBase(ModuleName(), Module::eLayer_App) {}
 
         virtual const Bool CreateMainWindow() { return FALSE; }
         virtual const Bool ReleaseAllWindows() { return FALSE; }
+
+        /// <summary>
+        /// やめる状態になっているか
+        /// </summary>
+        /// <returns></returns>
+        virtual const Bool IsQuit() = 0;
 
         /// <summary>
         /// 時間システム
@@ -68,23 +75,34 @@ namespace Platform
         /// モジュール開始
         /// </summary>
         /// <returns></returns>
-        virtual const Bool _Start() override { return FALSE; }
+        virtual const Bool _Start() override
+        {
+            HE_ASSERT(FALSE);
+            return FALSE;
+        }
 
         /// <summary>
-        /// このモジュールだけ更新前処理と後処理が必要なので用意している
-        /// エンジン側で呼び出している
+        /// モジュール前更新
         /// </summary>
-        /// <param name="in_deltaTime"></param>
+        /// <param name="in_fDeltaTime"></param>
         /// <returns></returns>
-        virtual const Bool BeforUpdate(const Float32 in_fDeltaTime) { return FALSE; }
-        virtual const Bool AfterUpdate(const Float32 in_fDeltaTime) { return FALSE; }
+        virtual const Bool _BeforeUpdate(const Float32 in_fDeltaTime) override
+        {
+            HE_ASSERT(FALSE);
+            return FALSE;
+        }
 
-        virtual const Bool _Update(const Float32 in_fDeltaTime) override { return FALSE; }
+        virtual const Bool _Update(const Float32 in_fDeltaTime) override
+        {
+            HE_ASSERT(FALSE);
+            return FALSE;
+        }
 
-        // 描画
-        virtual void BeginRender() = 0;
-        virtual void Redner()      = 0;
-        virtual void EndRender()   = 0;
+        virtual const Bool _LateUpdate(const Float32 in_fDeltaTime) override
+        {
+            HE_ASSERT(FALSE);
+            return FALSE;
+        }
 
     private:
         friend class ::Engine;

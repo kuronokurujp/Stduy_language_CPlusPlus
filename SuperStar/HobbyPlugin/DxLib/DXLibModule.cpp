@@ -47,6 +47,15 @@ namespace DXLib
             // 描画先を裏画面にセット
             SetDrawScreen(DX_SCREEN_BACK);
 
+            // 初期化と同時にウィンドウが表示するので非表示にする
+            // 表示はウィンドウ生成メソッドが呼ばれたら
+            // ウィンドウを非表示にするとアプリが非アクティブになってしまうので
+            // 一時的に非アクティブでも動作するようにします
+            SetAlwaysRunFlag(TRUE);
+
+            // ウィンドウを非表示にします
+            SetWindowVisibleFlag(FALSE);
+
             // DxLib初期化
             if (DxLib_Init() == -1)
             {
@@ -75,9 +84,16 @@ namespace DXLib
 
         return TRUE;
     }
+
     const Bool DXLibModule::CreateMainWindow()
     {
-        return FALSE;
+        // ウィンドウを表示する
+        SetWindowVisibleFlag(TRUE);
+
+        // 非アクティブでも実行する設定を解除します
+        SetAlwaysRunFlag(FALSE);
+
+        return TRUE;
     }
 
     const Bool DXLibModule::ReleaseAllWindows()
@@ -85,9 +101,8 @@ namespace DXLib
         return FALSE;
     }
 
-    const Bool DXLibModule::BeforUpdate(const Float32 in_fDeltaTime)
+    const Bool DXLibModule::_BeforeUpdate(const Float32 in_fDeltaTime)
     {
-        Bool bRet = TRUE;
         {
             // 入力更新
             this->_input.Update(in_fDeltaTime);
@@ -95,31 +110,20 @@ namespace DXLib
             // 0以外だと画面終了メッセージとみなしている
             if ((ProcessMessage() != 0))
             {
-                bRet = FALSE;
+                this->_bQuit = TRUE;
             }
         }
 
-        return bRet;
+        return (this->_bQuit == FALSE);
     }
 
     const Bool DXLibModule::_Update(const Float32 in_fDeltaTime)
     {
-        return TRUE;
-    }
+        if (this->_bQuit) return FALSE;
 
-    const Bool DXLibModule::AfterUpdate(const Float32 in_fDeltaTime)
-    {
-        return TRUE;
-    }
-
-    void DXLibModule::BeginRender()
-    {
         // 画面の描画クリア
         ClearDrawScreen();
-    }
 
-    void DXLibModule::Redner()
-    {
         auto pRenderModule = this->GetDependenceModule<Render::RenderModule>();
         HE_ASSERT(pRenderModule);
 
@@ -186,10 +190,13 @@ namespace DXLib
                     HE_ASSERT(0 && "存在しないコマンド");
             }
         }
+        return TRUE;
     }
 
-    void DXLibModule::EndRender()
+    const Bool DXLibModule::_LateUpdate(const Float32 in_fDeltaTime)
     {
+        if (this->_bQuit) return FALSE;
+
         auto pRenderModule = this->GetDependenceModule<Render::RenderModule>();
         HE_ASSERT(pRenderModule);
 
@@ -197,6 +204,8 @@ namespace DXLib
 
         // 画面の反映
         ScreenFlip();
+
+        return TRUE;
     }
 
 }  // namespace DXLib

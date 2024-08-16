@@ -41,7 +41,7 @@ namespace Render
         /// モジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool _Start() final override;
+        const Bool _Start() override final;
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>

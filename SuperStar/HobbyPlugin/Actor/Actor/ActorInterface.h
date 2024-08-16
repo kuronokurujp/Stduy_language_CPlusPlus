@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Actor/Component/InputComponent.h"
 #include "Engine/Common/Handle.h"
 #include "Engine/MiniEngine.h"
 
@@ -31,8 +32,12 @@ namespace Actor
         /// <summary>
         /// アクターを削除.
         /// </summary>
-        /// <param name="in_pActor">The in p actor.</param>
-        /// <returns></returns>
-        virtual void Remove(const Core::Common::Handle&) = 0;
+        virtual void Remove(Core::Common::Handle*) = 0;
+
+        /// <summary>
+        /// 入力コンポーネントの登録・解除
+        /// </summary>
+        virtual void RegistInputComponent(InputComponent& in_pInputComponent)   = 0;
+        virtual void UnRegistInputComponent(InputComponent& in_pInputComponent) = 0;
     };
 }  // namespace Actor

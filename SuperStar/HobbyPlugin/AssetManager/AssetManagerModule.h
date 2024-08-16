@@ -18,7 +18,7 @@ namespace AssetManager
     /// エンジンのアセット対応のモジュール
     /// </summary>
     class AssetManagerModule final : public Module::ModuleBase,
-                                     Core::Common::BasePoolManager<AssetDataBase>
+                                     Core::Common::RuntimePoolManager<AssetDataBase>
     {
         HE_MODULE_GENRATE_DECLARATION(AssetManagerModule);
 
@@ -73,7 +73,7 @@ namespace AssetManager
         /// モジュール開始
         /// </summary>
         /// <returns></returns>
-        const Bool _Start() final override;
+        const Bool _Start() override final;
 
         /// <summary>
         /// モジュール解放
@@ -81,7 +81,7 @@ namespace AssetManager
         /// </summary>
         virtual const Bool _Release() override final;
 
-        const Bool _Update(const Float32 in_fDeltaTime) final override;
+        const Bool _Update(const Float32 in_fDeltaTime) override final;
 
     private:
         const Bool _Load(AssetDataBase* out_pAssetData);

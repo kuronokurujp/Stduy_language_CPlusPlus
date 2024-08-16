@@ -6,6 +6,9 @@
 // アルゴリズムはLLRB(赤黒木)を使っている
 // キーの重複はだめ
 
+#include "Engine/Common/CustomStack.h"
+#include "Engine/Common/CustomString.h"
+#include "Engine/Common/CustomVector.h"
 #include "Engine/Common/PoolManager.h"
 #include "Engine/Macro.h"
 #include "Engine/Type.h"
@@ -23,7 +26,7 @@ namespace Core::Common
     template <typename KEY, typename DATA, Sint32 SIZE>
     class CustomFixMap
     {
-        HE_CLASS_MOVE_CONSTRUCT_NG(CustomFixMap);
+        HE_CLASS_MOVE_NG(CustomFixMap);
 
     public:
         // 前方宣言
@@ -116,11 +119,11 @@ namespace Core::Common
         }
 
         // コンストラクタ (initializer_listを受け取る)
-        CustomFixMap(std::initializer_list<std::pair<KEY, DATA>> in_initList)
+        CustomFixMap(const std::initializer_list<std::pair<KEY, DATA>>& in_rInitList)
             : _iteratorTail(&this->_tTail)
         {
             this->_Init();
-            for (const auto& item : in_initList)
+            for (const auto& item : in_rInitList)
             {
                 this->Add(item.first, item.second);
             }
@@ -169,7 +172,7 @@ namespace Core::Common
         /// <summary>
         /// キーからデータ検索
         /// </summary>
-        Iterator FindKey(const KEY& in_trKey)
+        Iterator FindKey(const KEY& in_trKey) const
         {
             // ツリーが空なら終端を返す
             if (this->Empty()) return this->End();
@@ -211,7 +214,7 @@ namespace Core::Common
         /// <summary>
         /// 指定キーの要素があるか
         /// </summary>
-        const Bool Contains(const KEY& in_rKey)
+        const Bool Contains(const KEY& in_rKey) const
         {
             // ツリーが空なのでキーの要素はない
             if (this->Empty()) return FALSE;
@@ -260,7 +263,7 @@ namespace Core::Common
         {
             // ルートから辿って破棄
             this->_Clear(this->_tpRoot);
-            this->_tpRoot = NULL;
+            this->_Init();
         }
 
         /// <summary>
@@ -311,6 +314,16 @@ namespace Core::Common
         /// <param name="pNode"></param>
         virtual void _DestoryNode(const Core::Common::Handle& in_rHandle)
         {
+            // DATA型で破棄する時にクラスのプロパティをクリアするためにデストラクタを呼ぶ
+            // 対象クラスは汎用データ構造を持つクラスに限定
+            if constexpr (IsCustomFixVector<DATA>::value || IsCustomFixStack<DATA>::value ||
+                          IsCustomFixString<DATA>::value)
+            {
+                // デストラクタを呼ぶ
+                Node* p = this->_poolObject._Ref(in_rHandle);
+                p->_pair.data.~DATA();
+            }
+
             this->_poolObject.Free(in_rHandle);
         }
 

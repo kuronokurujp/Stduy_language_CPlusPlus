@@ -20,21 +20,4 @@ namespace UI
         return TRUE;
     }
 
-    void Widget::_ProcessInput(const Float32 in_fDt, Platform::InputSystemInterface* in_pInput)
-    {
-        // 入力ルーターに入力情報を渡して子の入力端末の入力情報を更新
-        HE_ASSERT(in_pInput != NULL);
-        if (this->ValidComponent(this->_inputHandle))
-        {
-            UIInputRouterComponent* pInputRouter =
-                this->GetComponent<UIInputRouterComponent>(this->_inputHandle);
-
-            Core::Common::CustomFixStack<Actor::Component*, 64> sInputTerminalCom;
-
-            sInputTerminalCom.Clear();
-            this->OutputChildrenComponent(&sInputTerminalCom,
-                                          &UIInputIComponentInterface::CLASS_RTTI);
-            pInputRouter->ProcessInput(in_pInput, sInputTerminalCom);
-        }
-    }
 }  // namespace UI

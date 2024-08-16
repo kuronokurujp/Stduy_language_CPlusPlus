@@ -17,6 +17,6 @@ namespace UI
         /// コンポーネントの更新
         /// 必ず処理を記述
         /// </summary>
-        void Update(const Float32 in_fDeltaTime) final override;
+        void Update(const Float32 in_fDeltaTime) override;
     };
 }  // namespace UI

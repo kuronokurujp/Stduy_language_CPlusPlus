@@ -27,7 +27,7 @@ namespace Actor
     /// </summary>
     class Object : public Core::Task
     {
-        HE_CLASS_COPY_CONSTRUCT_NG(Object);
+        HE_CLASS_COPY_NG(Object);
 
     public:
         /// <summary>
@@ -55,11 +55,13 @@ namespace Actor
         /// 管理インスタンスを設定
         /// </summary>
         /// <param name="in_pDataAccess"></param>
-        void SetManager(ActorManagerPubliclnterface* in_pDataAccess)
+        void SetManagerAccessor(ActorManagerPubliclnterface* in_pDataAccess)
         {
             HE_ASSERT(in_pDataAccess);
             this->_pDataAccess = in_pDataAccess;
         }
+
+        ActorManagerPubliclnterface* GetManagerAcceesor() const { return this->_pDataAccess; }
 
         /// <summary>
         /// 生成直後の設定処理
@@ -123,7 +125,7 @@ namespace Actor
         /// <summary>
         /// Removes the component.
         /// </summary>
-        const Bool RemoveComponent(Core::Common::Handle&);
+        const Bool RemoveComponent(Core::Common::Handle*);
 
         /// <summary>
         /// 親アクターがあればその親アクターのコンポーネントを取得
@@ -306,7 +308,7 @@ namespace Actor
 
 #endif
     protected:
-        virtual void _ProcessInput(const Float32, Platform::InputSystemInterface*) {}
+        // virtual void _ProcessInput(const Float32, Platform::InputSystemInterface*) {}
 
         /// <summary>
         /// Computes the world transform.

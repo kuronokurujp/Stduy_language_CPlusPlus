@@ -16,10 +16,11 @@ namespace Core::Common
     /// プールしたデータを使いまわすためのクラス
     /// データを使いまわしてメモリ確保と解放の処理コストを減らせる
     /// プールデータ型をテンプレートで指定する
+    /// データを使いまわすのでクラス型を利用するとクラスのプロパティ値が残るので注意
     /// 継承利用版
     /// </summary>
     template <typename T>
-    class BasePoolManager
+    class RuntimePoolManager
     {
     public:
         struct AllocData
@@ -29,7 +30,7 @@ namespace Core::Common
         };
 
     public:
-        virtual ~BasePoolManager() { this->_Release(); }
+        virtual ~RuntimePoolManager() { this->_Release(); }
 
         /// <summary>
         /// データ使用個数
@@ -223,7 +224,7 @@ namespace Core::Common
         // データの参照(const版)
         const T* _Ref(const Handle& in_rHandle) const
         {
-            typedef BasePoolManager<T> ThisType;
+            typedef RuntimePoolManager<T> ThisType;
             return (const_cast<ThisType*>(this)->_Ref(in_rHandle));
         }
 
@@ -241,6 +242,7 @@ namespace Core::Common
     /// データを使いまわしてメモリ確保と解放の処理コストを減らせる
     /// プールデータ型をテンプレートで指定する
     /// データ最大数は固定
+    /// データを使いまわすのでクラス型を利用するとクラスのプロパティ値が残るので注意
     /// </summary>
     /// <typeparam name="T"></typeparam>
     template <typename T, Uint32 CAPACITY>
@@ -285,6 +287,7 @@ namespace Core::Common
                 out->Init(uIndex);
 
                 (*this->_vMagicNum.GetPtr(uIndex)) = out->Magic();
+                this->_vUserSlot.GetPtr(uIndex);
             }
 
             return this->_vUserSlot.GetPtr(uIndex);
@@ -317,13 +320,13 @@ namespace Core::Common
             if ((this->_vMagicNum[uIndex] == NON_MAGIC_NUMBER)) return NULL;
             if ((this->_vMagicNum[uIndex] != in_rHandle.Magic())) return NULL;
 
-            return this->_vUserSlot[uIndex];
+            return &this->_vUserSlot[uIndex];
         }
 
         // データの参照(const版)
         const T* _Ref(const Handle& in_rHandle) const
         {
-            typedef BasePoolManager<T> ThisType;
+            typedef RuntimePoolManager<T> ThisType;
             return (const_cast<ThisType*>(this)->_Ref(in_rHandle));
         }
 

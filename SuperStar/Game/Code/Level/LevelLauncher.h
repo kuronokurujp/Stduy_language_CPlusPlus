@@ -12,7 +12,7 @@ namespace Level
     /// </summary>
     class LevelLauncher : public Level::Node
     {
-        HE_CLASS_COPY_CONSTRUCT_NG(LevelLauncher);
+        HE_CLASS_COPY_NG(LevelLauncher);
 
     public:
         LevelLauncher() : Level::Node() {}

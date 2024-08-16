@@ -14,9 +14,9 @@ namespace Core
     /// タスク管理
     /// プールデータクラスを継承してタスク個数を固定にしている
     /// </summary>
-    class TaskManager final : public Common::BasePoolManager<Task>
+    class TaskManager final : public Common::RuntimePoolManager<Task>
     {
-        HE_CLASS_COPY_CONSTRUCT_NG(TaskManager);
+        HE_CLASS_COPY_NG(TaskManager);
 
         friend class Task;
 
@@ -26,7 +26,7 @@ namespace Core
         static const Uint32 FLAG_PAUSE = 0x00000001;
 
     public:
-        TaskManager() : BasePoolManager() {}
+        TaskManager() : RuntimePoolManager() {}
         ~TaskManager();
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace Core
             HE_ASSERT(in_sGroupId < this->_iGroupNum);
 
             // 利用するタスクを割り当て
-            BasePoolManager::AllocData resAlloc = this->_Alloc<T>();
-            Task* pTask                         = resAlloc._tpItem;
+            RuntimePoolManager::AllocData resAlloc = this->_Alloc<T>();
+            Task* pTask                            = resAlloc._tpItem;
 
             pTask->Setup(in_bReleaseMem);
             pTask->_hSelf = resAlloc._handle;
@@ -73,7 +73,7 @@ namespace Core
         /// <summary>
         /// タスクの削除
         /// </summary>
-        void RemoveTask(const Common::Handle&);
+        void RemoveTask(Common::Handle*);
 
         /// <summary>
         /// グループ丸ごとタスクを削除

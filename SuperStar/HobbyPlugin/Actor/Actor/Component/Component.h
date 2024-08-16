@@ -17,7 +17,7 @@ namespace Actor
     /// </summary>
     class Component : public Core::Task
     {
-        HE_CLASS_COPY_CONSTRUCT_NG(Component);
+        HE_CLASS_COPY_NG(Component);
 
         GENERATED_CLASS_BASE_BODY_HEADER(Component);
 
@@ -46,7 +46,7 @@ namespace Actor
         /// <summary>
         /// タスク終了
         /// </summary>
-        virtual const Bool End() override { return TRUE; }
+        virtual const Bool End() override;
 
         /// <summary>
         /// コンポーネントの更新

@@ -35,14 +35,15 @@ namespace Level
         /// モジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool _Start() final override;
+        const Bool _Start() override final;
 
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
         virtual const Bool _Release() override final;
 
-        const Bool _Update(const Float32 in_fDeltaTime) final override;
+        const Bool _BeforeUpdate(const Float32 in_fDeltaTime) override final;
+        const Bool _Update(const Float32 in_fDeltaTime) override final;
 
     private:
         std::shared_ptr<Manager> _pLevelManager = NULL;

@@ -15,6 +15,6 @@ namespace UI
         /// <summary>
         /// Processes the input.
         /// </summary>
-        virtual void ProcessInput(Platform::InputSystemInterface*) override;
+        virtual void ProcessInput(const void* in_pInputMap) override;
     };
 }  // namespace UI

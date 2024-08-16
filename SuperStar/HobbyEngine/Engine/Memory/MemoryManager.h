@@ -12,7 +12,7 @@ namespace Core::Memory
     /// </summary>
     class Manager : public Common::Singleton<Manager>
     {
-        HE_CLASS_COPY_CONSTRUCT_NG(Manager);
+        HE_CLASS_COPY_NG(Manager);
 
     public:
         Manager();

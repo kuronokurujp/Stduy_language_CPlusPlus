@@ -14,7 +14,7 @@ namespace UI
     /// </summary>
     class UIButtonMessageHandler
     {
-        HE_CLASS_COPY_CONSTRUCT_NG(UIButtonMessageHandler);
+        HE_CLASS_COPY_NG(UIButtonMessageHandler);
 
     public:
         UIButtonMessageHandler()          = default;
@@ -55,7 +55,7 @@ namespace UI
     /// </summary>
     class UIButtonComponent : public UIWidgetComponent
     {
-        HE_CLASS_COPY_CONSTRUCT_NG(UIButtonComponent);
+        HE_CLASS_COPY_NG(UIButtonComponent);
         GENERATED_CLASS_BODY_HEADER(UIButtonComponent, UIWidgetComponent);
 
     public:
@@ -77,7 +77,7 @@ namespace UI
         /// コンポーネントの更新
         /// 必ず処理を記述
         /// </summary>
-        void Update(const Float32 in_fDeltaTime) final override;
+        void Update(const Float32 in_fDeltaTime) override;
 
         /// <summary>
         /// プッシュ通知のハンドラーを設定
@@ -95,8 +95,7 @@ namespace UI
         /// <summary>
         /// タッチイベント
         /// </summary>
-        /// <param name="in_rTouch"></param>
-        virtual void OnTouch(const Platform::TouchInput& in_rTouch) override;
+        void OnTouch(const EnhancedInput::InputData::Item::Touch& in_rTouch) override;
 
     private:
         void _Clear()

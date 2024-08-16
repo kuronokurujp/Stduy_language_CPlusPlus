@@ -2,10 +2,10 @@
 
 #include "Engine/Common/CustomMap.h"
 #include "Engine/Memory/Memory.h"
+#include "LevelModule.h"
 
 namespace UI
 {
-
     // クラス内のみで利用する
     namespace Local
     {
@@ -25,6 +25,19 @@ namespace UI
         this->_AppendDependenceModule<Localization::LocalizationModule>();
         this->_AppendDependenceModule<Render::RenderModule>();
         this->_AppendDependenceModule<Actor::ActorModule>();
+    }
+
+    Widget* UIModule::GetWidget(const Core::Common::Handle& in_rHandle)
+    {
+        auto pLevelModule = this->GetDependenceModule<Level::LevelModule>();
+        HE_ASSERT(pLevelModule);
+
+        Actor::Object* pActor = NULL;
+        // pActor                =  LEVEL_MODULE_CURRENT_LEVEL->GetActor(in_rWidget);
+        pActor = pLevelModule->GetCurrneLevel().GetActor(in_rHandle);
+        HE_ASSERT(pActor);
+
+        return reinterpret_cast<Widget*>(pActor);
     }
 
     /// <summary>

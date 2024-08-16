@@ -10,17 +10,21 @@ namespace Core::Common
     template <class TYPE>
     class VectorBase
     {
+        HE_CLASS_COPY_CONSTRUCT_NG(VectorBase);
+
     public:
         VectorBase(TYPE* in_tpArrayAddr, Uint32 in_uSize)
             : _pBuff(in_tpArrayAddr), _uCapacity(in_uSize)
         {
         }
 
-        inline const Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
-        inline const Uint32 Size() const HE_NOEXCEPT { return this->_uNum; }
-        inline const Bool Empty() const HE_NOEXCEPT { return (this->_uNum <= 0); }
+        virtual ~VectorBase() { this->Clear(); }
 
-        void Clear() HE_NOEXCEPT { this->_uNum = 0; }
+        inline const Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
+        inline const Uint32 Size() const HE_NOEXCEPT { return this->_uSize; }
+        inline const Bool Empty() const HE_NOEXCEPT { return (this->_uSize <= 0); }
+
+        void Clear() HE_NOEXCEPT { this->_uSize = 0; }
 
         /// <summary>
         /// 配列の末尾に要素を追加
@@ -28,18 +32,18 @@ namespace Core::Common
         /// </summary>
         /// <param name="in_data"></param>
         /// <returns></returns>
-        TYPE& PushBack(const TYPE& in_data)
+        TYPE& PushBack(const TYPE& in_rData)
         {
-            HE_ASSERT(this->_uNum < this->Capacity());
+            HE_ASSERT(this->_uSize < this->Capacity());
             // コピー処理が発生
-            this->_pBuff[this->_uNum++] = in_data;
+            this->_pBuff[this->_uSize++] = in_rData;
 
-            return this->_pBuff[this->_uNum - 1];
+            return this->_pBuff[this->_uSize - 1];
         }
 
         void PopBack()
         {
-            if (0 < this->_uNum) --this->_uNum;
+            if (0 < this->_uSize) --this->_uSize;
         }
 
         /// <summary>
@@ -52,7 +56,7 @@ namespace Core::Common
         {
             Bool bRet = FALSE;
             // 要素が重複している可能性があるので全要素チェック
-            for (Uint32 i = 0; i < this->_uNum; ++i)
+            for (Uint32 i = 0; i < this->_uSize; ++i)
             {
                 if (this->_pBuff[i] == in_data)
                 {
@@ -70,10 +74,10 @@ namespace Core::Common
         /// <param name="in_uIndex"></param>
         void RemoveAt(const Uint32 in_uIndex)
         {
-            HE_ASSERT(in_uIndex < this->_uNum);
-            HE_ASSERT(0 < this->_uNum);
+            HE_ASSERT(in_uIndex < this->_uSize);
+            HE_ASSERT(0 < this->_uSize);
 
-            Uint32 uLastIndex = this->_uNum - 1;
+            Uint32 uLastIndex = this->_uSize - 1;
             if (in_uIndex < uLastIndex)
             {
                 // 削除する要素位置に上書きして削除
@@ -86,24 +90,39 @@ namespace Core::Common
                 // 末尾の削除は要素数を減らすだけでよい
             }
 
-            --this->_uNum;
+            --this->_uSize;
         }
 
         TYPE& operator[](const Uint32 in_uIndex) const
         {
-            HE_ASSERT(0 < this->_uNum);
+            HE_ASSERT(0 < this->_uSize);
             return this->_pBuff[in_uIndex];
         }
 
+        void operator=(VectorBase& in_vrData) { this->_DeepCopy(in_vrData); }
+        void operator=(const VectorBase& in_vrData) { this->_DeepCopy(in_vrData); }
+
         TYPE* GetPtr(const Uint32 in_uIndex) const
         {
-            HE_ASSERT(0 < this->_uNum);
+            HE_ASSERT(0 < this->_uSize);
             return &this->_pBuff[in_uIndex];
         }
 
+    protected:
+        void _DeepCopy(const VectorBase& in_vrData)
+        {
+            if (in_vrData._uSize <= 0) return;
+
+            const Uint32 uNewSize = HE_MIN(this->_uCapacity, in_vrData._uSize);
+            std::copy(in_vrData._pBuff, in_vrData._pBuff + uNewSize, this->_pBuff);
+            this->_uSize = uNewSize;
+        }
+
+    protected:
+        Uint32 _uSize = 0;
+
     private:
         TYPE* _pBuff      = NULL;
-        Uint32 _uNum      = 0;
         Uint32 _uCapacity = 0;
     };
 
@@ -117,8 +136,44 @@ namespace Core::Common
     public:
         CustomFixVector() : VectorBase<TYPE>(this->_aBuff, CAPACITY) {}
 
+        CustomFixVector(CustomFixVector& in_rSrc) : VectorBase<TYPE>(this->_aBuff, CAPACITY)
+        {
+            this->_DeepCopy(in_rSrc);
+        }
+
+        CustomFixVector(const CustomFixVector& in_rSrc) : VectorBase<TYPE>(this->_aBuff, CAPACITY)
+        {
+            this->_DeepCopy(in_rSrc);
+        }
+
+        // コンストラクタ (initializer_listを受け取る)
+        CustomFixVector(const std::initializer_list<TYPE>& in_rInitList)
+            : VectorBase<TYPE>(this->_aBuff, CAPACITY)
+        {
+            if (in_rInitList.size() <= 0) return;
+
+            const Uint32 uSize = HE_MIN(CAPACITY, in_rInitList.size());
+
+            auto it = in_rInitList.begin();
+            for (Uint32 i = 0; i < uSize; ++i) this->_aBuff[i] = *it;
+
+            this->_uSize = uSize;
+        }
+
     private:
         TYPE _aBuff[CAPACITY];
+    };
+
+    // テンプレートクラス CustomFixVector の部分的な型特性
+    template <typename T>
+    struct IsCustomFixVector : std::false_type
+    {
+    };
+
+    // CustomFixVector のインスタンスに対する特殊化
+    template <typename TYPE, Uint32 CAPACITY>
+    struct IsCustomFixVector<CustomFixVector<TYPE, CAPACITY>> : std::true_type
+    {
     };
 
 }  // namespace Core::Common

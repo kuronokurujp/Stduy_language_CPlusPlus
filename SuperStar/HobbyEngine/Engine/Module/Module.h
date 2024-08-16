@@ -16,6 +16,13 @@ namespace Module
 {
     class ModuleBase;
 
+    enum eLayer
+    {
+        eLayer_App = 0,
+        eLayer_Logic,
+        eLayer_View,
+    };
+
     /// <summary>
     /// モジュール管理クラス
     /// </summary>
@@ -34,7 +41,7 @@ namespace Module
         /// <summary>
         /// モジュールの利用開始
         /// </summary>
-        const Bool Start();
+        const Bool Start(const eLayer);
 
         /// <summary>
         /// 解放
@@ -42,27 +49,46 @@ namespace Module
         const Bool Release() override final;
 
         /// <summary>
-        /// モジュール更新
+        /// モジュール群の前更新
+        /// </summary>
+        /// <param name="in_fDeltaTime"></param>
+        void BeforeUpdate(const Float32 in_fDeltaTime);
+
+        /// <summary>
+        /// モジュール群の更新
         /// </summary>
         void Update(const Float32 in_fDeltaTime);
 
+        /// <summary>
+        /// モジュール群の後更新
+        /// </summary>
+        void LateUpdate(const Float32 in_fDeltaTime);
+
     private:
-        Core::Common::CustomFixVector<ModuleBase*, 64> _vModule;
+        const Bool _StartModule(ModuleBase&);
+        void _SortModuleVector(Core::Common::VectorBase<ModuleBase*>* out);
+
+    private:
+        Core::Common::CustomFixVector<ModuleBase*, 16> _vAppModule;
+        Core::Common::CustomFixVector<ModuleBase*, 32> _vLogicModule;
+        Core::Common::CustomFixVector<ModuleBase*, 16> _vViewModule;
     };
 
+    // アプリ層とロジック層とビュー層で種類を分けるべきか
     /// <summary>
     /// 外部モジュールの基本クラス
     /// </summary>
     class ModuleBase
     {
-        HE_CLASS_COPY_CONSTRUCT_NG(ModuleBase);
-        HE_CLASS_MOVE_CONSTRUCT_NG(ModuleBase);
+        HE_CLASS_COPY_NG(ModuleBase);
+        HE_CLASS_MOVE_NG(ModuleBase);
 
     public:
-        ModuleBase(const char* in_szName);
-        virtual ~ModuleBase();
+        ;
 
-        //        Platform::PlatformModule* GetPlatformModule();
+    public:
+        ModuleBase(const char* in_szName, eLayer in_eLayer = eLayer::eLayer_Logic);
+        virtual ~ModuleBase();
 
         template <typename T>
         T* GetDependenceModule()
@@ -84,12 +110,17 @@ namespace Module
             return NULL;
         }
 
-        const Char* Name() const HE_NOEXCEPT { return this->_szName.Str(); }
-
+        /// <summary>
+        /// モジュールが依存しているモジュール名リスト
+        /// </summary>
+        /// <returns></returns>
         const Core::Common::VectorBase<Core::Common::FixString64>& GetDependenceModuleNames() const
         {
             return this->_vDependenceModuleName;
         }
+
+        inline const Char* Name() const HE_NOEXCEPT { return this->_szName.Str(); }
+        inline const eLayer Layer() const HE_NOEXCEPT { return this->_eLayer; }
 
         /// <summary>
         /// モジュール処理優先度
@@ -111,7 +142,26 @@ namespace Module
         /// </summary>
         virtual const Bool _Release() = 0;
 
-        virtual const Bool _Update(const Float32 in_fDeltaTime) { return FALSE; }
+        /// <summary>
+        /// モジュール前更新
+        /// </summary>
+        /// <param name="in_fDeltaTime"></param>
+        /// <returns></returns>
+        virtual const Bool _BeforeUpdate(const Float32 in_fDeltaTime) { return TRUE; }
+
+        /// <summary>
+        /// モジュール更新
+        /// </summary>
+        /// <param name="in_fDeltaTime"></param>
+        /// <returns></returns>
+        virtual const Bool _Update(const Float32 in_fDeltaTime) { return TRUE; }
+
+        /// <summary>
+        /// モジュール更新
+        /// </summary>
+        /// <param name="in_fDeltaTime"></param>
+        /// <returns></returns>
+        virtual const Bool _LateUpdate(const Float32 in_fDeltaTime) { return TRUE; }
 
         template <class T>
         void _AppendDependenceModule()
@@ -121,6 +171,7 @@ namespace Module
 
     private:
         Core::Common::FixString128 _szName;
+        eLayer _eLayer = eLayer_Logic;
         Core::Common::CustomFixVector<ModuleBase*, 64> _vDependenceModule;
         Core::Common::CustomFixVector<Core::Common::FixString64, 64> _vDependenceModuleName;
 

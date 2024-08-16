@@ -21,11 +21,23 @@ namespace Actor
     /// <summary>
     /// Removes the actor.
     /// </summary>
-    void ActorManager::Remove(const Core::Common::Handle& in_rActorHandle)
+    void ActorManager::Remove(Core::Common::Handle* in_pActorHandle)
     {
-        HE_ASSERT((in_rActorHandle.Null() == FALSE) && "アクターを破棄するハンドルがない");
+        HE_ASSERT(in_pActorHandle);
+        HE_ASSERT((in_pActorHandle->Null() == FALSE) && "アクターを破棄するハンドルがない");
 
-        this->_taskManager.RemoveTask(in_rActorHandle);
+        // 入力コンポーネントがついている場合は登録リストから外す
+        auto pObject = this->Get(*in_pActorHandle);
+        {
+            auto handle = pObject->GetComponentHandle(&InputComponent::CLASS_RTTI);
+            if (handle.Null() == FALSE)
+            {
+                auto pInputComponent = pObject->GetComponent<InputComponent>(handle);
+                this->UnRegistInputComponent(*pInputComponent);
+            }
+        }
+
+        this->_taskManager.RemoveTask(in_pActorHandle);
     }
 
     Object* ActorManager::Get(const Core::Common::Handle& in_rActorHandle)
@@ -41,21 +53,6 @@ namespace Actor
     {
         HE_ASSERT((in_rActorHandle.Null() == FALSE) && "チェックするアクターがない");
         return (this->_taskManager.GetTask(in_rActorHandle) != NULL);
-    }
-
-    /// <summary>
-    /// アクターに入力状態を送信
-    /// </summary>
-    void ActorManager::ProcessInput(const Float32 in_uDt, Platform::InputSystemInterface* in_pInput)
-    {
-        Core::TaskData taskData{Actor::Object::ETaskUpdateId_Input,
-                                reinterpret_cast<void*>(in_pInput)};
-
-        const Uint32 max = this->_GetUpdateGroupMax();
-        for (Uint32 i = 0; i < max; ++i)
-        {
-            this->_taskManager.UpdateGroup(i, in_uDt, taskData);
-        }
     }
 
     void ActorManager::Update(const Float32 in_uDt, const Core::TaskData& in_rTaskData)

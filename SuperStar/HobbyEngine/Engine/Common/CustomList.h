@@ -40,7 +40,9 @@ namespace Core::Common
     public:
         ListNodeIterator() {}
         ListNodeIterator(NODETYPE* in_pNode) : _pNode(in_pNode) {}
-        ListNodeIterator(const ListNodeIterator<DATATYPE, NODETYPE>& it) : _pNode(it._pNode) {}
+        ListNodeIterator(const ListNodeIterator<DATATYPE, NODETYPE>& in_rIt) : _pNode(in_rIt._pNode)
+        {
+        }
 
         /// <summary>
         /// データ参照
@@ -243,9 +245,9 @@ namespace Core::Common
         /// 代入
         /// </summary>
         const ListNodeReverseIterator& operator=(
-            const ListNodeReverseIterator<DATATYPE, NODETYPE>& rhs)
+            const ListNodeReverseIterator<DATATYPE, NODETYPE>& in_rRhs)
         {
-            this->_pNode = rhs._pNode;
+            this->_pNode = in_rRhs._pNode;
             return *this;
         }
 
@@ -266,11 +268,34 @@ namespace Core::Common
         LinkedListBase() {}
         virtual ~LinkedListBase() {}
 
+        /// <summary>
+        /// ノードの消去
+        /// </summary>
+        // Bool EraseByNode(LinkedListNode<T>* in_pNode)
+        const Bool Erase(LinkedListNode<T>* in_pNode)
+        {
+            // 既にリンクから外されているノードは無視
+            if ((in_pNode->_uFlag & LinkedListNode<T>::uFlagLinked) == 0)
+            {
+                return FALSE;
+            }
+
+            HE_ASSERT(in_pNode->_pNext);
+            HE_ASSERT(in_pNode->_pPrev);
+            in_pNode->_pNext->_pPrev = in_pNode->_pPrev;
+            in_pNode->_pPrev->_pNext = in_pNode->_pNext;
+
+            // 接続済みフラグを消す
+            in_pNode->_uFlag &= ~LinkedListNode<T>::uFlagLinked;
+
+            return TRUE;
+        }
+
     protected:
         /// <summary>
         /// ノード挿入
         /// </summary>
-        Bool Insert(LinkedListNode<T>* in_pPrevNode, LinkedListNode<T>* in_pNewNode)
+        const Bool Insert(LinkedListNode<T>* in_pPrevNode, LinkedListNode<T>* in_pNewNode)
         {
             HE_ASSERT(in_pNewNode != in_pPrevNode);
 
@@ -297,28 +322,6 @@ namespace Core::Common
 
             return TRUE;
         }
-
-        /// <summary>
-        /// ノードの消去
-        /// </summary>
-        Bool Erase(LinkedListNode<T>* in_pNode)
-        {
-            // 既にリンクから外されているノードは無視
-            if ((in_pNode->_uFlag & LinkedListNode<T>::uFlagLinked) == 0)
-            {
-                return FALSE;
-            }
-
-            HE_ASSERT(in_pNode->_pNext);
-            HE_ASSERT(in_pNode->_pPrev);
-            in_pNode->_pNext->_pPrev = in_pNode->_pPrev;
-            in_pNode->_pPrev->_pNext = in_pNode->_pNext;
-
-            // 接続済みフラグを消す
-            in_pNode->_uFlag &= ~LinkedListNode<T>::uFlagLinked;
-
-            return TRUE;
-        }
     };
 
     /// <summary>
@@ -331,11 +334,12 @@ namespace Core::Common
     {
     public:
         // イテレータの型定義
-        typedef ListNodeIterator<T, LinkedListNode<T>> Iterator;
-        typedef ListNodeReverseIterator<T, LinkedListNode<T>> RevIterator;
+        using Iterator    = ListNodeIterator<T, LinkedListNode<T>>;
+        using RevIterator = ListNodeReverseIterator<T, LinkedListNode<T>>;
 
     public:
         CustomList() { LinkedListBase::Insert(&this->_head, &this->_tail); }
+        virtual ~CustomList() { this->Clear(); }
 
         void Clear()
         {
@@ -363,9 +367,9 @@ namespace Core::Common
         /// <summary>
         /// 任意の位置の直前にノードを挿入
         /// </summary>
-        const Bool Insert(Iterator& rIt, LinkedListNode<T>& in_rNode)
+        const Bool Insert(Iterator& in_rIt, LinkedListNode<T>& in_rNode)
         {
-            return LinkedListBase::Insert(rIt.GetNode()->GetPrev(), &in_rNode);
+            return LinkedListBase<T>::Insert(in_rIt.GetNode()->GetPrev(), &in_rNode);
         }
 
         /// <summary>
@@ -377,7 +381,7 @@ namespace Core::Common
             {
                 return FALSE;
             }
-            return LinkedListBase::Erase(this->_tail.GetPrev());
+            return LinkedListBase<T>::Erase(this->_tail.GetPrev());
         }
 
         /// <summary>
@@ -389,17 +393,17 @@ namespace Core::Common
             {
                 return FALSE;
             }
-            return LinkedListBase::Erase(this->_head.GetNext());
+            return LinkedListBase<T>::Erase(this->_head.GetNext());
         }
 
         /// <summary>
         /// 設定したイテレータのノードを取る
         /// </summary>
-        Iterator Erase(Iterator& in_it)
+        Iterator Erase(const Iterator& in_rIt)
         {
-            LinkedListNode<T>* pNode = in_it.GetNode();
+            LinkedListNode<T>* pNode = in_rIt.GetNode();
             LinkedListNode<T>* pNext = pNode->GetNext();
-            LinkedListBase::Erase(pNode);
+            LinkedListBase<T>::Erase(pNode);
             return Iterator(pNext);
         }
 

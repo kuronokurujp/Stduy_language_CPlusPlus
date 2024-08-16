@@ -17,9 +17,33 @@ const Bool Engine::Init()
 
     HE_LOG_LINE(HE_STR_TEXT("エンジンの前準備"));
 
+    this->_bInit = TRUE;
+
+    this->_moduleManager.Release();
+    this->_memoryManager.Release();
+
+    // 成功
+    return TRUE;
+}
+
+/// <summary>
+/// 初期化
+/// </summary>
+/// <returns></returns>
+const Bool Engine::Start()
+{
+    HE_ASSERT(this->_bStart == FALSE);
+    if (this->_bStart) return TRUE;
+
+    HE_LOG_LINE(HE_STR_TEXT("エンジンの初期化"));
+
+    // OS固有のモジュールは先に開始させる
+    this->_moduleManager.Start(Module::eLayer_App);
+
     // メモリ管理
     // カスタムメモリ確保
     // TODO: 確保数は適当にしている
+    // TODO: OSのメモリアロケーターを設定
     if (this->_memoryManager.Start(1024 * 1024 * 300) == FALSE)
     {
         HE_ASSERT(0 && "カスタムメモリの初期化に失敗");
@@ -47,25 +71,9 @@ const Bool Engine::Init()
         HE_ASSERT(this->_memoryManager.CheckAllMemoryBlock());
     }
 
-    this->_bInit = TRUE;
-
-    // 成功
-    return TRUE;
-}
-
-/// <summary>
-/// 初期化
-/// </summary>
-/// <returns></returns>
-const Bool Engine::Start()
-{
-    HE_ASSERT(this->_bStart == FALSE);
-    if (this->_bStart) return TRUE;
-
-    HE_LOG_LINE(HE_STR_TEXT("エンジンの初期化"));
-
-    // 追加したモジュール適応
-    this->_moduleManager.Start();
+    // ゲーム用のモジュールを開始
+    this->_moduleManager.Start(Module::eLayer_Logic);
+    this->_moduleManager.Start(Module::eLayer_View);
 
     // FPSタイマーを作成
     // ゲームを固定フレームレートにするため
@@ -135,17 +143,9 @@ void Engine::ReleseGameWindow()
     pPlatform->ReleaseAllWindows();
 }
 
-const Bool Engine::BeforUpdateLoop()
+const Bool Engine::BeforeUpdateLoop(const Float32 in_fDeltaSec)
 {
-    auto pPlatform = this->_PlatformModule();
-    if (pPlatform == NULL) return FALSE;
-
-    if (pPlatform->BeforUpdate(this->_spFPS->GetDeltaTimeSec(pPlatform->Time())) == FALSE)
-        return FALSE;
-
-    // 描画の前準備
-    pPlatform->BeginRender();
-
+    this->_moduleManager.BeforeUpdate(in_fDeltaSec);
     return TRUE;
 }
 
@@ -175,24 +175,12 @@ const Bool Engine::MainUpdateLoop(const Float32 in_fDeltaSec)
     // モジュール更新
     this->_moduleManager.Update(in_fDeltaSec);
 
-    // 描画処理
-    auto pPlatformModule = this->_PlatformModule();
-    if (pPlatformModule != NULL) pPlatformModule->Redner();
-
     return TRUE;
 }
 
-const Bool Engine::AfterUpdateLoop(const Float32 in_fDeltaSec)
+const Bool Engine::LateUpdateLoop(const Float32 in_fDeltaSec)
 {
-    auto pPlatform = this->_PlatformModule();
-    if (pPlatform == NULL) return FALSE;
-
-    if (pPlatform->AfterUpdate(this->_spFPS->GetDeltaTimeSec(pPlatform->Time())) == FALSE)
-        return FALSE;
-
-    // 描画終了
-    pPlatform->EndRender();
-
+    this->_moduleManager.LateUpdate(in_fDeltaSec);
     return TRUE;
 }
 
@@ -209,4 +197,12 @@ const Float32 Engine::GetDeltaTimeSec()
     if (pPlatform == NULL) return 0.0f;
 
     return this->_spFPS->GetDeltaTimeSec(pPlatform->Time());
+}
+
+const Bool Engine::IsAppQuit()
+{
+    auto pPlatform = this->_PlatformModule();
+    if (pPlatform == NULL) return TRUE;
+
+    return pPlatform->IsQuit();
 }

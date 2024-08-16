@@ -54,10 +54,10 @@ public:
     void ReleseGameWindow();
 
     // エンジンを稼働させるためのループ用メソッド
-    const Bool BeforUpdateLoop();
+    const Bool BeforeUpdateLoop(const Float32 in_fDeltaSec);
     const Bool WaitFrameLoop();
     const Bool MainUpdateLoop(const Float32 in_fDeltaSec);
-    const Bool AfterUpdateLoop(const Float32 in_fDeltaSec);
+    const Bool LateUpdateLoop(const Float32 in_fDeltaSec);
 
     /// <summary>
     /// メモリ管理を取得
@@ -88,6 +88,12 @@ public:
     /// </summary>
     /// <returns></returns>
     const Float32 GetDeltaTimeSec();
+
+    /// <summary>
+    /// アプリを辞める状態か
+    /// </summary>
+    /// <returns></returns>
+    const Bool IsAppQuit();
 
 private:
     /// <summary>

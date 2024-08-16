@@ -13,8 +13,8 @@ namespace Core::Common
     template <class T>
     class Singleton
     {
-        HE_CLASS_COPY_CONSTRUCT_NG(Singleton);
-        HE_CLASS_MOVE_CONSTRUCT_NG(Singleton);
+        HE_CLASS_COPY_NG(Singleton);
+        HE_CLASS_MOVE_NG(Singleton);
 
     public:
         Singleton()
