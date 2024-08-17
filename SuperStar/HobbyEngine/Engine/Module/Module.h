@@ -1,11 +1,9 @@
 ﻿#pragma once
 
 #include "Engine/Common/CustomMap.h"
-#include "Engine/Common/CustomString.h"
 #include "Engine/Common/CustomVector.h"
-#include "Engine/Common/Handle.h"
 #include "Engine/Common/Singleton.h"
-#include "Engine/Core.h"
+#include "Engine/MiniEngine.h"
 
 namespace Platform
 {

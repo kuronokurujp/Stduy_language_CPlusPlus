@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-#include "Engine/Common/Handle.h"
-#include "Engine/Core.h"
+#include "Engine/MiniEngine.h"
 #include "Engine/Module/Module.h"
 
 // モジュールのヘッダーファイルは全てインクルードする

@@ -1,11 +1,8 @@
 ﻿#pragma once
 
 #include "Actor/Component/Component.h"
-#include "ActorInterface.h"
 #include "Engine/Common/CustomList.h"
 #include "Engine/Common/CustomStack.h"
-#include "Engine/Common/CustomString.h"
-#include "Engine/Common/Handle.h"
 #include "Engine/Math/Math.h"
 #include "Engine/MiniEngine.h"
 #include "Engine/Task/Task.h"
@@ -28,6 +25,7 @@ namespace Actor
     class Object : public Core::Task
     {
         HE_CLASS_COPY_NG(Object);
+        HE_CLASS_MOVE_NG(Object);
 
     public:
         /// <summary>
@@ -40,21 +38,12 @@ namespace Actor
             EState_Dead,
         };
 
-        enum ETaskUpdateId
-        {
-            // 入力更新
-            ETaskUpdateId_Input = Task::uNoneId + 1,
-            // オブジェクト更新
-            ETaskUpdateId_Object,
-        };
-
         Object();
         virtual ~Object();
 
         /// <summary>
         /// 管理インスタンスを設定
         /// </summary>
-        /// <param name="in_pDataAccess"></param>
         void SetManagerAccessor(ActorManagerPubliclnterface* in_pDataAccess)
         {
             HE_ASSERT(in_pDataAccess);

@@ -8,7 +8,6 @@
 
 namespace EnhancedInput
 {
-
     EnhancedInputModule::EnhancedInputModule() : ModuleBase(ModuleName())
     {
         // 依存しているモジュールを設定

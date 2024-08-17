@@ -107,13 +107,12 @@ namespace Level
                 break;
             }
 
-            // TODO: 更新
+            // 更新
             case Node::ETaskUpdateId_Actor:
             {
                 // Actorの制御
                 {
-                    Core::TaskData taskData{Actor::Object::ETaskUpdateId_Object, NULL};
-                    this->_pActorManager->Update(in_fDt, taskData);
+                    this->_pActorManager->Update(in_fDt, DEFAULT_TASK_DATA);
 
                     // コリジョン処理(コリジョンしてActor追加が起きてもpendingするように)
                     // this->_Colision();

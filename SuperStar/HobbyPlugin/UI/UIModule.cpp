@@ -297,9 +297,6 @@ namespace UI
             pButton->SetAnchor(in_rBtnRect._eAnchor);
         }
 
-        // 入力ルーターの端末コンポーネントを設定
-        auto inputTerminalHandle = this->AddComponent<UI::UIInputTouchComponent>(handle, 0);
-
         return handle;
     }
 

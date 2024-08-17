@@ -26,6 +26,7 @@ namespace Level
     class Node : public Actor::Object
     {
         HE_CLASS_COPY_NG(Node);
+        HE_CLASS_MOVE_NG(Node);
 
     private:
         /// <summary>
@@ -126,6 +127,7 @@ namespace Level
     class Manager
     {
         HE_CLASS_COPY_NG(Manager);
+        HE_CLASS_MOVE_NG(Manager);
 
     public:
         Manager() {}

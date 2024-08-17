@@ -18,11 +18,8 @@ set(UI_PLUGIN_TARGET_FILES
     UI/Builder/UILayoutData.h
     UI/Builder/UILayoutData.cpp
     
-    UI/Component/Input/UIInputInterface.h
     UI/Component/Input/UIInputRouter.h
     UI/Component/Input/UIInputRouter.cpp
-    UI/Component/Input/UIInputTerminalTouch.h
-    UI/Component/Input/UIInputTerminalTouch.cpp
 
     UI/Component/Widget/UIButton.h
     UI/Component/Widget/UIButton.cpp

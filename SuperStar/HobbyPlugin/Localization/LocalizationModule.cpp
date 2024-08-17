@@ -64,10 +64,10 @@ namespace Localization
         HE_ASSERT(pLocalModule);
 
         SystemAssetData& a = pLocalModule->GetAsset<SystemAssetData>(this->_sysAssetDataHandle);
-        const SYSTEM_ASSET_LOCATE_MAP& map = a.FindLocate(in_szLocateName.Str());
+        const SystemAssetData::LocateMap& map = a.FindLocate(in_szLocateName.Str());
         HE_ASSERT(map.Empty() == FALSE);
 
-        LOCATE_TEXT_MAP textMap;
+        LocateTextMap textMap;
         Core::Common::FixString128 szTmp;
         for (auto it = map.Begin(); it != map.End(); ++it)
         {
@@ -166,7 +166,7 @@ namespace Localization
         return TRUE;
     }
 
-    const SYSTEM_ASSET_LOCATE_MAP& SystemAssetData::FindLocate(const Char* in_szLocateName)
+    const SystemAssetData::LocateMap& SystemAssetData::FindLocate(const Char* in_szLocateName)
     {
         HE_ASSERT(in_szLocateName);
 

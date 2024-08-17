@@ -128,7 +128,7 @@ namespace Core::Common
             Handle handle;
 
             Bool bNewSlot = FALSE;
-            S* tpObject   = NULL;
+            S* pObject   = NULL;
 
             if (this->_spCacheDatas->empty())
             {
@@ -144,8 +144,8 @@ namespace Core::Common
                 for (auto b = this->_spCacheDatas->begin(); b != this->_spCacheDatas->end(); ++b)
                 {
                     // 再利用可能なデータかチェック
-                    tpObject = dynamic_cast<S*>(*b);
-                    if (tpObject != NULL)
+                    pObject = dynamic_cast<S*>(*b);
+                    if (pObject != NULL)
                     {
                         // 再利用可能なデータなので追加フラグを立てる
                         bFreeSlot = TRUE;
@@ -173,14 +173,14 @@ namespace Core::Common
 
                 // Tを継承したSクラスのインスタンスを生成
                 // NEWは用意したマクロを使う
-                tpObject = HE_NEW(S, 0);  // new S();
+                pObject = HE_NEW(S, 0);
             }
 
             allocData._handle = handle;
-            allocData._tpItem = tpObject;
+            allocData._tpItem = pObject;
 
             // 利用リストに追加
-            this->_spUserSlot->insert(std::make_pair(handle, tpObject));
+            this->_spUserSlot->insert(std::make_pair(handle, pObject));
 
             return allocData;
         }

@@ -34,6 +34,8 @@ namespace UI
     /// </summary>
     class UIButtonMessageHandlerDefault : public UIButtonMessageHandler
     {
+        HE_CLASS_COPY_NG(UIButtonMessageHandlerDefault);
+
     public:
         UIButtonMessageHandlerDefault() = default;
         UIButtonMessageHandlerDefault(const Char* in_szMsg, UIButtonMessageHandlerImpOnPush in_func)

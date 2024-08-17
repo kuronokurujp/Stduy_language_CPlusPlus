@@ -33,8 +33,8 @@ namespace Localization
             Core::File::Path _textFilePath;
         };
 
-#define SYSTEM_ASSET_LOCATE_MAP \
-    Core::Common::CustomFixMap<Core::Common::FixString128, SystemAssetData::LocateData, 32>
+        using LocateMap =
+            Core::Common::CustomFixMap<Core::Common::FixString128, SystemAssetData::LocateData, 32>;
 
         virtual const Bool _Load(Platform::FileSystemInterface& in_rFileSystem) override;
 
@@ -43,15 +43,13 @@ namespace Localization
         /// 常駐しているメンバー変数を参照するようにしている
         /// 呼び出し側が参照したメンバー変数の書き換えたをできないようにするためにconstにしている
         /// </summary>
-        /// <param name="in_pLocateName"></param>
-        /// <returns></returns>
-        const SYSTEM_ASSET_LOCATE_MAP& FindLocate(const Char* in_szLocateName);
+        const LocateMap& FindLocate(const Char* in_szLocateName);
 
     private:
         /// <summary>
         /// 各言語毎のデータ
         /// </summary>
-        Core::Common::CustomFixMap<Core::Common::FixString128, SYSTEM_ASSET_LOCATE_MAP, 32>
+        Core::Common::CustomFixMap<Core::Common::FixString128, LocateMap, 32>
             _locateDataMap;
     };
 
@@ -113,10 +111,10 @@ namespace Localization
         const Bool _Update(const Float32 in_fDeltaTime) override final;
 
     private:
-#define LOCATE_TEXT_MAP \
-    Core::Common::CustomFixMap<Core::Common::FixString128, Core::Common::Handle, 64>
+        using LocateTextMap =
+            Core::Common::CustomFixMap<Core::Common::FixString128, Core::Common::Handle, 64>;
 
         Core::Common::Handle _sysAssetDataHandle;
-        Core::Common::CustomFixMap<Core::Common::FixString128, LOCATE_TEXT_MAP, 16> _locateDataMap;
+        Core::Common::CustomFixMap<Core::Common::FixString128, LocateTextMap, 16> _locateDataMap;
     };
 }  // namespace Localization

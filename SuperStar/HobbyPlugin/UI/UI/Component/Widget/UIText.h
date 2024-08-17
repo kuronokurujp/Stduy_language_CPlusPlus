@@ -11,6 +11,7 @@ namespace UI
     /// </summary>
     class UITextComponent : public UIWidgetComponent
     {
+        HE_CLASS_COPY_NG(UITextComponent);
         GENERATED_CLASS_BODY_HEADER(UITextComponent, UIWidgetComponent);
 
     public:
@@ -59,6 +60,7 @@ namespace UI
         {
             this->_eAnchor = in_eAnchor;
         }
+
         inline void SetFontSize(const Uint32 in_fontSize) { this->_fontSize = in_fontSize; }
 
     private:

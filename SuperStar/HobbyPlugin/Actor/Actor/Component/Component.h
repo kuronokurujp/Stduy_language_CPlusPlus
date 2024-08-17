@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <iostream>
-
 #include "Engine/Math/Rect2.h"
 #include "Engine/MiniEngine.h"
 #include "Engine/Task/Task.h"
@@ -18,7 +16,6 @@ namespace Actor
     class Component : public Core::Task
     {
         HE_CLASS_COPY_NG(Component);
-
         GENERATED_CLASS_BASE_BODY_HEADER(Component);
 
     public:

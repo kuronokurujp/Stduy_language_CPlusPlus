@@ -51,30 +51,21 @@ namespace Actor
     {
         if (this->_eState != EState_Active) return;
 
-        switch (in_rData.uId)
-        {
-            // オブジェクト更新
-            case Object::ETaskUpdateId_Object:
-            {
-                // 座標更新
-                this->_ComputeWorldTransform();
+        // 座標更新
+        this->_ComputeWorldTransform();
 
-                // コンポーネント更新
-                this->_components.UpdateAll(in_fDt, in_rData);
+        // コンポーネント更新
+        this->_components.UpdateAll(in_fDt, in_rData);
 
-                // コンポーネント内で更新した座標を含めて更新
-                this->_ComputeWorldTransform();
+        // コンポーネント内で更新した座標を含めて更新
+        this->_ComputeWorldTransform();
 
-                // コンポーネントがすべて更新してから実行
-                // コンポーネントの結果が同フレーム取れる
-                this->UpdateActor(in_fDt);
+        // コンポーネントがすべて更新してから実行
+        // コンポーネントの結果が同フレーム取れる
+        this->UpdateActor(in_fDt);
 
-                // Actor内で更新した座標を含めて更新
-                this->_ComputeWorldTransform();
-
-                break;
-            }
-        }
+        // Actor内で更新した座標を含めて更新
+        this->_ComputeWorldTransform();
     }
 
     /// <summary>

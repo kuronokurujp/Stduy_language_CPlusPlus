@@ -24,7 +24,13 @@ namespace AssetManager
     /// </summary>
     class AssetDataBase
     {
+        HE_CLASS_COPY_NG(AssetDataBase);
+        HE_CLASS_MOVE_NG(AssetDataBase);
+
         friend class AssetManagerModule;
+
+    public:
+        AssetDataBase() {}
 
     protected:
         virtual void _Init(const Char* in_szName, const Core::File::Path& in_rPath);
@@ -41,6 +47,9 @@ namespace AssetManager
     /// </summary>
     class AssetDataToml : public AssetDataBase
     {
+        HE_CLASS_COPY_NG(AssetDataToml);
+        HE_CLASS_MOVE_NG(AssetDataToml);
+
     public:
 #define TOML_NODE_MAP_TYPE \
     Core::Common::CustomFixMap<Core::Common::FixString128, class AssetDataToml::Node, 128>
@@ -91,6 +100,8 @@ namespace AssetManager
             toml::node_view<toml::node> _node;
         };
 
+        AssetDataToml() : AssetDataBase() {}
+
         virtual const Bool _Load(Platform::FileSystemInterface& in_rFileSystem) override;
         virtual void _Unload() override;
 
@@ -105,7 +116,12 @@ namespace AssetManager
     /// </summary>
     class AssetDataJson : public AssetDataBase
     {
+        HE_CLASS_COPY_NG(AssetDataJson);
+        HE_CLASS_MOVE_NG(AssetDataJson);
+
     public:
+        AssetDataJson() : AssetDataBase() {}
+
         virtual const Bool _Load(Platform::FileSystemInterface& in_rFileSystem) override;
         virtual void _Unload() override;
 
@@ -142,7 +158,12 @@ namespace AssetManager
     /// </summary>
     class AssetDataXml : public AssetDataBase
     {
+        HE_CLASS_COPY_NG(AssetDataXml);
+        HE_CLASS_MOVE_NG(AssetDataXml);
+
     public:
+        AssetDataXml() : AssetDataBase() {}
+
         virtual const Bool _Load(Platform::FileSystemInterface& in_rFileSystem) override;
         virtual void _Unload() override;
 

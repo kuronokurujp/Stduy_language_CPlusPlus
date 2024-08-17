@@ -83,7 +83,12 @@ namespace UI::Builder
     /// </summary>
     class UILayoutData final : public AssetManager::AssetDataXml
     {
+        HE_CLASS_COPY_NG(UILayoutData);
+        HE_CLASS_MOVE_NG(UILayoutData);
+
     public:
+        UILayoutData() : AssetManager::AssetDataXml() {}
+
         /// <summary>
         /// 親ルート下にあるノードを名前で取得
         /// </summary>
@@ -99,7 +104,4 @@ namespace UI::Builder
         /// </summary>
         void OutputNodeChildren(Core::Common::StackBase<Node>* out, const Node& in_rParentNode);
     };
-
 }  // namespace UI::Builder
-
-#define UI_BUIILDER_NODE_CHILDREN_TYPE Core::Common::FixMap<Uint64, UI::Builder::Node, 64>

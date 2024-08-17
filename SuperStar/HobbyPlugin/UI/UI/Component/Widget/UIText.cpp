@@ -7,7 +7,6 @@
 
 namespace UI
 {
-
     void UITextComponent::Update(const Float32 in_fDeltaTime)
     {
         // ローカライズテキストならローカライズテキストを取得

@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-#include "Engine/Common/CustomVector.h"
-#include "UIInputInterface.h"
+#include "Actor/Component/InputComponent.h"
 
 namespace UI
 {
@@ -10,15 +9,17 @@ namespace UI
     /// UIのWidgetのタップやボタン入力を行い,
     /// 各Widgetへ結果を送信する
     /// </summary>
-    class UIInputRouterComponent : public Actor::Component
+    class UIInputRouterComponent : public Actor::InputComponent
     {
-        GENERATED_CLASS_BODY_HEADER(UIInputRouterComponent, Actor::Component);
+        HE_CLASS_COPY_NG(UIInputRouterComponent);
+        GENERATED_CLASS_BODY_HEADER(UIInputRouterComponent, Actor::InputComponent);
 
     public:
+        UIInputRouterComponent() : Actor::InputComponent() {}
+
         /// <summary>
         /// Processes the input.
         /// </summary>
-        void ProcessInput(Platform::InputSystemInterface*,
-                          Core::Common::StackBase<Actor::Component*>&);
+        void ProcessInput(const void* in_pInputMap) override final;
     };
 }  // namespace UI

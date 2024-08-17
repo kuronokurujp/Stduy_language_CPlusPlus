@@ -12,7 +12,12 @@ namespace UI
     /// </summary>
     class Widget : public Actor::Object
     {
+        HE_CLASS_COPY_NG(Widget);
+        HE_CLASS_MOVE_NG(Widget);
+
     public:
+        Widget() : Actor::Object() {}
+
         /// <summary>
         /// 開始
         /// 継承したクラスで必ず基本クラスのメソッドを呼ぶ
