@@ -51,8 +51,11 @@ namespace AssetManager
         HE_CLASS_MOVE_NG(AssetDataToml);
 
     public:
-#define TOML_NODE_MAP_TYPE \
-    Core::Common::CustomFixMap<Core::Common::FixString128, class AssetDataToml::Node, 128>
+        // 前方宣言
+        class Node;
+
+        // Nodeをマップで扱う型
+        using ToolNodeMapType = Core::Common::CustomFixMap<Core::Common::FixString128, Node, 64>;
 
         class Node
         {
@@ -61,7 +64,7 @@ namespace AssetManager
             Node(toml::node_view<toml::node> in_node) : _node(in_node) {}
             Node(toml::node& in_rNode) : _node(in_rNode) {}
 
-            const Core::Common::FixString512 GetString();
+            const Core::Common::FixString512 GetString() const;
 
             template <typename... Args>
             typename std::enable_if<(std::is_same<Args, const Char*>::value && ...), Node>::type
@@ -80,7 +83,7 @@ namespace AssetManager
             template <typename... Args>
             typename std::enable_if<(std::is_same<Args, const Char*>::value && ...),
                                     const Bool>::type
-            OutputNodeMap(TOML_NODE_MAP_TYPE* out, Args... args)
+            OutputNodeMap(ToolNodeMapType* out, Args... args)
             {
                 // 引数の個数を取得
                 Uint32 uCount = static_cast<Uint32>(sizeof...(args));
@@ -92,7 +95,7 @@ namespace AssetManager
             }
 
         private:
-            const Bool _OutputNodeMap(TOML_NODE_MAP_TYPE* out, const Char* in_szaName[],
+            const Bool _OutputNodeMap(ToolNodeMapType* out, const Char* in_szaName[],
                                       const Uint32 in_uCount);
             Node _GetNode(const Char* in_szaName[], Uint32 in_uCount);
 

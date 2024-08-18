@@ -46,7 +46,6 @@ namespace Level
     {
         auto pUIModule = Module::ModuleManager::I().Get<UI::UIModule>();
         // ロードしたアセットを破棄
-        // ModuleUI()->UnloadAssetWithLayoutBuild(this->_layoutAssetHandle);
         pUIModule->UnloadAssetWithLayoutBuild(this->_layoutAssetHandle);
 
         const Bool bRet = Level::Node::End();

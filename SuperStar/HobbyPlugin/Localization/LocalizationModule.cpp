@@ -132,8 +132,9 @@ namespace Localization
         // Locateデータ構築
         AssetManager::AssetDataToml::Node locateNode = rootNode.GetNode(HE_STR_TEXT("locate"));
 
-        TOML_NODE_MAP_TYPE mLocateNode;
-        TOML_NODE_MAP_TYPE mGroupNode;
+        AssetManager::AssetDataToml::ToolNodeMapType mLocateNode;
+        AssetManager::AssetDataToml::ToolNodeMapType mGroupNode;
+
         locateNode.OutputNodeMap(&mLocateNode, HE_STR_EMPTY);
         for (auto it = mLocateNode.Begin(); it != mLocateNode.End(); ++it)
         {

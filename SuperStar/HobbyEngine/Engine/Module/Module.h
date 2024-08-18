@@ -5,11 +5,6 @@
 #include "Engine/Common/Singleton.h"
 #include "Engine/MiniEngine.h"
 
-namespace Platform
-{
-    class PlatformModule;
-}
-
 namespace Module
 {
     class ModuleBase;
@@ -82,10 +77,8 @@ namespace Module
         HE_CLASS_MOVE_NG(ModuleBase);
 
     public:
-        ;
-
-    public:
-        ModuleBase(const char* in_szName, eLayer in_eLayer = eLayer::eLayer_Logic);
+        ModuleBase(const char* in_szName, eLayer const in_eLayer = eLayer::eLayer_Logic,
+                   const Sint32 in_prioriry = 0);
         virtual ~ModuleBase();
 
         template <typename T>
@@ -111,7 +104,6 @@ namespace Module
         /// <summary>
         /// モジュールが依存しているモジュール名リスト
         /// </summary>
-        /// <returns></returns>
         const Core::Common::VectorBase<Core::Common::FixString64>& GetDependenceModuleNames() const
         {
             return this->_vDependenceModuleName;
@@ -125,7 +117,7 @@ namespace Module
         /// 値が大きいほど後に処理
         /// </summary>
         /// <returns></returns>
-        virtual const Sint32 Prioryty() const { return 0; }
+        inline const Sint32 Priority() const { return this->_priority; }
 
     protected:
         /// <summary>
@@ -169,7 +161,9 @@ namespace Module
 
     private:
         Core::Common::FixString128 _szName;
-        eLayer _eLayer = eLayer_Logic;
+        eLayer _eLayer   = eLayer_Logic;
+        Sint32 _priority = 0;
+
         Core::Common::CustomFixVector<ModuleBase*, 64> _vDependenceModule;
         Core::Common::CustomFixVector<Core::Common::FixString64, 64> _vDependenceModuleName;
 

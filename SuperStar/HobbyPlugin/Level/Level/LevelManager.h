@@ -103,8 +103,6 @@ namespace Level
         /// <summary>
         /// レベルのアクターを取得
         /// </summary>
-        /// <param name="in_hActor"></param>
-        /// <returns></returns>
         Actor::Object* GetActor(const Core::Common::Handle&);
 
         /// <summary>
@@ -193,5 +191,4 @@ namespace Level
         /// </summary>
         Core::Common::Handle _prevLevel;
     };
-
 }  // namespace Level

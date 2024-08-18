@@ -43,7 +43,7 @@ namespace AssetManager
         return Node(rNode);
     }
 
-    const Core::Common::FixString512 AssetDataToml::Node::GetString()
+    const Core::Common::FixString512 AssetDataToml::Node::GetString() const
     {
         std::optional<std::string_view> s = this->_node.value<std::string_view>();
         return Core::Common::FixString512(s->data());
@@ -62,7 +62,7 @@ namespace AssetManager
         return Node(node);
     }
 
-    const Bool AssetDataToml::Node::_OutputNodeMap(TOML_NODE_MAP_TYPE* out,
+    const Bool AssetDataToml::Node::_OutputNodeMap(ToolNodeMapType* out,
                                                    const Char* in_szaName[], const Uint32 in_uCount)
     {
         HE_ASSERT(out && "出力するポインターがNULL");

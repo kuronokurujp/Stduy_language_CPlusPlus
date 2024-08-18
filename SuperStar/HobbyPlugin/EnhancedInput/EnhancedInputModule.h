@@ -95,13 +95,6 @@ namespace EnhancedInput
         EnhancedInputModule();
 
         /// <summary>
-        /// モジュール更新の優先度
-        /// 入力を最優先にしている
-        /// </summary>
-        /// <returns></returns>
-        const Sint32 Prioryty() const override final { return -10; }
-
-        /// <summary>
         /// 共通利用のアクションをマッピングデータを設定
         /// </summary>
         /// <param name="in_mrTable"></param>

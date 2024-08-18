@@ -17,7 +17,7 @@ namespace Render
         HE_MODULE_GENRATE_DECLARATION(RenderModule);
 
     public:
-        RenderModule() : ModuleBase(ModuleName()) {}
+        RenderModule() : ModuleBase(ModuleName(), Module::eLayer_View, 10) {}
 
         // 描画コマンドを追加
         // コマンドデータは呼び出し元のものにするためにstd::move()で渡す
@@ -33,8 +33,6 @@ namespace Render
         /// </summary>
         /// <returns></returns>
         CommandBuffer* GetCmdBuff() { return &this->_commandBuff; }
-
-        const Sint32 Prioryty() const override final { return 10; }
 
     protected:
         /// <summary>

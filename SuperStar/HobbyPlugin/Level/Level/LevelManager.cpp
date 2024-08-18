@@ -132,7 +132,7 @@ namespace Level
         }
     }
 
-    // TODO: レベルに追加されたアクターを削除
+    // レベルに追加されたアクターを削除
     void Node::RemoveActor(Core::Common::Handle* in_pActor)
     {
         HE_ASSERT(in_pActor);

@@ -127,7 +127,7 @@ void EndInstance(HINSTANCE hInstance)
 #include "Level/LevelLauncher.h"
 
 #else
-// #include "sequence/title/TitleSeq.h"
+#include "Level/LevelTitle.h"
 #endif
 
 const Bool AppEntryGameMain::Start(const Bool in_bDebug)
@@ -150,6 +150,7 @@ const Bool AppEntryGameMain::Start(const Bool in_bDebug)
 
     // TODO: ゲームのみで利用するライブラリを初期化
     //		LuaStateManager::Init();
+
     // リソースの起点ディレクトリを設定
     auto pAssetManagerModule = Module::ModuleManager::I().Get<AssetManager::AssetManagerModule>();
     pAssetManagerModule->SetMountDir(HE_STR_TEXT("Assets"));
@@ -160,11 +161,10 @@ const Bool AppEntryGameMain::Start(const Bool in_bDebug)
 
     auto pLevelModule = Module::ModuleManager::I().Get<Level::LevelModule>();
 #ifdef HE_ENGINE_DEBUG
-    if (in_bDebug)
-    {
-        // デバッグレベルを開始
-        pLevelModule->GetManager()->StartLevel<Level::LevelLauncher>();
-    }
+    // デバッグレベルを開始
+    pLevelModule->GetManager()->StartLevel<Level::LevelLauncher>();
+#else
+    pLevelModule->GetManager()->StartLevel<Level::LevelTitle>();
 #endif
 
     return TRUE;

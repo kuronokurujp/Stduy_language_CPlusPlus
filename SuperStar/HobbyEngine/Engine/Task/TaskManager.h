@@ -17,6 +17,7 @@ namespace Core
     class TaskManager final : public Common::RuntimePoolManager<Task>
     {
         HE_CLASS_COPY_NG(TaskManager);
+        HE_CLASS_MOVE_NG(TaskManager);
 
         friend class Task;
 

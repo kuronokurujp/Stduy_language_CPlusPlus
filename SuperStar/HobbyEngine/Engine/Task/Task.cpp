@@ -102,9 +102,6 @@ namespace Core
         auto itr     = Core::Common::CustomList<ChildTaskNode>::Iterator(&pTask->_chainNode);
         auto nextItr = this->_lstChildTask.Erase(itr);
 
-        // this->_chainNodeはクリアしない
-        // なぜならリストのイテレータのノードなのでクリアするとイテレータが壊れるから
-
         // 破棄フラグがあればタスク管理で消去
         if (pTask->_bKill)
         {
@@ -143,5 +140,4 @@ namespace Core
             pTask->_UpdateChild(in_fDt, in_rData);
         }
     }
-
 }  // namespace Core

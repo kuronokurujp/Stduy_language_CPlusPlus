@@ -4,15 +4,6 @@
 #include "Engine/Core.h"
 #include "Engine/Module/Module.h"
 
-// 前方宣言
-
-namespace Core::Memory
-{
-    class Manager;
-}
-
-class Engine;
-
 namespace Platform
 {
     // 前方宣言
@@ -103,8 +94,5 @@ namespace Platform
             HE_ASSERT(FALSE);
             return FALSE;
         }
-
-    private:
-        friend class ::Engine;
     };
 }  // namespace Platform

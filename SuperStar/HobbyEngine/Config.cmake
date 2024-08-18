@@ -10,7 +10,6 @@ set(ENGINE_TARGET_FILES
 
     Engine/Engine.cpp
     Engine/Engine.h
-    Engine/framework.h
     Engine/GameMain.h
     Engine/MiniEngine.h
 

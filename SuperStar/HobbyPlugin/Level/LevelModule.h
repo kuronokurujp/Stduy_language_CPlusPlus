@@ -22,6 +22,8 @@ namespace Level
     /// </summary>
     class LevelModule final : public Module::ModuleBase
     {
+        HE_CLASS_COPY_NG(LevelModule);
+        HE_CLASS_MOVE_NG(LevelModule);
         HE_MODULE_GENRATE_DECLARATION(LevelModule);
 
     public:
@@ -42,7 +44,6 @@ namespace Level
         /// </summary>
         virtual const Bool _Release() override final;
 
-        const Bool _BeforeUpdate(const Float32 in_fDeltaTime) override final;
         const Bool _Update(const Float32 in_fDeltaTime) override final;
 
     private:

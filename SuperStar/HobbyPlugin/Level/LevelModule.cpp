@@ -26,16 +26,10 @@ namespace Level
     {
         // レベル関連の準備
         {
-            // this->_pLevelManager = std::shared_ptr<Manager>(new Manager());
             this->_pLevelManager = Core::Memory::MakeCustomSharedPtr<Manager>();
             this->_pLevelManager->Init();
         }
 
-        return TRUE;
-    }
-
-    const Bool LevelModule::_BeforeUpdate(const Float32 in_fDeltaTime)
-    {
         return TRUE;
     }
 
@@ -52,6 +46,7 @@ namespace Level
 
         return TRUE;
     }
+
     const Bool LevelModule::_Release()
     {
         this->_pLevelManager->End();

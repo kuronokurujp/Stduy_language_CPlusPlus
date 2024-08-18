@@ -11,8 +11,8 @@ namespace Module
         static Core::Common::CustomFixMap<Core::Common::FixString128, ModuleBase*, 16> mViewModule;
     }  // namespace Local
 
-    ModuleBase::ModuleBase(const UTF8* in_szName, const eLayer in_eLayer)
-        : _szName(in_szName), _eLayer(in_eLayer)
+    ModuleBase::ModuleBase(const UTF8* in_szName, const eLayer in_eLayer, const Sint32 in_priority)
+        : _szName(in_szName), _eLayer(in_eLayer), _priority(in_priority)
     {
         // モジュールレイヤーに応じたリストに登録
         if (this->Layer() == eLayer_App)
@@ -209,10 +209,10 @@ namespace Module
         // モジュール数が3桁もいかないので高速ソートは不要
         for (Uint32 i = 0; i < out->Size() - 1; ++i)
         {
-            Sint32 nowPriority = (*out)[i]->Prioryty();
+            Sint32 nowPriority = (*out)[i]->Priority();
             for (Uint32 j = i; j < out->Size(); ++j)
             {
-                Sint32 cmpPriority = (*out)[j]->Prioryty();
+                Sint32 cmpPriority = (*out)[j]->Priority();
                 if (cmpPriority < nowPriority)
                 {
                     auto tmp  = (*out)[i];

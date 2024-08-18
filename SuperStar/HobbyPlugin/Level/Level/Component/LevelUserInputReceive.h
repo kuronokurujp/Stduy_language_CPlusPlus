@@ -17,6 +17,7 @@ namespace Level
     class LevelUserInputMessage
     {
         HE_CLASS_COPY_NG(LevelUserInputMessage);
+        HE_CLASS_MOVE_NG(LevelUserInputMessage);
 
     public:
         LevelUserInputMessage() {}
@@ -34,6 +35,7 @@ namespace Level
     class LevelUserInputReceiveComponent : public Actor::Component
     {
         HE_CLASS_COPY_NG(LevelUserInputReceiveComponent);
+        HE_CLASS_MOVE_NG(LevelUserInputReceiveComponent);
         GENERATED_CLASS_BODY_HEADER(LevelUserInputReceiveComponent, Actor::Component);
 
     public:

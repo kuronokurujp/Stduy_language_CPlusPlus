@@ -10,6 +10,7 @@ namespace Level
     class LevelTitle : public Level::Node
     {
         HE_CLASS_COPY_NG(LevelTitle);
+        HE_CLASS_MOVE_NG(LevelTitle);
 
     public:
         LevelTitle();

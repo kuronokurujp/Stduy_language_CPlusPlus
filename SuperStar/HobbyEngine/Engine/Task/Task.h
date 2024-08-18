@@ -29,6 +29,7 @@ namespace Core
         friend class TaskManager;
 
         HE_CLASS_COPY_NG(Task);
+        HE_CLASS_MOVE_NG(Task);
 
     public:
         // 子タスクのリストノード

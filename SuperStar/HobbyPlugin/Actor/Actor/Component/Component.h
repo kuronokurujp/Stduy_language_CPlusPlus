@@ -16,6 +16,7 @@ namespace Actor
     class Component : public Core::Task
     {
         HE_CLASS_COPY_NG(Component);
+        HE_CLASS_MOVE_NG(Component);
         GENERATED_CLASS_BASE_BODY_HEADER(Component);
 
     public:

@@ -8,7 +8,7 @@
 
 namespace EnhancedInput
 {
-    EnhancedInputModule::EnhancedInputModule() : ModuleBase(ModuleName())
+    EnhancedInputModule::EnhancedInputModule() : ModuleBase(ModuleName(), Module::eLayer_Logic, -10)
     {
         // 依存しているモジュールを設定
         // モジュールの依存設定していないと依存したモジュールが使えない

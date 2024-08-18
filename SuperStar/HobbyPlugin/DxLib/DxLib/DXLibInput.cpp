@@ -2,7 +2,7 @@
 
 #include "DxLib.h"
 
-// TODO: DxLib用の入力システムの実装
+// DxLib用の入力システムの実装
 
 namespace DXLib
 {
@@ -104,5 +104,4 @@ namespace DXLib
                 this->_state._touch._uCurrTouchState |= Platform::EInputMouseType_Middle;
         }
     }
-
 }  // namespace DXLib
