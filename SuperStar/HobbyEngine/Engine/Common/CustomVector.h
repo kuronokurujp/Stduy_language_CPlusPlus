@@ -155,7 +155,11 @@ namespace Core::Common
             const Uint32 uSize = HE_MIN(CAPACITY, in_rInitList.size());
 
             auto it = in_rInitList.begin();
-            for (Uint32 i = 0; i < uSize; ++i) this->_aBuff[i] = *it;
+            for (Uint32 i = 0; i < uSize; ++i)
+            {
+                this->_aBuff[i] = *it;
+                ++it;
+            }
 
             this->_uSize = uSize;
         }
