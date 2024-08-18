@@ -230,7 +230,9 @@ namespace Core::Common
         /// </summary>
         const Bool Erase(const KEY& in_rKey)
         {
-            // ツリーを辿って削除 &再構築
+            if (this->Contains(in_rKey) == FALSE) return FALSE;
+
+            // ツリーを辿って削除と再構築
             this->_tpRoot = this->_Erase(this->_tpRoot, in_rKey);
 
             // まだツリーが存在するなら、ルートノードを黒にしておく
@@ -665,7 +667,12 @@ namespace Core::Common
                     tpMinNode->_pRight = this->_RemoveMinNode(in_pNode->_pRight);
                     tpMinNode->_pLeft  = in_pNode->_pLeft;
                     tpMinNode->_uColor = in_pNode->_uColor;
-                    in_pNode           = tpMinNode;
+                    // ノードを削除
+                    {
+                        this->_DeleteNode(in_pNode);
+                    }
+
+                    in_pNode = tpMinNode;
                 }
                 else
                 {
@@ -748,6 +755,11 @@ namespace Core::Common
         Node* _MoveRedLeft(Node* in_pNode)
         {
             HE_ASSERT(in_pNode);
+
+            // 右のノードを左に移動したいが,
+            // 右のノードが存在しない場合もあるので移動できない
+            if (in_pNode->_pRight == NULL)
+                return in_pNode;
 
             this->_FlipColors(in_pNode);
 
