@@ -136,9 +136,9 @@ const Bool AppEntryGameMain::Start(const Bool in_bDebug)
 
     // ユーザー共通入力割り当て設定
     {
-        Core::Common::CustomFixVector<Platform::EKeyboard, 4> aKeys(
+        EnhancedInput::ActionData::ActionKeyMap aKeys(
             {Platform::EKeyboard::EKeyboard_A});
-        Core::Common::CustomFixVector<Platform::EInputMouseType, 4> aTouchs(
+        EnhancedInput::ActionData::ActionTouchMap aTouchs(
             {Platform::EInputMouseType::EInputMouseType_Left});
 
         EnhancedInput::ActionMap mInputAction;

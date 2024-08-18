@@ -13,11 +13,14 @@ namespace Level
         HE_CLASS_MOVE_NG(LevelTitle);
 
     public:
-        LevelTitle();
-        ~LevelTitle();
+        LevelTitle() : Level::Node() {}
 
         const Bool Begin() override final;
         const Bool End() override final;
+
+
+    protected:
+        void _ProcessInput(const Float32 in_fDt, const EnhancedInput::InputMap* in_pInputMap) override final;
 
     private:
         Core::Common::Handle _layoutAssetHandle;

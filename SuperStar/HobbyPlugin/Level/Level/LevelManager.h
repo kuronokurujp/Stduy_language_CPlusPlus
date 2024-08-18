@@ -76,7 +76,7 @@ namespace Level
         const Bool End() override;
 
         /// <summary>
-        /// 更新用で継承先が実装しないとだめ
+        /// 更新
         /// 継承先は必ず基底クラスのメソッドを最初に呼び出す
         /// 呼ばないとエラーになるので注意
         /// </summary>
@@ -110,6 +110,11 @@ namespace Level
         /// </summary>
         const Bool ChainActor(const Core::Common::Handle& in_rActor,
                               const Core::Common::Handle& in_rParentActor);
+
+    protected:
+        virtual void _ProcessInput(const Float32 in_fDt, const EnhancedInput::InputMap* in_pInputMap)
+        {
+        }
 
     private:
         /// <summary>

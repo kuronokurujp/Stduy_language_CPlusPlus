@@ -102,6 +102,9 @@ namespace Level
                 HE_ASSERT(in_rData.pData);
                 const auto pInputMap = reinterpret_cast<EnhancedInput::InputMap*>(in_rData.pData);
 
+                // レベルノードで入力処理が出来る
+                this->_ProcessInput(in_fDt, pInputMap);
+
                 this->_pActorManager->ProcessInput(in_fDt, pInputMap);
 
                 break;

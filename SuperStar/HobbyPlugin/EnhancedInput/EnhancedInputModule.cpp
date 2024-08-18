@@ -28,6 +28,20 @@ namespace EnhancedInput
         }
     }
 
+    void EnhancedInputModule::RemoveCommonMappingAction(const ActionMap& in_mrAction)
+    {
+        for (auto it = in_mrAction.Begin(); it != in_mrAction.End(); ++it)
+        {
+            this->_mMappingAction.Erase(it->key);
+        }
+    }
+
+    void EnhancedInputModule::RemoveCommonMappingAction(const Char* in_pActonName)
+    {
+        HE_ASSERT(in_pActonName);
+        this->_mMappingAction.Erase(in_pActonName);
+    }
+
     /// <summary>
     /// UIのモジュール初期化
     /// </summary>

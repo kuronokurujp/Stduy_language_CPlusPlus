@@ -25,6 +25,7 @@ namespace EnhancedInput
 
         // CustomFixMapクラスでバッファデータを作成時に使う
         ActionData() {}
+        ActionData(const ActionKeyMap& in_arKeys) { this->aKeyboardKeys = in_arKeys; }
         ActionData(const ActionKeyMap& in_arKeys, const ActionTouchMap& in_arTouchs)
         {
             this->aKeyboardKeys = in_arKeys;
@@ -105,6 +106,12 @@ namespace EnhancedInput
         /// </summary>
         /// <param name=""></param>
         void AddCommonMappingAction(const ActionMap&);
+        /// <summary>
+        /// 共通利用のアクションマッピングデータを外す
+        /// </summary>
+        /// <param name="in_pActonName"></param>
+        void RemoveCommonMappingAction(const ActionMap&);
+        void RemoveCommonMappingAction(const Char*);
 
         const InputMap& GetInputMap() const { return this->_mInputAction; }
 
