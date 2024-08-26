@@ -11,7 +11,7 @@
 // 前方宣言
 namespace Platform
 {
-    class InputSystemInterface;
+    class InputInterface;
 }
 
 namespace Actor

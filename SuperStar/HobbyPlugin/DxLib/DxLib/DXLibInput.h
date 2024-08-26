@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 // DXLib用の入力システム
-
 #include "Engine/Platform/PlatformInput.h"
 
 namespace DXLib
@@ -9,7 +8,7 @@ namespace DXLib
     /// <summary>
     /// DxLib用の入力システム
     /// </summary>
-    class InputSystem : public Platform::InputSystemInterface
+    class Input : public Platform::InputInterface
     {
     public:
         void Init() override final;

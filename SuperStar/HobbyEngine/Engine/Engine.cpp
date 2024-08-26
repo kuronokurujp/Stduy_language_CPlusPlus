@@ -22,24 +22,6 @@ const Bool Engine::Init()
     this->_moduleManager.Release();
     this->_memoryManager.Release();
 
-    // 成功
-    return TRUE;
-}
-
-/// <summary>
-/// 初期化
-/// </summary>
-/// <returns></returns>
-const Bool Engine::Start()
-{
-    HE_ASSERT(this->_bStart == FALSE);
-    if (this->_bStart) return TRUE;
-
-    HE_LOG_LINE(HE_STR_TEXT("エンジンの初期化"));
-
-    // OS固有のモジュールは先に開始させる
-    this->_moduleManager.Start(Module::eLayer_App);
-
     // メモリ管理
     // カスタムメモリ確保
     // TODO: 確保数は適当にしている
@@ -70,6 +52,24 @@ const Bool Engine::Start()
 
         HE_ASSERT(this->_memoryManager.CheckAllMemoryBlock());
     }
+
+    // 成功
+    return TRUE;
+}
+
+/// <summary>
+/// 初期化
+/// </summary>
+/// <returns></returns>
+const Bool Engine::Start()
+{
+    HE_ASSERT(this->_bStart == FALSE);
+    if (this->_bStart) return TRUE;
+
+    HE_LOG_LINE(HE_STR_TEXT("エンジンの初期化"));
+
+    // OS固有のモジュールは先に開始させる
+    this->_moduleManager.Start(Module::eLayer_App);
 
     // ゲーム用のモジュールを開始
     this->_moduleManager.Start(Module::eLayer_Logic);
@@ -118,7 +118,7 @@ const Bool Engine::Release()
 /// ゲームウィンドウ生成.
 /// </summary>
 /// <returns></returns>
-const Bool Engine::CreateGameWindow()
+const Bool Engine::CreateMainWindow()
 {
     HE_ASSERT(this->_bStart);
 
@@ -135,7 +135,7 @@ const Bool Engine::CreateGameWindow()
 /// ゲームウィンドウを解放.
 /// </summary>
 /// <returns></returns>
-void Engine::ReleseGameWindow()
+void Engine::ReleseWindows()
 {
     auto pPlatform = this->_PlatformModule();
     if (pPlatform == NULL) return;

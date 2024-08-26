@@ -26,15 +26,30 @@ namespace UI
         /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
         virtual void Setup(const Bool in_bReleaseMem = TRUE) override;
 
+        /// <summary>
+        /// タスク開始
+        /// 継承したら基本クラスのメソッドを呼ぶ
+        /// </summary>
+        virtual const Bool Begin() override;
+
         virtual void OnTouch(const EnhancedInput::InputData::Item::Touch& in_rTouch) {}
         virtual void OnKey(const EnhancedInput::InputData::Item::Key& in_rKeyboard) {}
 
         void SetColor(const Uint32 in_color) { this->_color = in_color; }
+        void SetViewHandle(const Core::Common::Handle& in_rHandle)
+        {
+            this->_viewHandle = in_rHandle;
+        }
 
-    private:
-        void _Clear() { this->_color = 0; }
+    protected:
+        void _Clear()
+        {
+            this->_color = 0;
+            this->_viewHandle.Clear();
+        }
 
     protected:
         Uint32 _color = 0;
+        Core::Common::Handle _viewHandle;
     };
 }  // namespace UI

@@ -66,6 +66,8 @@ namespace UI
     private:
         void _Clear()
         {
+            UIWidgetComponent::_Clear();
+
             this->_szText.Clear();
             this->_szDrawText.Clear();
             this->_szLocGroup.Clear();

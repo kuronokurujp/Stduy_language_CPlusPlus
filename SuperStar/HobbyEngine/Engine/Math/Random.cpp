@@ -5,7 +5,6 @@ namespace Core::Math
     /// <summary>
     /// Initializes this instance.
     /// </summary>
-    /// <returns></returns>
     const Bool RandomManager::Init(const Sint32 in_iSeed)
     {
         this->SetSeed(in_iSeed);
@@ -16,8 +15,6 @@ namespace Core::Math
     /// <summary>
     /// Sets the seed.
     /// </summary>
-    /// <param name="in_seed">The in seed.</param>
-    /// <returns></returns>
     void RandomManager::SetSeed(const Sint32 in_iSeed)
     {
         this->_generator.seed(in_iSeed);

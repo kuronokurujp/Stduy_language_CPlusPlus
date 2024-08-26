@@ -90,26 +90,28 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     // エンジン起動
     CREATE_HOBBY_ENGINE;
 
+    // TODO: エンジン用の設定ファイルが必要
+
     const Bool bPreInitRet = HOBBY_ENGINE.Init();
     HE_ASSERT(bPreInitRet && "事前初期化に失敗");
 
-    // 利用プラグインをインポート
+    // 利用モジュールを登録
     {
-        MODULE_IMPORT(DXLib::DXLibModule);
-        MODULE_IMPORT(Render::RenderModule);
-        MODULE_IMPORT(Actor::ActorModule);
-        MODULE_IMPORT(UI::UIModule);
-        MODULE_IMPORT(AssetManager::AssetManagerModule);
-        MODULE_IMPORT(Level::LevelModule);
-        MODULE_IMPORT(Localization::LocalizationModule);
-        MODULE_IMPORT(EnhancedInput::EnhancedInputModule);
+        HOBBY_ENGINE.CreateModule<DXLib::DXLibModule>();
+        HOBBY_ENGINE.CreateModule<Render::RenderModule>();
+        HOBBY_ENGINE.CreateModule<Actor::ActorModule>();
+        HOBBY_ENGINE.CreateModule<UI::UIModule>();
+        HOBBY_ENGINE.CreateModule<AssetManager::AssetManagerModule>();
+        HOBBY_ENGINE.CreateModule<Level::LevelModule>();
+        HOBBY_ENGINE.CreateModule<Localization::LocalizationModule>();
+        HOBBY_ENGINE.CreateModule<EnhancedInput::EnhancedInputModule>();
     }
 
     const Bool bInitRet = HOBBY_ENGINE.Start();
     HE_ASSERT(bInitRet && "初期化に失敗");
 
     // ゲームウィンドウを作成
-    if (HOBBY_ENGINE.CreateGameWindow() == FALSE) return FALSE;
+    if (HOBBY_ENGINE.CreateMainWindow() == FALSE) return FALSE;
 
     return TRUE;
 }
@@ -136,8 +138,7 @@ const Bool AppEntryGameMain::Start(const Bool in_bDebug)
 
     // ユーザー共通入力割り当て設定
     {
-        EnhancedInput::ActionData::ActionKeyMap aKeys(
-            {Platform::EKeyboard::EKeyboard_A});
+        EnhancedInput::ActionData::ActionKeyMap aKeys({Platform::EKeyboard::EKeyboard_A});
         EnhancedInput::ActionData::ActionTouchMap aTouchs(
             {Platform::EInputMouseType::EInputMouseType_Left});
 

@@ -127,6 +127,8 @@ namespace Core
         // ハンドルを返却する + メモリから削除するかしないか
         const bool bCache = pTask->_bReleaseMem == FALSE;
         this->_Free(*in_pTask, bCache);
+
+        in_pTask->Clear();
     }
 
     void TaskManager::RemoveGroup(Sint32 in_groupId)

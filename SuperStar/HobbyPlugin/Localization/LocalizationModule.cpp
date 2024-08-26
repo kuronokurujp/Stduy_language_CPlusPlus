@@ -117,7 +117,7 @@ namespace Localization
         return rData.GetText(in_szKey.Str()).Str();
     }
 
-    const Bool SystemAssetData::_Load(Platform::FileSystemInterface& in_rFileSystem)
+    const Bool SystemAssetData::_Load(Platform::FileInterface& in_rFileSystem)
     {
         const Bool bRet = AssetManager::AssetDataToml::_Load(in_rFileSystem);
         HE_ASSERT(bRet);

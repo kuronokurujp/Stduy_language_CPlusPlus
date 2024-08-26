@@ -19,17 +19,17 @@ namespace Core::Common
     public:
         Singleton()
         {
-            HE_ASSERT((_tpInstance == NULL) && "インスタンス二重生成");
-            _tpInstance = static_cast<T*>(this);
+            HE_ASSERT((T::_pInstance == NULL) && "インスタンス二重生成");
+            T::_pInstance = static_cast<T*>(this);
         }
 
         virtual ~Singleton()
         {
-            if (_tpInstance)
+            if (T::_pInstance)
             {
-                if (_tpInstance->Release() == FALSE) HE_ASSERT(FALSE && "リリース失敗");
+                if (T::_pInstance->Release() == FALSE) HE_ASSERT(FALSE && "リリース失敗");
 
-                _tpInstance = NULL;
+                T::_pInstance = NULL;
             }
             else
             {
@@ -49,29 +49,29 @@ namespace Core::Common
         /// <returns></returns>
         static T& I() HE_NOEXCEPT
         {
-            HE_ASSERT(_tpInstance && "シングルトンのインスタンスがないので参照している");
-            return *_tpInstance;
+            HE_ASSERT(T::_pInstance && "シングルトンのインスタンスがないので参照している");
+            return *T::_pInstance;
         }
 
         /// <summary>
         /// インスタンスがあるかどうか
         /// </summary>
         /// <returns></returns>
-        static const Bool Exist() HE_NOEXCEPT { return (_tpInstance != NULL); }
+        static const Bool Exist() HE_NOEXCEPT { return (T::_pInstance != NULL); }
 
         /// <summary>
         /// シングルトン対象から解放
         /// </summary>
         static void Reset()
         {
-            HE_ASSERT(_tpInstance);
-            if (_tpInstance->Release() == FALSE) HE_ASSERT(FALSE && "リリース失敗");
-            _tpInstance = NULL;
+            HE_ASSERT(T::_pInstance);
+            if (T::_pInstance->Release() == FALSE) HE_ASSERT(FALSE && "リリース失敗");
+            T::_pInstance = NULL;
         }
 
     private:
         // ユニークなインスタンス
-        static inline T* _tpInstance = NULL;
+        static inline T* _pInstance = NULL;
     };
 
 }  // namespace Core::Common

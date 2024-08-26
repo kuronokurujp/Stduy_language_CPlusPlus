@@ -1,11 +1,13 @@
 ﻿#pragma once
 
+#include "Engine/Common/CustomVector.h"
+#include "Engine/Common/PoolManager.h"
 #include "Engine/Module/Module.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
 #include "Render/Color.h"
 #include "Render/Command/Command.h"
-#include "Render/CommandBuffer.h"
+#include "Render/View/View.h"
 
 namespace Render
 {
@@ -14,25 +16,46 @@ namespace Render
     /// </summary>
     class RenderModule final : public Module::ModuleBase
     {
+        HE_CLASS_COPY_NG(RenderModule);
+        HE_CLASS_MOVE_NG(RenderModule);
         HE_MODULE_GENRATE_DECLARATION(RenderModule);
+
+    public:
+        using ViewHandleVector = Core::Common::CustomFixVector<Core::Common::Handle, 32>;
 
     public:
         RenderModule() : ModuleBase(ModuleName(), Module::eLayer_View, 10) {}
 
-        // 描画コマンドを追加
-        // コマンドデータは呼び出し元のものにするためにstd::move()で渡す
-        const Bool AddCmd(const Command&& in_rrCmd);
-
         /// <summary>
-        /// コマンドをクリア
-        /// </summary>
-        void ClearCmd() { this->_commandBuff.Clear(); }
-
-        /// <summary>
-        /// コマンド配列取得
+        /// レンダリングビューを追加
         /// </summary>
         /// <returns></returns>
-        CommandBuffer* GetCmdBuff() { return &this->_commandBuff; }
+        const Core::Common::Handle AddView();
+
+        /// <summary>
+        /// 追加したレンダリングビューを削除
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        const Bool RemoveView(const Core::Common::Handle&);
+
+        /// <summary>
+        /// レンダリングビュー取得
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        inline View* GetView(const Core::Common::Handle& in_rHandle)
+        {
+            if (in_rHandle.Null()) return NULL;
+
+            return this->_poolView.Ref(in_rHandle);
+        }
+
+        /// <summary>
+        /// ビューのハンドル群を取得
+        /// </summary>
+        /// <returns></returns>
+        inline const ViewHandleVector& ViewHandles() const { return this->_vViewHandle; }
 
     protected:
         /// <summary>
@@ -43,9 +66,16 @@ namespace Render
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool _Release() override final;
+        const Bool _Release() override final;
+
+        /// <summary>
+        /// 前更新
+        /// </summary>
+        const Bool _BeforeUpdate(const Float32 in_fDeltaTime) override final;
 
     private:
-        CommandBuffer _commandBuff;
+        Core::Common::FixPoolManager<View, 32> _poolView;
+        ViewHandleVector _vViewHandle;
     };
+
 }  // namespace Render

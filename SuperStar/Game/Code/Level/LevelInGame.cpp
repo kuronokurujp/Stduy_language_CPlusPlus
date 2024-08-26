@@ -1,13 +1,22 @@
 ﻿#include "LevelInGame.h"
 
 #include "InGame/Component/InGameSystemComponent.h"
+#include "LevelInGame/LevelInGame_BG.h"
+#include "RenderModule.h"
 
 namespace Level
 {
+
+    LevelInGame::LevelInGame() : Level::Node()
+    {
+    }
+
     const Bool LevelInGame::Begin()
     {
         const Bool bRet = Node::Begin();
         HE_ASSERT(bRet);
+
+        this->AddLevel<LevelInGame_BG>();
 
         // インゲームのシステムコンポーネントを追加
         this->_systemComponentHandle = this->AddComponent<InGame::InGameSystemComponent>(0);

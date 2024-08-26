@@ -33,25 +33,43 @@ public:
     const Bool Init();
 
     /// <summary>
+    /// モジュールを作成
+    /// </summary>
+    /// <returns></returns>
+    template <class T>
+    const Bool CreateModule()
+    {
+        HE_ASSERT(this->_bInit);
+
+        T* pModule = HE_NEW_LAST(T, 0);
+        if (this->_moduleManager.RegistHeapModule(pModule) == FALSE)
+        {
+            HE_DELETE(pModule);
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
+    /// <summary>
     /// エンジン起動
     /// Initメソッドを事前に呼ばないとエラーになる
     /// </summary>
     /// <returns></returns>
     const Bool Start();
-
     const Bool Release() override final;
 
     /// <summary>
     /// ゲームウィンドウ生成
     /// </summary>
     /// <returns></returns>
-    const Bool CreateGameWindow();
+    const Bool CreateMainWindow();
 
     /// <summary>
     /// ゲームウィンドウを解放
     /// </summary>
     /// <returns></returns>
-    void ReleseGameWindow();
+    void ReleseWindows();
 
     // エンジンを稼働させるためのループ用メソッド
     const Bool BeforeUpdateLoop(const Float32 in_fDeltaSec);

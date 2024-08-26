@@ -49,8 +49,9 @@ namespace UI
         /// </summary>
         /// <param name="in_rHandle"></param>
         /// <returns></returns>
-        Core::Common::Handle NewLayoutByLayotuAsset(Core::Common::Handle& in_rHandle,
-                                                    const Uint32 in_sort);
+        Core::Common::Handle NewLayoutByLayotuAsset(const Core::Common::Handle& in_rHandle,
+                                                    const Uint32 in_sort,
+                                                    const Core::Common::Handle& in_rViewHandle);
 
         // UIのLayerを作成する
         // 描画ソート機能は未実装
@@ -62,7 +63,8 @@ namespace UI
         /// </summary>
         /// <param name="in_bLoc">ローカライズテキスト対象フラグ</param>
         /// <returns></returns>
-        Core::Common::Handle NewLabelWidget(const Core::Common::StringBase& in_szrName,
+        Core::Common::Handle NewLabelWidget(const Core::Common::Handle& in_rViewHandle,
+                                            const Core::Common::StringBase& in_szrName,
                                             const Uint32 in_sort, const Char* in_pLocGroupName,
                                             const Char* in_szText,
                                             const Core::Math::Rect2& in_rTextRect,
@@ -71,7 +73,8 @@ namespace UI
         /// <summary>
         /// ボタンWidget作成
         /// </summary>
-        Core::Common::Handle NewButtonWidget(const Core::Common::StringBase& in_szrName,
+        Core::Common::Handle NewButtonWidget(const Core::Common::Handle& in_rViewHandle,
+                                             const Core::Common::StringBase& in_szrName,
                                              const Uint32 in_sort,
                                              const Core::Math::Rect2& in_rBtnRect,
                                              const Uint32 in_uBtnColor);

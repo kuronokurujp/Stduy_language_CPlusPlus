@@ -4,93 +4,104 @@
 
 namespace Module
 {
-    namespace Local
-    {
-        static Core::Common::CustomFixMap<Core::Common::FixString128, ModuleBase*, 16> mAppModule;
-        static Core::Common::CustomFixMap<Core::Common::FixString128, ModuleBase*, 32> mLogicModule;
-        static Core::Common::CustomFixMap<Core::Common::FixString128, ModuleBase*, 16> mViewModule;
-    }  // namespace Local
-
     ModuleBase::ModuleBase(const UTF8* in_szName, const eLayer in_eLayer, const Sint32 in_priority)
         : _szName(in_szName), _eLayer(in_eLayer), _priority(in_priority)
     {
-        // モジュールレイヤーに応じたリストに登録
-        if (this->Layer() == eLayer_App)
-        {
-            Local::mAppModule.Add(this->_szName.Str(), this);
-        }
-        if (this->Layer() == eLayer_Logic) Local::mLogicModule.Add(this->_szName.Str(), this);
-        if (this->Layer() == eLayer_View) Local::mViewModule.Add(this->_szName.Str(), this);
     }
 
     ModuleBase::~ModuleBase()
     {
-        // モジュールを解放したのでモジュールリストから除外する
-        {
-            auto it = Local::mAppModule.FindKey(this->_szName);
-            if (it != Local::mAppModule.End()) Local::mAppModule.Erase(it);
-        }
-
-        {
-            auto it = Local::mLogicModule.FindKey(this->_szName);
-            if (it != Local::mLogicModule.End()) Local::mLogicModule.Erase(it);
-        }
-
-        {
-            auto it = Local::mViewModule.FindKey(this->_szName);
-            if (it != Local::mViewModule.End()) Local::mViewModule.Erase(it);
-        }
     }
+
+#ifdef HE_ENGINE_DEBUG
+    const Bool ModuleBase::_ValidateDependenceModule()
+    {
+        for (Uint32 i = 0; i < this->_vDependenceModule.Size(); ++i)
+        {
+            // 依存モジュールに設定している依存モジュールが自身の場合はエラー
+            // 依存の循環参照は認めない
+            const auto& vCheckModule = this->_vDependenceModule[i]->_vDependenceModule;
+            for (Uint32 j = 0; j < vCheckModule.Size(); ++j)
+            {
+                if (this->_szName == vCheckModule[j]->Name())
+                {
+                    HE_PG_LOG_LINE(HE_STR_FORMAT_TEXT HE_STR_TEXT("モジュールに依存している")
+                                       HE_STR_FORMAT_TEXT HE_STR_TEXT("と循環参照関係になっている"),
+                                   this->_szName.Str(), vCheckModule[j]->Name());
+                    return FALSE;
+                }
+            }
+        }
+
+        return TRUE;
+    }
+#endif
 
     ModuleBase* ModuleManager::Get(const Char* in_szName) const
     {
-        if (Local::mAppModule.Contains(in_szName))
+        if (this->_mAppModule.Contains(in_szName))
         {
-            return Local::mAppModule[in_szName];
+            return this->_mAppModule.FindKey(in_szName)->data;
         }
 
-        if (Local::mLogicModule.Contains(in_szName))
+        if (this->_mLogicModule.Contains(in_szName))
         {
-            return Local::mLogicModule[in_szName];
+            return this->_mLogicModule.FindKey(in_szName)->data;
         }
 
-        if (Local::mViewModule.Contains(in_szName))
+        if (this->_mViewModule.Contains(in_szName))
         {
-            return Local::mViewModule[in_szName];
+            return this->_mViewModule.FindKey(in_szName)->data;
         }
 
-        HE_ASSERT(FALSE);
+        // HE_ASSERT(FALSE);
         return NULL;
     }
 
     const Bool ModuleManager::Release()
     {
         // 全モジュール解放
+        // TODO: 依存関係に応じてモジュールを破棄する順序を変える事はできないか？
         {
-            for (auto b = Local::mViewModule.Begin(); b != Local::mViewModule.End(); ++b)
+            for (Uint32 i = 0; i < this->_vViewModule.Size(); ++i)
             {
-                b->data->_Release();
+                this->_vViewModule[i]->_Release();
             }
-            Local::mViewModule.Clear();
             this->_vViewModule.Clear();
+
+            for (auto b = this->_mViewModule.Begin(); b != this->_mViewModule.End(); ++b)
+            {
+                HE_DELETE(b->data);
+            }
+            this->_mViewModule.Clear();
         }
 
         {
-            for (auto b = Local::mLogicModule.Begin(); b != Local::mLogicModule.End(); ++b)
+            for (Uint32 i = 0; i < this->_vLogicModule.Size(); ++i)
             {
-                b->data->_Release();
+                this->_vLogicModule[i]->_Release();
             }
-            Local::mLogicModule.Clear();
             this->_vLogicModule.Clear();
+
+            for (auto b = this->_mLogicModule.Begin(); b != this->_mLogicModule.End(); ++b)
+            {
+                HE_DELETE(b->data);
+            }
+            this->_mLogicModule.Clear();
         }
 
         {
-            for (auto b = Local::mAppModule.Begin(); b != Local::mAppModule.End(); ++b)
+            for (Uint32 i = 0; i < this->_vAppModule.Size(); ++i)
             {
-                b->data->_Release();
+                this->_vAppModule[i]->_Release();
             }
-            Local::mAppModule.Clear();
             this->_vAppModule.Clear();
+
+            for (auto b = this->_mAppModule.Begin(); b != this->_mAppModule.End(); ++b)
+            {
+                HE_DELETE(b->data);
+            }
+            this->_mAppModule.Clear();
         }
 
         return TRUE;
@@ -151,6 +162,35 @@ namespace Module
         }
     }
 
+    /// <summary>
+    /// ヒープ作成したモジュールを登録
+    /// </summary>
+    const Bool ModuleManager::RegistHeapModule(ModuleBase* in_pModule)
+    {
+        HE_ASSERT(in_pModule);
+        // モジュールレイヤーに応じたリストに登録
+        const auto eLayer = in_pModule->Layer();
+        if (eLayer == eLayer_App)
+        {
+            this->_mAppModule.Add(in_pModule->_szName, in_pModule);
+            return TRUE;
+        }
+
+        if (eLayer == eLayer_Logic)
+        {
+            this->_mLogicModule.Add(in_pModule->_szName, in_pModule);
+            return TRUE;
+        }
+
+        if (eLayer == eLayer_View)
+        {
+            this->_mViewModule.Add(in_pModule->_szName, in_pModule);
+            return TRUE;
+        }
+
+        return FALSE;
+    }
+
     const Bool ModuleManager::Start(const eLayer in_eLayer)
     {
         switch (in_eLayer)
@@ -160,7 +200,7 @@ namespace Module
                 // AppモジュールはプラットフォームなどのOS関連のモジュール
                 // newでメモリ確保とかもあり得る
                 // ゲーム特有処理の前段となる
-                for (auto b = Local::mAppModule.Begin(); b != Local::mAppModule.End(); ++b)
+                for (auto b = this->_mAppModule.Begin(); b != this->_mAppModule.End(); ++b)
                 {
                     if (this->_StartModule(*b->data))
                     {
@@ -173,7 +213,7 @@ namespace Module
             }
             case eLayer_Logic:
             {
-                for (auto b = Local::mLogicModule.Begin(); b != Local::mLogicModule.End(); ++b)
+                for (auto b = this->_mLogicModule.Begin(); b != this->_mLogicModule.End(); ++b)
                 {
                     if (this->_StartModule(*b->data))
                     {
@@ -186,7 +226,7 @@ namespace Module
             }
             case eLayer_View:
             {
-                for (auto b = Local::mViewModule.Begin(); b != Local::mViewModule.End(); ++b)
+                for (auto b = this->_mViewModule.Begin(); b != this->_mViewModule.End(); ++b)
                 {
                     if (this->_StartModule(*b->data))
                     {
@@ -243,8 +283,13 @@ namespace Module
                 auto pDependenceModule = this->Get(szName.Str());
                 if (pDependenceModule == NULL) continue;
 
-                in_rModule._vDependenceModule.PushBack(&in_rModule);
+#ifdef HE_ENGINE_DEBUG
+                in_rModule._vDependenceModule.PushBack(pDependenceModule);
+#endif
             }
+#ifdef HE_ENGINE_DEBUG
+            HE_ASSERT(in_rModule._ValidateDependenceModule() && "依存設定が循環になっている");
+#endif
         }
 
         return TRUE;

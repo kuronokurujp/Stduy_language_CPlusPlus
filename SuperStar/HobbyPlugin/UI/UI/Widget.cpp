@@ -8,8 +8,6 @@ namespace UI
     {
         if (Actor::Object::Begin() == FALSE) return FALSE;
 
-        this->_inputHandle = this->GetComponentHandle(&UIInputRouterComponent::CLASS_RTTI);
-
         return TRUE;
     }
 

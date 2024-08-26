@@ -12,7 +12,6 @@ namespace Level
     {
         // 依存しているモジュールを設定
         // モジュールの依存設定していないと依存したモジュールが使えない
-        this->_AppendDependenceModule<Level::LevelModule>();
         this->_AppendDependenceModule<Actor::ActorModule>();
         this->_AppendDependenceModule<Platform::PlatformModule>();
         this->_AppendDependenceModule<EnhancedInput::EnhancedInputModule>();
@@ -21,7 +20,6 @@ namespace Level
     /// <summary>
     /// モジュール初期化
     /// </summary>
-    /// <returns></returns>
     const Bool LevelModule::_Start()
     {
         // レベル関連の準備
@@ -33,25 +31,38 @@ namespace Level
         return TRUE;
     }
 
-    const Bool LevelModule::_Update(const Float32 in_fDeltaTime)
-    {
-        // インプット入力対象に入力結果を送信
-        auto pEnhancedInputModule = this->GetDependenceModule<EnhancedInput::EnhancedInputModule>();
-
-        // 入力結果を渡す
-        this->_pLevelManager->ProcessInput(in_fDeltaTime, pEnhancedInputModule->GetInputMap());
-
-        // マウスやキーボードなどの各入力を渡す
-        this->_pLevelManager->Update(in_fDeltaTime);
-
-        return TRUE;
-    }
-
     const Bool LevelModule::_Release()
     {
         this->_pLevelManager->End();
         this->_pLevelManager.reset();
 
+        return TRUE;
+    }
+
+    const Bool LevelModule::_BeforeUpdate(const Float32 in_fDt)
+    {
+        // TODO: 前更新でメインレベルの切り替えなどしている
+        this->_pLevelManager->BeforeUpdate(in_fDt);
+
+        return TRUE;
+    }
+
+    const Bool LevelModule::_Update(const Float32 in_fDt)
+    {
+        // インプット入力対象に入力結果を送信
+        auto pEnhancedInputModule = this->GetDependenceModule<EnhancedInput::EnhancedInputModule>();
+
+        // 入力結果を渡す
+        this->_pLevelManager->ProcessInput(in_fDt, pEnhancedInputModule->GetInputMap());
+
+        // マウスやキーボードなどの各入力を渡す
+        this->_pLevelManager->Update(in_fDt);
+
+        return TRUE;
+    }
+    const Bool LevelModule::_LateUpdate(const Float32 in_fDt)
+    {
+        this->_pLevelManager->LateUpdate(in_fDt);
         return TRUE;
     }
 }  // namespace Level

@@ -16,7 +16,7 @@ namespace AssetManager
         this->_path   = in_rPath;
     }
 
-    const Bool AssetDataToml::_Load(Platform::FileSystemInterface& in_rFileSystem)
+    const Bool AssetDataToml::_Load(Platform::FileInterface& in_rFileSystem)
     {
         // ファイルロード
         this->_result = toml::parse_file(this->_path.Str());
@@ -62,8 +62,8 @@ namespace AssetManager
         return Node(node);
     }
 
-    const Bool AssetDataToml::Node::_OutputNodeMap(ToolNodeMapType* out,
-                                                   const Char* in_szaName[], const Uint32 in_uCount)
+    const Bool AssetDataToml::Node::_OutputNodeMap(ToolNodeMapType* out, const Char* in_szaName[],
+                                                   const Uint32 in_uCount)
     {
         HE_ASSERT(out && "出力するポインターがNULL");
         HE_ASSERT(0 < in_uCount);
@@ -89,7 +89,7 @@ namespace AssetManager
         return TRUE;
     }
 
-    const Bool AssetDataJson::_Load(Platform::FileSystemInterface& in_rFileSystem)
+    const Bool AssetDataJson::_Load(Platform::FileInterface& in_rFileSystem)
     {
         Bool bRet = TRUE;
 
@@ -198,7 +198,7 @@ namespace AssetManager
         return FALSE;
     }
 
-    const Bool AssetDataXml::_Load(Platform::FileSystemInterface& in_rFileSystem)
+    const Bool AssetDataXml::_Load(Platform::FileInterface& in_rFileSystem)
     {
         Bool bRet = TRUE;
 

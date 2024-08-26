@@ -34,6 +34,24 @@ namespace Level
         }
     }
 
+    void Manager::BeforeUpdate(const Float32 in_fDt)
+    {
+        // レベルの切り替え先があればカレントと交換
+        // 切り替えた後は古いカレントは破棄
+        if ((this->_nextLevelHandle.Null() == FALSE))
+        {
+            auto pNode = reinterpret_cast<Node*>(this->_nodeManager.Get(this->_nextLevelHandle));
+            HE_ASSERT(pNode);
+            pNode->SetState(Actor::Object::EState::EState_Active);
+
+            if (this->_currentLevelHandle.Null() == FALSE)
+                this->_nodeManager.Remove(&this->_currentLevelHandle);
+
+            this->_currentLevelHandle = this->_nextLevelHandle;
+            this->_nextLevelHandle.Clear();
+        }
+    }
+
     void Manager::Update(const Float32 in_fDt)
     {
         // アクター更新
@@ -48,10 +66,10 @@ namespace Level
         }
 
         this->_nodeManager.UpdatePending();
-        if (this->_prevLevel.Null() == FALSE)
-        {
-            this->_nodeManager.Remove(&this->_prevLevel);
-        }
+    }
+
+    void Manager::LateUpdate(const Float32 in_fDt)
+    {
     }
 
     /// <summary>
@@ -61,8 +79,21 @@ namespace Level
     Level::Node* Manager::CurrentLevel()
     {
         Level::Node* pNode =
-            reinterpret_cast<Level::Node*>(this->_nodeManager.Get(this->_currentLevel));
+            reinterpret_cast<Level::Node*>(this->_nodeManager.Get(this->_currentLevelHandle));
         return pNode;
+    }
+
+    const Bool Manager::_StartLevel(const Core::Common::Handle& in_rHandle)
+    {
+        this->_nextLevelHandle = in_rHandle;
+        auto pNode = reinterpret_cast<Node*>(this->_nodeManager.Get(this->_nextLevelHandle));
+        HE_ASSERT(pNode);
+        if (pNode == NULL) return FALSE;
+
+        // 切り替えた後にアクティブにする
+        pNode->SetState(Actor::Object::EState::EState_Paused);
+
+        return TRUE;
     }
 
     // ここから先は

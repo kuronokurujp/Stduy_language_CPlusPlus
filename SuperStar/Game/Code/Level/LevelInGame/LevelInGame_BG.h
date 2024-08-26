@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "Engine/Common/CustomVector.h"
+#include "Engine/Math/Vector2.h"
 #include "Engine/MiniEngine.h"
 
 // 外部モジュール
@@ -7,13 +9,13 @@
 
 namespace Level
 {
-    class LevelInGame : public Level::Node
+    class LevelInGame_BG : public Level::Node
     {
-        HE_CLASS_COPY_NG(LevelInGame);
-        HE_CLASS_MOVE_NG(LevelInGame);
+        HE_CLASS_COPY_NG(LevelInGame_BG);
+        HE_CLASS_MOVE_NG(LevelInGame_BG);
 
     public:
-        LevelInGame();
+        LevelInGame_BG() : Level::Node() {}
 
         const Bool Begin() override final;
         const Bool End() override final;
@@ -24,6 +26,7 @@ namespace Level
         void Update(const Float32 in_fDt, const Core::TaskData&) override final;
 
     private:
-        Core::Common::Handle _systemComponentHandle;
+        Core::Common::CustomArray<Core::Math::Vector2, 64> _aPointPos;
+        Core::Common::Handle _viewHandle;
     };
 }  // namespace Level

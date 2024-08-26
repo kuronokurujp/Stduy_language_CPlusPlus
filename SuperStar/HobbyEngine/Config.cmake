@@ -73,5 +73,8 @@ set(ENGINE_TARGET_FILES
     Engine/Platform/PlatformFile.h
     Engine/Platform/PlatformInput.cpp
     Engine/Platform/PlatformInput.h
+    Engine/Platform/PlatformScreen.h
+    Engine/Platform/PlatformSystem.h
+    Engine/Platform/PlatformTime.h
     Engine/Platform/PlatformModule.h
 )

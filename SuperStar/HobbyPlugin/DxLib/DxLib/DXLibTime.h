@@ -1,13 +1,13 @@
 ﻿#pragma once
 
-#include "Engine/Platform/PlatformModule.h"
+#include "Engine/Platform/PlatformTime.h"
 
 namespace DXLib
 {
     /// <summary>
     /// プラットフォームの時間インターフェイス
     /// </summary>
-    class TimeSystem : public Platform::TimeSystemInterface
+    class Time : public Platform::TimeInterface
     {
     public:
         const Uint32 NowMSec() override final;

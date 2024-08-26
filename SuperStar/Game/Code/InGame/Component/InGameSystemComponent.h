@@ -23,19 +23,19 @@ namespace InGame
 
         InGameSystemComponent() : Actor::Component() {}
 
-/*
-        //	アクターハンドル
-        typedef struct
-        {
-            Sint32 stageManager = 0;
-            Sint32 shotManager = 0;
-            Sint32 player = 0;
-            Sint32 aEnemy[ENEMY_MAX];
-            Sint32 enemyMax = 0;
-        } ACTOR_HANDLE_DATA_ST;
+        /*
+                //	アクターハンドル
+                typedef struct
+                {
+                    Sint32 stageManager = 0;
+                    Sint32 shotManager = 0;
+                    Sint32 player = 0;
+                    Sint32 aEnemy[ENEMY_MAX];
+                    Sint32 enemyMax = 0;
+                } ACTOR_HANDLE_DATA_ST;
 
-        ACTOR_HANDLE_DATA_ST& GetActorHandleData() const { return this->_actorHandleData; }
-        */
+                ACTOR_HANDLE_DATA_ST& GetActorHandleData() const { return this->_actorHandleData; }
+                */
 
         const Bool IsGameEnd() const { return this->_bGameEnd; }
         void SetFlgGameEnd(const Bool in_bFlg) { this->_bGameEnd = in_bFlg; }
@@ -48,7 +48,7 @@ namespace InGame
 
     private:
         //	変数
-//        ACTOR_HANDLE_DATA_ST _actorHandleData;
+        //        ACTOR_HANDLE_DATA_ST _actorHandleData;
         Bool _bGameEnd = FALSE;
         Uint32 _uPoint = 0;
     };

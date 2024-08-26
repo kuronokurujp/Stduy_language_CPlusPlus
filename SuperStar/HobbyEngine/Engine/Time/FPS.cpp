@@ -4,7 +4,7 @@
 
 namespace Core::Time
 {
-    FPS::FPS(Platform::TimeSystemInterface* in_pTimeInterface)
+    FPS::FPS(Platform::TimeInterface* in_pTimeInterface)
     {
         // 帰ってくる時間の単位はmsec
         Uint32 uCurrentTime = in_pTimeInterface->NowMSec();
@@ -12,15 +12,14 @@ namespace Core::Time
         for (Uint32 i = 0; i < FPS::_uTimeAvgMax - 1; ++i) this->_uaPreviousTime[i] = uCurrentTime;
     }
 
-    const Bool FPS::UpdateWait(Platform::TimeSystemInterface* in_pTimeInterface,
-                               const Uint32 in_waitMSec)
+    const Bool FPS::UpdateWait(Platform::TimeInterface* in_pTimeInterface, const Uint32 in_uWaitMSec)
     {
         HE_ASSERT(in_pTimeInterface);
 
         // 前フレームからin_waitMSec経ったら処理に進める
         const Uint32 nowMSec = in_pTimeInterface->NowMSec();
         Bool bWait =
-            (in_waitMSec <= (nowMSec - this->_uaPreviousTime[FPS::_uTimeAvgMax - 1]) ? FALSE
+            (in_uWaitMSec <= (nowMSec - this->_uaPreviousTime[FPS::_uTimeAvgMax - 1]) ? FALSE
                                                                                      : TRUE);
 
         // 待機時間より遅い
@@ -51,7 +50,7 @@ namespace Core::Time
         return FALSE;
     }
 
-    const Float32 FPS::GetDeltaTimeMSec(Platform::TimeSystemInterface* in_pTimeInterface) const
+    const Float32 FPS::GetDeltaTimeMSec(Platform::TimeInterface* in_pTimeInterface) const
     {
         HE_ASSERT(in_pTimeInterface);
 
@@ -64,7 +63,7 @@ namespace Core::Time
         return fDeltaTime;
     }
 
-    const Float32 FPS::GetDeltaTimeSec(Platform::TimeSystemInterface* in_pTimeInterface) const
+    const Float32 FPS::GetDeltaTimeSec(Platform::TimeInterface* in_pTimeInterface) const
     {
         HE_ASSERT(in_pTimeInterface);
 

@@ -48,6 +48,8 @@ namespace AssetManager
             }
 
             this->_Free(p._handle, TRUE);
+            p._handle.Clear();
+
             return Core::Common::Handle();
         }
 

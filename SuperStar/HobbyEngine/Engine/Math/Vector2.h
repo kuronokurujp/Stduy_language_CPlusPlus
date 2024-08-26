@@ -79,6 +79,11 @@ namespace Core::Math
         /// Sets the specified in value.
         /// </summary>
         inline void Set(const Float32 in_fValue) HE_NOEXCEPT { this->_fX = this->_fY = in_fValue; }
+        inline void Set(const Float32 in_fX, const Float32 in_fY) HE_NOEXCEPT
+        {
+            this->_fX = in_fX;
+            this->_fY = in_fY;
+        }
 
         /// <summary>
         /// ベクトル型で設定

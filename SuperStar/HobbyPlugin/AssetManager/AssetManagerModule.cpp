@@ -39,7 +39,7 @@ namespace AssetManager
     const Bool AssetManagerModule::_Load(AssetDataBase* out)
     {
         auto pPlatformModule = this->GetDependenceModule<Platform::PlatformModule>();
-        Platform::FileSystemInterface* pFileSystem = pPlatformModule->File();
+        Platform::FileInterface* pFileSystem = pPlatformModule->File();
         if (out->_Load(*pFileSystem) == FALSE)
         {
             return FALSE;

@@ -40,7 +40,7 @@ namespace UI
         this->TransformLocalToWorldRect2D(&rect, srcRect);
 
         // 描画コマンドを追加
-        Render::Cmd2DRect(rect, {this->_color});
+        Render::CreateCmd2DRectDraw(this->_viewHandle, rect, {this->_color});
     }
 
     void UIButtonComponent::OnTouch(const EnhancedInput::InputData::Item::Touch& in_rTouch)

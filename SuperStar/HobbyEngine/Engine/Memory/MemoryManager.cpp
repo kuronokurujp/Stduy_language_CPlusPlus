@@ -103,8 +103,8 @@ namespace Core::Memory
                 return FALSE;
             }
 
-            if (this->_InitMemoryPage(pTempSetupInfo->_chPage, uHeapOffset,
-                                      pTempSetupInfo->_uSize) == FALSE)
+            if (this->_InitMemoryPage(pTempSetupInfo->_page, uHeapOffset, pTempSetupInfo->_uSize) ==
+                FALSE)
             {
                 HE_ASSERT(0 && "メモリページの初期化に失敗．");
                 return FALSE;
@@ -151,10 +151,10 @@ namespace Core::Memory
         {
             PageSetupInfo* pTempSetupInfo = &in_pSetupInfoArray[i];
 
-            uaSize[pTempSetupInfo->_chPage] = pTempSetupInfo->_uSize;
+            uaSize[pTempSetupInfo->_page] = pTempSetupInfo->_uSize;
 
             // サイズ0なら消すだけなので特にチェックいらず
-            if (uaSize[pTempSetupInfo->_chPage] != 0)
+            if (uaSize[pTempSetupInfo->_page] != 0)
             {
                 // サイズが確保したヒープサイズを超えているのでエラー
                 if ((uOffset + pTempSetupInfo->_uSize) > this->_uHeapSize)
@@ -164,21 +164,21 @@ namespace Core::Memory
                 }
 
                 // 全ページの形にしておく
-                uaOffset[pTempSetupInfo->_chPage]       = uOffset;
-                baNeedInitFlag[pTempSetupInfo->_chPage] = TRUE;
+                uaOffset[pTempSetupInfo->_page]       = uOffset;
+                baNeedInitFlag[pTempSetupInfo->_page] = TRUE;
 
                 // すでに初期化されている場合チェック必要
-                if (this->_ValidMemoryPage(pTempSetupInfo->_chPage))
+                if (this->_ValidMemoryPage(pTempSetupInfo->_page))
                 {
                     // オフセットが違う
                     const Bool bDiffOffsetAddr =
                         reinterpret_cast<Sint8*>(
-                            this->_aMemoryPageInfoArray[pTempSetupInfo->_chPage]._pTopAddr) !=
+                            this->_aMemoryPageInfoArray[pTempSetupInfo->_page]._pTopAddr) !=
                         reinterpret_cast<Sint8*>(this->_pHeapTop) + uOffset;
 
                     // サイズが違う
                     const Bool bDiffSize =
-                        this->_aMemoryPageInfoArray[pTempSetupInfo->_chPage]._uSize !=
+                        this->_aMemoryPageInfoArray[pTempSetupInfo->_page]._uSize !=
                         pTempSetupInfo->_uSize;
 
                     // ページ初期化ができるかチェック
@@ -188,7 +188,7 @@ namespace Core::Memory
                         // サイズが違う場合は大きくなる分には問題ないし
                         // 小さくなる場合も使用していない部分なら問題ないけど
                         // さらにリマップして問題が発生した際に原因が見つけにくくなりそうなのでとりあえずこうしておく
-                        if (this->UsedMemoryBlock(pTempSetupInfo->_chPage))
+                        if (this->UsedMemoryBlock(pTempSetupInfo->_page))
                         {
                             HE_ASSERT(0 &&
                                       "オフセットもしくはサイズの変更が指定されているが、使用中"
@@ -200,7 +200,7 @@ namespace Core::Memory
                     {
                         // オフセットも変わらず,
                         // サイズも同じなのでそのままページが使えるので初期化は不要
-                        baNeedInitFlag[pTempSetupInfo->_chPage] = FALSE;
+                        baNeedInitFlag[pTempSetupInfo->_page] = FALSE;
                     }
                 }
             }

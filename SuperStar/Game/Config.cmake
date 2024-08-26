@@ -16,6 +16,8 @@ set(TARGET_FILES
 	Code/Level/LevelTitle.h
 	Code/Level/LevelInGame.cpp
 	Code/Level/LevelInGame.h
+	Code/Level/LevelInGame/LevelInGame_BG.cpp
+	Code/Level/LevelInGame/LevelInGame_BG.h
 	
 	Code/InGame/Component/InGameSystemComponent.h
 	Code/InGame/Component/InGameSystemComponent.cpp

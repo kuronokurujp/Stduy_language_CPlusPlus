@@ -23,5 +23,6 @@ namespace Level
     private:
         Core::Common::Handle _layoutAssetHandle;
         Core::Common::Handle _uIWidgetHandle;
+        Core::Common::Handle _viewHandle;
     };
 }  // namespace Level

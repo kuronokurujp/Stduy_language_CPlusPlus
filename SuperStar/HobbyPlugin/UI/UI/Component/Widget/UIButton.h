@@ -102,6 +102,8 @@ namespace UI
     private:
         void _Clear()
         {
+            UIWidgetComponent::_Clear();
+
             this->_pushHandler.release();
             this->_fWidth  = 0.0f;
             this->_fHeight = 0.0f;

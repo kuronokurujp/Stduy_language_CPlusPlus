@@ -37,7 +37,7 @@ namespace DXLib
         KEY_INPUT_9,
     };
 
-    void InputSystem::Init()
+    void Input::Init()
     {
         // キー入力初期化
         {
@@ -63,7 +63,7 @@ namespace DXLib
         }
     }
 
-    void InputSystem::Update(const Float32 in_fDeltaTime)
+    void Input::Update(const Float32 in_fDeltaTime)
     {
         // キー入力の処理
         {

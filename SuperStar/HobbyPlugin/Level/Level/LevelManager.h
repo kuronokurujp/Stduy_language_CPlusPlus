@@ -7,18 +7,133 @@
 #include "Engine/Task/TaskManager.h"
 #include "EnhancedInputModule.h"
 
-// 前方宣言
-namespace Platform
-{
-    class InputSystemInterface;
-}
-
 /// <summary>
 /// レベルの管理
 /// ゲーム中のアクターなどのオブジェクトを配置するレベルを管理
 /// </summary>
 namespace Level
 {
+    // 前方宣言
+    class Node;
+
+    /// <summary>
+    /// レベルを管理するクラス
+    /// 個々のレベルはタスク形式で管理する
+    /// </summary>
+    class Manager
+    {
+        HE_CLASS_COPY_NG(Manager);
+        HE_CLASS_MOVE_NG(Manager);
+
+    public:
+        /// <summary>
+        /// レベルノードを管理する専用アクタークラス
+        /// </summary>
+        class NodeManager final : public Actor::ActorManager
+        {
+        public:
+            NodeManager(Manager* in_pManager) : Actor::ActorManager(), _pLevelManager(in_pManager)
+            {
+            }
+
+            inline Manager* GetLevelManager() const { return this->_pLevelManager; }
+
+        private:
+            Manager* _pLevelManager = NULL;
+        };
+
+    public:
+        Manager() : _nodeManager(this) {}
+
+        /// <summary>
+        /// 必ず最初に呼び出す
+        /// </summary>
+        const Bool Init();
+
+        /// <summary>
+        /// 使い終わったら実行
+        /// そのあとに利用したらエラーになる
+        /// </summary>
+        const Bool End();
+
+        /// <summary>
+        /// ユーザー入力処理
+        /// </summary>
+        void ProcessInput(const Float32 in_fDt, const EnhancedInput::InputMap&);
+
+        /// <summary>
+        /// 前更新
+        /// </summary>
+        void BeforeUpdate(const Float32);
+
+        /// <summary>
+        /// 更新
+        /// </summary>
+        void Update(const Float32);
+
+        /// <summary>
+        /// 後更新
+        /// </summary>
+        void LateUpdate(const Float32);
+
+        /// <summary>
+        /// 起動するレベルを設定
+        /// </summary>
+        template <class T>
+        const Bool StartLevel()
+        {
+            static_assert(std::is_base_of<Node, T>::value,
+                          "Tクラスはレベルのノードクラスを継承していない");
+
+            // レベルのノードは使いまわさない
+            Core::Common::Handle handle = this->_nodeManager.Add<T>();
+            if (handle.Null()) return FALSE;
+
+            return this->_StartLevel(handle);
+        }
+
+        /// <summary>
+        /// レベルを追加
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        template <class T>
+        const Bool AddLevel()
+        {
+            static_assert(std::is_base_of<Node, T>::value,
+                          "Tクラスはレベルのノードクラスを継承していない");
+
+            // レベルのノードは使いまわさない
+            Core::Common::Handle handle = this->_nodeManager.Add<T>();
+            if (handle.Null()) return FALSE;
+
+            return TRUE;
+        }
+
+        /// <summary>
+        /// カレントレベルを取得
+        /// </summary>
+        /// <returns></returns>
+        Node* CurrentLevel();
+
+    private:
+        const Bool _StartLevel(const Core::Common::Handle&);
+
+    private:
+        // レベルのノードをアクターとして管理
+        NodeManager _nodeManager;
+
+        /// <summary>
+        /// カレントレベルのハンドル
+        /// </summary>
+        Core::Common::Handle _currentLevelHandle;
+
+        /// <summary>
+        ///  切り替え先のレベルのハンドル
+        /// </summary>
+        Core::Common::Handle _nextLevelHandle;
+    };
+
     /// <summary>
     /// レベルのノード
     /// アクターなどのオブジェクトを配置
@@ -30,7 +145,7 @@ namespace Level
 
     private:
         /// <summary>
-        /// レベルノードに管理する専用アクター管理クラス
+        /// レベルノードにつけるアクターの専用管理クラス
         /// </summary>
         class CustomActorManager final : public Actor::ActorManager
         {
@@ -111,8 +226,31 @@ namespace Level
         const Bool ChainActor(const Core::Common::Handle& in_rActor,
                               const Core::Common::Handle& in_rParentActor);
 
+        /// <summary>
+        /// レベルを追加
+        /// </summary>
+        template <class T>
+        const Bool AddLevel()
+        {
+            static_assert(std::is_base_of<Node, T>::value,
+                          "Tクラスはレベルのノードクラスを継承していない");
+
+            // ノード管理にレベルを追加
+            auto pNodeManager = reinterpret_cast<Manager::NodeManager*>(this->GetManagerAcceesor());
+            HE_ASSERT(pNodeManager);
+            if (pNodeManager == NULL) return FALSE;
+
+            auto pLevelManager = pNodeManager->GetLevelManager();
+            HE_ASSERT(pLevelManager);
+            if (pLevelManager == NULL) return FALSE;
+
+            // ノード追加
+            return pLevelManager->AddLevel<T>();
+        }
+
     protected:
-        virtual void _ProcessInput(const Float32 in_fDt, const EnhancedInput::InputMap* in_pInputMap)
+        virtual void _ProcessInput(const Float32 in_fDt,
+                                   const EnhancedInput::InputMap* in_pInputMap)
         {
         }
 
@@ -121,79 +259,5 @@ namespace Level
         /// レベルに紐づけるアクター管理
         /// </summary>
         std::shared_ptr<CustomActorManager> _pActorManager;
-    };
-
-    /// <summary>
-    /// レベルを管理するクラス
-    /// 個々のレベルはタスク形式で管理する
-    /// </summary>
-    class Manager
-    {
-        HE_CLASS_COPY_NG(Manager);
-        HE_CLASS_MOVE_NG(Manager);
-
-    public:
-        Manager() {}
-
-        /// <summary>
-        /// 必ず最初に呼び出す
-        /// </summary>
-        /// <returns></returns>
-        const Bool Init();
-
-        /// <summary>
-        /// 使い終わったら実行
-        /// そのあとに利用したらエラーになる
-        /// </summary>
-        /// <returns></returns>
-        const Bool End();
-
-        void ProcessInput(const Float32 in_fDt, const EnhancedInput::InputMap&);
-
-        /// <summary>
-        /// 更新
-        /// </summary>
-        void Update(const Float32 in_fDt);
-
-        /// <summary>
-        /// 起動するレベルを設定
-        /// </summary>
-        template <class T>
-        const Bool StartLevel()
-        {
-            static_assert(std::is_base_of<Node, T>::value,
-                          "Tクラスはレベルのノードクラスを継承していない");
-
-            // レベルのノードは使いまわさない
-            Core::Common::Handle handle = this->_nodeManager.Add<T>();
-            if (handle.Null()) return FALSE;
-
-            // 変更前のレベルを保存してカレントレベルに切り替わったら破棄する
-            this->_prevLevel = this->_currentLevel;
-
-            this->_currentLevel = handle;
-
-            return TRUE;
-        }
-
-        /// <summary>
-        /// カレントレベルを取得
-        /// </summary>
-        /// <returns></returns>
-        Level::Node* CurrentLevel();
-
-    private:
-        // レベルのノードをアクターとして管理
-        Actor::ActorManager _nodeManager;
-
-        /// <summary>
-        /// カレントレベルのハンドル
-        /// </summary>
-        Core::Common::Handle _currentLevel;
-
-        /// <summary>
-        /// 前カレントレベルのハンドル
-        /// </summary>
-        Core::Common::Handle _prevLevel;
     };
 }  // namespace Level

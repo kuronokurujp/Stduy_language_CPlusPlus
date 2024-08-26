@@ -8,27 +8,10 @@
 
 namespace Platform
 {
-    class TextFileReadInterface
-    {
-    public:
-        virtual const Bool Open(Core::File::Path&) = 0;
-        virtual void Close()                       = 0;
-
-        /// <summary>
-        /// 失敗した時のエラーメッセージ
-        /// </summary>
-        /// <returns></returns>
-        const Core::Common::FixString256& ErrorMsg() { return this->_szErr; }
-
-    protected:
-        Core::Common::FixString256 _szErr;
-        Bool _bOpen = FALSE;
-    };
-
     /// <summary>
     /// ファイルシステム管理のインターフェイス
     /// </summary>
-    class FileSystemInterface
+    class FileInterface
     {
     public:
         virtual const Core::Common::Handle FileOpen(const Core::File::Path& in_rPath) = 0;

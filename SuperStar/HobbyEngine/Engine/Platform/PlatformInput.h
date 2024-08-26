@@ -303,7 +303,7 @@ namespace Platform
     /// プラットフォームのインプットシステム
     /// マウス, キーボード, コントローラーを対応
     /// </summary>
-    class InputSystemInterface
+    class InputInterface
     {
     public:
         virtual void Init()                              = 0;

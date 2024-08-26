@@ -36,7 +36,6 @@ namespace Level
         /// <summary>
         /// モジュール初期化
         /// </summary>
-        /// <returns></returns>
         const Bool _Start() override final;
 
         /// <summary>
@@ -44,7 +43,20 @@ namespace Level
         /// </summary>
         virtual const Bool _Release() override final;
 
-        const Bool _Update(const Float32 in_fDeltaTime) override final;
+        /// <summary>
+        /// 前更新
+        /// </summary>
+        const Bool _BeforeUpdate(const Float32) override final;
+
+        /// <summary>
+        /// 更新
+        /// </summary>
+        const Bool _Update(const Float32) override final;
+
+        /// <summary>
+        /// 後更新
+        /// </summary>
+        const Bool _LateUpdate(const Float32) override final;
 
     private:
         std::shared_ptr<Manager> _pLevelManager = NULL;

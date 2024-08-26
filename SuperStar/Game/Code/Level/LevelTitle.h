@@ -18,12 +18,13 @@ namespace Level
         const Bool Begin() override final;
         const Bool End() override final;
 
-
     protected:
-        void _ProcessInput(const Float32 in_fDt, const EnhancedInput::InputMap* in_pInputMap) override final;
+        void _ProcessInput(const Float32 in_fDt,
+                           const EnhancedInput::InputMap* in_pInputMap) override final;
 
     private:
         Core::Common::Handle _layoutAssetHandle;
         Core::Common::Handle _uIWidgetHandle;
+        Core::Common::Handle _viewHandle;
     };
 }  // namespace Level

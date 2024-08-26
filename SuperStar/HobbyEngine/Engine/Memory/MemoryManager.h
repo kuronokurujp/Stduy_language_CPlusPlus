@@ -146,7 +146,7 @@ namespace Core::Memory
         struct PageSetupInfo
         {
             // ページ番号．
-            Uint8 _chPage = InvalidMemoryPage;
+            Uint8 _page = InvalidMemoryPage;
             // ページに割り当てるサイズ（MINIMUM_ALIGN_SIZEの倍数であること）
             Uint32 _uSize = 0xffffffff;
         };

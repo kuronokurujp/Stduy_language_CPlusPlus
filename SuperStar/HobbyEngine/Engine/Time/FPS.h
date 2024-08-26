@@ -5,7 +5,7 @@
 // 前方宣言
 namespace Platform
 {
-    class TimeSystemInterface;
+    class TimeInterface;
 }
 
 /// <summary>
@@ -17,22 +17,21 @@ namespace Core::Time
     {
     public:
         FPS() {}
-        FPS(Platform::TimeSystemInterface* in_pTimeInterface);
+        FPS(Platform::TimeInterface* in_pTimeInterface);
 
         /// <summary>
         /// 指定時間待機(ミリ秒)
         /// </summary>
         /// <param name="in_fps"></param>
         /// <returns></returns>
-        const Bool UpdateWait(Platform::TimeSystemInterface* in_pTimeInterface,
-                              const Uint32 in_waitMSec);
+        const Bool UpdateWait(Platform::TimeInterface* in_pTimeInterface, const Uint32 in_uWaitMSec);
 
         /// <summary>
         /// 更新時間取得(秒)
         /// </summary>
         /// <returns></returns>
-        const Float32 GetDeltaTimeSec(Platform::TimeSystemInterface* in_pTimeInterface) const;
-        const Float32 GetDeltaTimeMSec(Platform::TimeSystemInterface* in_pTimeInterface) const;
+        const Float32 GetDeltaTimeSec(Platform::TimeInterface* in_pTimeInterface) const;
+        const Float32 GetDeltaTimeMSec(Platform::TimeInterface* in_pTimeInterface) const;
 
         inline const Uint32 GetFrameRate() const { return this->_uFrameRate; }
 

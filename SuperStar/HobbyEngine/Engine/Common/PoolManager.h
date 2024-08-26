@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Engine/Common/CustomArray.h"
 #include "Engine/Common/CustomStack.h"
 #include "Engine/Common/CustomVector.h"
 #include "Engine/Common/Handle.h"
@@ -128,7 +129,7 @@ namespace Core::Common
             Handle handle;
 
             Bool bNewSlot = FALSE;
-            S* pObject   = NULL;
+            S* pObject    = NULL;
 
             if (this->_spCacheDatas->empty())
             {
@@ -189,7 +190,7 @@ namespace Core::Common
         /// 割り当てデータを解放
         /// </summary>
         /// <param name="handle"></param>
-        void _Free(Handle& in_rHandle, const Bool in_bCache)
+        void _Free(const Handle& in_rHandle, const Bool in_bCache)
         {
             HE_ASSERT(in_rHandle.Null() == FALSE && "解放するデータがないとだめ");
 
@@ -207,8 +208,6 @@ namespace Core::Common
                 // キャッシュしたのを破棄する
                 HE_SAFE_DELETE(tpRemoveObj);
             }
-            // ハンドルを無効化
-            in_rHandle.Clear();
         }
 
         // データの参照(非const版)
@@ -275,8 +274,6 @@ namespace Core::Common
             Uint32 uIndex = 0;
             if (this->_sFreeSlot.Empty())
             {
-                this->_vUserSlot.PushBack(T());
-
                 uIndex = this->_vMagicNum.Size();
                 out->Init(uIndex);
                 this->_vMagicNum.PushBack(out->Magic());
@@ -287,10 +284,10 @@ namespace Core::Common
                 out->Init(uIndex);
 
                 (*this->_vMagicNum.GetPtr(uIndex)) = out->Magic();
-                this->_vUserSlot.GetPtr(uIndex);
             }
 
-            return this->_vUserSlot.GetPtr(uIndex);
+            // 空きのあるスロットを使用する
+            return &this->_vUserSlot[uIndex];
         }
 
         /// <summary>
@@ -304,14 +301,14 @@ namespace Core::Common
             const Uint32 uIndex = in_rHandle.Index();
             HE_ASSERT(this->_vMagicNum[uIndex] != NON_MAGIC_NUMBER);
             HE_ASSERT(this->_vMagicNum[uIndex] == in_rHandle.Magic());
-            HE_ASSERT(uIndex < this->_vUserSlot.Size());
+            HE_ASSERT(uIndex < this->_vUserSlot.Capacity());
 
             (*this->_vMagicNum.GetPtr(uIndex)) = NON_MAGIC_NUMBER;
             this->_sFreeSlot.PushBack(uIndex);
         }
 
         // データの参照(非const版)
-        T* _Ref(const Handle& in_rHandle)
+        T* Ref(const Handle& in_rHandle)
         {
             if (in_rHandle.Null()) return NULL;
 
@@ -324,14 +321,14 @@ namespace Core::Common
         }
 
         // データの参照(const版)
-        const T* _Ref(const Handle& in_rHandle) const
+        const T* Ref(const Handle& in_rHandle) const
         {
             typedef RuntimePoolManager<T> ThisType;
             return (const_cast<ThisType*>(this)->_Ref(in_rHandle));
         }
 
     private:
-        CustomFixVector<T, CAPACITY> _vUserSlot;
+        CustomArray<T, CAPACITY> _vUserSlot;
         CustomFixStack<Uint32, CAPACITY> _sFreeSlot;
         CustomFixVector<Uint32, CAPACITY> _vMagicNum;
     };

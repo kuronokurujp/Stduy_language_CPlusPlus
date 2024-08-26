@@ -1,25 +1,17 @@
 ﻿#pragma once
 
-#include "Engine/Common/CustomArray.h"
 #include "Engine/Core.h"
 #include "Engine/Module/Module.h"
 
+// プラットフォームのインターフェイス
+#include "PlatformFile.h"
+#include "PlatformInput.h"
+#include "PlatformScreen.h"
+#include "PlatformSystem.h"
+#include "PlatformTime.h"
+
 namespace Platform
 {
-    // 前方宣言
-    class InputSystemInterface;
-    class FileSystemInterface;
-
-    /// <summary>
-    /// プラットフォームの時間インターフェイス
-    /// </summary>
-    class TimeSystemInterface
-    {
-    public:
-        virtual const Uint32 NowMSec()             = 0;
-        virtual void SleepMSec(const Uint32 in_ms) = 0;
-    };
-
     /// <summary>
     /// プラットフォームの追加モジュール
     /// ゲームは一つのプラットフォームしか起動しない
@@ -40,32 +32,37 @@ namespace Platform
         /// <summary>
         /// やめる状態になっているか
         /// </summary>
-        /// <returns></returns>
         virtual const Bool IsQuit() = 0;
 
         /// <summary>
-        /// 時間システム
+        /// 時間関連の処理
         /// </summary>
-        /// <returns></returns>
-        virtual TimeSystemInterface* Time() = 0;
+        virtual TimeInterface* Time() = 0;
 
         /// <summary>
-        /// 入力システム
+        /// 入力関連の処理
         /// </summary>
-        /// <returns></returns>
-        virtual InputSystemInterface* Input() = 0;
+        virtual InputInterface* Input() = 0;
 
         /// <summary>
-        /// ファイルシステム
+        /// ファイル関連の処理
         /// </summary>
-        /// <returns></returns>
-        virtual FileSystemInterface* File() = 0;
+        virtual FileInterface* File() = 0;
+
+        /// <summary>
+        /// スクリーン関連の処理
+        /// </summary>
+        virtual ScreenInterface* Screen() = 0;
+
+        /// <summary>
+        /// システム関連の処理
+        /// </summary>
+        virtual SystemInterface* System() = 0;
 
     protected:
         /// <summary>
         /// モジュール開始
         /// </summary>
-        /// <returns></returns>
         virtual const Bool _Start() override
         {
             HE_ASSERT(FALSE);
@@ -73,26 +70,24 @@ namespace Platform
         }
 
         /// <summary>
-        /// モジュール前更新
+        /// 前更新
         /// </summary>
         /// <param name="in_fDeltaTime"></param>
         /// <returns></returns>
-        virtual const Bool _BeforeUpdate(const Float32 in_fDeltaTime) override
-        {
-            HE_ASSERT(FALSE);
-            return FALSE;
-        }
+        virtual const Bool _BeforeUpdate(const Float32 in_fDeltaTime) override = 0;
 
-        virtual const Bool _Update(const Float32 in_fDeltaTime) override
-        {
-            HE_ASSERT(FALSE);
-            return FALSE;
-        }
+        /// <summary>
+        /// 更新
+        /// </summary>
+        /// <param name="in_fDeltaTime"></param>
+        /// <returns></returns>
+        virtual const Bool _Update(const Float32 in_fDeltaTime) override = 0;
 
-        virtual const Bool _LateUpdate(const Float32 in_fDeltaTime) override
-        {
-            HE_ASSERT(FALSE);
-            return FALSE;
-        }
+        /// <summary>
+        /// 後更新
+        /// </summary>
+        /// <param name="in_fDeltaTime"></param>
+        /// <returns></returns>
+        virtual const Bool _LateUpdate(const Float32 in_fDeltaTime) override = 0;
     };
 }  // namespace Platform

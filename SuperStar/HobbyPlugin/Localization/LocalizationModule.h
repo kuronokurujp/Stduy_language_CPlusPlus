@@ -36,7 +36,7 @@ namespace Localization
         using LocateMap =
             Core::Common::CustomFixMap<Core::Common::FixString128, SystemAssetData::LocateData, 32>;
 
-        virtual const Bool _Load(Platform::FileSystemInterface& in_rFileSystem) override;
+        virtual const Bool _Load(Platform::FileInterface& in_rFileSystem) override;
 
         /// <summary>
         /// ロケートマップデータを探して取得
@@ -49,8 +49,7 @@ namespace Localization
         /// <summary>
         /// 各言語毎のデータ
         /// </summary>
-        Core::Common::CustomFixMap<Core::Common::FixString128, LocateMap, 32>
-            _locateDataMap;
+        Core::Common::CustomFixMap<Core::Common::FixString128, LocateMap, 32> _locateDataMap;
     };
 
     /// <summary>

@@ -7,6 +7,8 @@
 // モジュールのヘッダーファイルは全てインクルードする
 #include "DxLib/DXLibFile.h"
 #include "DxLib/DXLibInput.h"
+#include "DxLib/DXLibScreen.h"
+#include "DxLib/DXLibSystem.h"
 #include "DxLib/DXLibTime.h"
 
 namespace DXLib
@@ -23,32 +25,19 @@ namespace DXLib
     public:
         DXLibModule();
 
-        const bool CreateMainWindow() override final;
-        const bool ReleaseAllWindows() override final;
+        const Bool CreateMainWindow() override final;
+        const Bool ReleaseAllWindows() override final;
 
         /// <summary>
         /// やめる状態になっているか
         /// </summary>
-        /// <returns></returns>
         const Bool IsQuit() override final { return this->_bQuit; }
 
-        /// <summary>
-        /// 時間システム
-        /// </summary>
-        /// <returns></returns>
-        Platform::TimeSystemInterface* Time() override final { return &this->_time; }
-
-        /// <summary>
-        /// 入力システム
-        /// </summary>
-        /// <returns></returns>
-        Platform::InputSystemInterface* Input() override final { return &this->_input; }
-
-        /// <summary>
-        /// ファイルシステム
-        /// </summary>
-        /// <returns></returns>
-        Platform::FileSystemInterface* File() override final { return &this->_file; }
+        Platform::TimeInterface* Time() override final { return &this->_time; }
+        Platform::InputInterface* Input() override final { return &this->_input; }
+        Platform::FileInterface* File() override final { return &this->_file; }
+        Platform::ScreenInterface* Screen() override final { return &this->_screen; }
+        Platform::SystemInterface* System() override final { return &this->_system; }
 
     protected:
         /// <summary>
@@ -60,16 +49,18 @@ namespace DXLib
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool _Release() override final;
+        const Bool _Release() override final;
 
-        const bool _BeforeUpdate(const Float32 in_fDeltaTime) override final;
-        const bool _Update(const Float32 in_fDeltaTime) override final;
-        const bool _LateUpdate(const Float32 in_fDeltaTime) override final;
+        const Bool _BeforeUpdate(const Float32 in_fDeltaTime) override final;
+        const Bool _Update(const Float32 in_fDeltaTime) override final;
+        const Bool _LateUpdate(const Float32 in_fDeltaTime) override final;
 
     private:
-        TimeSystem _time;
-        InputSystem _input;
-        FileSystem _file;
+        ::DXLib::Time _time;
+        ::DXLib::Input _input;
+        ::DXLib::File _file;
+        ::DXLib::Screen _screen;
+        ::DXLib::System _system;
 
         Bool _bQuit = FALSE;
     };

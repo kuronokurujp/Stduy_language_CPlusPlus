@@ -16,4 +16,8 @@ set(DXLIB_PLUGIN_TARGET_FILES
     DxLib/DXLibInput.h
     DxLib/DXLibTime.cpp
     DxLib/DXLibTime.h
+    DxLib/DXLibScreen.h
+    DxLib/DXLibScreen.cpp
+    DxLib/DXLibSystem.h
+    DxLib/DXLibSystem.cpp
 )

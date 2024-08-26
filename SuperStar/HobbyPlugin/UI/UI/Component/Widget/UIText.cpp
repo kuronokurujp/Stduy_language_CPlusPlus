@@ -27,6 +27,7 @@ namespace UI
         Core::Math::Vector2 pos;
         this->TransformLocalToWorldPos2D(&pos, this->_rect.Pos());
 
-        Render::Cmd2DText(pos, this->_szDrawText, {this->_color}, this->_eAnchor);
+        Render::CreateCmd2DTextDraw(this->_viewHandle, pos, this->_szDrawText, {this->_color},
+                                    this->_eAnchor);
     }
 }  // namespace UI

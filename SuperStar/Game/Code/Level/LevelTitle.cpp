@@ -9,10 +9,10 @@ namespace Level
 {
     namespace Local
     {
-        const Char* szInputActionNameByGameStart = HE_STR_TEXT("TitleLevel_GameStart");
-        const Char* szInputActionNameByGameEnd   = HE_STR_TEXT("TitleLevel_GameEnd");
+        static const Char* szInputActionNameByGameStart = HE_STR_TEXT("TitleLevel_GameStart");
+        static const Char* szInputActionNameByGameEnd   = HE_STR_TEXT("TitleLevel_GameEnd");
 
-        EnhancedInput::ActionMap mInputAction =
+        static const EnhancedInput::ActionMap mInputAction =
             {{szInputActionNameByGameStart,
               EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_A})},
              {szInputActionNameByGameEnd,
@@ -23,6 +23,12 @@ namespace Level
     {
         const Bool bRet = Level::Node::Begin();
         HE_ASSERT(bRet);
+
+        // レンダリングビュー作成
+        {
+            auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
+            this->_viewHandle  = pRenderModule->AddView();
+        }
 
         // ユーザー共通入力割り当て設定
         {
@@ -42,31 +48,42 @@ namespace Level
         }
 
         // UIのBuilderファイルからレイアウト作成
-        auto pUIModule = Module::ModuleManager::I().Get<UI::UIModule>();
+        {
+            auto pUIModule = Module::ModuleManager::I().Get<UI::UIModule>();
 
-        this->_layoutAssetHandle = pUIModule->LoadAssetWithLayoutBuild(
-            Core::File::Path(HE_STR_TEXT("UI"), HE_STR_TEXT("Builder"), HE_STR_TEXT("Game"),
-                             HE_STR_TEXT("Title.xml")));
+            this->_layoutAssetHandle = pUIModule->LoadAssetWithLayoutBuild(
+                Core::File::Path(HE_STR_TEXT("UI"), HE_STR_TEXT("Builder"), HE_STR_TEXT("Game"),
+                                 HE_STR_TEXT("Title.xml")));
 
-        // widgetを作成
-        // レベルが切り替わると自動的にwidgetは破棄される
-        this->_uIWidgetHandle = pUIModule->NewLayoutByLayotuAsset(this->_layoutAssetHandle, 0);
+            // widgetを作成
+            // レベルが切り替わると自動的にwidgetは破棄される
+            this->_uIWidgetHandle =
+                pUIModule->NewLayoutByLayotuAsset(this->_layoutAssetHandle, 0, this->_viewHandle);
+        }
 
         return bRet;
     }
 
     const Bool LevelTitle::End()
     {
+        // ビューのハンドルを外す
+        {
+            auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
+            if (pRenderModule != NULL) pRenderModule->RemoveView(this->_viewHandle);
+        }
+
         // 専用の入力アクションを外す
         {
             auto pInputModule =
                 Module::ModuleManager::I().Get<EnhancedInput::EnhancedInputModule>();
-            pInputModule->RemoveCommonMappingAction(Local::mInputAction);
+            if (pInputModule != NULL) pInputModule->RemoveCommonMappingAction(Local::mInputAction);
         }
 
-        auto pUIModule = Module::ModuleManager::I().Get<UI::UIModule>();
         // ロードしたアセットを破棄
-        pUIModule->UnloadAssetWithLayoutBuild(this->_layoutAssetHandle);
+        {
+            auto pUIModule = Module::ModuleManager::I().Get<UI::UIModule>();
+            if (pUIModule != NULL) pUIModule->UnloadAssetWithLayoutBuild(this->_layoutAssetHandle);
+        }
 
         const Bool bRet = Level::Node::End();
         HE_ASSERT(bRet);

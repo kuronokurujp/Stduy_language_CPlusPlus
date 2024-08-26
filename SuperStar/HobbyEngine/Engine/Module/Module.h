@@ -32,6 +32,11 @@ namespace Module
         }
 
         /// <summary>
+        /// ヒープ作成したモジュールを登録
+        /// </summary>
+        const Bool RegistHeapModule(ModuleBase* in_pModule);
+
+        /// <summary>
         /// モジュールの利用開始
         /// </summary>
         const Bool Start(const eLayer);
@@ -65,6 +70,10 @@ namespace Module
         Core::Common::CustomFixVector<ModuleBase*, 16> _vAppModule;
         Core::Common::CustomFixVector<ModuleBase*, 32> _vLogicModule;
         Core::Common::CustomFixVector<ModuleBase*, 16> _vViewModule;
+
+        Core::Common::CustomFixMap<Core::Common::FixString128, ModuleBase*, 16> _mAppModule;
+        Core::Common::CustomFixMap<Core::Common::FixString128, ModuleBase*, 32> _mLogicModule;
+        Core::Common::CustomFixMap<Core::Common::FixString128, ModuleBase*, 16> _mViewModule;
     };
 
     // アプリ層とロジック層とビュー層で種類を分けるべきか
@@ -84,8 +93,18 @@ namespace Module
         template <typename T>
         T* GetDependenceModule()
         {
-            Bool bHit = FALSE;
             Core::Common::FixString64 szName(T::ModuleName());
+            auto pTargetModule = reinterpret_cast<T*>(ModuleManager::I().Get(szName.Str()));
+            if (pTargetModule == NULL)
+            {
+                HE_PG_LOG_LINE(HE_STR_TEXT("指定したモジュール(")
+                                   HE_STR_FORMAT_TEXT HE_STR_TEXT(")が存在しない"),
+                               szName.Str());
+                return NULL;
+            }
+
+            // 依存対象のモジュールかどうかチェック
+            Bool bHit = FALSE;
             for (Uint32 i = 0; i < this->_vDependenceModuleName.Size(); ++i)
             {
                 if (this->_vDependenceModuleName[i] == szName)
@@ -95,10 +114,9 @@ namespace Module
                 }
             }
 
-            if (bHit) return reinterpret_cast<T*>(ModuleManager::I().Get(szName.Str()));
+            if (bHit == FALSE) return NULL;
 
-            HE_ASSERT(0 && "指定モジュールが依存モジュールではない");
-            return NULL;
+            return pTargetModule;
         }
 
         /// <summary>
@@ -135,8 +153,6 @@ namespace Module
         /// <summary>
         /// モジュール前更新
         /// </summary>
-        /// <param name="in_fDeltaTime"></param>
-        /// <returns></returns>
         virtual const Bool _BeforeUpdate(const Float32 in_fDeltaTime) { return TRUE; }
 
         /// <summary>
@@ -160,11 +176,18 @@ namespace Module
         }
 
     private:
+#ifdef HE_ENGINE_DEBUG
+        const Bool _ValidateDependenceModule();
+#endif
+
+    private:
         Core::Common::FixString128 _szName;
         eLayer _eLayer   = eLayer_Logic;
         Sint32 _priority = 0;
 
+#ifdef HE_ENGINE_DEBUG
         Core::Common::CustomFixVector<ModuleBase*, 64> _vDependenceModule;
+#endif
         Core::Common::CustomFixVector<Core::Common::FixString64, 64> _vDependenceModuleName;
 
     private:
@@ -181,10 +204,3 @@ public:                                       \
     {                                         \
         return #_type_;                       \
     }
-
-// モジュールのインポート
-#define MODULE_IMPORT(_type_)           \
-    do                                  \
-    {                                   \
-        static _type_ s_global_module_; \
-    } while (0);

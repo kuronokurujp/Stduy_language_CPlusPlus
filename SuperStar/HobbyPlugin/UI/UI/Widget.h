@@ -29,8 +29,5 @@ namespace UI
         /// 継承したクラスで必ず基本クラスのメソッドを呼ぶ
         /// </summary>
         virtual const Bool End() override;
-
-    private:
-        Core::Common::Handle _inputHandle;
     };
 }  // namespace UI

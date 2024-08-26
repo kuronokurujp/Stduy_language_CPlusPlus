@@ -89,8 +89,9 @@ namespace UI
         return handle;
     }
 
-    Core::Common::Handle UIModule::NewLayoutByLayotuAsset(Core::Common::Handle& in_rHandle,
-                                                          const Uint32 in_uSort)
+    Core::Common::Handle UIModule::NewLayoutByLayotuAsset(
+        const Core::Common::Handle& in_rHandle, const Uint32 in_uSort,
+        const Core::Common::Handle& in_rViewHandle)
     {
         HE_ASSERT(in_rHandle.Null() == FALSE);
         auto pAssetManagerModule = this->GetDependenceModule<AssetManager::AssetManagerModule>();
@@ -157,7 +158,8 @@ namespace UI
                             Core::Math::Rect2(pLabel->fX, pLabel->fY, pStyle->w, pStyle->h,
                                               Local::mPosAnthorToRect2Anchor[pLabel->eAnchor]);
 
-                        auto h = this->NewLabelWidget(Core::Common::FixString64(pNodeData->szId),
+                        auto h = this->NewLabelWidget(in_rViewHandle,
+                                                      Core::Common::FixString64(pNodeData->szId),
                                                       sort, pLabel->szLoc, pLabel->szText, rect,
                                                       pStyle->color);
 
@@ -174,7 +176,7 @@ namespace UI
                         const UI::Builder::Style* pStyle = &pButton->style;
 
                         auto h = this->NewButtonWidget(
-                            Core::Common::FixString64(pNodeData->szId), sort,
+                            in_rViewHandle, Core::Common::FixString64(pNodeData->szId), sort,
                             Core::Math::Rect2(pButton->fX, pButton->fY, pStyle->w, pStyle->h,
                                               Local::mPosAnthorToRect2Anchor[pButton->eAnchor]),
                             pStyle->color);
@@ -235,12 +237,10 @@ namespace UI
         return hLayout;
     }
 
-    Core::Common::Handle UIModule::NewLabelWidget(const Core::Common::StringBase& in_szrName,
-                                                  const Uint32 in_uSort,
-                                                  const Char* in_szLocGroupName,
-                                                  const Char* in_szText,
-                                                  const Core::Math::Rect2& in_rTextRect,
-                                                  const Uint32 in_uTextColor)
+    Core::Common::Handle UIModule::NewLabelWidget(
+        const Core::Common::Handle& in_rViewHandle, const Core::Common::StringBase& in_szrName,
+        const Uint32 in_uSort, const Char* in_szLocGroupName, const Char* in_szText,
+        const Core::Math::Rect2& in_rTextRect, const Uint32 in_uTextColor)
     {
         Core::Common::Handle handle = this->NewWidget(in_szrName, in_uSort);
         HE_ASSERT(handle.Null() == FALSE);
@@ -259,6 +259,7 @@ namespace UI
         auto textHandle = this->AddComponent<UI::UITextComponent>(handle, in_uSort + 1);
         {
             UI::UITextComponent* pText = pWidget->GetComponent<UI::UITextComponent>(textHandle);
+            pText->SetViewHandle(in_rViewHandle);
             pText->SetText(in_szText);
             pText->SetRect(Core::Math::Rect2(0, 0, in_rTextRect.Width(), in_rTextRect.Height(),
                                              in_rTextRect._eAnchor));
@@ -270,7 +271,8 @@ namespace UI
         return handle;
     }
 
-    Core::Common::Handle UIModule::NewButtonWidget(const Core::Common::StringBase& in_szrName,
+    Core::Common::Handle UIModule::NewButtonWidget(const Core::Common::Handle& in_rViewHandle,
+                                                   const Core::Common::StringBase& in_szrName,
                                                    const Uint32 in_uSort,
                                                    const Core::Math::Rect2& in_rBtnRect,
                                                    const Uint32 in_uBtnColor)
@@ -291,6 +293,7 @@ namespace UI
         auto hButton = this->AddComponent<UI::UIButtonComponent>(handle, in_uSort);
         {
             UI::UIButtonComponent* pButton = pWidget->GetComponent<UI::UIButtonComponent>(hButton);
+            pButton->SetViewHandle(in_rViewHandle);
             pButton->SetWidth(in_rBtnRect.Width());
             pButton->SetHeight(in_rBtnRect.Height());
             pButton->SetColor(in_uBtnColor);

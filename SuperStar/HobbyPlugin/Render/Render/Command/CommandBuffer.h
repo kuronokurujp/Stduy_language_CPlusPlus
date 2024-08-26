@@ -8,7 +8,7 @@ namespace Render
     /// <summary>
     /// コマンドバッファ
     /// </summary>
-    class CommandBuffer : public Core::Common::CustomFixVector<Command, 128>
+    class CommandBuffer : public Core::Common::CustomFixVector<Command, 2048>
     {
     };
 }  // namespace Render

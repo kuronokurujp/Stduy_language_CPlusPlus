@@ -322,7 +322,7 @@ namespace Core::Common
                           IsCustomFixString<DATA>::value)
             {
                 // デストラクタを呼ぶ
-                Node* p = this->_poolObject._Ref(in_rHandle);
+                Node* p = this->_poolObject.Ref(in_rHandle);
                 p->_pair.data.~DATA();
             }
 
@@ -758,8 +758,7 @@ namespace Core::Common
 
             // 右のノードを左に移動したいが,
             // 右のノードが存在しない場合もあるので移動できない
-            if (in_pNode->_pRight == NULL)
-                return in_pNode;
+            if (in_pNode->_pRight == NULL) return in_pNode;
 
             this->_FlipColors(in_pNode);
 
