@@ -27,7 +27,7 @@ namespace Core::Common
         {
             if (T::_pInstance)
             {
-                if (T::_pInstance->Release() == FALSE) HE_ASSERT(FALSE && "リリース失敗");
+                if (T::_pInstance->VRelease() == FALSE) HE_ASSERT(FALSE && "リリース失敗");
 
                 T::_pInstance = NULL;
             }
@@ -41,7 +41,7 @@ namespace Core::Common
         /// インスタンスがリリースされたときに呼ばれる
         /// 終了処理だが, 大抵はアプリ終了時に呼ばれる
         /// </summary>
-        virtual const Bool Release() { return FALSE; }
+        virtual const Bool VRelease() { return FALSE; }
 
         /// <summary>
         /// インスタンスの参照を返す
@@ -65,7 +65,7 @@ namespace Core::Common
         static void Reset()
         {
             HE_ASSERT(T::_pInstance);
-            if (T::_pInstance->Release() == FALSE) HE_ASSERT(FALSE && "リリース失敗");
+            if (T::_pInstance->VRelease() == FALSE) HE_ASSERT(FALSE && "リリース失敗");
             T::_pInstance = NULL;
         }
 

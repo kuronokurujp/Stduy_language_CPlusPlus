@@ -41,7 +41,7 @@ namespace Core
         // タスクシステムの終了
         manager.End();
 
-        CHECK(memoryManager.Release());
+        CHECK(memoryManager.VRelease());
         memoryManager.Reset();
     }
 
@@ -81,7 +81,10 @@ namespace Core
         public:
             EffectTask() : Task() {}
 
-            void Update(const Float32 in_dt, const TaskData&) override final
+            const Bool VBegin() override final { return TRUE; }
+            const Bool VEnd() override final { return TRUE; }
+
+            void VUpdate(const Float32 in_dt, const TaskData&) override final
             {
                 this->_time += in_dt;
                 HE_LOG(HE_STR_TEXT("F"));
@@ -99,14 +102,17 @@ namespace Core
         public:
             ObjectTask() : Task() {}
 
-            virtual void Update(const Float32 in_dt, const TaskData&) override
+            const Bool VBegin() override final { return TRUE; }
+            const Bool VEnd() override final { return TRUE; }
+
+            void VUpdate(const Float32 in_dt, const TaskData&) override
             {
                 this->_time += in_dt;
                 HE_LOG(HE_STR_TEXT("P"));
 
                 // 1/30の確率でエフェクトを発生させる
-                // TODO: これだけエラーになる
-                if (rand() % 30 == 0) this->_pManager->CreateAndAdd<EffectTask>(GROUP_SYSTEM, TRUE);
+                if (rand() % 30 == 0)
+                    this->_pTaskManager->CreateAndAdd<EffectTask>(GROUP_SYSTEM, TRUE);
             }
 
         private:
@@ -118,7 +124,7 @@ namespace Core
         public:
             EnemyTask() : ObjectTask() {}
 
-            void Update(const Float32 in_dt, const TaskData&) override final
+            void VUpdate(const Float32 in_dt, const TaskData&) override final
             {
                 this->_time += in_dt;
                 HE_LOG(HE_STR_TEXT("E"));
@@ -133,7 +139,10 @@ namespace Core
         public:
             DummySystemTask() {}
 
-            void Update(const Float32 in_dt, const TaskData&) override final
+            const Bool VBegin() override final { return TRUE; }
+            const Bool VEnd() override final { return TRUE; }
+
+            void VUpdate(const Float32 in_dt, const TaskData&) override final
             {
                 this->_time += in_dt;
                 HE_LOG(HE_STR_TEXT("S"));
@@ -225,7 +234,7 @@ namespace Core
             CHECK(pPlayer == NULL);
         }
 
-        CHECK(memoryManager.Release());
+        CHECK(memoryManager.VRelease());
         memoryManager.Reset();
     }
 
@@ -261,7 +270,10 @@ namespace Core
         public:
             EffectTask() : Task() {}
 
-            void Update(const Float32 in_fDt, const TaskData&) override
+            const Bool VBegin() override final { return TRUE; }
+            const Bool VEnd() override final { return TRUE; }
+
+            void VUpdate(const Float32 in_fDt, const TaskData&) override
             {
                 this->_time += in_fDt;
                 HE_LOG(HE_STR_TEXT("F"));
@@ -279,13 +291,16 @@ namespace Core
         public:
             ObjectTask() : Task() {}
 
-            void Update(const Float32 in_fDt, const TaskData&) override
+            const Bool VBegin() override final { return TRUE; }
+            const Bool VEnd() override final { return TRUE; }
+
+            void VUpdate(const Float32 in_fDt, const TaskData&) override
             {
                 this->_time += in_fDt;
                 HE_LOG(HE_STR_TEXT("P"));
 
                 // 1/30の確率でエフェクトを発生させる
-                if (rand() % 30 == 0) this->_pManager->CreateAndAdd<EffectTask>(0, FALSE);
+                if (rand() % 30 == 0) this->_pTaskManager->CreateAndAdd<EffectTask>(0, FALSE);
             }
 
         private:
@@ -349,7 +364,7 @@ namespace Core
         // タスクシステムが終了しているので解放されているか
         CHECK(manager.UseCount() == 0);
 
-        CHECK(memoryManager.Release());
+        CHECK(memoryManager.VRelease());
         memoryManager.Reset();
     }
 
@@ -384,7 +399,10 @@ namespace Core
         public:
             EffectTask() : Task() {}
 
-            void Update(const Float32 in_fDt, const TaskData&) override
+            const Bool VBegin() override final { return TRUE; }
+            const Bool VEnd() override final { return TRUE; }
+
+            void VUpdate(const Float32 in_fDt, const TaskData&) override
             {
                 this->_time += in_fDt;
                 HE_LOG(HE_STR_TEXT("F"));
@@ -402,13 +420,16 @@ namespace Core
         public:
             ObjectTask() : Task() {}
 
-            void Update(const Float32 in_fDt, const TaskData&) override
+            const Bool VBegin() override final { return TRUE; }
+            const Bool VEnd() override final { return TRUE; }
+
+            void VUpdate(const Float32 in_fDt, const TaskData&) override
             {
                 this->_time += in_fDt;
                 HE_LOG(HE_STR_TEXT("P"));
 
                 // 1/30の確率でエフェクトを発生させる
-                if (rand() % 30 == 0) this->_pManager->CreateAndAdd<EffectTask>(0, TRUE);
+                if (rand() % 30 == 0) this->_pTaskManager->CreateAndAdd<EffectTask>(0, TRUE);
             }
 
         private:
@@ -458,7 +479,7 @@ namespace Core
         // タスクシステムが終了しているので解放されているか
         CHECK(manager.UseCount() == 0);
 
-        CHECK(memoryManager.Release());
+        CHECK(memoryManager.VRelease());
         memoryManager.Reset();
     }
 
@@ -493,7 +514,10 @@ namespace Core
         public:
             EffectTask() : Task() {}
 
-            void Update(const Float32 in_fDt, const TaskData&) override
+            const Bool VBegin() override final { return TRUE; }
+            const Bool VEnd() override final { return TRUE; }
+
+            void VUpdate(const Float32 in_fDt, const TaskData&) override
             {
                 this->_time += in_fDt;
                 HE_LOG(HE_STR_TEXT("F"));
@@ -511,7 +535,10 @@ namespace Core
         public:
             ObjectTask() : Task() {}
 
-            void Update(const Float32 in_fDt, const TaskData&) override
+            const Bool VBegin() override final { return TRUE; }
+            const Bool VEnd() override final { return TRUE; }
+
+            void VUpdate(const Float32 in_fDt, const TaskData&) override
             {
                 this->_time += in_fDt;
                 HE_LOG(HE_STR_TEXT("P"));
@@ -582,7 +609,7 @@ namespace Core
         // タスクシステムが終了しているので解放されているか
         CHECK(manager.UseCount() == 0);
 
-        CHECK(memoryManager.Release());
+        CHECK(memoryManager.VRelease());
         memoryManager.Reset();
 
         HE_LOG_LINE(HE_STR_TEXT(""));

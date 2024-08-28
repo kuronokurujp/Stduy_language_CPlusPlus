@@ -15,9 +15,9 @@
 // デバッグ画面を表示してレベルを切り替える
 namespace Level
 {
-    const Bool LevelLauncher::Begin()
+    const Bool LevelLauncher::VBegin()
     {
-        const Bool bRet = Level::Node::Begin();
+        const Bool bRet = Level::Node::VBegin();
         HE_ASSERT(bRet);
 
         // ランチャー用のレンダリングビュー作成
@@ -61,7 +61,7 @@ namespace Level
         return bRet;
     }
 
-    const Bool LevelLauncher::End()
+    const Bool LevelLauncher::VEnd()
     {
         // ビューのハンドルを外す
         {
@@ -75,7 +75,7 @@ namespace Level
             if (pUIModule != NULL) pUIModule->UnloadAssetWithLayoutBuild(this->_layoutAssetHandle);
         }
 
-        const Bool bRet = Level::Node::End();
+        const Bool bRet = Level::Node::VEnd();
         HE_ASSERT(bRet);
 
         return TRUE;

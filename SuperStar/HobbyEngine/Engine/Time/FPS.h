@@ -24,7 +24,8 @@ namespace Core::Time
         /// </summary>
         /// <param name="in_fps"></param>
         /// <returns></returns>
-        const Bool UpdateWait(Platform::TimeInterface* in_pTimeInterface, const Uint32 in_uWaitMSec);
+        const Bool UpdateWait(Platform::TimeInterface* in_pTimeInterface,
+                              const Uint32 in_uWaitMSec);
 
         /// <summary>
         /// 更新時間取得(秒)

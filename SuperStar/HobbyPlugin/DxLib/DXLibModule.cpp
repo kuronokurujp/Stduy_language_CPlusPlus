@@ -12,7 +12,7 @@ namespace DXLib
         this->_AppendDependenceModule<Render::RenderModule>();
     }
 
-    const Bool DXLibModule::_Start()
+    const Bool DXLibModule::_VStart()
     {
         Bool bRet = TRUE;
         {
@@ -43,13 +43,13 @@ namespace DXLib
 #endif
             }
 
-            this->_input.Init();
+            this->_input.VInit();
         }
 
         return bRet;
     }
 
-    const Bool DXLibModule::_Release()
+    const Bool DXLibModule::_VRelease()
     {
         // DxLibの後始末
         ::DxLib_End();
@@ -57,7 +57,7 @@ namespace DXLib
         return TRUE;
     }
 
-    const Bool DXLibModule::CreateMainWindow()
+    const Bool DXLibModule::VCreateMainWindow()
     {
         // ウィンドウを表示する
         ::SetWindowVisibleFlag(TRUE);
@@ -68,16 +68,16 @@ namespace DXLib
         return TRUE;
     }
 
-    const Bool DXLibModule::ReleaseAllWindows()
+    const Bool DXLibModule::VReleaseAllWindows()
     {
         return FALSE;
     }
 
-    const Bool DXLibModule::_BeforeUpdate(const Float32 in_fDeltaTime)
+    const Bool DXLibModule::_VBeforeUpdate(const Float32 in_fDeltaTime)
     {
         {
             // 入力更新
-            this->_input.Update(in_fDeltaTime);
+            this->_input.VUpdate(in_fDeltaTime);
 
             // 0以外だと画面終了メッセージとみなしている
             if ((ProcessMessage() != 0))
@@ -89,14 +89,14 @@ namespace DXLib
         return (this->_bQuit == FALSE);
     }
 
-    const Bool DXLibModule::_Update(const Float32 in_fDeltaTime)
+    const Bool DXLibModule::_VUpdate(const Float32 in_fDeltaTime)
     {
         if (this->_bQuit) return FALSE;
 
         return TRUE;
     }
 
-    const Bool DXLibModule::_LateUpdate(const Float32 in_fDeltaTime)
+    const Bool DXLibModule::_VLateUpdate(const Float32 in_fDeltaTime)
     {
         if (this->_bQuit) return FALSE;
 

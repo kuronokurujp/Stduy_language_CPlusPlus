@@ -20,7 +20,7 @@ namespace Level
     /// <summary>
     /// モジュール初期化
     /// </summary>
-    const Bool LevelModule::_Start()
+    const Bool LevelModule::_VStart()
     {
         // レベル関連の準備
         {
@@ -31,23 +31,23 @@ namespace Level
         return TRUE;
     }
 
-    const Bool LevelModule::_Release()
+    const Bool LevelModule::_VRelease()
     {
-        this->_pLevelManager->End();
+        this->_pLevelManager->Release();
         this->_pLevelManager.reset();
 
         return TRUE;
     }
 
-    const Bool LevelModule::_BeforeUpdate(const Float32 in_fDt)
+    const Bool LevelModule::_VBeforeUpdate(const Float32 in_fDt)
     {
-        // TODO: 前更新でメインレベルの切り替えなどしている
+        // 前更新でメインレベルの切り替えなどしている
         this->_pLevelManager->BeforeUpdate(in_fDt);
 
         return TRUE;
     }
 
-    const Bool LevelModule::_Update(const Float32 in_fDt)
+    const Bool LevelModule::_VUpdate(const Float32 in_fDt)
     {
         // インプット入力対象に入力結果を送信
         auto pEnhancedInputModule = this->GetDependenceModule<EnhancedInput::EnhancedInputModule>();
@@ -60,7 +60,7 @@ namespace Level
 
         return TRUE;
     }
-    const Bool LevelModule::_LateUpdate(const Float32 in_fDt)
+    const Bool LevelModule::_VLateUpdate(const Float32 in_fDt)
     {
         this->_pLevelManager->LateUpdate(in_fDt);
         return TRUE;

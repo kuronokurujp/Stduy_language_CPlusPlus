@@ -5,9 +5,9 @@
 
 namespace Level
 {
-    const Bool LevelInGame_BG::Begin()
+    const Bool LevelInGame_BG::VBegin()
     {
-        const Bool bRet = Node::Begin();
+        const Bool bRet = Node::VBegin();
         HE_ASSERT(bRet);
 
         // レンダリングビュー作成
@@ -20,15 +20,15 @@ namespace Level
         {
             // スクリーンサイズ取得
             auto pPlatform = Module::ModuleManager::I().Get<Platform::PlatformModule>();
-            auto pScreen   = pPlatform->Screen();
-            auto pSystem   = pPlatform->System();
+            auto pScreen   = pPlatform->VScreen();
+            auto pSystem   = pPlatform->VSystem();
 
-            Uint32 uW = pScreen->Width();
-            Uint32 uH = pScreen->Height();
+            Uint32 uW = pScreen->VWidth();
+            Uint32 uH = pScreen->VHeight();
             for (Uint32 i = 0; i < this->_aPointPos.Capacity(); ++i)
             {
-                const Float32 fX = static_cast<Float32>(pSystem->GetRand(uW));
-                const Float32 fY = static_cast<Float32>(pSystem->GetRand(uH));
+                const Float32 fX = static_cast<Float32>(pSystem->VGetRand(uW));
+                const Float32 fY = static_cast<Float32>(pSystem->VGetRand(uH));
                 this->_aPointPos[i].Set(fX, fY);
             }
         }
@@ -36,28 +36,28 @@ namespace Level
         return TRUE;
     }
 
-    const Bool LevelInGame_BG::End()
+    const Bool LevelInGame_BG::VEnd()
     {
         auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
         if (pRenderModule != NULL) pRenderModule->RemoveView(this->_viewHandle);
 
-        const Bool bRet = Node::End();
+        const Bool bRet = Node::VEnd();
         HE_ASSERT(bRet);
 
         return TRUE;
     }
 
-    void LevelInGame_BG::Update(const Float32 in_fDt, const Core::TaskData& in_rTaskData)
+    void LevelInGame_BG::VUpdate(const Float32 in_fDt, const Core::TaskData& in_rTaskData)
     {
-        Node::Update(in_fDt, in_rTaskData);
+        Node::VUpdate(in_fDt, in_rTaskData);
 
         // スクリーン情報を取得
         auto pPlatform = Module::ModuleManager::I().Get<Platform::PlatformModule>();
-        auto pScreen   = pPlatform->Screen();
-        auto pSystem   = pPlatform->System();
+        auto pScreen   = pPlatform->VScreen();
+        auto pSystem   = pPlatform->VSystem();
 
-        const Uint32 uW = pScreen->Width();
-        const Uint32 uH = pScreen->Height();
+        const Uint32 uW = pScreen->VWidth();
+        const Uint32 uH = pScreen->VHeight();
 
         const Float32 fMaxXPos = static_cast<Float32>(uW);
         // 左から右へ動かす
@@ -67,7 +67,7 @@ namespace Level
             if (0 > this->_aPointPos[i]._fX)
             {
                 this->_aPointPos[i]._fX = fMaxXPos;
-                this->_aPointPos[i]._fY = pSystem->GetRand(uH);
+                this->_aPointPos[i]._fY = pSystem->VGetRand(uH);
             }
         }
 

@@ -7,12 +7,12 @@ namespace Localization
         this->_AppendDependenceModule<AssetManager::AssetManagerModule>();
     }
 
-    const Bool LocalizationModule::_Start()
+    const Bool LocalizationModule::_VStart()
     {
         return TRUE;
     }
 
-    const Bool LocalizationModule::_Release()
+    const Bool LocalizationModule::_VRelease()
     {
         // ロードしたアセットを全て破棄
         for (auto it = this->_locateDataMap.Begin(); it != this->_locateDataMap.End(); ++it)
@@ -28,7 +28,7 @@ namespace Localization
         return TRUE;
     }
 
-    const Bool LocalizationModule::_Update(const Float32 in_fDeltaTime)
+    const Bool LocalizationModule::_VUpdate(const Float32 in_fDeltaTime)
     {
         return TRUE;
     }
@@ -117,9 +117,9 @@ namespace Localization
         return rData.GetText(in_szKey.Str()).Str();
     }
 
-    const Bool SystemAssetData::_Load(Platform::FileInterface& in_rFileSystem)
+    const Bool SystemAssetData::_VLoad(Platform::FileInterface& in_rFileSystem)
     {
-        const Bool bRet = AssetManager::AssetDataToml::_Load(in_rFileSystem);
+        const Bool bRet = AssetManager::AssetDataToml::_VLoad(in_rFileSystem);
         HE_ASSERT(bRet);
 
         auto rootNode = this->GetRootNode();

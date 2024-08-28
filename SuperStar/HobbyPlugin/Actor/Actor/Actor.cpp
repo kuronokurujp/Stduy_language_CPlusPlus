@@ -16,30 +16,43 @@ namespace Actor
     Object::~Object()
     {
         this->_components.End();
-        this->_pDataAccess = NULL;
+        this->_pOwner = NULL;
     }
 
-    void Object::Setup(const Bool in_bAutoDelete)
+    void Object::SetOwner(ActorManager* in_pOwner)
     {
-        Task::Setup(in_bAutoDelete);
+        HE_ASSERT(in_pOwner);
+        this->_pOwner = in_pOwner;
+    }
+
+    Object* Object::GetActorByOwner(const Core::Common::Handle& in_rHandle)
+    {
+        HE_ASSERT(this->_pOwner);
+        return this->_pOwner->Get(in_rHandle);
+    }
+
+    void Object::VSetup(const Bool in_bAutoDelete)
+    {
+        Task::VSetup(in_bAutoDelete);
+
         this->_Clear();
     }
 
-    const Bool Object::Begin()
+    const Bool Object::VBegin()
     {
-        Task::Begin();
+        if (Task::VBegin() == FALSE) return FALSE;
 
         return TRUE;
     }
 
-    const Bool Object::End()
+    const Bool Object::VEnd()
     {
-        Task::End();
+        if (Task::VEnd() == FALSE) return FALSE;
 
         // 設定しているコンポーネントを全て破棄
         this->RemoveAllComponent();
 
-        this->_pDataAccess = NULL;
+        this->_Clear();
 
         return TRUE;
     }
@@ -47,7 +60,7 @@ namespace Actor
     /// <summary>
     /// Updates the specified in delta time.
     /// </summary>
-    void Object::Update(const Float32 in_fDt, const Core::TaskData& in_rData)
+    void Object::VUpdate(const Float32 in_fDt, const Core::TaskData& in_rData)
     {
         if (this->_eState != EState_Active) return;
 
@@ -62,7 +75,7 @@ namespace Actor
 
         // コンポーネントがすべて更新してから実行
         // コンポーネントの結果が同フレーム取れる
-        this->UpdateActor(in_fDt);
+        this->VUpdateActor(in_fDt);
 
         // Actor内で更新した座標を含めて更新
         this->_ComputeWorldTransform();
@@ -73,6 +86,14 @@ namespace Actor
     /// </summary>
     void Object::RemoveAllComponent()
     {
+        // コンポーネント解除をオーナーに通知
+        auto components = this->_components.GetUserDataList();
+        for (auto itr = components->begin(); itr != components->end(); ++itr)
+        {
+            auto pComponent = reinterpret_cast<Component*>(itr->second);
+            this->_pOwner->VOnActorUnRegistComponent(pComponent);
+        }
+
         this->_components.RemoveAll();
     }
 
@@ -84,33 +105,14 @@ namespace Actor
         HE_ASSERT(in_pHandle);
         HE_ASSERT(in_pHandle->Null() == FALSE);
 
+        // コンポーネント解除をオーナーに通知
+        auto pComponent = reinterpret_cast<Component*>(this->_components.GetTask(*in_pHandle));
+        this->_pOwner->VOnActorUnRegistComponent(pComponent);
+
         this->_components.RemoveTask(in_pHandle);
 
         return TRUE;
     }
-#if 0
-    /// <summary>
-    /// 子アクターが追加された時に呼ばれるイベント
-    /// </summary>
-    void Object::OnAddChildActor(const Core::Common::Handle& in_rChildActor)//Actor::Object* in_pChildActor)
-    {
-        //HE_ASSERT(in_pChildActor != NULL);
-        //HE_ASSERT(this != in_pChildActor);
-        //this->_aChildObject.PushBack(in_pChildActor);
-
-        HE_ASSERT(in_rChildActor.Null() == FALSE);
-        this->_aChildObject.PushBack(ChildObjectNode(in_rChildActor));
-    }
-
-    /// <summary>
-    /// 子アクター外す時に呼ばれるイベント
-    /// </summary>
-    void Object::OnRemoveChildActor(Actor::Object* in_pChildActor)
-    {
-        HE_ASSERT(in_pChildActor != NULL);
-        this->_aChildObject.Remove(in_pChildActor);
-    }
-#endif
 
     /// <summary>
     /// アクター自身, 子アクターに設定しているコンポーネントを全て出力
@@ -133,14 +135,14 @@ namespace Actor
 
         while (itr != endItr)
         {
-            auto pChildActor = this->_pManager->GetTask<Object>(itr->GetHandle());
+            auto pChildActor = this->_pTaskManager->GetTask<Object>(itr->GetHandle());
             HE_ASSERT(pChildActor);
 
             auto slot = pChildActor->_components.GetUserDataList();
             for (auto b = slot->begin(); b != slot->end(); ++b)
             {
                 auto c = reinterpret_cast<Actor::Component*>(b->second);
-                if (c->GetRTTI().DerivesFrom(in_pRtti))
+                if (c->VGetRTTI().DerivesFrom(in_pRtti))
                 {
                     out->PushBack(c);
                 }
@@ -173,49 +175,16 @@ namespace Actor
                 }
             }
         }
-
-        /*
-                const Uint32 uSize = this->_aChildObject.Size();
-                if (uSize <= 0) return;
-
-                Core::Common::FastFixArray<Object*, 32> stack;
-
-                // 子アクターがあれば再帰処理する
-                for (Uint32 i = 0; i < uSize; ++i)
-                {
-                    stack.PushBack(this->_aChildObject[i]);
-                    while (stack.Empty())
-                    {
-                        auto obj = stack.PopBack();
-                        {
-                            auto slot = obj->_components.GetUserDataList();
-                            for (auto b = slot->begin(); b != slot->end(); ++b)
-                            {
-                                auto c = reinterpret_cast<Actor::Component*>(b->second);
-                                if (c->GetRTTI().DerivesFrom(in_pRtti))
-                                {
-                                    out->PushBack(c);
-                                }
-                            }
-                        }
-
-                        for (Uint32 j = 0; j < obj->_aChildObject.Size(); ++j)
-                        {
-                            stack.PushBack(obj);
-                        }
-                    }
-                }
-                */
     }
 
     Core::Common::Handle Object::GetComponentHandle(const Core::Common::RTTI* in_pRtti)
     {
-        auto list = this->_components.GetUserDataList();
+        auto list = this->GetComponents();
         auto end  = list->end();
         for (auto itr = list->begin(); itr != end; ++itr)
         {
             Component* target = reinterpret_cast<Component*>(itr->second);
-            if (target->GetRTTI().DerivesFrom(in_pRtti)) return itr->first;
+            if (target->VGetRTTI().DerivesFrom(in_pRtti)) return itr->first;
         }
 
         return InvalidHandle;
@@ -234,7 +203,7 @@ namespace Actor
             Core::Common::Handle handle = this->_chainNode.GetParentHandle();
             while (handle.Null() == FALSE)
             {
-                Object* pParentActor = this->_pDataAccess->Get(handle);
+                Object* pParentActor = this->GetActorByOwner(handle);
                 if (pParentActor == NULL) break;
 
                 pos += pParentActor->GetWorldPos();

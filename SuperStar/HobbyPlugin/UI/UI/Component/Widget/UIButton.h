@@ -20,10 +20,10 @@ namespace UI
         UIButtonMessageHandler()          = default;
         virtual ~UIButtonMessageHandler() = default;
 
-        void OnPush() { this->_OnPushInternal(); }
+        void OnPush() { this->_VOnPushInternal(); }
 
     protected:
-        virtual void _OnPushInternal() = 0;
+        virtual void _VOnPushInternal() = 0;
     };
 
     using UIButtonMessageHandlerImpOnPush = std::function<void(Core::Common::StringBase&)>;
@@ -44,7 +44,7 @@ namespace UI
         }
 
     protected:
-        void _OnPushInternal() override final { this->_onPush(this->_msg); }
+        void _VOnPushInternal() override final { this->_onPush(this->_msg); }
 
     private:
         UIButtonMessageHandlerImpOnPush _onPush;
@@ -68,18 +68,18 @@ namespace UI
         /// 登録に必要な情報を設定
         /// </summary>
         /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
-        virtual void Setup(const Bool in_bAutoDelete = TRUE) override;
+        virtual void VSetup(const Bool in_bAutoDelete = TRUE) override;
 
         /// <summary>
         /// コンポーネントの終了
         /// </summary>
-        virtual const Bool End() override;
+        virtual const Bool VEnd() override;
 
         /// <summary>
         /// コンポーネントの更新
         /// 必ず処理を記述
         /// </summary>
-        void Update(const Float32 in_fDeltaTime) override;
+        void VUpdate(const Float32 in_fDeltaTime) override;
 
         /// <summary>
         /// プッシュ通知のハンドラーを設定
@@ -97,7 +97,7 @@ namespace UI
         /// <summary>
         /// タッチイベント
         /// </summary>
-        void OnTouch(const EnhancedInput::InputData::Item::Touch& in_rTouch) override;
+        void VOnTouch(const EnhancedInput::InputData::Item::Touch& in_rTouch) override;
 
     private:
         void _Clear()

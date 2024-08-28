@@ -38,8 +38,8 @@ namespace AssetManager
             auto p = this->_Alloc<T>();
 
             AssetDataBase* pAsset = p._tpItem;
-            pAsset->_Init(in_pName,
-                          Core::File::Path(this->_mountDirPath.Str(), in_rFilePath.Str()));
+            pAsset->_VInit(in_pName,
+                           Core::File::Path(this->_mountDirPath.Str(), in_rFilePath.Str()));
 
             // アセットのロードをして失敗したら確保したインスタンスを解放
             if (this->_Load(pAsset))
@@ -75,15 +75,15 @@ namespace AssetManager
         /// モジュール開始
         /// </summary>
         /// <returns></returns>
-        const Bool _Start() override final;
+        const Bool _VStart() override final;
 
         /// <summary>
         /// モジュール解放
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool _Release() override final;
+        virtual const Bool _VRelease() override final;
 
-        const Bool _Update(const Float32 in_fDeltaTime) override final;
+        const Bool _VUpdate(const Float32 in_fDeltaTime) override final;
 
     private:
         const Bool _Load(AssetDataBase* out_pAssetData);

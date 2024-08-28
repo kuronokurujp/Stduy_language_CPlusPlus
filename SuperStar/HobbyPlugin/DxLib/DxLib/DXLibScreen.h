@@ -12,8 +12,8 @@ namespace DXLib
     public:
         const Bool Init();
 
-        const Uint32 Width() const override final;
-        const Uint32 Height() const override final;
+        const Uint32 VWidth() const override final;
+        const Uint32 VHeight() const override final;
 
     private:
         Uint32 _w = 0;

@@ -17,7 +17,8 @@ namespace Platform
 namespace Actor
 {
     // 前方宣言
-    class ActorManagerPubliclnterface;
+    // class ActorManagerPubliclnterface;
+    class ActorManager;
 
     /// <summary>
     /// ゲームアクター
@@ -44,42 +45,41 @@ namespace Actor
         /// <summary>
         /// 管理インスタンスを設定
         /// </summary>
-        void SetManagerAccessor(ActorManagerPubliclnterface* in_pDataAccess)
-        {
-            HE_ASSERT(in_pDataAccess);
-            this->_pDataAccess = in_pDataAccess;
-        }
+        void SetOwner(ActorManager*);
 
-        ActorManagerPubliclnterface* GetManagerAcceesor() const { return this->_pDataAccess; }
+        /// <summary>
+        /// ハンドルからオーナーに所属しているアクターを取得
+        /// </summary>
+        Object* GetActorByOwner(const Core::Common::Handle&);
 
         /// <summary>
         /// 生成直後の設定処理
         /// データ初期化はここで行う
         /// </summary>
         /// <param name="in_bAutoDelete"></param>
-        virtual void Setup(const Bool in_bAutoDelete) override;
+        virtual void VSetup(const Bool in_bAutoDelete) override;
 
         /// <summary>
         /// 開始
         /// 継承したクラスで必ず基本クラスのメソッドを呼ぶ
         /// </summary>
-        virtual const Bool Begin() override;
+        virtual const Bool VBegin() override;
 
         /// <summary>
         /// 終了
         /// 継承したクラスで必ず基本クラスのメソッドを呼ぶ
         /// </summary>
-        virtual const Bool End() override;
+        virtual const Bool VEnd() override;
 
         /// <summary>
         /// Updates the specified in delta time.
         /// </summary>
-        void Update(const Float32 in_fDt, const Core::TaskData&) override;
+        void VUpdate(const Float32 in_fDt, const Core::TaskData&) override;
 
         /// <summary>
         /// 継承先でUpdateメソッドをoverride出来る.
         /// </summary>
-        virtual void UpdateActor(Float32 in_fDeltaTime) {}
+        virtual void VUpdateActor(Float32 in_fDeltaTime) {}
 
         /// <summary>
         /// コンポーネントを追加
@@ -102,6 +102,7 @@ namespace Actor
 
             // コンポーネントを付けた自身を設定
             pComp->SetOwner(this);
+            this->_pOwner->VOnActorRegistComponent(pComp);
 
             return handle;
         }
@@ -175,21 +176,13 @@ namespace Actor
         }
 
         /// <summary>
-        /// アクター自身, 子アクターに設定しているコンポーネントを全て出力
-        /// アクターの階層構造が深くなると再帰処理が多くなるので注意
-        /// </summary>
-        void OutputChildrenComponent(Core::Common::StackBase<Component*>* out,
-                                     const Core::Common::RTTI*);
-        /// <summary>
         /// RTTIから目的のコンポーネントを取得
         /// </summary>
         Core::Common::Handle GetComponentHandle(const Core::Common::RTTI*);
 
-        inline const Bool ValidComponent(const Core::Common::Handle& in_h)
+        inline const std::unordered_map<Core::Common::Handle, Core::Task*>* GetComponents() const
         {
-            if (in_h.Null()) return FALSE;
-
-            return this->_components.Valid(in_h);
+            return this->_components.GetUserDataList();
         }
 
         /// <summary>
@@ -201,23 +194,21 @@ namespace Actor
         /// <summary>
         /// Sets the position.
         /// </summary>
-        /// <param name="in_rPosition">The in r position.</param>
-        /// <returns></returns>
         inline void SetPos(const Core::Math::Vector3& in_rPosition) { this->_pos = in_rPosition; }
 
-#if 0
-        /// <summary>
-        /// 子アクターが追加された時に呼ばれるイベント
-        /// </summary>
-        /// <param name="in_pChildActor"></param>
-        virtual void OnAddChildActor(const Core::Common::Handle& in_rChildActor);// Actor::Object* in_pChildActor);
+        inline const Bool ValidComponent(const Core::Common::Handle& in_h)
+        {
+            if (in_h.Null()) return FALSE;
+
+            return this->_components.Valid(in_h);
+        }
 
         /// <summary>
-        /// 子アクター外す時に呼ばれるイベント
+        /// アクター自身, 子アクターに設定しているコンポーネントを全て出力
+        /// アクターの階層構造が深くなると再帰処理が多くなるので注意
         /// </summary>
-        /// <param name="in_pChildActor"></param>
-        virtual void OnRemoveChildActor(Actor::Object* in_pChildActor);
-#endif
+        void OutputChildrenComponent(Core::Common::StackBase<Component*>* out,
+                                     const Core::Common::RTTI*);
 
         // TODO: コリジョンイベント
 
@@ -281,24 +272,8 @@ namespace Actor
 
         inline const Math::Matrix4& GetWorldTransform() const { return this->worldTransform; }
 
-        /// <summary>
-        /// Processes the input.
-        /// </summary>
-        /// <param name="in_pKeyState">State of the in p key.</param>
-        /// <returns></returns>
-        void ProcessInput(const uint8_t* in_pKeyState);
-
-        /// <summary>
-        /// Actors the input.
-        /// </summary>
-        /// <param name="in_pKeyState">State of the in p key.</param>
-        /// <returns></returns>
-        virtual void ActorInput(const uint8_t* /* in_pKeyState */) {}
-
 #endif
     protected:
-        // virtual void _ProcessInput(const Float32, Platform::InputSystemInterface*) {}
-
         /// <summary>
         /// Computes the world transform.
         /// </summary>
@@ -313,27 +288,13 @@ namespace Actor
             this->_scale.Clear();
             this->_bComputeTransform = FALSE;
 
-            this->_pDataAccess = NULL;
+            this->_pOwner = NULL;
             this->_components.RemoveAll();
         }
 
     protected:
-#if 0
-        // 子アクターリスト
-        // TODO: リストにする
-        // リスト用のノード
-        class ChildObjectNode : public Core::Common::LinkedListNode<Core::Common::Handle>
-        {
-        public:
-            ChildObjectNode(const Core::Common::Handle& in_rHandle) : _handle(in_rHandle) {}
-
-        private:
-            Core::Common::Handle _handle;
-        };
-
-        // Core::Common::CustomList<Actor::Object*, 512> _aChildObject;
-        Core::Common::CustomList<Core::Common::Handle> _aChildObject;
-#endif
+        // ActorManagerPubliclnterface* _pDataAccess = NULL;
+        ActorManager* _pOwner = NULL;
 
     private:
         // Actorの状態
@@ -347,8 +308,6 @@ namespace Actor
         Bool _bComputeTransform = FALSE;
 
         Core::TaskManager _components;
-
-        ActorManagerPubliclnterface* _pDataAccess = NULL;
 
         // オブジェクト名
         Core::Common::FixString128 _szName;

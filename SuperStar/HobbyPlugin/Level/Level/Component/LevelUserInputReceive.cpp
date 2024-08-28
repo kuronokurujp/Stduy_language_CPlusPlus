@@ -4,9 +4,9 @@
 
 namespace Level
 {
-    void LevelUserInputReceiveComponent::Setup(const Bool in_bAutoDelete)
+    void LevelUserInputReceiveComponent::VSetup(const Bool in_bAutoDelete)
     {
-        Actor::Component::Setup(in_bAutoDelete);
+        Actor::Component::VSetup(in_bAutoDelete);
     }
 
     void LevelUserInputReceiveComponent::Message(const Char* in_szMsg)

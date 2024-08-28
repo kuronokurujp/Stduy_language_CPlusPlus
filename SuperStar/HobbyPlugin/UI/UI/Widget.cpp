@@ -4,16 +4,16 @@
 
 namespace UI
 {
-    const Bool Widget::Begin()
+    const Bool Widget::VBegin()
     {
-        if (Actor::Object::Begin() == FALSE) return FALSE;
+        if (Actor::Object::VBegin() == FALSE) return FALSE;
 
         return TRUE;
     }
 
-    const Bool Widget::End()
+    const Bool Widget::VEnd()
     {
-        if (Actor::Object::End() == FALSE) return FALSE;
+        if (Actor::Object::VEnd() == FALSE) return FALSE;
 
         return TRUE;
     }

@@ -28,7 +28,6 @@ namespace InGame
                 typedef struct
                 {
                     Sint32 stageManager = 0;
-                    Sint32 shotManager = 0;
                     Sint32 player = 0;
                     Sint32 aEnemy[ENEMY_MAX];
                     Sint32 enemyMax = 0;

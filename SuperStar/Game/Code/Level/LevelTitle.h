@@ -15,12 +15,12 @@ namespace Level
     public:
         LevelTitle() : Level::Node() {}
 
-        const Bool Begin() override final;
-        const Bool End() override final;
+        const Bool VBegin() override final;
+        const Bool VEnd() override final;
 
     protected:
-        void _ProcessInput(const Float32 in_fDt,
-                           const EnhancedInput::InputMap* in_pInputMap) override final;
+        void _VProcessInput(const Float32 in_fDt,
+                            const EnhancedInput::InputMap* in_pInputMap) override final;
 
     private:
         Core::Common::Handle _layoutAssetHandle;

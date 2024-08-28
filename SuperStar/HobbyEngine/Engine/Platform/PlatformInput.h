@@ -306,8 +306,8 @@ namespace Platform
     class InputInterface
     {
     public:
-        virtual void Init()                              = 0;
-        virtual void Update(const Float32 in_fDeltaTime) = 0;
+        virtual void VInit()                              = 0;
+        virtual void VUpdate(const Float32 in_fDeltaTime) = 0;
 
         const InputState& GetState() const { return this->_state; }
 

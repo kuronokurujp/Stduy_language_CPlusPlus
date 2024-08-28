@@ -10,7 +10,7 @@ namespace DXLib
     class System : public Platform::SystemInterface
     {
     public:
-        const Uint32 GetRand(const Uint32) override final;
-        const Bool SetSeedRand(const Uint32) override final;
+        const Uint32 VGetRand(const Uint32) override final;
+        const Bool VSetSeedRand(const Uint32) override final;
     };
 }  // namespace DXLib

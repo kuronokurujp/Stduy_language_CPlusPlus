@@ -22,9 +22,9 @@ namespace UI
         /// 登録に必要な情報を設定
         /// </summary>
         /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
-        virtual void Setup(const Bool in_bAutoDelete) override
+        virtual void VSetup(const Bool in_bAutoDelete) override
         {
-            UIWidgetComponent::Setup(in_bAutoDelete);
+            UIWidgetComponent::VSetup(in_bAutoDelete);
 
             this->_Clear();
         }
@@ -33,7 +33,7 @@ namespace UI
         /// コンポーネントの更新
         /// 必ず処理を記述
         /// </summary>
-        void Update(const Float32 in_fDeltaTime) override;
+        void VUpdate(const Float32 in_fDeltaTime) override;
 
         /// <summary>
         /// テキスト設定

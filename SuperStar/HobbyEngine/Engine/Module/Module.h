@@ -44,7 +44,7 @@ namespace Module
         /// <summary>
         /// 解放
         /// </summary>
-        const Bool Release() override final;
+        const Bool VRelease() override final;
 
         /// <summary>
         /// モジュール群の前更新
@@ -134,40 +134,34 @@ namespace Module
         /// モジュール処理優先度
         /// 値が大きいほど後に処理
         /// </summary>
-        /// <returns></returns>
         inline const Sint32 Priority() const { return this->_priority; }
 
     protected:
         /// <summary>
         /// モジュールの開始
         /// </summary>
-        /// <returns></returns>
-        virtual const Bool _Start() = 0;
+        virtual const Bool _VStart() = 0;
 
         /// <summary>
         /// モジュールの解放
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool _Release() = 0;
+        virtual const Bool _VRelease() = 0;
 
         /// <summary>
         /// モジュール前更新
         /// </summary>
-        virtual const Bool _BeforeUpdate(const Float32 in_fDeltaTime) { return TRUE; }
+        virtual const Bool _VBeforeUpdate(const Float32 in_fDeltaTime) { return TRUE; }
 
         /// <summary>
         /// モジュール更新
         /// </summary>
-        /// <param name="in_fDeltaTime"></param>
-        /// <returns></returns>
-        virtual const Bool _Update(const Float32 in_fDeltaTime) { return TRUE; }
+        virtual const Bool _VUpdate(const Float32 in_fDeltaTime) { return TRUE; }
 
         /// <summary>
-        /// モジュール更新
+        /// モジュール後更新
         /// </summary>
-        /// <param name="in_fDeltaTime"></param>
-        /// <returns></returns>
-        virtual const Bool _LateUpdate(const Float32 in_fDeltaTime) { return TRUE; }
+        virtual const Bool _VLateUpdate(const Float32 in_fDeltaTime) { return TRUE; }
 
         template <class T>
         void _AppendDependenceModule()

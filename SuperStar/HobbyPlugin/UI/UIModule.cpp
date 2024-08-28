@@ -44,7 +44,7 @@ namespace UI
     /// UIのモジュール初期化
     /// </summary>
     /// <returns></returns>
-    const Bool UIModule::_Start()
+    const Bool UIModule::_VStart()
     {
         return TRUE;
     }
@@ -332,7 +332,7 @@ namespace UI
         return pLevelModule->GetCurrneLevel().ChainActor(in_rWidget, in_rParent);
     }
 
-    const Bool UIModule::_Release()
+    const Bool UIModule::_VRelease()
     {
         return TRUE;
     }

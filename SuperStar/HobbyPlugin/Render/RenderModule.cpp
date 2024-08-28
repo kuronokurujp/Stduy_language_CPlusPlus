@@ -31,7 +31,7 @@ namespace Render
     /// モジュール初期化
     /// </summary>
     /// <returns></returns>
-    const Bool RenderModule::_Start()
+    const Bool RenderModule::_VStart()
     {
         return TRUE;
     }
@@ -40,7 +40,7 @@ namespace Render
     /// インスタンス破棄時に呼ばれる
     /// </summary>
 
-    const Bool RenderModule::_Release()
+    const Bool RenderModule::_VRelease()
     {
         // ビュー解放
         for (Uint32 i = 0; i < this->_vViewHandle.Size(); ++i)
@@ -51,7 +51,7 @@ namespace Render
         return TRUE;
     }
 
-    const Bool RenderModule::_BeforeUpdate(const Float32 in_fDeltaTime)
+    const Bool RenderModule::_VBeforeUpdate(const Float32 in_fDeltaTime)
     {
         // ビューのコマンドクリア
         for (Uint32 i = 0; i < this->_vViewHandle.Size(); ++i)

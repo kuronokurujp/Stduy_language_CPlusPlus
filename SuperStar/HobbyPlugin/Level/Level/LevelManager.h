@@ -26,24 +26,7 @@ namespace Level
         HE_CLASS_MOVE_NG(Manager);
 
     public:
-        /// <summary>
-        /// レベルノードを管理する専用アクタークラス
-        /// </summary>
-        class NodeManager final : public Actor::ActorManager
-        {
-        public:
-            NodeManager(Manager* in_pManager) : Actor::ActorManager(), _pLevelManager(in_pManager)
-            {
-            }
-
-            inline Manager* GetLevelManager() const { return this->_pLevelManager; }
-
-        private:
-            Manager* _pLevelManager = NULL;
-        };
-
-    public:
-        Manager() : _nodeManager(this) {}
+        Manager() {}
 
         /// <summary>
         /// 必ず最初に呼び出す
@@ -54,7 +37,7 @@ namespace Level
         /// 使い終わったら実行
         /// そのあとに利用したらエラーになる
         /// </summary>
-        const Bool End();
+        const Bool Release();
 
         /// <summary>
         /// ユーザー入力処理
@@ -93,24 +76,6 @@ namespace Level
         }
 
         /// <summary>
-        /// レベルを追加
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        template <class T>
-        const Bool AddLevel()
-        {
-            static_assert(std::is_base_of<Node, T>::value,
-                          "Tクラスはレベルのノードクラスを継承していない");
-
-            // レベルのノードは使いまわさない
-            Core::Common::Handle handle = this->_nodeManager.Add<T>();
-            if (handle.Null()) return FALSE;
-
-            return TRUE;
-        }
-
-        /// <summary>
         /// カレントレベルを取得
         /// </summary>
         /// <returns></returns>
@@ -121,7 +86,7 @@ namespace Level
 
     private:
         // レベルのノードをアクターとして管理
-        NodeManager _nodeManager;
+        Actor::ActorManager _nodeManager;
 
         /// <summary>
         /// カレントレベルのハンドル
@@ -143,11 +108,11 @@ namespace Level
         HE_CLASS_COPY_NG(Node);
         HE_CLASS_MOVE_NG(Node);
 
-    private:
+    public:
         /// <summary>
         /// レベルノードにつけるアクターの専用管理クラス
         /// </summary>
-        class CustomActorManager final : public Actor::ActorManager
+        class ActorMaanagerDecorater : public Actor::ActorManagerDecoraterlnterface
         {
         public:
             /// <summary>
@@ -158,8 +123,8 @@ namespace Level
             /// <summary>
             /// 入力コンポーネントの登録・解除
             /// </summary>
-            void RegistInputComponent(Actor::InputComponent&) override final;
-            void UnRegistInputComponent(Actor::InputComponent&) override final;
+            void VOnActorRegistComponent(Actor::Component*) override final;
+            void VOnActorUnRegistComponent(Actor::Component*) override final;
 
         private:
             Core::Common::CustomList<Actor::InputComponent> _lstInputComponent;
@@ -174,28 +139,22 @@ namespace Level
             ETaskUpdateId_Actor,
         };
 
-        Node() : Actor::Object() {}
+        Node() : Actor::Object(), _actorManager(&this->_actorManagerDecorater) {}
 
         /// <summary>
         /// タスク開始
-        /// 継承先は必ず基底クラスのメソッドを最初に呼び出す
-        /// 呼ばないとエラーになるので注意
         /// </summary>
-        const Bool Begin() override;
+        const Bool VBegin() override;
 
         /// <summary>
         /// タスク終了
-        /// 継承先は必ず基底クラスのメソッドを最初に呼び出す
-        /// 呼ばないとエラーになるので注意
         /// </summary>
-        const Bool End() override;
+        const Bool VEnd() override;
 
         /// <summary>
         /// 更新
-        /// 継承先は必ず基底クラスのメソッドを最初に呼び出す
-        /// 呼ばないとエラーになるので注意
         /// </summary>
-        void Update(const Float32 in_fDt, const Core::TaskData&) override;
+        void VUpdate(const Float32 in_fDt, const Core::TaskData&) override;
 
         /// <summary>
         /// レベルにアクターを追加
@@ -206,8 +165,28 @@ namespace Level
             static_assert(std::is_base_of<Actor::Object, T>::value,
                           "TクラスはアクターのObjectクラスを継承していない");
 
-            Core::Common::Handle handle = this->_pActorManager->Add<T>();
+            Core::Common::Handle handle = this->_actorManager.Add<T>();
             HE_ASSERT(handle.Null() == FALSE);
+
+            return handle;
+        }
+
+        /// <summary>
+        /// レベルを追加
+        /// </summary>
+        template <class T>
+        const Bool AddLevel()
+        {
+            static_assert(std::is_base_of<Node, T>::value,
+                          "Tクラスはレベルのノードクラスを継承していない");
+
+            // ノード管理にレベルを追加
+            auto pNodeManager = this->_pOwner;
+            HE_ASSERT(pNodeManager);
+            if (pNodeManager == NULL) return FALSE;
+
+            Core::Common::Handle handle = pNodeManager->Add<T>();
+            if (handle.Null()) return FALSE;
 
             return handle;
         }
@@ -226,38 +205,15 @@ namespace Level
         const Bool ChainActor(const Core::Common::Handle& in_rActor,
                               const Core::Common::Handle& in_rParentActor);
 
-        /// <summary>
-        /// レベルを追加
-        /// </summary>
-        template <class T>
-        const Bool AddLevel()
-        {
-            static_assert(std::is_base_of<Node, T>::value,
-                          "Tクラスはレベルのノードクラスを継承していない");
-
-            // ノード管理にレベルを追加
-            auto pNodeManager = reinterpret_cast<Manager::NodeManager*>(this->GetManagerAcceesor());
-            HE_ASSERT(pNodeManager);
-            if (pNodeManager == NULL) return FALSE;
-
-            auto pLevelManager = pNodeManager->GetLevelManager();
-            HE_ASSERT(pLevelManager);
-            if (pLevelManager == NULL) return FALSE;
-
-            // ノード追加
-            return pLevelManager->AddLevel<T>();
-        }
-
     protected:
-        virtual void _ProcessInput(const Float32 in_fDt,
-                                   const EnhancedInput::InputMap* in_pInputMap)
-        {
-        }
+        virtual void _VProcessInput(const Float32 in_fDt,
+                                    const EnhancedInput::InputMap* in_pInputMap);
 
     private:
         /// <summary>
         /// レベルに紐づけるアクター管理
         /// </summary>
-        std::shared_ptr<CustomActorManager> _pActorManager;
+        Actor::ActorManager _actorManager;
+        ActorMaanagerDecorater _actorManagerDecorater;
     };
 }  // namespace Level

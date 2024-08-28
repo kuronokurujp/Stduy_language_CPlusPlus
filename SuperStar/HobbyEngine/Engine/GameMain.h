@@ -15,7 +15,7 @@ public:
     /// </summary>
     /// <param name="in_bDebug"></param>
     /// <returns></returns>
-    virtual const Bool Start(const Bool in_bDebug) = 0;
+    virtual const Bool VStart(const Bool in_bDebug) = 0;
 
     /// <summary>
     /// ゲーム更新
@@ -23,12 +23,12 @@ public:
     /// </summary>
     /// <param name="in_deltaTime"></param>
     /// <returns></returns>
-    virtual const Bool Update(const Float32 in_fDeltaTime) = 0;
+    virtual const Bool VUpdate(const Float32 in_fDeltaTime) = 0;
 
     /// <summary>
     /// ゲーム終了
     /// エンジン側が呼ぶ
     /// </summary>
     /// <returns></returns>
-    virtual const Bool End() = 0;
+    virtual const Bool VEnd() = 0;
 };

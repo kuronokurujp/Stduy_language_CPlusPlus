@@ -15,6 +15,7 @@ namespace Actor
     const Bool ActorManager::End()
     {
         this->_taskManager.End();
+
         return TRUE;
     }
 
@@ -29,11 +30,14 @@ namespace Actor
         // 入力コンポーネントがついている場合は登録リストから外す
         auto pObject = this->Get(*in_pActorHandle);
         {
-            auto handle = pObject->GetComponentHandle(&InputComponent::CLASS_RTTI);
-            if (handle.Null() == FALSE)
+            auto components = pObject->GetComponents();
+            for (auto itr = components->begin(); itr != components->end(); ++itr)
             {
-                auto pInputComponent = pObject->GetComponent<InputComponent>(handle);
-                this->UnRegistInputComponent(*pInputComponent);
+                if (itr->first.Null()) continue;
+
+                Component* pTarget = reinterpret_cast<Component*>(itr->second);
+                HE_ASSERT(pTarget);
+                this->VOnActorUnRegistComponent(pTarget);
             }
         }
 
@@ -46,16 +50,25 @@ namespace Actor
         return reinterpret_cast<Object*>(this->_taskManager.GetTask(in_rActorHandle));
     }
 
-    /// <summary>
-    /// Determines whether the specified in p actor is actor.
-    /// </summary>
-    const Bool ActorManager::IsActor(const Core::Common::Handle& in_rActorHandle)
+    void ActorManager::VOnActorRegistComponent(Component* in_pComponent)
     {
-        HE_ASSERT((in_rActorHandle.Null() == FALSE) && "チェックするアクターがない");
-        return (this->_taskManager.GetTask(in_rActorHandle) != NULL);
+        if (this->_pDecorator == NULL) return;
+
+        this->_pDecorator->VOnActorRegistComponent(in_pComponent);
     }
 
-    void ActorManager::Update(const Float32 in_uDt, const Core::TaskData& in_rTaskData)
+    void ActorManager::VOnActorUnRegistComponent(Component* in_pComponent)
+    {
+        if (this->_pDecorator == NULL) return;
+
+        this->_pDecorator->VOnActorUnRegistComponent(in_pComponent);
+    }
+
+    void ActorManager::BeginUpdate(const Float32 in_fDt)
+    {
+    }
+
+    void ActorManager::Update(const Float32 in_fDt, const Core::TaskData& in_rTaskData)
     {
         // アクター処理内で新しいアクターが追加した場合は保留リストにまず登録させる
         this->_bUpdatingActors = TRUE;
@@ -63,13 +76,18 @@ namespace Actor
             const Uint32 uMax = this->_GetUpdateGroupMax();
             for (Uint32 i = 0; i < uMax; ++i)
             {
-                this->_taskManager.UpdateGroup(i, in_uDt, in_rTaskData);
+                this->_taskManager.UpdateGroup(i, in_fDt, in_rTaskData);
             }
         }
         this->_bUpdatingActors = FALSE;
     }
 
-    void ActorManager::UpdatePending()
+    void ActorManager::LateUpdate(const Float32 in_fDt)
+    {
+        this->_UpdatePending();
+    }
+
+    void ActorManager::_UpdatePending()
     {
         // 保留グループに設定したタスクを更新グループに移動
         for (auto b = this->_pendingDataMap.Begin(); b != this->_pendingDataMap.End(); ++b)

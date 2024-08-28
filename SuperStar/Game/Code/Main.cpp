@@ -49,7 +49,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
     if (InitInstance(hInstance, nCmdShow))
     {
         // エンジンに設定したアプリを開始
-        s_app.Start(HOBBY_ENGINE.IsDebugMode());
+        s_app.VStart(HOBBY_ENGINE.IsDebugMode());
 
         // ゲームループ
         while (HOBBY_ENGINE.IsAppQuit() == FALSE)
@@ -66,7 +66,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
                 const Float32 d = HOBBY_ENGINE.GetDeltaTimeSec();
 
                 // アプリメイン
-                if (s_app.Update(d) == FALSE) break;
+                if (s_app.VUpdate(d) == FALSE) break;
 
                 if (HOBBY_ENGINE.MainUpdateLoop(d) == FALSE) break;
 
@@ -74,7 +74,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
             }
         }
 
-        s_app.End();
+        s_app.VEnd();
     }
 
     EndInstance(hInstance);
@@ -132,7 +132,7 @@ void EndInstance(HINSTANCE hInstance)
 #include "Level/LevelTitle.h"
 #endif
 
-const Bool AppEntryGameMain::Start(const Bool in_bDebug)
+const Bool AppEntryGameMain::VStart(const Bool in_bDebug)
 {
     HE_LOG_LINE(HE_STR_TEXT("game start"));
 
@@ -171,12 +171,12 @@ const Bool AppEntryGameMain::Start(const Bool in_bDebug)
     return TRUE;
 }
 
-const Bool AppEntryGameMain::Update(const Float32 in_fDeltaTime)
+const Bool AppEntryGameMain::VUpdate(const Float32 in_fDeltaTime)
 {
     return TRUE;
 }
 
-const Bool AppEntryGameMain::End()
+const Bool AppEntryGameMain::VEnd()
 {
     HE_LOG_LINE(HE_STR_TEXT("game end"));
     return TRUE;

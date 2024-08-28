@@ -7,7 +7,7 @@
 
 namespace UI
 {
-    void UITextComponent::Update(const Float32 in_fDeltaTime)
+    void UITextComponent::VUpdate(const Float32 in_fDeltaTime)
     {
         // ローカライズテキストならローカライズテキストを取得
         if (0 < this->_szLocGroup.Length())

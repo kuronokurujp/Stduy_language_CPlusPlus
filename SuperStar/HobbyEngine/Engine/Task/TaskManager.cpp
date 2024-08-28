@@ -5,6 +5,38 @@
 
 namespace Core
 {
+    namespace Local
+    {
+        /// <summary>
+        /// ルート用タスク
+        /// </summary>
+        class RootTask final : public Task
+        {
+            HE_CLASS_COPY_NG(RootTask);
+            HE_CLASS_MOVE_NG(RootTask);
+
+        public:
+            RootTask() : Task() {}
+
+            /// <summary>
+            /// タスク開始
+            /// </summary>
+            const Bool VBegin() override final { return TRUE; }
+
+            /// <summary>
+            /// タスク終了
+            /// </summary>
+            const Bool VEnd() override final { return TRUE; }
+
+            /// <summary>
+            /// 更新用で継承先が実装しないとだめ
+            /// TaskData型は更新に必要なデータなのでこのデータを保存してはいけない
+            /// </summary>
+            void VUpdate(const Float32 in_fDt, const TaskData&) override final {}
+        };
+
+    }  // namespace Local
+
     TaskManager::~TaskManager()
     {
         this->End();
@@ -23,7 +55,7 @@ namespace Core
         for (Uint32 i = 0; i < in_groupNum; ++i)
         {
             // 先頭と終端タスクを作成して設定
-            this->_pTasks[i]._pRootTask = HE_NEW(Task, 0);
+            this->_pTasks[i]._pRootTask = HE_NEW(Local::RootTask, 0);
             this->_pTasks[i]._pTailTask = this->_pTasks[i]._pRootTask;
             this->_pTasks[i]._uFlags    = 0;
         }
@@ -79,14 +111,14 @@ namespace Core
                 // 一度しか呼ばれない
                 if (pTask->_bStart)
                 {
-                    if (pTask->Begin())
+                    if (pTask->VBegin())
                     {
                         pTask->_bStart = FALSE;
                     }
                 }
 
                 // タスク更新
-                pTask->Update(in_dt, in_rData);
+                pTask->VUpdate(in_dt, in_rData);
                 pTask->_UpdateChild(in_dt, in_rData);
             }
         }
@@ -117,12 +149,14 @@ namespace Core
         if (pTask == NULL) return;
 
         // 終了を呼ぶ
-        if (pTask->_bStart == FALSE) pTask->End();
+        if (pTask->_bStart == FALSE) pTask->VEnd();
+        // タスクを破棄
+        pTask->_Destory();
 
         // タスクの連結を解除
         this->_Dettach(pTask);
 
-        pTask->_pManager = NULL;
+        pTask->_pTaskManager = NULL;
 
         // ハンドルを返却する + メモリから削除するかしないか
         const bool bCache = pTask->_bReleaseMem == FALSE;
@@ -265,12 +299,12 @@ namespace Core
         pTailTask->_pNext = in_pTask;
 
         // タスクの初期化
-        (*ppTask)->_pPrev    = pTailTask;
-        (*ppTask)->_pNext    = NULL;
-        (*ppTask)->_iGroupId = in_groupId;
-        (*ppTask)->_bStart   = TRUE;
-        (*ppTask)->_bKill    = FALSE;
-        (*ppTask)->_pManager = this;
+        (*ppTask)->_pPrev        = pTailTask;
+        (*ppTask)->_pNext        = NULL;
+        (*ppTask)->_iGroupId     = in_groupId;
+        (*ppTask)->_bStart       = TRUE;
+        (*ppTask)->_bKill        = FALSE;
+        (*ppTask)->_pTaskManager = this;
 
         // 新たな終端に据える
         this->_pTasks[in_groupId]._pTailTask = in_pTask;

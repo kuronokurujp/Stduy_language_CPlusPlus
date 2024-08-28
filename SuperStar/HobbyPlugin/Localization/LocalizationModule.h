@@ -36,7 +36,7 @@ namespace Localization
         using LocateMap =
             Core::Common::CustomFixMap<Core::Common::FixString128, SystemAssetData::LocateData, 32>;
 
-        virtual const Bool _Load(Platform::FileInterface& in_rFileSystem) override;
+        virtual const Bool _VLoad(Platform::FileInterface& in_rFileSystem) override;
 
         /// <summary>
         /// ロケートマップデータを探して取得
@@ -101,13 +101,13 @@ namespace Localization
         /// モジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool _Start() override final;
+        const Bool _VStart() override final;
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool _Release() override final;
+        virtual const Bool _VRelease() override final;
 
-        const Bool _Update(const Float32 in_fDeltaTime) override final;
+        const Bool _VUpdate(const Float32 in_fDeltaTime) override final;
 
     private:
         using LocateTextMap =

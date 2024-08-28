@@ -63,7 +63,7 @@ namespace Core
             RuntimePoolManager::AllocData resAlloc = this->_Alloc<T>();
             Task* pTask                            = resAlloc._tpItem;
 
-            pTask->Setup(in_bReleaseMem);
+            pTask->VSetup(in_bReleaseMem);
             pTask->_hSelf = resAlloc._handle;
 
             this->_Attach(pTask, in_sGroupId);
@@ -92,7 +92,7 @@ namespace Core
         const Bool MoveGroupAll(const Sint32 in_sOrgGroupId, const Sint32 in_sTargetGroupId);
 
         /// <summary>
-        /// TODO: タスクのグループ移動
+        /// タスクのグループ移動
         /// </summary>
         const Bool MoveGropuTask(const Common::Handle& in_rTask, const Sint32 in_sGroupId);
 

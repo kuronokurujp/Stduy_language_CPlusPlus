@@ -27,7 +27,7 @@ namespace Core::Math
         /// インスタンスがリリースされたときに呼ばれる
         /// 終了処理だが, 大抵はアプリ終了時に呼ばれる
         /// </summary>
-        const Bool Release() override final { return TRUE; }
+        const Bool VRelease() override final { return TRUE; }
 
         /// <summary>
         /// Sets the seed.

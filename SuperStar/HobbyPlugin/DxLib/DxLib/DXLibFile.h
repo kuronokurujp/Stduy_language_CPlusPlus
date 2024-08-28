@@ -14,12 +14,12 @@ namespace DXLib
     class File : public Platform::FileInterface
     {
     public:
-        virtual const Core::Common::Handle FileOpen(const Core::File::Path& in_rPath) override;
-        virtual const Bool FileClose(const Core::Common::Handle&) override;
+        virtual const Core::Common::Handle VFileOpen(const Core::File::Path& in_rPath) override;
+        virtual const Bool VFileClose(const Core::Common::Handle&) override;
 
-        virtual const Bool FileRead(void* out_pBuff, const Core::Common::Handle& in_rHandle,
-                                    const Sint32 in_size) override;
-        virtual const Sint32 FileSize(const Core::Common::Handle&) override;
+        virtual const Bool VFileRead(void* out_pBuff, const Core::Common::Handle& in_rHandle,
+                                     const Sint32 in_size) override;
+        virtual const Sint32 VFileSize(const Core::Common::Handle&) override;
 
     private:
         /// <summary>

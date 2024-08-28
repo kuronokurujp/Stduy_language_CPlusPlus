@@ -19,19 +19,8 @@ namespace Actor
         InputComponent() : Component() {}
 
         /// <summary>
-        /// タスク開始
-        /// </summary>
-        virtual const Bool Begin() override;
-
-        /// <summary>
-        /// タスク終了
-        /// </summary>
-        virtual const Bool End() override;
-
-        /// <summary>
         /// 入力処理
         /// </summary>
-        /// <param name="in_pInputMap"></param>
-        virtual void ProcessInput(const void* in_pInputMap) = 0;
+        virtual void VProcessInput(const void* in_pInputMap) = 0;
     };
 }  // namespace Actor

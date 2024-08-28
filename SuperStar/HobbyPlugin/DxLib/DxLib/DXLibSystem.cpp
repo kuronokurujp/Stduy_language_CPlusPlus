@@ -4,12 +4,12 @@
 
 namespace DXLib
 {
-    const Uint32 System::GetRand(const Uint32 in_uMax)
+    const Uint32 System::VGetRand(const Uint32 in_uMax)
     {
         return ::GetRand(in_uMax);
     }
 
-    const Bool System::SetSeedRand(const Uint32 in_uVal)
+    const Bool System::VSetSeedRand(const Uint32 in_uVal)
     {
         return (::SRand(in_uVal) == 0);
     }

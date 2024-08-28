@@ -10,8 +10,8 @@ namespace Platform
     class ScreenInterface
     {
     public:
-        virtual const Uint32 Width() const  = 0;
-        virtual const Uint32 Height() const = 0;
+        virtual const Uint32 VWidth() const  = 0;
+        virtual const Uint32 VHeight() const = 0;
     };
 
 }  // namespace Platform

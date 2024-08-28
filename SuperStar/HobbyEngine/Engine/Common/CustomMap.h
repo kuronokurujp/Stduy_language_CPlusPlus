@@ -300,7 +300,7 @@ namespace Core::Common
         /// <summary>
         /// ノード作成
         /// </summary>
-        virtual Node* _CreateNode()
+        virtual Node* _VCreateNode()
         {
             Core::Common::Handle handle;
             Node* pNode = this->_poolObject.Alloc(&handle);
@@ -314,7 +314,7 @@ namespace Core::Common
         /// ノード破棄
         /// </summary>
         /// <param name="pNode"></param>
-        virtual void _DestoryNode(const Core::Common::Handle& in_rHandle)
+        virtual void _VDestoryNode(const Core::Common::Handle& in_rHandle)
         {
             // DATA型で破棄する時にクラスのプロパティをクリアするためにデストラクタを呼ぶ
             // 対象クラスは汎用データ構造を持つクラスに限定
@@ -417,7 +417,7 @@ namespace Core::Common
         Node* _NewNode()
         {
             // ノードメモリ確保
-            Node* pNewNode = this->_CreateNode();
+            Node* pNewNode = this->_VCreateNode();
             HE_ASSERT(pNewNode && "メモリが足りなくてノードが作成できない");
 
             ++this->_uNodeNum;
@@ -452,7 +452,7 @@ namespace Core::Common
             in_pNode->_pRight = NULL;
             in_pNode->_uColor = 0;
 #endif
-            this->_DestoryNode(in_pNode->handle);
+            this->_VDestoryNode(in_pNode->handle);
             --this->_uNodeNum;
         }
 

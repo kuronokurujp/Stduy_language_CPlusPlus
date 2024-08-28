@@ -19,8 +19,8 @@ const Bool Engine::Init()
 
     this->_bInit = TRUE;
 
-    this->_moduleManager.Release();
-    this->_memoryManager.Release();
+    this->_moduleManager.VRelease();
+    this->_memoryManager.VRelease();
 
     // メモリ管理
     // カスタムメモリ確保
@@ -80,7 +80,7 @@ const Bool Engine::Start()
     auto pPlatformModule = this->_PlatformModule();
     if (pPlatformModule)
     {
-        this->_spFPS = Core::Memory::MakeCustomSharedPtr<Core::Time::FPS>(pPlatformModule->Time());
+        this->_spFPS = Core::Memory::MakeCustomSharedPtr<Core::Time::FPS>(pPlatformModule->VTime());
     }
 
     this->_bStart = TRUE;
@@ -89,7 +89,7 @@ const Bool Engine::Start()
     return TRUE;
 }
 
-const Bool Engine::Release()
+const Bool Engine::VRelease()
 {
     HE_ASSERT(this->_bInit);
     HE_ASSERT(this->_bStart);
@@ -99,13 +99,13 @@ const Bool Engine::Release()
     if (this->_bInit == FALSE) return TRUE;
 
     // 確保したメモリを解放しないとEngineのデストラクタでエラーになる
-    this->_moduleManager.Release();
+    this->_moduleManager.VRelease();
 
     this->_spFPS.reset();
 
     // アプリ/エンジンで利用しているメモリはここで解放
     // 確保したメモリが残っている場合はエラーになるので注意
-    this->_memoryManager.Release();
+    this->_memoryManager.VRelease();
 
     HE_LOG_LINE(HE_STR_TEXT("エンジンの終了"));
     // デストラクタが呼ばれる
@@ -126,7 +126,7 @@ const Bool Engine::CreateMainWindow()
     if (pPlatform == NULL) return FALSE;
 
     // windowを作成
-    if (pPlatform->CreateMainWindow() == FALSE) return FALSE;
+    if (pPlatform->VCreateMainWindow() == FALSE) return FALSE;
 
     return TRUE;
 }
@@ -140,7 +140,7 @@ void Engine::ReleseWindows()
     auto pPlatform = this->_PlatformModule();
     if (pPlatform == NULL) return;
 
-    pPlatform->ReleaseAllWindows();
+    pPlatform->VReleaseAllWindows();
 }
 
 const Bool Engine::BeforeUpdateLoop(const Float32 in_fDeltaSec)
@@ -158,10 +158,10 @@ const Bool Engine::WaitFrameLoop()
     // TODO: FPS設定できるようにした方がいい
     if (this->_spFPS != NULL)
     {
-        while (this->_spFPS->UpdateWait(pPlatform->Time(), 16))
+        while (this->_spFPS->UpdateWait(pPlatform->VTime(), 16))
         {
             // TODO: 待機する時間を正確に計算した方がいい
-            pPlatform->Time()->SleepMSec(1);
+            pPlatform->VTime()->VSleepMSec(1);
         }
 
         // HE_LOG_LINE(HE_STR_TEXT("%d"), this->_spFPS->GetFrameRate());
@@ -196,7 +196,7 @@ const Float32 Engine::GetDeltaTimeSec()
     auto pPlatform = this->_PlatformModule();
     if (pPlatform == NULL) return 0.0f;
 
-    return this->_spFPS->GetDeltaTimeSec(pPlatform->Time());
+    return this->_spFPS->GetDeltaTimeSec(pPlatform->VTime());
 }
 
 const Bool Engine::IsAppQuit()
@@ -204,5 +204,5 @@ const Bool Engine::IsAppQuit()
     auto pPlatform = this->_PlatformModule();
     if (pPlatform == NULL) return TRUE;
 
-    return pPlatform->IsQuit();
+    return pPlatform->VIsQuit();
 }

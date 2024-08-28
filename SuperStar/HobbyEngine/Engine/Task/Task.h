@@ -73,31 +73,28 @@ namespace Core
         /// タスク利用した設定をした最初に実行
         /// 登録に必要な情報を設定
         /// </summary>
-        virtual void Setup(const Bool in_bAutoDelete);
-
-        /// <summary>
-        /// タスク破棄
-        /// </summary>
-        void Kill();
+        virtual void VSetup(const Bool in_bAutoDelete);
 
         /// <summary>
         /// タスク開始
         /// </summary>
-        virtual const Bool Begin() { return TRUE; }
+        virtual const Bool VBegin() { return TRUE; }
 
         /// <summary>
         /// タスク終了
         /// </summary>
-        virtual const Bool End();
+        virtual const Bool VEnd() { return TRUE; }
 
         /// <summary>
         /// 更新用で継承先が実装しないとだめ
         /// TaskData型は更新に必要なデータなのでこのデータを保存してはいけない
         /// </summary>
-        virtual void Update(const Float32 in_fDt, const TaskData&)
-        {
-            HE_ASSERT(FALSE && "継承クラスは必ず実装");
-        }
+        virtual void VUpdate(const Float32 in_fDt, const TaskData&) = 0;
+
+        /// <summary>
+        /// タスク破棄指示
+        /// </summary>
+        void Kill();
 
         inline const Common::Handle& GetHandle() const { return this->_hSelf; }
 
@@ -121,6 +118,11 @@ namespace Core
             Core::Common::Handle*);
 
     private:
+        /// <summary>
+        /// タスク破棄
+        /// </summary>
+        void _Destory();
+
         void _Clear()
         {
             this->_bStart = TRUE;
@@ -138,7 +140,7 @@ namespace Core
         void _UpdateChild(const Float32 in_fDt, const TaskData&);
 
     protected:
-        TaskManager* _pManager = NULL;
+        TaskManager* _pTaskManager = NULL;
 
         Core::Common::CustomList<ChildTaskNode> _lstChildTask;
         ChildTaskNode _chainNode;

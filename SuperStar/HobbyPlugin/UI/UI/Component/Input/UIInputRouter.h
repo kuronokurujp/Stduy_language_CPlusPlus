@@ -20,6 +20,6 @@ namespace UI
         /// <summary>
         /// Processes the input.
         /// </summary>
-        void ProcessInput(const void* in_pInputMap) override final;
+        void VProcessInput(const void* in_pInputMap) override final;
     };
 }  // namespace UI

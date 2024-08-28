@@ -28,35 +28,17 @@ namespace Actor
         /// 登録に必要な情報を設定
         /// </summary>
         /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
-        virtual void Setup(const Bool in_bReleaseMem) override;
-
-        /// <summary>
-        /// コンポーネントのオーターアクターを設定
-        /// </summary>
-        /// <param name="in_pOwner"></param>
-        virtual void SetOwner(Object* in_pOwner) { this->_pOwner = in_pOwner; }
-
-        /// <summary>
-        /// タスク開始
-        /// </summary>
-        virtual const Bool Begin() override { return TRUE; }
-
-        /// <summary>
-        /// タスク終了
-        /// </summary>
-        virtual const Bool End() override;
+        virtual void VSetup(const Bool in_bReleaseMem) override;
 
         /// <summary>
         /// コンポーネントの更新
         /// 必ず処理を記述
         /// </summary>
-        /// <param name="in_deltaTime">The in delta time.</param>
-        virtual void Update(const Float32 in_fDeltaTime) {}
+        virtual void VUpdate(const Float32 in_fDeltaTime) {}
 
         /// <summary>
         /// Gets the update order.
         /// </summary>
-        /// <returns></returns>
         const int GetUpdateOrder() const { return this->_iUpdateOrder; }
 
         // 座標変換一覧
@@ -65,17 +47,16 @@ namespace Actor
         void TransformLocalToWorldRect2D(Core::Math::Rect2* out,
                                          const Core::Math::Rect2& in_rOffsetRect);
 
+        /// <summary>
+        /// コンポーネントのオーターアクターを設定
+        /// </summary>
+        void SetOwner(Object* in_pOwner) { this->_pOwner = in_pOwner; }
+
     protected:
         /// <summary>
         /// コンポーネントの更新
-        /// 必ず処理を記述
-        /// TaskDataは使わないので省略した更新メソッドを継承してもらう
-        /// 呼び出してほしくないのでpublicとしない
         /// </summary>
-        void Update(const Float32 in_fDeltaTime, const Core::TaskData& in_rData) override final
-        {
-            this->Update(in_fDeltaTime);
-        }
+        void VUpdate(const Float32 in_fDeltaTime, const Core::TaskData& in_rData) override final;
 
     private:
         void _Clear()

@@ -10,7 +10,7 @@ namespace UI
     /// <summary>
     /// Processes the input.
     /// </summary>
-    void UIInputRouterComponent::ProcessInput(const void* in_pInputMap)
+    void UIInputRouterComponent::VProcessInput(const void* in_pInputMap)
     {
         HE_ASSERT(in_pInputMap);
         auto pInputMap = reinterpret_cast<const EnhancedInput::InputMap*>(in_pInputMap);
@@ -43,7 +43,7 @@ namespace UI
                 {
                     UIWidgetComponent* c =
                         reinterpret_cast<UIWidgetComponent*>(sWidgetComponent.PopBack());
-                    c->OnTouch(input[i].item.touch);
+                    c->VOnTouch(input[i].item.touch);
                 }
             }
         }

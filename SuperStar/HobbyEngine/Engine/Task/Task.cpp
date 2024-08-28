@@ -10,7 +10,7 @@ namespace Core
     /// タスク管理に登録する
     /// 登録に必要な情報を設定
     /// </summary>
-    void Task::Setup(const Bool in_bReleaseMem)
+    void Task::VSetup(const Bool in_bReleaseMem)
     {
         this->_Clear();
         // パラメータはタスク管理に登録された時に設定される
@@ -23,21 +23,19 @@ namespace Core
         _bKill = TRUE;
     }
 
-    const Bool Task::End()
+    void Task::_Destory()
     {
         // 子タスクを全て破棄
         while (this->_lstChildTask.BeginItr() != this->_lstChildTask.EndItr())
         {
             auto it = this->_lstChildTask.BeginItr();
 
-            auto pTask = this->_pManager->GetTask(it->GetHandle());
+            auto pTask = this->_pTaskManager->GetTask(it->GetHandle());
 
             // 親から外すのと同時にタスク破棄
             pTask->Kill();
             this->RemoveChildTask(&it->GetHandle());
         }
-
-        return TRUE;
     }
 
     const Bool Task::AddChildTask(const Core::Common::Handle& in_rHandle)
@@ -46,7 +44,7 @@ namespace Core
         // 自分自身を子タスクとして設定できない
         if (in_rHandle == this->_hSelf) return FALSE;
 
-        auto pTask = this->_pManager->GetTask(in_rHandle);
+        auto pTask = this->_pTaskManager->GetTask(in_rHandle);
         HE_ASSERT(pTask);
 
         // 管理側でつながっているのであれば外す
@@ -61,14 +59,14 @@ namespace Core
                 return FALSE;
             }
 
-            this->_pManager->_Dettach(pTask);
+            this->_pTaskManager->_Dettach(pTask);
             // 子のタスクに変わった
             pTask->_bChild = TRUE;
         }
         else
         {
             // すでに子タスクとなっているのであれば親タスクから外す
-            auto pParentTask = this->_pManager->GetTask(pTask->_chainNode.GetParentHandle());
+            auto pParentTask = this->_pTaskManager->GetTask(pTask->_chainNode.GetParentHandle());
             HE_ASSERT(pParentTask);
             HE_ASSERT(in_rHandle == pTask->_chainNode.GetHandle());
 
@@ -89,7 +87,7 @@ namespace Core
     {
         HE_ASSERT(in_pHandle);
         HE_ASSERT(in_pHandle->Null() == FALSE);
-        auto pTask = this->_pManager->GetTask(*in_pHandle);
+        auto pTask = this->_pTaskManager->GetTask(*in_pHandle);
         HE_ASSERT(pTask);
 
         if (pTask->_chainNode.Empty())
@@ -105,12 +103,12 @@ namespace Core
         // 破棄フラグがあればタスク管理で消去
         if (pTask->_bKill)
         {
-            this->_pManager->RemoveTask(in_pHandle);
+            this->_pTaskManager->RemoveTask(in_pHandle);
         }
         else
         {
             // タスク管理につけなおす
-            this->_pManager->_Attach(pTask, pTask->GetGropuId());
+            this->_pTaskManager->_Attach(pTask, pTask->GetGropuId());
         }
 
         return nextItr;
@@ -120,7 +118,7 @@ namespace Core
     {
         for (auto it = this->_lstChildTask.BeginItr(); it != this->_lstChildTask.EndItr(); ++it)
         {
-            auto pTask = this->_pManager->GetTask(it->GetHandle());
+            auto pTask = this->_pTaskManager->GetTask(it->GetHandle());
             if (pTask == NULL)
             {
                 this->_lstChildTask.Erase(it);
@@ -130,13 +128,13 @@ namespace Core
             // 子タスクがまだ開始していない可能性がある
             if (pTask->_bStart)
             {
-                if (pTask->Begin())
+                if (pTask->VBegin())
                 {
                     pTask->_bStart = FALSE;
                 }
             }
 
-            pTask->Update(in_fDt, in_rData);
+            pTask->VUpdate(in_fDt, in_rData);
             pTask->_UpdateChild(in_fDt, in_rData);
         }
     }

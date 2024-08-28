@@ -1,6 +1,7 @@
 ﻿#include "Component.h"
 
 #include "Actor/Actor.h"
+#include "Actor/ActorInterface.h"
 
 namespace Actor
 {
@@ -18,21 +19,14 @@ namespace Actor
     /// 登録に必要な情報を設定
     /// </summary>
     /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
-    void Component::Setup(const Bool in_bAutoDelete)
+    void Component::VSetup(const Bool in_bAutoDelete)
     {
         HE_LOG_LINE(HE_STR_TEXT("初期化したコンポーネントは(") HE_STR_FORMAT_TEXT HE_STR_TEXT(")"),
-                    GetRTTI().GetName().Str());
+                    this->VGetRTTI().GetName().Str());
 
-        Core::Task::Setup(in_bAutoDelete);
+        Core::Task::VSetup(in_bAutoDelete);
 
         this->_Clear();
-    }
-
-    const Bool Component::End()
-    {
-        this->_Clear();
-
-        return TRUE;
     }
 
     void Component::TransformLocalToWorldPos2D(Core::Math::Vector2* out,
@@ -57,4 +51,10 @@ namespace Actor
         const Core::Math::Vector3& pos = this->_pOwner->GetWorldPos();
         (*out) += Core::Math::Vector2(pos._fX, pos._fY);
     }
+
+    void Component::VUpdate(const Float32 in_fDeltaTime, const Core::TaskData& in_rData)
+    {
+        this->VUpdate(in_fDeltaTime);
+    }
+
 }  // namespace Actor

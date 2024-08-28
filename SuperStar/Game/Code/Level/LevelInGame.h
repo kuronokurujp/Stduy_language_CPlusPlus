@@ -15,15 +15,17 @@ namespace Level
     public:
         LevelInGame();
 
-        const Bool Begin() override final;
-        const Bool End() override final;
+        const Bool VBegin() override final;
+        const Bool VEnd() override final;
 
         /// <summary>
         /// 更新
         /// </summary>
-        void Update(const Float32 in_fDt, const Core::TaskData&) override final;
+        void VUpdate(const Float32 in_fDt, const Core::TaskData&) override final;
 
     private:
         Core::Common::Handle _systemComponentHandle;
+        Core::Common::Handle _shotManagerComponentHandle;
+        Core::Common::Handle _stageManagerComponentHandle;
     };
 }  // namespace Level

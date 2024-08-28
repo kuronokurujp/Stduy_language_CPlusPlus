@@ -8,7 +8,7 @@ namespace Core::Memory
     {
     }
 
-    const Bool Manager::Release()
+    const Bool Manager::VRelease()
     {
         if (this->_IsReady() == FALSE) return TRUE;
 

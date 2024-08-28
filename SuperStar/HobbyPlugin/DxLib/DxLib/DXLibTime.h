@@ -10,7 +10,7 @@ namespace DXLib
     class Time : public Platform::TimeInterface
     {
     public:
-        const Uint32 NowMSec() override final;
-        void SleepMSec(const Uint32 in_uMs) override final;
+        const Uint32 VNowMSec() override final;
+        void VSleepMSec(const Uint32 in_uMs) override final;
     };
 }  // namespace DXLib

@@ -33,9 +33,9 @@ namespace AssetManager
         AssetDataBase() {}
 
     protected:
-        virtual void _Init(const Char* in_szName, const Core::File::Path& in_rPath);
-        virtual const Bool _Load(Platform::FileInterface& in_rFileSystem) = 0;
-        virtual void _Unload()                                            = 0;
+        virtual void _VInit(const Char* in_szName, const Core::File::Path& in_rPath);
+        virtual const Bool _VLoad(Platform::FileInterface& in_rFileSystem) = 0;
+        virtual void _VUnload()                                            = 0;
 
     protected:
         Core::Common::FixString128 _szName;
@@ -105,8 +105,8 @@ namespace AssetManager
 
         AssetDataToml() : AssetDataBase() {}
 
-        virtual const Bool _Load(Platform::FileInterface& in_rFileSystem) override;
-        virtual void _Unload() override;
+        virtual const Bool _VLoad(Platform::FileInterface& in_rFileSystem) override;
+        virtual void _VUnload() override;
 
         Node GetRootNode();
 
@@ -125,8 +125,8 @@ namespace AssetManager
     public:
         AssetDataJson() : AssetDataBase() {}
 
-        virtual const Bool _Load(Platform::FileInterface& in_rFileSystem) override;
-        virtual void _Unload() override;
+        virtual const Bool _VLoad(Platform::FileInterface& in_rFileSystem) override;
+        virtual void _VUnload() override;
 
     protected:
         template <typename... Args>
@@ -167,8 +167,8 @@ namespace AssetManager
     public:
         AssetDataXml() : AssetDataBase() {}
 
-        virtual const Bool _Load(Platform::FileInterface& in_rFileSystem) override;
-        virtual void _Unload() override;
+        virtual const Bool _VLoad(Platform::FileInterface& in_rFileSystem) override;
+        virtual void _VUnload() override;
 
     protected:
         Core::Common::Handle _fileHandle;

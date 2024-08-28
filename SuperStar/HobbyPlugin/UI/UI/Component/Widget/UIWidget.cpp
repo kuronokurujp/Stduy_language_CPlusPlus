@@ -2,13 +2,13 @@
 
 namespace UI
 {
-    void UIWidgetComponent::Setup(const Bool in_bAutoDelete)
+    void UIWidgetComponent::VSetup(const Bool in_bAutoDelete)
     {
-        Actor::Component::Setup(in_bAutoDelete);
+        Actor::Component::VSetup(in_bAutoDelete);
         this->_Clear();
     }
 
-    const Bool UIWidgetComponent::Begin()
+    const Bool UIWidgetComponent::VBegin()
     {
         if (this->_viewHandle.Null()) return FALSE;
         return TRUE;

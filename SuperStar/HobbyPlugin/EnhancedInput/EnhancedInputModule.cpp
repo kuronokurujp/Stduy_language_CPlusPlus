@@ -46,28 +46,28 @@ namespace EnhancedInput
     /// UIのモジュール初期化
     /// </summary>
     /// <returns></returns>
-    const Bool EnhancedInputModule::_Start()
+    const Bool EnhancedInputModule::_VStart()
     {
         return TRUE;
     }
 
-    const Bool EnhancedInputModule::_Release()
+    const Bool EnhancedInputModule::_VRelease()
     {
         return TRUE;
     }
 
-    const Bool EnhancedInputModule::_BeforeUpdate(const Float32 in_fDeltaTime)
+    const Bool EnhancedInputModule::_VBeforeUpdate(const Float32 in_fDeltaTime)
     {
         this->_mInputAction.Clear();
         return TRUE;
     }
 
-    const Bool EnhancedInputModule::_Update(const Float32 in_fDeltaTime)
+    const Bool EnhancedInputModule::_VUpdate(const Float32 in_fDeltaTime)
     {
         auto pPlatformModule = this->GetDependenceModule<Platform::PlatformModule>();
         HE_ASSERT(pPlatformModule);
 
-        auto pInput = pPlatformModule->Input();
+        auto pInput = pPlatformModule->VInput();
         HE_ASSERT(pInput);
 
         // 入力処理をする

@@ -16,7 +16,7 @@ public:
     /// </summary>
     /// <param name="in_bDebug"></param>
     /// <returns></returns>
-    const Bool Start(const Bool in_bDebug) override final;
+    const Bool VStart(const Bool in_bDebug) override final;
 
     /// <summary>
     /// ゲーム更新
@@ -24,12 +24,12 @@ public:
     /// </summary>
     /// <param name="in_deltaTime"></param>
     /// <returns></returns>
-    const Bool Update(const Float32 in_deltaTime) override final;
+    const Bool VUpdate(const Float32 in_deltaTime) override final;
 
     /// <summary>
     /// ゲーム終了
     /// エンジン側が呼ぶ
     /// </summary>
     /// <returns></returns>
-    const Bool End() override final;
+    const Bool VEnd() override final;
 };

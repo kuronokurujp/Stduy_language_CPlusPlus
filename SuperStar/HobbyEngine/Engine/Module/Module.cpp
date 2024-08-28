@@ -58,14 +58,14 @@ namespace Module
         return NULL;
     }
 
-    const Bool ModuleManager::Release()
+    const Bool ModuleManager::VRelease()
     {
         // 全モジュール解放
         // TODO: 依存関係に応じてモジュールを破棄する順序を変える事はできないか？
         {
             for (Uint32 i = 0; i < this->_vViewModule.Size(); ++i)
             {
-                this->_vViewModule[i]->_Release();
+                this->_vViewModule[i]->_VRelease();
             }
             this->_vViewModule.Clear();
 
@@ -79,7 +79,7 @@ namespace Module
         {
             for (Uint32 i = 0; i < this->_vLogicModule.Size(); ++i)
             {
-                this->_vLogicModule[i]->_Release();
+                this->_vLogicModule[i]->_VRelease();
             }
             this->_vLogicModule.Clear();
 
@@ -93,7 +93,7 @@ namespace Module
         {
             for (Uint32 i = 0; i < this->_vAppModule.Size(); ++i)
             {
-                this->_vAppModule[i]->_Release();
+                this->_vAppModule[i]->_VRelease();
             }
             this->_vAppModule.Clear();
 
@@ -111,17 +111,17 @@ namespace Module
     {
         for (Uint32 i = 0; i < this->_vAppModule.Size(); ++i)
         {
-            this->_vAppModule[i]->_BeforeUpdate(in_fDeltaTime);
+            this->_vAppModule[i]->_VBeforeUpdate(in_fDeltaTime);
         }
 
         for (Uint32 i = 0; i < this->_vLogicModule.Size(); ++i)
         {
-            this->_vLogicModule[i]->_BeforeUpdate(in_fDeltaTime);
+            this->_vLogicModule[i]->_VBeforeUpdate(in_fDeltaTime);
         }
 
         for (Uint32 i = 0; i < this->_vViewModule.Size(); ++i)
         {
-            this->_vViewModule[i]->_BeforeUpdate(in_fDeltaTime);
+            this->_vViewModule[i]->_VBeforeUpdate(in_fDeltaTime);
         }
     }
 
@@ -129,18 +129,18 @@ namespace Module
     {
         for (Uint32 i = 0; i < this->_vLogicModule.Size(); ++i)
         {
-            this->_vLogicModule[i]->_Update(in_fDeltaTime);
+            this->_vLogicModule[i]->_VUpdate(in_fDeltaTime);
         }
 
         for (Uint32 i = 0; i < this->_vViewModule.Size(); ++i)
         {
-            this->_vViewModule[i]->_Update(in_fDeltaTime);
+            this->_vViewModule[i]->_VUpdate(in_fDeltaTime);
         }
 
         // ロジックとビューのモジュール更新結果を元にアプリモジュールは更新される
         for (Uint32 i = 0; i < this->_vAppModule.Size(); ++i)
         {
-            this->_vAppModule[i]->_Update(in_fDeltaTime);
+            this->_vAppModule[i]->_VUpdate(in_fDeltaTime);
         }
     }
 
@@ -148,17 +148,17 @@ namespace Module
     {
         for (Uint32 i = 0; i < this->_vViewModule.Size(); ++i)
         {
-            this->_vViewModule[i]->_LateUpdate(in_fDeltaTime);
+            this->_vViewModule[i]->_VLateUpdate(in_fDeltaTime);
         }
 
         for (Uint32 i = 0; i < this->_vLogicModule.Size(); ++i)
         {
-            this->_vLogicModule[i]->_LateUpdate(in_fDeltaTime);
+            this->_vLogicModule[i]->_VLateUpdate(in_fDeltaTime);
         }
 
         for (Uint32 i = 0; i < this->_vAppModule.Size(); ++i)
         {
-            this->_vAppModule[i]->_LateUpdate(in_fDeltaTime);
+            this->_vAppModule[i]->_VLateUpdate(in_fDeltaTime);
         }
     }
 
@@ -267,7 +267,7 @@ namespace Module
     {
         HE_LOG_LINE(HE_STR_TEXT("Start Module(") HE_STR_FORMAT_TEXT HE_STR_TEXT(")"),
                     in_rModule.Name());
-        if (in_rModule._Start() == FALSE)
+        if (in_rModule._VStart() == FALSE)
         {
             HE_ASSERT(FALSE && "モジュール開始に失敗");
         }

@@ -8,9 +8,9 @@
 
 namespace UI
 {
-    void UIButtonComponent::Setup(const Bool in_bAutoDelete)
+    void UIButtonComponent::VSetup(const Bool in_bAutoDelete)
     {
-        UIWidgetComponent::Setup(in_bAutoDelete);
+        UIWidgetComponent::VSetup(in_bAutoDelete);
 
         this->_Clear();
     }
@@ -19,9 +19,9 @@ namespace UI
     /// ボタンコンポーネントが終了
     /// </summary>
     /// <returns></returns>
-    const Bool UIButtonComponent::End()
+    const Bool UIButtonComponent::VEnd()
     {
-        const Bool bRet = UIWidgetComponent::End();
+        const Bool bRet = UIWidgetComponent::VEnd();
 
         // プッシュハンドルを解放
         this->_pushHandler.release();
@@ -33,7 +33,7 @@ namespace UI
     /// コンポーネントの更新
     /// 必ず処理を記述
     /// </summary>
-    void UIButtonComponent::Update(const Float32 in_fDeltaTime)
+    void UIButtonComponent::VUpdate(const Float32 in_fDeltaTime)
     {
         Core::Math::Rect2 srcRect(0.0f, 0.0f, this->_fWidth, this->_fHeight, this->_eAnchor);
         Core::Math::Rect2 rect;
@@ -43,7 +43,7 @@ namespace UI
         Render::CreateCmd2DRectDraw(this->_viewHandle, rect, {this->_color});
     }
 
-    void UIButtonComponent::OnTouch(const EnhancedInput::InputData::Item::Touch& in_rTouch)
+    void UIButtonComponent::VOnTouch(const EnhancedInput::InputData::Item::Touch& in_rTouch)
     {
         Core::Math::Rect2 rect;
         Core::Math::Rect2 orgRect(0.0f, 0.0f, this->_fWidth, this->_fHeight, this->_eAnchor);

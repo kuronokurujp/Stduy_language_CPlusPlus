@@ -6,38 +6,17 @@
 
 namespace Actor
 {
-    // 前方宣言
-    class Object;
-
     /// <summary>
-    /// 管理クラスの処理公開インターフェイス
+    /// アクター管理を拡張するデコレーターインターフェイス
     /// </summary>
-    class ActorManagerPubliclnterface
+    class ActorManagerDecoraterlnterface
     {
     public:
         /// <summary>
-        /// アクター取得.
+        /// アクターのコンポーネントの登録・解除イベント
         /// </summary>
-        /// <param name=""></param>
-        /// <returns></returns>
-        virtual Object* Get(const Core::Common::Handle&) = 0;
-
-        /// <summary>
-        /// アクターが存在するか.
-        /// </summary>
-        /// <param name="in_pActor">The in p actor.</param>
-        /// <returns></returns>
-        virtual const Bool IsActor(const Core::Common::Handle&) = 0;
-
-        /// <summary>
-        /// アクターを削除.
-        /// </summary>
-        virtual void Remove(Core::Common::Handle*) = 0;
-
-        /// <summary>
-        /// 入力コンポーネントの登録・解除
-        /// </summary>
-        virtual void RegistInputComponent(InputComponent& in_pInputComponent)   = 0;
-        virtual void UnRegistInputComponent(InputComponent& in_pInputComponent) = 0;
+        virtual void VOnActorRegistComponent(Component*)   = 0;
+        virtual void VOnActorUnRegistComponent(Component*) = 0;
     };
+
 }  // namespace Actor

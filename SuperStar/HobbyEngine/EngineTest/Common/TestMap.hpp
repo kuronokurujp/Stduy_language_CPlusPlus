@@ -180,7 +180,7 @@ TEST_CASE("FixMap Test")
     // データの削除
     HE_SAFE_DELETE_ARRAY(pDataArray);
 
-    CHECK(memoryManager.Release());
+    CHECK(memoryManager.VRelease());
     memoryManager.Reset();
 }
 

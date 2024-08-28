@@ -45,12 +45,12 @@ namespace DXLib
         return TRUE;
     }
 
-    const Uint32 Screen::Width() const
+    const Uint32 Screen::VWidth() const
     {
         return this->_w;
     }
 
-    const Uint32 Screen::Height() const
+    const Uint32 Screen::VHeight() const
     {
         return this->_h;
     }

@@ -57,7 +57,7 @@ public:
     /// </summary>
     /// <returns></returns>
     const Bool Start();
-    const Bool Release() override final;
+    const Bool VRelease() override final;
 
     /// <summary>
     /// ゲームウィンドウ生成

@@ -11,7 +11,7 @@ TEST_CASE("Memory Init to End")
     Core::Memory::Manager memoryManager;
 
     CHECK(memoryManager.Start(0x1000000));
-    CHECK(memoryManager.Release());
+    CHECK(memoryManager.VRelease());
 
     memoryManager.Reset();
 }
@@ -38,7 +38,7 @@ TEST_CASE("Memory SetupMemory")
         CHECK(memoryManager.CheckAllMemoryBlock());
     }
 
-    CHECK(memoryManager.Release());
+    CHECK(memoryManager.VRelease());
     memoryManager.Reset();
 }
 
@@ -48,7 +48,7 @@ TEST_CASE("Memory SetupMemory")
 TEST_CASE("Memory Allocate And Free")
 {
     Core::Memory::Manager memoryManager;
-    CHECK(memoryManager.Release());
+    CHECK(memoryManager.VRelease());
     CHECK(memoryManager.Start(0x1000000));
 
     // ページ確保テスト
@@ -97,7 +97,7 @@ TEST_CASE("Memory Allocate And Free")
     }
     memoryManager.PrintAllMemoryInfo();
 
-    CHECK(memoryManager.Release());
+    CHECK(memoryManager.VRelease());
     memoryManager.Reset();
 }
 
@@ -130,7 +130,7 @@ TEST_CASE("Memory New and Delete")
     HE_DELETE_ARRAY(pData);
 
     // TODO new と deleteがうまくいっているかチェック
-    CHECK(memoryManager.Release());
+    CHECK(memoryManager.VRelease());
     memoryManager.Reset();
 }
 
@@ -178,7 +178,7 @@ TEST_CASE("Memory Custom Shader Ptr")
     // TODO new と deleteがうまくいっているかチェック
     CHECK(memoryManager.UsedAllMemoryBlock() == FALSE);
 
-    CHECK(memoryManager.Release());
+    CHECK(memoryManager.VRelease());
     memoryManager.Reset();
 }
 
@@ -226,6 +226,6 @@ TEST_CASE("Memory Custom Uniqe Ptr")
     // TODO new と deleteがうまくいっているかチェック
     CHECK(memoryManager.UsedAllMemoryBlock() == FALSE);
 
-    CHECK(memoryManager.Release());
+    CHECK(memoryManager.VRelease());
     memoryManager.Reset();
 }

@@ -157,7 +157,7 @@ namespace Core::Memory
         const Bool Start(const Uint32 in_uManageSize);
 
         // システムの解放
-        const Bool Release() override final;
+        const Bool VRelease() override final;
 
 #ifdef HE_ENGINE_DEBUG
         // メモリ確保

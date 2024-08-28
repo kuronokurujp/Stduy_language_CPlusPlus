@@ -11,7 +11,7 @@ namespace AssetManager
         this->_AppendDependenceModule<Platform::PlatformModule>();
     }
 
-    const Bool AssetManagerModule::_Start()
+    const Bool AssetManagerModule::_VStart()
     {
         // 利用するアセット数を設定
         this->_Reserve(1024);
@@ -19,7 +19,7 @@ namespace AssetManager
         return TRUE;
     }
 
-    const Bool AssetManagerModule::_Update(const Float32 in_fDeltaTime)
+    const Bool AssetManagerModule::_VUpdate(const Float32 in_fDeltaTime)
     {
         return TRUE;
     }
@@ -33,14 +33,14 @@ namespace AssetManager
         AssetDataBase* p = this->_Ref(in_rHandle);
         if (p == NULL) return;
 
-        p->_Unload();
+        p->_VUnload();
     }
 
     const Bool AssetManagerModule::_Load(AssetDataBase* out)
     {
         auto pPlatformModule = this->GetDependenceModule<Platform::PlatformModule>();
-        Platform::FileInterface* pFileSystem = pPlatformModule->File();
-        if (out->_Load(*pFileSystem) == FALSE)
+        Platform::FileInterface* pFileSystem = pPlatformModule->VFile();
+        if (out->_VLoad(*pFileSystem) == FALSE)
         {
             return FALSE;
         }
@@ -48,7 +48,7 @@ namespace AssetManager
         return TRUE;
     }
 
-    const Bool AssetManagerModule::_Release()
+    const Bool AssetManagerModule::_VRelease()
     {
         // アセットハンドルがあれば解放する
         {

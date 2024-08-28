@@ -24,16 +24,16 @@ namespace UI
         /// 登録に必要な情報を設定
         /// </summary>
         /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
-        virtual void Setup(const Bool in_bReleaseMem = TRUE) override;
+        virtual void VSetup(const Bool in_bReleaseMem = TRUE) override;
 
         /// <summary>
         /// タスク開始
         /// 継承したら基本クラスのメソッドを呼ぶ
         /// </summary>
-        virtual const Bool Begin() override;
+        virtual const Bool VBegin() override;
 
-        virtual void OnTouch(const EnhancedInput::InputData::Item::Touch& in_rTouch) {}
-        virtual void OnKey(const EnhancedInput::InputData::Item::Key& in_rKeyboard) {}
+        virtual void VOnTouch(const EnhancedInput::InputData::Item::Touch& in_rTouch) {}
+        virtual void VOnKey(const EnhancedInput::InputData::Item::Key& in_rKeyboard) {}
 
         void SetColor(const Uint32 in_color) { this->_color = in_color; }
         void SetViewHandle(const Core::Common::Handle& in_rHandle)

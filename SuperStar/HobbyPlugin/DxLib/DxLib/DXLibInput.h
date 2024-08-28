@@ -11,8 +11,8 @@ namespace DXLib
     class Input : public Platform::InputInterface
     {
     public:
-        void Init() override final;
-        void Update(const Float32 in_fDeltaTime) override final;
+        void VInit() override final;
+        void VUpdate(const Float32 in_fDeltaTime) override final;
 
     private:
         Uint32 _uCurrButton = 0;

@@ -9,17 +9,15 @@ namespace Level
     {
         // タスク管理を初期化
         // 利用するタスク設定は内部で固定する
-        if (this->_nodeManager.Start(32, 2) == FALSE)
-        {
-            return FALSE;
-        }
+        if (this->_nodeManager.Start(32, 2) == FALSE) return FALSE;
 
         return TRUE;
     }
 
-    const Bool Manager::End()
+    const Bool Manager::Release()
     {
-        this->_nodeManager.End();
+        if (this->_nodeManager.End() == FALSE) return FALSE;
+
         return TRUE;
     }
 
@@ -50,6 +48,8 @@ namespace Level
             this->_currentLevelHandle = this->_nextLevelHandle;
             this->_nextLevelHandle.Clear();
         }
+
+        this->_nodeManager.BeginUpdate(in_fDt);
     }
 
     void Manager::Update(const Float32 in_fDt)
@@ -64,12 +64,11 @@ namespace Level
 
             this->_nodeManager.Update(in_fDt, taskData);
         }
-
-        this->_nodeManager.UpdatePending();
     }
 
     void Manager::LateUpdate(const Float32 in_fDt)
     {
+        this->_nodeManager.LateUpdate(in_fDt);
     }
 
     /// <summary>
@@ -86,6 +85,7 @@ namespace Level
     const Bool Manager::_StartLevel(const Core::Common::Handle& in_rHandle)
     {
         this->_nextLevelHandle = in_rHandle;
+
         auto pNode = reinterpret_cast<Node*>(this->_nodeManager.Get(this->_nextLevelHandle));
         HE_ASSERT(pNode);
         if (pNode == NULL) return FALSE;
@@ -99,10 +99,11 @@ namespace Level
     // ここから先は
     // レベルノードの実装
 
-    const Bool Node::Begin()
+    const Bool Node::VBegin()
     {
-        this->_pActorManager = Core::Memory::MakeCustomSharedPtr<CustomActorManager>();
-        if (this->_pActorManager->Start(256, 2) == FALSE)
+        if (Actor::Object::VBegin() == FALSE) return FALSE;
+
+        if (this->_actorManager.Start(256, 2) == FALSE)
         {
             HE_ASSERT(FALSE && "レベルノードのアクター管理の初期化が失敗");
             return FALSE;
@@ -111,20 +112,22 @@ namespace Level
         return TRUE;
     }
 
-    const Bool Node::End()
+    const Bool Node::VEnd()
     {
-        if (this->_pActorManager->End() == FALSE)
+        if (Actor::Object::VEnd() == FALSE) return FALSE;
+
+        if (this->_actorManager.End() == FALSE)
         {
             HE_ASSERT(FALSE && "レベルノードの終了に失敗");
         }
-        // メモリ解放をしている
-        this->_pActorManager.reset();
 
         return TRUE;
     }
 
-    void Node::Update(const Float32 in_fDt, const Core::TaskData& in_rData)
+    void Node::VUpdate(const Float32 in_fDt, const Core::TaskData& in_rData)
     {
+        Actor::Object::VUpdate(in_fDt, in_rData);
+
         switch (in_rData.uId)
         {
             // 入力送信
@@ -133,10 +136,7 @@ namespace Level
                 HE_ASSERT(in_rData.pData);
                 const auto pInputMap = reinterpret_cast<EnhancedInput::InputMap*>(in_rData.pData);
 
-                // レベルノードで入力処理が出来る
-                this->_ProcessInput(in_fDt, pInputMap);
-
-                this->_pActorManager->ProcessInput(in_fDt, pInputMap);
+                this->_VProcessInput(in_fDt, pInputMap);
 
                 break;
             }
@@ -145,8 +145,9 @@ namespace Level
             case Node::ETaskUpdateId_Actor:
             {
                 // Actorの制御
+                this->_actorManager.BeginUpdate(in_fDt);
                 {
-                    this->_pActorManager->Update(in_fDt, DEFAULT_TASK_DATA);
+                    this->_actorManager.Update(in_fDt, DEFAULT_TASK_DATA);
 
                     // コリジョン処理(コリジョンしてActor追加が起きてもpendingするように)
                     // this->_Colision();
@@ -157,9 +158,7 @@ namespace Level
                         }
          */           }
                 }
-
-                // キャッシュに登録しているActorを更新用のリストに移行する
-                this->_pActorManager->UpdatePending();
+                this->_actorManager.LateUpdate(in_fDt);
 
                 break;
             }
@@ -172,13 +171,13 @@ namespace Level
         HE_ASSERT(in_pActor);
         if (in_pActor->Null()) return;
 
-        this->_pActorManager->Remove(in_pActor);
+        this->_actorManager.Remove(in_pActor);
     }
 
     Actor::Object* Node::GetActor(const Core::Common::Handle& in_rActor)
     {
         HE_ASSERT(in_rActor.Null() == FALSE);
-        return this->_pActorManager->Get(in_rActor);
+        return this->_actorManager.Get(in_rActor);
     }
 
     const Bool Node::ChainActor(const Core::Common::Handle& in_rChildActor,
@@ -192,8 +191,13 @@ namespace Level
         return pParentActor->AddChildTask(in_rChildActor);
     }
 
-    void Node::CustomActorManager::ProcessInput(const Float32 in_fDt,
-                                                const EnhancedInput::InputMap* in_pInputMap)
+    void Node::_VProcessInput(const Float32 in_fDt, const EnhancedInput::InputMap* in_pInputMap)
+    {
+        this->_actorManagerDecorater.ProcessInput(in_fDt, in_pInputMap);
+    }
+
+    void Node::ActorMaanagerDecorater::ProcessInput(const Float32 in_fDt,
+                                                    const EnhancedInput::InputMap* in_pInputMap)
     {
         HE_ASSERT(in_pInputMap);
 
@@ -201,18 +205,29 @@ namespace Level
         for (auto it = this->_lstInputComponent.BeginItr(); it != this->_lstInputComponent.EndItr();
              ++it)
         {
-            it->ProcessInput(pInputMap);
+            it->VProcessInput(pInputMap);
         }
     }
 
-    void Node::CustomActorManager::RegistInputComponent(Actor::InputComponent& in_rInputComponent)
+    void Node::ActorMaanagerDecorater::VOnActorRegistComponent(Actor::Component* in_rComponent)
     {
-        this->_lstInputComponent.PushBack(in_rInputComponent);
+        HE_ASSERT(in_rComponent);
+
+        if (in_rComponent->VGetRTTI().DerivesFrom(&Actor::InputComponent::CLASS_RTTI) == FALSE)
+            return;
+
+        auto pInputComponent = reinterpret_cast<Actor::InputComponent*>(in_rComponent);
+        this->_lstInputComponent.PushBack(*pInputComponent);
     }
 
-    void Node::CustomActorManager::UnRegistInputComponent(Actor::InputComponent& in_rInputComponent)
+    void Node::ActorMaanagerDecorater::VOnActorUnRegistComponent(Actor::Component* in_rComponent)
     {
-        this->_lstInputComponent.Erase(&in_rInputComponent);
+        HE_ASSERT(in_rComponent);
+        if (in_rComponent->VGetRTTI().DerivesFrom(&Actor::InputComponent::CLASS_RTTI) == FALSE)
+            return;
+
+        auto pInputComponent = reinterpret_cast<Actor::InputComponent*>(in_rComponent);
+        this->_lstInputComponent.Erase(pInputComponent);
     }
 
 }  // namespace Level

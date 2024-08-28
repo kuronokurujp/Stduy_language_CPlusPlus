@@ -21,6 +21,31 @@ set(TARGET_FILES
 	
 	Code/InGame/Component/InGameSystemComponent.h
 	Code/InGame/Component/InGameSystemComponent.cpp
+	Code/InGame/Component/InGameShotManagerComponent.cpp
+	Code/InGame/Component/InGameShotManagerComponent.h
+	Code/InGame/Component/InGameStageManagerComponent.cpp
+	Code/InGame/Component/InGameStageManagerComponent.h
+
+	Code/InGame/Actor/Player/InGamePlayerActor.cpp
+	Code/InGame/Actor/Player/InGamePlayerActor.h
+
+	Code/InGame/Actor/Enemy/InGameBaseEnemyActor.cpp
+	Code/InGame/Actor/Enemy/InGameBaseEnemyActor.h
+	Code/InGame/Actor/Enemy/InGameSnakeEnemyActor.cpp
+	Code/InGame/Actor/Enemy/InGameSnakeEnemyActor.h
+	Code/InGame/Actor/Enemy/InGameBaseEnemyActor.cpp
+	Code/InGame/Actor/Enemy/InGameBaseEnemyActor.h
+	Code/InGame/Actor/Enemy/InGameSplitEnemyActor.cpp
+	Code/InGame/Actor/Enemy/InGameSplitEnemyActor.h
+	Code/InGame/Actor/Enemy/InGameZakoEnemyActor.cpp
+	Code/InGame/Actor/Enemy/InGameZakoEnemyActor.h
+
+	Code/InGame/Actor/Boss/InGameBoss01Actor.cpp
+	Code/InGame/Actor/Boss/InGameBoss01Actor.h
+	
+	Code/Ingame/InGameActorSystem.h
+	Code/Ingame/InGameActorSystem.cpp
+	Code/Ingame/InGameActorCommon.h
 
 	Code/framework.h
 	Code/Resource.h
