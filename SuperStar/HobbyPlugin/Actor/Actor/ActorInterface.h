@@ -6,12 +6,18 @@
 
 namespace Actor
 {
+    class ActorManager;
+
     /// <summary>
     /// アクター管理を拡張するデコレーターインターフェイス
     /// </summary>
     class ActorManagerDecoraterlnterface
     {
     public:
+        virtual const Bool VStart(ActorManager*) = 0;
+
+        virtual void VLateUpdate(const Float32 in_fDt, ActorManager*) = 0;
+
         /// <summary>
         /// アクターのコンポーネントの登録・解除イベント
         /// </summary>

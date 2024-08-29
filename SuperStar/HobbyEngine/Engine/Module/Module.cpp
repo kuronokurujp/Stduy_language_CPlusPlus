@@ -25,8 +25,7 @@ namespace Module
             {
                 if (this->_szName == vCheckModule[j]->Name())
                 {
-                    HE_PG_LOG_LINE(HE_STR_FORMAT_TEXT HE_STR_TEXT("モジュールに依存している")
-                                       HE_STR_FORMAT_TEXT HE_STR_TEXT("と循環参照関係になっている"),
+                    HE_PG_LOG_LINE(HE_STR_TEXT("%s モジュールに依存している %s と循環参照関係になっている"),
                                    this->_szName.Str(), vCheckModule[j]->Name());
                     return FALSE;
                 }
@@ -265,7 +264,7 @@ namespace Module
 
     const Bool ModuleManager::_StartModule(ModuleBase& in_rModule)
     {
-        HE_LOG_LINE(HE_STR_TEXT("Start Module(") HE_STR_FORMAT_TEXT HE_STR_TEXT(")"),
+        HE_LOG_LINE(HE_STR_TEXT("Start Module(%s)"),
                     in_rModule.Name());
         if (in_rModule._VStart() == FALSE)
         {

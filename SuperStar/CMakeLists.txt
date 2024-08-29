@@ -126,6 +126,7 @@ check_variable(DXLIB_PLUGIN_NAME)
 check_variable(ENGINE_NAME)
 
 # ゲームアプリがリンクするライブラリ
+# 設定プロジェクトのライブラリ・インクルードディレクトリ登録
 target_link_libraries(${APP_NAME}
   ${ENHANCED_INPUT_PLUGIN_NAME}
   ${UI_PLUGIN_NAME}
@@ -141,7 +142,12 @@ target_link_libraries(${APP_NAME}
 # テストプロジェクト作成
 add_subdirectory(Test)
 
+# アプリディレクトリのみをインクルード
+set(APP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Game)
+target_include_directories(${TEST_APP_NAME} PRIVATE ${APP_INCLUDE_DIR})
+
 # テストしたいライブラリを設定
+# 設定プロジェクトのライブラリ・インクルードディレクトリ登録
 target_link_libraries(${TEST_APP_NAME}
   ${ENHANCED_INPUT_PLUGIN_NAME}
   ${UI_PLUGIN_NAME}

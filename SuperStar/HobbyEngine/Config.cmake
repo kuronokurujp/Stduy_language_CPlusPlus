@@ -33,6 +33,8 @@ set(ENGINE_TARGET_FILES
     Engine/Common/RTTI.cpp
     Engine/Common/RTTI.h
     Engine/Common/Singleton.h
+    Engine/Common/Hash.h
+    Engine/Common/Hash.cpp
     
     Engine/File/Path.cpp
     Engine/File/Path.h

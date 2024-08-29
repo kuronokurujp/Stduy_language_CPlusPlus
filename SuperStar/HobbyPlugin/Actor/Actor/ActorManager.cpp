@@ -9,6 +9,11 @@ namespace Actor
         HE_ASSERT(1 < in_uActorGroupMax);
         if (this->_taskManager.Init(in_uActorCapacity, in_uActorGroupMax) == FALSE) return FALSE;
 
+        if (this->_pDecorator)
+        {
+            if (this->_pDecorator->VStart(this) == FALSE) return TRUE;
+        }
+
         return TRUE;
     }
 
@@ -85,6 +90,8 @@ namespace Actor
     void ActorManager::LateUpdate(const Float32 in_fDt)
     {
         this->_UpdatePending();
+
+        if (this->_pDecorator) this->_pDecorator->VLateUpdate(in_fDt, this);
     }
 
     void ActorManager::_UpdatePending()
@@ -99,24 +106,4 @@ namespace Actor
         this->_pendingDataMap.Clear();
     }
 
-    void ActorManager::MoveDepth(const Core::Common::Handle& in_rActorHandle,
-                                 const Uint32 in_uDepth)
-    {
-        HE_ASSERT(in_uDepth < this->_taskManager.GetMaxGroup());
-        const Sint32 iGroupId = static_cast<Sint32>(in_uDepth);
-
-        const auto pTask = this->_taskManager.GetTask(in_rActorHandle);
-        if (pTask->GetGropuId() == this->_GetPendingGroupId())
-        {
-            // 保留中のタスクなので移動させるグループIDのみ切り替える
-            auto it = this->_pendingDataMap.FindKey(in_rActorHandle);
-            HE_ASSERT(it.IsValid());
-            it->data.sMoveGroupId = iGroupId;
-        }
-        else
-        {
-            // タスクのグループIDに変える
-            this->_taskManager.MoveGropuTask(in_rActorHandle, iGroupId);
-        }
-    }
 }  // namespace Actor

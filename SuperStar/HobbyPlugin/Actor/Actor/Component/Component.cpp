@@ -21,7 +21,7 @@ namespace Actor
     /// <param name="bAutoDelete">TRUEだとタスク破棄と同時に削除
     void Component::VSetup(const Bool in_bAutoDelete)
     {
-        HE_LOG_LINE(HE_STR_TEXT("初期化したコンポーネントは(") HE_STR_FORMAT_TEXT HE_STR_TEXT(")"),
+        HE_LOG_LINE(HE_STR_TEXT("初期化したコンポーネントは(%s)"),
                     this->VGetRTTI().GetName().Str());
 
         Core::Task::VSetup(in_bAutoDelete);

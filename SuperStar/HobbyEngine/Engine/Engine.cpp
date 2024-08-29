@@ -26,6 +26,7 @@ const Bool Engine::Init()
     // カスタムメモリ確保
     // TODO: 確保数は適当にしている
     // TODO: OSのメモリアロケーターを設定
+    // TODO: 使う側が決めるようにしないといけない
     if (this->_memoryManager.Start(1024 * 1024 * 300) == FALSE)
     {
         HE_ASSERT(0 && "カスタムメモリの初期化に失敗");

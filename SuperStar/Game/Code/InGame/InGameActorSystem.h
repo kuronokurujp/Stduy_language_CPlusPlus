@@ -2,6 +2,7 @@
 
 #include "Engine/MiniEngine.h"
 #include "LevelModule.h"
+
 #if 0
 #include "common/Common.h"
 #include "common/Man.h"
@@ -99,21 +100,22 @@ namespace InGame
 
     //	ゲーム専用のアクター管理クラス( in Actor同士の当たり判定用 )
     //	Actor同士の当たり判定を行う場合はここに登録
-    class InGameActorManager final : public Level::Node::CustomActorManager
+    class InGameActorManager final : public Actor::ActorManagerDecoraterlnterface
     {
         HE_CLASS_COPY_NG(InGameActorManager);
         HE_CLASS_MOVE_NG(InGameActorManager);
 
     public:
-        static InGameActorManager& inst(void) { return m_Manager; }
+        //static InGameActorManager& inst(void) { return m_Manager; }
 
-        const Bool Start(const Uint32 in_uActorCapacity,
-                         const Uint32 in_uActorGroupMax) override final;
+        const Bool VStart(Actor::ActorManager*) override final;
 
         /// <summary>
         /// アクター更新
         /// </summary>
-        void Update(const Float32 in_fDt, const Core::TaskData&) override final;
+        //void Update(const Float32 in_fDt, const Core::TaskData&) override final;
+
+        void VLateUpdate(const Float32 in_fDt, Actor::ActorManager*) override final;
 
         /*
                 // 追加時ハンドルを返す
@@ -126,7 +128,8 @@ namespace InGame
 
     private:
         //	コリジョン判定処理
-        static InGameActorManager m_Manager;
+        //static InGameActorManager m_Manager;
+        // TODO: Luaモジュールが必要
     };
 
     /*
@@ -230,4 +233,5 @@ namespace InGame
     };
 
 }  // namespace InGame
+
 #endif

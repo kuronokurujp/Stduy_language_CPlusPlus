@@ -97,9 +97,7 @@ namespace Module
             auto pTargetModule = reinterpret_cast<T*>(ModuleManager::I().Get(szName.Str()));
             if (pTargetModule == NULL)
             {
-                HE_PG_LOG_LINE(HE_STR_TEXT("指定したモジュール(")
-                                   HE_STR_FORMAT_TEXT HE_STR_TEXT(")が存在しない"),
-                               szName.Str());
+                HE_PG_LOG_LINE(HE_STR_TEXT("指定したモジュール(%s)が存在しない"), szName.Str());
                 return NULL;
             }
 

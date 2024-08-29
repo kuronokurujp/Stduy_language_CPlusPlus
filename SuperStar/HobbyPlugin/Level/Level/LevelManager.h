@@ -110,11 +110,15 @@ namespace Level
 
     public:
         /// <summary>
-        /// レベルノードにつけるアクターの専用管理クラス
+        /// レベルノードにつけるアクター管理のデコレーター
         /// </summary>
         class ActorMaanagerDecorater : public Actor::ActorManagerDecoraterlnterface
         {
         public:
+            const Bool VStart(Actor::ActorManager*) override final;
+
+            void VLateUpdate(const Float32 in_fDt, Actor::ActorManager*) override final {}
+
             /// <summary>
             /// 管理下にあるアクターに入力状態を送信
             /// </summary>

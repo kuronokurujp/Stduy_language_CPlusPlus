@@ -19,10 +19,9 @@ namespace Actor
     /// <summary>
     /// アクターの管理
     /// アクター登録 / 削除 / 更新などアクター個々の挙動を制御
-    /// デコレーターパターンのみで拡張 / 継承はしてはいけない
+    /// デコレーターパターンのみで拡張
     /// </summary>
-    class ActorManager final : /*public ActorManagerPubliclnterface*/
-                               public ActorManagerDecoraterlnterface
+    class ActorManager final
     {
     private:
         /// <summary>
@@ -32,15 +31,6 @@ namespace Actor
         {
             Core::Common::Handle handle;
             Sint32 sMoveGroupId;
-        };
-
-        class InputCompontContent : public Core::Common::LinkedListNode<InputCompontContent>
-        {
-        public:
-            InputCompontContent(InputComponent* in_pCompoent) { this->_pComponent = in_pCompoent; }
-
-        private:
-            InputComponent* _pComponent = NULL;
         };
 
     public:
@@ -115,15 +105,8 @@ namespace Actor
         /// <summary>
         /// アクターのコンポーネントの登録・解除イベント
         /// </summary>
-        void VOnActorRegistComponent(Component*) override final;
-        void VOnActorUnRegistComponent(Component*) override final;
-
-        /// <summary>
-        /// アクターの階層移動
-        /// </summary>
-        /// <param name="in_hHandle"></param>
-        /// <param name="in_depth"></param>
-        void MoveDepth(const Core::Common::Handle& in_rHandle, const Uint32 in_uDepth);
+        void VOnActorRegistComponent(Component*);
+        void VOnActorUnRegistComponent(Component*);
 
     protected:
         inline const Sint32 _GetPendingGroupId() const

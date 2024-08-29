@@ -112,11 +112,9 @@ namespace InGame
         return NULL;
     }
 
-    const Bool InGameActorManager::Start(const Uint32 in_uActorCapacity,
-                                         const Uint32 in_uActorGroupMax)
+    const Bool InGameActorManager::VStart(Actor::ActorManager* in_pOwner)
     {
-        if (Level::Node::CustomActorManager::Start(in_uActorCapacity, in_uActorGroupMax) == FALSE)
-            return FALSE;
+        // TODO: Luaの利用準備
         /*
                 //	Lua側で呼び出す関数追加
                 //	スクリプト側からの送信
@@ -126,10 +124,9 @@ namespace InGame
         return TRUE;
     }
 
-    void InGameActorManager::Update(const Float32 in_fDt, const Core::TaskData& in_rTaskData)
+    void InGameActorManager::VLateUpdate(const Float32 in_fDt, Actor::ActorManager* in_pOwner)
     {
-        Level::Node::CustomActorManager::Update(in_fDt, in_rTaskData);
-
+//        auto actors = in_pOwner->Get();
         /*
                 vector<I_Actor*> aDieActorList;
 
@@ -187,6 +184,11 @@ namespace InGame
                     }
                 }
         */
+    }
+
+    void InGameActorManager::LateUpdate(const Float32 in_fDt, Actor::ActorManager*)
+    {
+
     }
 
     int InGameActorManager::add(I_Actor* in_pClass)

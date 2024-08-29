@@ -24,7 +24,7 @@ namespace AssetManager
         {
             // エラーログを出してアサートで止める
             Core::Common::FixString256 errorMsg(this->_result.error().description().data());
-            HE_LOG_LINE(HE_STR_FORMAT_TEXT, errorMsg.Str());
+            HE_LOG_LINE(HE_STR_TEXT("%s"), errorMsg.Str());
             HE_ASSERT(FALSE);
 
             return FALSE;
@@ -119,10 +119,10 @@ namespace AssetManager
                         auto resultCode = this->_parser->iterate(*this->_json).get(this->_doc);
                         if (resultCode != simdjson::error_code::SUCCESS)
                         {
-                            HE_PG_LOG_LINE(HE_STR_FORMAT_TEXT HE_STR_TEXT(" ファイルエラー: %d"),
+                            HE_PG_LOG_LINE(HE_STR_TEXT("%s ファイルエラー: %d"),
                                            this->_path.Str(), resultCode);
                             HE_LOG_LINE(HE_STR_TEXT("エラーのjson内容"));
-                            HE_LOG_LINE(HE_STR_FORMAT_PURE_TEXT, pReadTmpBuff);
+                            HE_LOG_LINE(HE_STR_TEXT("%s"), pReadTmpBuff);
 
                             bRet = FALSE;
                         }
@@ -135,8 +135,7 @@ namespace AssetManager
             }
             catch (const simdjson::simdjson_error& e)
             {
-                HE_PG_LOG_LINE(HE_STR_FORMAT_TEXT HE_STR_TEXT("ファイルの扱いに失敗: ")
-                                   HE_STR_FORMAT_PURE_TEXT,
+                HE_PG_LOG_LINE(HE_STR_TEXT("%s ファイルの扱いに失敗: %s"),
                                this->_path.Str(), e.what());
                 bRet = FALSE;
             }
@@ -192,7 +191,7 @@ namespace AssetManager
         }
         catch (const simdjson::simdjson_error& e)
         {
-            HE_PG_LOG_LINE(HE_STR_TEXT("json要素がない: ") HE_STR_FORMAT_PURE_TEXT, e.what());
+            HE_PG_LOG_LINE(HE_STR_TEXT("json要素がない: %s"), e.what());
         }
 
         return FALSE;
@@ -220,15 +219,14 @@ namespace AssetManager
                     pugi::xml_parse_result result = this->_doc.load_string(pReadTmpBuff);
                     if (result)
                     {
-                        HE_LOG_LINE(HE_STR_TEXT("XML Load Success: ") HE_STR_FORMAT_TEXT,
+                        HE_LOG_LINE(HE_STR_TEXT("XML Load Success: %s"),
                                     this->_path.Str());
                     }
                     else
                     {
-                        HE_LOG_LINE(HE_STR_TEXT("Error description: ") HE_STR_FORMAT_PURE_TEXT,
+                        HE_LOG_LINE(HE_STR_TEXT("Error description: %s"),
                                     result.description());
-                        HE_LOG_LINE(HE_STR_TEXT("Error offset: %td (error at [... ")
-                                        HE_STR_FORMAT_PURE_TEXT HE_STR_TEXT("] "),
+                        HE_LOG_LINE(HE_STR_TEXT("Error offset: %td (error at [...%s] "),
                                     result.offset, (pReadTmpBuff + result.offset));
                     }
                 }

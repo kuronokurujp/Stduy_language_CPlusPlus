@@ -613,8 +613,8 @@ namespace Core::Memory
         pMemoryBlock->_paddingSize = 0;
 
 #ifdef HE_ENGINE_DEBUG
-        HE_LOG_LINE(HE_STR_TEXT("FreeMemory: ") HE_STR_FORMAT_PURE_TEXT HE_STR_TEXT(" Line: %lu"),
-                    pMemoryBlock->_szFileName, pMemoryBlock->_uLine);
+        HE_LOG_LINE(HE_STR_TEXT("FreeMemory: %s Line: %lu"), pMemoryBlock->_szFileName,
+                    pMemoryBlock->_uLine);
         ::memset(pMemoryBlock->_szFileName, 0, HE_ARRAY_SIZE(pMemoryBlock->_szFileName));
         pMemoryBlock->_uLine = 0;
 #endif
@@ -908,15 +908,13 @@ namespace Core::Memory
             {
                 Ptr pBlockAddr = reinterpret_cast<Ptr>(pUsedMemoryBlock);
 #ifdef HE_X64
-                HE_LOG_LINE(HE_STR_TEXT("0llx%8.8llx: 0x%8.8x (0x%8.8x) [%d] {%d}: ")
-                                HE_STR_FORMAT_PURE_TEXT HE_STR_TEXT("(%d)"),
+                HE_LOG_LINE(HE_STR_TEXT("0llx%8.8llx: 0x%8.8x (0x%8.8x) [%d] {%d}: %s (%d)"),
                             pBlockAddr + this->_GetMemoryBlockHeaderSize(),
                             pUsedMemoryBlock->_uAllocateSize, pUsedMemoryBlock->_uSize,
                             pUsedMemoryBlock->_paddingSize, pUsedMemoryBlock->_alignSize,
                             pUsedMemoryBlock->_szFileName, pUsedMemoryBlock->_uLine);
 #else
-                E_LOG_LINE(E_STR_TEXT("0x%8.8x: 0x%8.8x (0x%8.8x) [%d] {%d}: ")
-                               E_STR_FORMAT_PURE_TEXT E_STR_TEXT("(%d)"),
+                E_LOG_LINE(E_STR_TEXT("0x%8.8x: 0x%8.8x (0x%8.8x) [%d] {%d}: %s (%d)"),
                            blockAddr + this->_GetMemoryBlockHeaderSize(),
                            pUsedMemoryBlock->_allocateSize, pUsedMemoryBlock->_size,
                            pUsedMemoryBlock->_paddingSize, pUsedMemoryBlock->_alignSize,

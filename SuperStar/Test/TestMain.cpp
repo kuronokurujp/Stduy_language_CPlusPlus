@@ -7,6 +7,9 @@
 #include "ThirdParty/Catch.hpp"
 
 // 外部モジュール一覧
+#include <fcntl.h>
+#include <io.h>
+
 #include "ActorModule.h"
 #include "AssetManagerModule.h"
 #include "DXLibModule.h"
@@ -36,7 +39,6 @@ int CATCH_INTERNAL_CDECL wmain(int argc, wchar_t* argv[], wchar_t*[])
 int CATCH_INTERNAL_CDECL main(int argc, char* argv[])
 {
 #endif
-
     const int ret = Catch::Session().run(argc, argv);
 
     return ret;
@@ -65,6 +67,9 @@ int main(int argc, char* const argv[])
 
 // マクロテストコード
 #include "EngineTest/Common/TestMacro.hpp"
+
+// ハッシュのテストコード
+#include "EngineTest/Common/TestHash.hpp"
 
 // カスタム配列のテストコード
 #include "EngineTest/Common/TestArray.hpp"
@@ -96,3 +101,5 @@ int main(int argc, char* const argv[])
 
 // エンジン本体のテストコード
 #include "EngineTest/TestEngine.hpp"
+
+// TODO: ゲームアプリのテストコード

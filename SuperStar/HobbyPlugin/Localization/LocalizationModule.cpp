@@ -155,7 +155,7 @@ namespace Localization
                     Core::File::Path(groupIt->data.GetNode(HE_STR_TEXT("json")).GetString().Str());
 
                 LocateData data(path);
-                HE_LOG_LINE(HE_STR_FORMAT_TEXT, data._textFilePath.Str());
+                HE_LOG_LINE(HE_STR_TEXT("%s"), data._textFilePath.Str());
 
                 const Core::Common::FixString128 szGroupName(groupIt->key.Str());
                 mData.Add(szGroupName, data);

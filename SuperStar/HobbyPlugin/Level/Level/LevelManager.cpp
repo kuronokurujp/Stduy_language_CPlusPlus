@@ -196,6 +196,13 @@ namespace Level
         this->_actorManagerDecorater.ProcessInput(in_fDt, in_pInputMap);
     }
 
+    const Bool Node::ActorMaanagerDecorater::VStart(Actor::ActorManager*)
+    {
+        this->_lstInputComponent.Clear();
+
+        return TRUE;
+    }
+
     void Node::ActorMaanagerDecorater::ProcessInput(const Float32 in_fDt,
                                                     const EnhancedInput::InputMap* in_pInputMap)
     {

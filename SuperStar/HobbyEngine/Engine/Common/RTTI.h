@@ -16,14 +16,13 @@ namespace Core::Common
     public:
         RTTI(const Char* in_szClass) : _szClass(in_szClass), _pBaseRTTI(NULL)
         {
-            HE_LOG_LINE(HE_STR_TEXT("RTTI BaseClassName: ") HE_STR_FORMAT_TEXT, in_szClass);
+            HE_LOG_LINE(HE_STR_TEXT("RTTI BaseClassName: %s"), in_szClass);
         }
 
         RTTI(const Char* in_szClass, const RTTI& in_rBaseRTTI)
             : _szClass(in_szClass), _pBaseRTTI(&in_rBaseRTTI)
         {
-            HE_LOG_LINE(HE_STR_TEXT("RTTI InheritClassName: ")
-                            HE_STR_FORMAT_TEXT HE_STR_TEXT(" BaseClassName: ") HE_STR_FORMAT_TEXT,
+            HE_LOG_LINE(HE_STR_TEXT("RTTI InheritClassName: %s BaseClassName: %s"),
                         in_szClass, in_rBaseRTTI.GetName().Str());
         }
 
