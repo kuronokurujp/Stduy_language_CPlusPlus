@@ -13,17 +13,10 @@ namespace Core::Math
     /// 列ベクトルにするで扱いたい場合は転置する必要がある
     /// クラスだが扱いは構造体とするので仮想関数の定義はしてはいけない
     /// </summary>
-    class Matrix4
+    class Matrix4 final
     {
     public:
-        Float32 _faaMat[4][4];
-
-        Matrix4() { *this = Matrix4::Identity; }
-
-        /// <summary>
-        /// TODO: コピーなので重い
-        /// </summary>
-        /// <param name="in_faaMat"></param>
+        explicit Matrix4() { *this = Matrix4::Identity; }
         explicit Matrix4(const Float32 in_faaMat[4][4])
         {
             ::memcpy(this->_faaMat, in_faaMat, 4 * 4 * sizeof(Float32));
@@ -67,10 +60,10 @@ namespace Core::Math
                                     row04.AddMul(col04));
 
             Float32 temp[4][4] = {
-                {newRow01.x, newRow01.y, newRow01.z, newRow01.w},
-                {newRow02.x, newRow02.y, newRow02.z, newRow02.w},
-                {newRow03.x, newRow03.y, newRow03.z, newRow03.w},
-                {newRow04.x, newRow04.y, newRow04.z, newRow04.w},
+                {newRow01._fX, newRow01._fY, newRow01._fZ, newRow01._fW},
+                {newRow02._fX, newRow02._fY, newRow02._fZ, newRow02._fW},
+                {newRow03._fX, newRow03._fY, newRow03._fZ, newRow03._fW},
+                {newRow04._fX, newRow04._fY, newRow04._fZ, newRow04._fW},
             };
 
             ::memcpy(this->_faaMat, temp, sizeof(Float32) * 4 * 4);
@@ -87,7 +80,7 @@ namespace Core::Math
         /// <summary>
         /// 行列式を取得.
         /// </summary>
-        Float32 GetDet();
+        const Float32 GetDet();
 
         /// <summary>
         /// 余因子行列を出力.
@@ -107,7 +100,7 @@ namespace Core::Math
         /// <summary>
         /// 各要素にスケール値を掛ける.
         /// </summary>
-        void Scale(Float32);
+        void Scale(const Float32);
 
         /// <summary>
         /// Creates the scale matrix4.
@@ -147,7 +140,6 @@ namespace Core::Math
         /// なぜ?
         ///   2pi = 360度なのでこれを360分割すれば1ラジアンになるから
         /// </summary>
-        /// <returns></returns>
         static Matrix4 CreateRotationZ(const Float32 in_fRadian);
 
         /// <summary>
@@ -171,7 +163,10 @@ namespace Core::Math
                                             const Float32 in_fHeight, const Float32 in_fNear,
                                             const Float32 in_fFar);
 
+    public:
         // 単位行列定義
         static const Matrix4 Identity;
+
+        Float32 _faaMat[4][4];
     };
 }  // namespace Core::Math

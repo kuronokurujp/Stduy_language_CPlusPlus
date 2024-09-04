@@ -6,7 +6,7 @@
 
 namespace Core::Math
 {
-    class Vector2
+    class Vector2 final
     {
     public:
         explicit Vector2() {}
@@ -206,8 +206,8 @@ namespace Core::Math
         }
 
         //	2つのベクトルの距離取得
-        static inline float GetDistance(const Vector2& in_rRight,
-                                        const Vector2& in_rLeft) HE_NOEXCEPT
+        static inline Float32 GetDistance(const Vector2& in_rRight,
+                                          const Vector2& in_rLeft) HE_NOEXCEPT
         {
             Vector2 size;
             size.SetSub(in_rLeft, in_rRight);
@@ -218,7 +218,7 @@ namespace Core::Math
         /// <summary>
         /// Dots the specified in v.
         /// </summary>
-        static inline float Dot(const Vector2& in_rLeft, const Vector2& in_rRight) HE_NOEXCEPT
+        static inline Float32 Dot(const Vector2& in_rLeft, const Vector2& in_rRight) HE_NOEXCEPT
         {
             return (in_rLeft._fX * in_rRight._fX) + (in_rLeft._fY * in_rRight._fY);
         }
@@ -237,7 +237,6 @@ namespace Core::Math
         }
 
         // 頻繁にアクセスする変数にはprivate指定にはしない
-        Float32 _fX = 0.0f;
-        Float32 _fY = 0.0f;
+        Float32 _fX = 0.0f, _fY = 0.0f;
     };
 }  // namespace Core::Math

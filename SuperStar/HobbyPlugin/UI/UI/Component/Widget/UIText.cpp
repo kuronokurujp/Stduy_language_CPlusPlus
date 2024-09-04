@@ -25,7 +25,11 @@ namespace UI
         }
 
         Core::Math::Vector2 pos;
-        this->TransformLocalToWorldPos2D(&pos, this->_rect.Pos());
+
+        auto pTrans = this->GetTransformComponent();
+        HE_ASSERT(pTrans);
+
+        pTrans->TransformLocalToWorldPos2D(&pos, this->_rect.Pos());
 
         Render::CreateCmd2DTextDraw(this->_viewHandle, pos, this->_szDrawText, {this->_color},
                                     this->_eAnchor);

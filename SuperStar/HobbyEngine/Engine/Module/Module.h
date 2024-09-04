@@ -9,17 +9,17 @@ namespace Module
 {
     class ModuleBase;
 
-    enum eLayer
+    enum ELayer
     {
-        eLayer_App = 0,
-        eLayer_Logic,
-        eLayer_View,
+        ELayer_App = 0,
+        ELayer_Logic,
+        ELayer_View,
     };
 
     /// <summary>
     /// モジュール管理クラス
     /// </summary>
-    class ModuleManager : public Core::Common::Singleton<ModuleManager>
+    class ModuleManager final : public Core::Common::Singleton<ModuleManager>
     {
     public:
         ModuleBase* Get(const Char* in_szName) const;
@@ -39,7 +39,7 @@ namespace Module
         /// <summary>
         /// モジュールの利用開始
         /// </summary>
-        const Bool Start(const eLayer);
+        const Bool Start(const ELayer);
 
         /// <summary>
         /// 解放
@@ -86,9 +86,9 @@ namespace Module
         HE_CLASS_MOVE_NG(ModuleBase);
 
     public:
-        ModuleBase(const char* in_szName, eLayer const in_eLayer = eLayer::eLayer_Logic,
+        ModuleBase(const char* in_szName, ELayer const in_eLayer = ELayer::ELayer_Logic,
                    const Sint32 in_prioriry = 0);
-        virtual ~ModuleBase();
+        virtual ~ModuleBase() = default;
 
         template <typename T>
         T* GetDependenceModule()
@@ -126,7 +126,7 @@ namespace Module
         }
 
         inline const Char* Name() const HE_NOEXCEPT { return this->_szName.Str(); }
-        inline const eLayer Layer() const HE_NOEXCEPT { return this->_eLayer; }
+        inline const ELayer Layer() const HE_NOEXCEPT { return this->_eLayer; }
 
         /// <summary>
         /// モジュール処理優先度
@@ -174,7 +174,7 @@ namespace Module
 
     private:
         Core::Common::FixString128 _szName;
-        eLayer _eLayer   = eLayer_Logic;
+        ELayer _eLayer   = ELayer_Logic;
         Sint32 _priority = 0;
 
 #ifdef HE_ENGINE_DEBUG

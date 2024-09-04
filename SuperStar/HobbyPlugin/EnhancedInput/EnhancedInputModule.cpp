@@ -8,7 +8,7 @@
 
 namespace EnhancedInput
 {
-    EnhancedInputModule::EnhancedInputModule() : ModuleBase(ModuleName(), Module::eLayer_Logic, -10)
+    EnhancedInputModule::EnhancedInputModule() : ModuleBase(ModuleName(), Module::ELayer_Logic, -10)
     {
         // 依存しているモジュールを設定
         // モジュールの依存設定していないと依存したモジュールが使えない
@@ -85,7 +85,7 @@ namespace EnhancedInput
                 if (inputState._keyboard.GetKeyState(eKey))
                 {
                     InputData inputData;
-                    inputData.eType              = eInputType_Keyboard;
+                    inputData.eType              = EInputType_Keyboard;
                     inputData.item.keyboard.eKey = eKey;
 
                     this->_mInputAction[it->key].PushBack(inputData);
@@ -101,7 +101,7 @@ namespace EnhancedInput
                     const auto pos = inputState._touch.GetWorldPos();
 
                     InputData inputData;
-                    inputData.eType            = eInputType_Touch;
+                    inputData.eType            = EInputType_Touch;
                     inputData.item.touch.fX    = pos._fX;
                     inputData.item.touch.fY    = pos._fY;
                     inputData.item.touch.eType = eTouch;

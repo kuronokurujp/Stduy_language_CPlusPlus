@@ -17,6 +17,7 @@ namespace Actor
 
     public:
         InputComponent() : Component() {}
+        virtual ~InputComponent() = default;
 
         /// <summary>
         /// 入力処理

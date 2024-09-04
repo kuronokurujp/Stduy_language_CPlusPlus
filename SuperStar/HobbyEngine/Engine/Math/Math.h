@@ -20,7 +20,6 @@ namespace Core::Math
     /// <summary>
     /// Radianses to degrees.
     /// </summary>
-    /// <param name="in_radians">The in radians.</param>
     static inline const Float32 RadiansToDegrees(Float32 in_fRadians) HE_NOEXCEPT
     {
         return fInvertRadiansUnit * in_fRadians;
@@ -29,7 +28,6 @@ namespace Core::Math
     /// <summary>
     /// Degreeses to radians.
     /// </summary>
-    /// <param name="in_degrees">The in degrees.</param>
     static inline const Float32 DegreesToRadians(Float32 in_fDegrees) HE_NOEXCEPT
     {
         return fRadiansUnit * in_fDegrees;
@@ -54,7 +52,6 @@ namespace Core::Math
     /// <summary>
     /// Tans the specified in angle.
     /// </summary>
-    /// <param name="in_angle">The in angle.</param>
     static inline Float32 Tan(const Float32 in_fAngle) HE_NOEXCEPT
     {
         return tanf(in_fAngle);
@@ -63,7 +60,6 @@ namespace Core::Math
     /// <summary>
     /// Acoses the specified in value.
     /// </summary>
-    /// <param name="in_value">The in value.</param>
     static inline Float32 Acos(const Float32 in_fValue) HE_NOEXCEPT
     {
         return acosf(in_fValue);
@@ -72,8 +68,6 @@ namespace Core::Math
     /// <summary>
     /// Atan2s the specified in x.
     /// </summary>
-    /// <param name="in_x">The in x.</param>
-    /// <param name="in_y">The in y.</param>
     static inline Float32 Atan2(const Float32 in_fX, const Float32 in_fY) HE_NOEXCEPT
     {
         return atan2f(in_fY, in_fX);
@@ -87,8 +81,6 @@ namespace Core::Math
     /// <summary>
     /// 値が直近0かどうか.
     /// </summary>
-    /// <param name="in_value">The in value.</param>
-    /// <param name="in_epsilon">The in epsilon.</param>
     static inline Bool NearZero(const Float32 in_fValue,
                                 const Float32 in_fEpsilon = 0.001f) HE_NOEXCEPT
     {
@@ -121,11 +113,13 @@ namespace Core::Math
     }
 
     /// <summary>
-    /// Vector3s the transform.
+    /// Vector3をクォータニオンに与えた結果を返す
     /// </summary>
-    extern Vector3 Vector3Transform(const Vector3& in_rVec3, const Quaternion& in_rQuaternion);
+    extern Vector3 TransformByVector3(const Vector3& in_rVec3, const Quaternion& in_rQuaternion);
+
     /// <summary>
-    /// Matrix4s the form quaternion.
+    /// クォータニオンを行列に変えたのを返す
     /// </summary>
-    extern Matrix4 Matrix4FormQuaternion(const Quaternion& in_rQuaternion);
+    extern Matrix4 ConvQuaternionToMatrix4(const Quaternion& in_rQuaternion);
+
 }  // namespace Core::Math

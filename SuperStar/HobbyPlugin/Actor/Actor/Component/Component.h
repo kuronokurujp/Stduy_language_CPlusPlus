@@ -21,7 +21,7 @@ namespace Actor
 
     public:
         Component();
-        virtual ~Component();
+        virtual ~Component() = default;
 
         /// <summary>
         /// タスク利用した設定をした最初に実行
@@ -40,12 +40,6 @@ namespace Actor
         /// Gets the update order.
         /// </summary>
         const int GetUpdateOrder() const { return this->_iUpdateOrder; }
-
-        // 座標変換一覧
-        void TransformLocalToWorldPos2D(Core::Math::Vector2* out,
-                                        const Core::Math::Vector2& in_rOffsetPos);
-        void TransformLocalToWorldRect2D(Core::Math::Rect2* out,
-                                         const Core::Math::Rect2& in_rOffsetRect);
 
         /// <summary>
         /// コンポーネントのオーターアクターを設定

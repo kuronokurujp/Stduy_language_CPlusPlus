@@ -11,7 +11,7 @@ namespace Core::File
     /// ファイルパス制御
     /// パスの連結とかできる
     /// </summary>
-    class Path
+    class Path final
     {
     public:
         /// <summary>

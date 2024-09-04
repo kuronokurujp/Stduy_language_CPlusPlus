@@ -10,10 +10,6 @@ namespace Actor
         this->_Clear();
     }
 
-    Component::~Component()
-    {
-    }
-
     /// <summary>
     /// タスク利用した設定をした最初に実行
     /// 登録に必要な情報を設定
@@ -27,29 +23,6 @@ namespace Actor
         Core::Task::VSetup(in_bAutoDelete);
 
         this->_Clear();
-    }
-
-    void Component::TransformLocalToWorldPos2D(Core::Math::Vector2* out,
-                                               const Core::Math::Vector2& in_rOffsetPos)
-    {
-        HE_ASSERT(out != NULL);
-
-        const Core::Math::Vector3& pos = this->_pOwner->GetWorldPos();
-        out->_fX                       = pos._fX;
-        out->_fY                       = pos._fY;
-
-        (*out) += in_rOffsetPos;
-    }
-
-    void Component::TransformLocalToWorldRect2D(Core::Math::Rect2* out,
-                                                const Core::Math::Rect2& in_rOffsetRect)
-    {
-        HE_ASSERT(out != NULL);
-
-        (*out) = in_rOffsetRect;
-
-        const Core::Math::Vector3& pos = this->_pOwner->GetWorldPos();
-        (*out) += Core::Math::Vector2(pos._fX, pos._fY);
     }
 
     void Component::VUpdate(const Float32 in_fDeltaTime, const Core::TaskData& in_rData)

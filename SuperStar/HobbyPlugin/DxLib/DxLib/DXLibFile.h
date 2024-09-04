@@ -11,7 +11,7 @@ namespace DXLib
     /// <summary>
     ///  DxLibのファイルシステム
     /// </summary>
-    class File : public Platform::FileInterface
+    class File final : public Platform::FileInterface
     {
     public:
         virtual const Core::Common::Handle VFileOpen(const Core::File::Path& in_rPath) override;

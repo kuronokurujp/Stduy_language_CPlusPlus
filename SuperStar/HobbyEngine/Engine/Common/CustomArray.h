@@ -24,10 +24,11 @@ namespace Core::Common
         HE_CLASS_MOVE_NG(ArrayBase);
 
     public:
-        ArrayBase(TYPE* in_pArrayAddr, Uint32 in_uSize)
+        explicit ArrayBase(TYPE* in_pArrayAddr, Uint32 in_uSize)
             : _pBuff(in_pArrayAddr), _uCapacity(in_uSize)
         {
         }
+        virtual ~ArrayBase() = default;
 
         inline const Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
 
@@ -68,10 +69,11 @@ namespace Core::Common
     /// テンプレートで要素を決めている
     /// </summary>
     template <class TYPE, Uint32 CAPACITY>
-    class CustomArray : public ArrayBase<TYPE>
+    class CustomArray final : public ArrayBase<TYPE>
     {
     public:
-        CustomArray() : ArrayBase<TYPE>(this->_aBuff, CAPACITY) {}
+        explicit CustomArray() : ArrayBase<TYPE>(this->_aBuff, CAPACITY) {}
+
         // コンストラクタ (initializer_listを受け取る)
         CustomArray(const std::initializer_list<TYPE>& in_rInitList)
             : ArrayBase<TYPE>(this->_aBuff, CAPACITY)

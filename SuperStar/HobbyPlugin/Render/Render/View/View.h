@@ -9,7 +9,7 @@ namespace Render
     /// レンダリングするビュー
     /// 描画コマンドをためてコマンドを実行する
     /// </summary>
-    class View
+    class View final
     {
     public:
         const Bool Release();

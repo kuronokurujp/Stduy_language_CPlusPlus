@@ -12,9 +12,7 @@ namespace Level
     /// </summary>
     using LevelUserInputEventHandler = std::function<void(const Char*)>;
 
-    /// <summary>
-    /// </summary>
-    class LevelUserInputMessage
+    class LevelUserInputMessage final
     {
         HE_CLASS_COPY_NG(LevelUserInputMessage);
         HE_CLASS_MOVE_NG(LevelUserInputMessage);
@@ -32,7 +30,7 @@ namespace Level
     /// <summary>
     /// UIの入力を受け取るレベル専用コンポーネント
     /// </summary>
-    class LevelUserInputReceiveComponent : public Actor::Component
+    class LevelUserInputReceiveComponent final : public Actor::Component
     {
         HE_CLASS_COPY_NG(LevelUserInputReceiveComponent);
         HE_CLASS_MOVE_NG(LevelUserInputReceiveComponent);

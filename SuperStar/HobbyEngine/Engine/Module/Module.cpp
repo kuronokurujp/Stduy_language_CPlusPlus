@@ -4,12 +4,8 @@
 
 namespace Module
 {
-    ModuleBase::ModuleBase(const UTF8* in_szName, const eLayer in_eLayer, const Sint32 in_priority)
+    ModuleBase::ModuleBase(const UTF8* in_szName, const ELayer in_eLayer, const Sint32 in_priority)
         : _szName(in_szName), _eLayer(in_eLayer), _priority(in_priority)
-    {
-    }
-
-    ModuleBase::~ModuleBase()
     {
     }
 
@@ -25,7 +21,8 @@ namespace Module
             {
                 if (this->_szName == vCheckModule[j]->Name())
                 {
-                    HE_PG_LOG_LINE(HE_STR_TEXT("%s モジュールに依存している %s と循環参照関係になっている"),
+                    HE_PG_LOG_LINE(HE_STR_TEXT(
+                                       "%s モジュールに依存している %s と循環参照関係になっている"),
                                    this->_szName.Str(), vCheckModule[j]->Name());
                     return FALSE;
                 }
@@ -169,19 +166,19 @@ namespace Module
         HE_ASSERT(in_pModule);
         // モジュールレイヤーに応じたリストに登録
         const auto eLayer = in_pModule->Layer();
-        if (eLayer == eLayer_App)
+        if (eLayer == ELayer_App)
         {
             this->_mAppModule.Add(in_pModule->_szName, in_pModule);
             return TRUE;
         }
 
-        if (eLayer == eLayer_Logic)
+        if (eLayer == ELayer_Logic)
         {
             this->_mLogicModule.Add(in_pModule->_szName, in_pModule);
             return TRUE;
         }
 
-        if (eLayer == eLayer_View)
+        if (eLayer == ELayer_View)
         {
             this->_mViewModule.Add(in_pModule->_szName, in_pModule);
             return TRUE;
@@ -190,11 +187,11 @@ namespace Module
         return FALSE;
     }
 
-    const Bool ModuleManager::Start(const eLayer in_eLayer)
+    const Bool ModuleManager::Start(const ELayer in_eLayer)
     {
         switch (in_eLayer)
         {
-            case eLayer_App:
+            case ELayer_App:
             {
                 // AppモジュールはプラットフォームなどのOS関連のモジュール
                 // newでメモリ確保とかもあり得る
@@ -210,7 +207,7 @@ namespace Module
 
                 break;
             }
-            case eLayer_Logic:
+            case ELayer_Logic:
             {
                 for (auto b = this->_mLogicModule.Begin(); b != this->_mLogicModule.End(); ++b)
                 {
@@ -223,7 +220,7 @@ namespace Module
                 this->_SortModuleVector(&this->_vLogicModule);
                 break;
             }
-            case eLayer_View:
+            case ELayer_View:
             {
                 for (auto b = this->_mViewModule.Begin(); b != this->_mViewModule.End(); ++b)
                 {
@@ -264,8 +261,7 @@ namespace Module
 
     const Bool ModuleManager::_StartModule(ModuleBase& in_rModule)
     {
-        HE_LOG_LINE(HE_STR_TEXT("Start Module(%s)"),
-                    in_rModule.Name());
+        HE_LOG_LINE(HE_STR_TEXT("Start Module(%s)"), in_rModule.Name());
         if (in_rModule._VStart() == FALSE)
         {
             HE_ASSERT(FALSE && "モジュール開始に失敗");

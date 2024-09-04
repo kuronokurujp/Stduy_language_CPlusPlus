@@ -7,7 +7,7 @@ namespace DXLib
     /// <summary>
     /// DXLibプラットフォームのシステム
     /// </summary>
-    class System : public Platform::SystemInterface
+    class System final : public Platform::SystemInterface
     {
     public:
         const Uint32 VGetRand(const Uint32) override final;

@@ -8,7 +8,7 @@ namespace DXLib
     /// <summary>
     /// DxLib用の入力システム
     /// </summary>
-    class Input : public Platform::InputInterface
+    class Input final : public Platform::InputInterface
     {
     public:
         void VInit() override final;

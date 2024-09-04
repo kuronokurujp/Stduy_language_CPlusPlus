@@ -10,6 +10,7 @@ namespace Platform
     class ScreenInterface
     {
     public:
+        virtual ~ScreenInterface()           = default;
         virtual const Uint32 VWidth() const  = 0;
         virtual const Uint32 VHeight() const = 0;
     };

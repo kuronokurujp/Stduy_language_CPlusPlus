@@ -8,7 +8,7 @@
 
 namespace InGame
 {
-    class InGameStageManagerComponent : public Actor::Component
+    class InGameStageManagerComponent final : public Actor::Component
     {
         HE_CLASS_COPY_NG(InGameStageManagerComponent);
         HE_CLASS_MOVE_NG(InGameStageManagerComponent);
@@ -17,7 +17,7 @@ namespace InGame
     public:
         //	コンストラクタ
         InGameStageManagerComponent();
-        virtual ~InGameStageManagerComponent() {}
+        virtual ~InGameStageManagerComponent() = default;
 
         /// <summary>
         /// タスク開始

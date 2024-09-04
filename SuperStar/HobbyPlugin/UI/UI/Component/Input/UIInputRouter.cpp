@@ -37,7 +37,7 @@ namespace UI
         // UIレイヤーに応じてボタンを押せないとか
         for (Uint32 i = 0; i < input.Size(); ++i)
         {
-            if (input[i].eType == EnhancedInput::eInputType::eInputType_Touch)
+            if (input[i].eType == EnhancedInput::EInputType::EInputType_Touch)
             {
                 while (sWidgetComponent.Empty() == FALSE)
                 {

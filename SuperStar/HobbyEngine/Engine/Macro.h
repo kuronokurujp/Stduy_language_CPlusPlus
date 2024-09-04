@@ -139,21 +139,6 @@ void HE_LOG_LINE(const Char* in_szFormat, Args... in_args)
 // プログラムが把握する情報を付与したログ出力
 // ファイルパスが長く長文になる可能性があるのでログサイズ2倍の文字列サイズを確保
 // コンソールにも出力
-#if 0
-#define HE_PG_LOG_LINE(format, ...)                                                          \
-    do                                                                                       \
-    {                                                                                        \
-        Char c[HE_LOG_MSG_SIZE] = {};                                                        \
-        _snwprintf_s(c, HE_LOG_MSG_SIZE, HE_LOG_MSG_SIZE, format, __VA_ARGS__);              \
-        Char c2[HE_LOG_MSG_SIZE * 2] = {};                                                   \
-        _snwprintf_s(c2, HE_LOG_MSG_SIZE * 2, HE_LOG_MSG_SIZE * 2, L"%ls:%d %ls", __FILEW__, \
-                     __LINE__, c);                                                           \
-        OutputDebugString(c2);                                                               \
-        OutputDebugString(L"\n");                                                            \
-        wprintf(c2);                                                                         \
-        wprintf(L"\n");                                                                      \
-    } while (0)
-#else
 #define HE_PG_LOG_LINE(format, ...)                                                               \
     do                                                                                            \
     {                                                                                             \
@@ -172,7 +157,6 @@ void HE_LOG_LINE(const Char* in_szFormat, Args... in_args)
             ::WriteConsoleW(hConsole, HE_STR_TEXT("\n"), 1, &written, nullptr);                   \
         }                                                                                         \
     } while (0)
-#endif
 
 #else
 

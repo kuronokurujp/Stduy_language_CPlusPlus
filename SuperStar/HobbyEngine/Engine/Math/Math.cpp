@@ -2,21 +2,18 @@
 
 namespace Core::Math
 {
-    /// <summary>
-    /// Vector3s the transform.
-    /// </summary>
-    Vector3 Vector3Transform(const Vector3& in_rVec3, const Quaternion& in_rQuaternion)
+    Vector3 TransformByVector3(const Vector3& in_rVec3, const Quaternion& in_rQuaternion)
     {
-        // todo: ベクトルをクォータニオンで計算
+        // ベクトルをクォータニオンで計算
         Vector3 qv(in_rQuaternion._fX, in_rQuaternion._fY, in_rQuaternion._fZ);
 
         Vector3 retV = Vector3();
 
-        // なぜこうなる？
         {
             Vector3 temp(in_rVec3);
             Vector3 temp2 =
                 Vector3::Cross(qv, Vector3::Cross(qv, in_rVec3) + temp * in_rQuaternion._fW);
+
             // 2.0fを-2.0fにすると90度に回転したベクトルになる
             // 反射ベクトルに使えそう
             auto vec3 = temp2 * 2.0f;
@@ -30,7 +27,7 @@ namespace Core::Math
     /// <summary>
     /// Matrix4s the form quaternion.
     /// </summary>
-    Matrix4 Matrix4FormQuaternion(const Quaternion& in_rQuaternion)
+    Matrix4 ConvQuaternionToMatrix4(const Quaternion& in_rQuaternion)
     {
         Matrix4 mat4;
         auto q = in_rQuaternion;

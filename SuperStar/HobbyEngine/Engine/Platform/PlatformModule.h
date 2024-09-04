@@ -24,7 +24,8 @@ namespace Platform
 
     public:
         // プラットフォームモジュールはOS固有なのでモジュールレイヤーはアプリに
-        PlatformModule() : ModuleBase(ModuleName(), Module::eLayer_App) {}
+        PlatformModule() : ModuleBase(ModuleName(), Module::ELayer_App) {}
+        virtual ~PlatformModule() = default;
 
         virtual const Bool VCreateMainWindow() { return FALSE; }
         virtual const Bool VReleaseAllWindows() { return FALSE; }

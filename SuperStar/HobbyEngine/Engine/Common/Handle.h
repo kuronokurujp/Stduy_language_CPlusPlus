@@ -7,7 +7,7 @@ namespace Core::Common
     /// <summary>
     /// インデックスをハンドルとして持つクラス
     /// </summary>
-    class Handle
+    class Handle final
     {
     public:
         Handle() { this->Clear(); }

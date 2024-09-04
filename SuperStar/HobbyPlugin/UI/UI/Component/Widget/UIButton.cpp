@@ -37,7 +37,11 @@ namespace UI
     {
         Core::Math::Rect2 srcRect(0.0f, 0.0f, this->_fWidth, this->_fHeight, this->_eAnchor);
         Core::Math::Rect2 rect;
-        this->TransformLocalToWorldRect2D(&rect, srcRect);
+
+        auto pTrans = this->GetTransformComponent();
+        HE_ASSERT(pTrans);
+
+        pTrans->TransformLocalToWorldRect2D(&rect, srcRect);
 
         // 描画コマンドを追加
         Render::CreateCmd2DRectDraw(this->_viewHandle, rect, {this->_color});
@@ -47,7 +51,11 @@ namespace UI
     {
         Core::Math::Rect2 rect;
         Core::Math::Rect2 orgRect(0.0f, 0.0f, this->_fWidth, this->_fHeight, this->_eAnchor);
-        this->TransformLocalToWorldRect2D(&rect, orgRect);
+
+        auto pTrans = this->GetTransformComponent();
+        HE_ASSERT(pTrans);
+
+        pTrans->TransformLocalToWorldRect2D(&rect, orgRect);
 
         if (rect.InSidePoint(Core::Math::Vector2(in_rTouch.fX, in_rTouch.fY)))
         {

@@ -50,7 +50,7 @@ namespace Level
         {
             auto pUIModule           = Module::ModuleManager::I().Get<UI::UIModule>();
             this->_layoutAssetHandle = pUIModule->LoadAssetWithLayoutBuild(
-                Core::File::Path(HE_STR_TEXT("UI"), HE_STR_TEXT("Builder"), HE_STR_TEXT("Debug"),
+                Core::File::Path(HE_STR_TEXT("UI"), HE_STR_TEXT("Builder"), HE_STR_TEXT("Test"),
                                  HE_STR_TEXT("Launcher.xml")));
             // widgetを作成
             // レベルが切り替わると自動的にwidgetは破棄される

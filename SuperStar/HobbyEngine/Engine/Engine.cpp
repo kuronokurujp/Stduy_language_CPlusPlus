@@ -70,11 +70,11 @@ const Bool Engine::Start()
     HE_LOG_LINE(HE_STR_TEXT("エンジンの初期化"));
 
     // OS固有のモジュールは先に開始させる
-    this->_moduleManager.Start(Module::eLayer_App);
+    this->_moduleManager.Start(Module::ELayer_App);
 
     // ゲーム用のモジュールを開始
-    this->_moduleManager.Start(Module::eLayer_Logic);
-    this->_moduleManager.Start(Module::eLayer_View);
+    this->_moduleManager.Start(Module::ELayer_Logic);
+    this->_moduleManager.Start(Module::ELayer_View);
 
     // FPSタイマーを作成
     // ゲームを固定フレームレートにするため

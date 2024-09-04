@@ -75,4 +75,3 @@ namespace Core::Common
     };
 
 }  // namespace Core::Common
-;  // namespace Core

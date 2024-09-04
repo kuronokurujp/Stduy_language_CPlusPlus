@@ -14,6 +14,8 @@ namespace Platform
     class FileInterface
     {
     public:
+        virtual ~FileInterface() = default;
+
         virtual const Core::Common::Handle VFileOpen(const Core::File::Path& in_rPath) = 0;
         virtual const Bool VFileClose(const Core::Common::Handle& in_rHandle)          = 0;
         virtual const Bool VFileRead(void* out_pBuff, const Core::Common::Handle& in_rHandle,

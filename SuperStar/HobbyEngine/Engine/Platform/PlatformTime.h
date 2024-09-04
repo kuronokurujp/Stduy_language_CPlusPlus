@@ -9,6 +9,8 @@ namespace Platform
     class TimeInterface
     {
     public:
+        virtual ~TimeInterface() = default;
+
         virtual const Uint32 VNowMSec()             = 0;
         virtual void VSleepMSec(const Uint32 in_ms) = 0;
     };

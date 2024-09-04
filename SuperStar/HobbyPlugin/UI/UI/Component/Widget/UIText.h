@@ -9,7 +9,7 @@ namespace UI
     /// <summary>
     /// UIに表示するテキストコンポーネント
     /// </summary>
-    class UITextComponent : public UIWidgetComponent
+    class UITextComponent final : public UIWidgetComponent
     {
         HE_CLASS_COPY_NG(UITextComponent);
         GENERATED_CLASS_BODY_HEADER(UITextComponent, UIWidgetComponent);

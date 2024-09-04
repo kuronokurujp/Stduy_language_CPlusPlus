@@ -33,7 +33,7 @@ namespace Core
 
     public:
         // 子タスクのリストノード
-        class ChildTaskNode : public Core::Common::LinkedListNode<ChildTaskNode>
+        class ChildTaskNode final : public Core::Common::LinkedListNode<ChildTaskNode>
         {
         public:
             ChildTaskNode() { this->Clear(); }
@@ -43,7 +43,10 @@ namespace Core
             {
             }
 
-            inline Core::Common::Handle& GetParentHandle() { return this->_parentHandle; }
+            inline const Core::Common::Handle& GetParentHandle() const
+            {
+                return this->_parentHandle;
+            }
             inline Core::Common::Handle& GetHandle() { return this->_handle; }
 
             void Clear()
@@ -69,9 +72,10 @@ namespace Core
         // タスクは生成したインスタンスが再利用されるのでコンストラクタで初期化はできない
         Task() { this->_Clear(); }
 
+        virtual ~Task() = default;
+
         /// <summary>
-        /// タスク利用した設定をした最初に実行
-        /// 登録に必要な情報を設定
+        /// タスク実行前の初期セットアップ
         /// </summary>
         virtual void VSetup(const Bool in_bAutoDelete);
 
@@ -103,6 +107,9 @@ namespace Core
         /// </summary>
         /// <returns></returns>
         inline const Sint32 GetGropuId() const { return this->_iGroupId; }
+
+        inline const ChildTaskNode GetChildTaskNode() const { return this->_chainNode; }
+        inline const Bool IsChild() const { return this->_bChild; }
 
         /// <summary>
         /// 子タスクの追加

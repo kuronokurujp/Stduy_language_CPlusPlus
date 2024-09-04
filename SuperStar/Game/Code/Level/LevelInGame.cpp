@@ -1,5 +1,6 @@
 ﻿#include "LevelInGame.h"
 
+#include "InGame/Component/InGameCollisionComponent.h"
 #include "InGame/Component/InGameShotManagerComponent.h"
 #include "InGame/Component/InGameStageManagerComponent.h"
 #include "InGame/Component/InGameSystemComponent.h"
@@ -73,6 +74,11 @@ namespace Level
             {
                 // next = new C_TitleSeq();
             }
+        }
+
+        // TODO: コリジョン処理をする
+        {
+            InGame::InGameCollisionComponent::CollisionAll();
         }
     }
 

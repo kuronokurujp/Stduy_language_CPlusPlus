@@ -65,20 +65,20 @@ namespace Actor
         if (this->_eState != EState_Active) return;
 
         // 座標更新
-        this->_ComputeWorldTransform();
+        // this->_ComputeWorldTransform();
 
         // コンポーネント更新
         this->_components.UpdateAll(in_fDt, in_rData);
 
         // コンポーネント内で更新した座標を含めて更新
-        this->_ComputeWorldTransform();
+        // this->_ComputeWorldTransform();
 
         // コンポーネントがすべて更新してから実行
         // コンポーネントの結果が同フレーム取れる
         this->VUpdateActor(in_fDt);
 
         // Actor内で更新した座標を含めて更新
-        this->_ComputeWorldTransform();
+        // this->_ComputeWorldTransform();
     }
 
     /// <summary>
@@ -107,6 +107,12 @@ namespace Actor
 
         // コンポーネント解除をオーナーに通知
         auto pComponent = reinterpret_cast<Component*>(this->_components.GetTask(*in_pHandle));
+        if (pComponent == NULL)
+        {
+            in_pHandle->Null();
+            return TRUE;
+        }
+
         this->_pOwner->VOnActorUnRegistComponent(pComponent);
 
         this->_components.RemoveTask(in_pHandle);
@@ -190,45 +196,7 @@ namespace Actor
         return InvalidHandle;
     }
 
-    /// <summary>
-    /// 親の位置を含めたワールド座標取得
-    /// </summary>
-    /// <returns></returns>
-    const Core::Math::Vector3 Object::GetWorldPos()
-    {
-        Core::Math::Vector3 pos = this->_pos;
-        // 親アクターがあれば座標を取得
-        if (this->_bChild)
-        {
-            Core::Common::Handle handle = this->_chainNode.GetParentHandle();
-            while (handle.Null() == FALSE)
-            {
-                Object* pParentActor = this->GetActorByOwner(handle);
-                if (pParentActor == NULL) break;
-
-                pos += pParentActor->GetWorldPos();
-
-                // 親アクターに更に親アクターがあれば処理を続ける
-                if (pParentActor->_bChild)
-                    handle = pParentActor->_chainNode.GetParentHandle();
-                else
-                    handle.Clear();
-            }
-        }
-
-        return pos;
-    }
-
 #if 0
-    /// <summary>
-    /// Gets the Renderer.
-    /// </summary>
-    /// <returns></returns>
-    Renderer* Actor::GetRenderer()
-    {
-        return this->pRenderer;
-    }
-
     /// <summary>
     /// Sets the rotation deg.
     /// 時計周りがマイナス値、反時計周りがプラス値
@@ -255,48 +223,5 @@ namespace Actor
         return Math::Vector3Transform(Math::Vector3::Unit_X, this->rotation);
     }
 
-    /// <summary>
-    /// Processes the input.
-    /// </summary>
-    /// <param name="in_pKeyState">State of the in p key.</param>
-    /// <returns></returns>
-    auto Actor::ProcessInput(const uint8_t* in_pKeyState) -> void
-    {
-        if (this->state == EState_Active)
-        {
-            // コンポーネントの入力プロセスを実行する
-            // 継承したコンポーネント側で実装している
-            for (auto comp : this->_components)
-            {
-                comp->ProcessInput(in_pKeyState);
-            }
-
-            this->ActorInput(in_pKeyState);
-        }
-    }
-
 #endif
-    /// <summary>
-    /// Computes the world transform.
-    /// </summary>
-    /// <returns></returns>
-    void Object::_ComputeWorldTransform()
-    {
-        if (this->_bComputeTransform == false)
-        {
-            return;
-        }
-
-        this->_bComputeTransform = false;
-
-        // 拡大・拡縮行列作成して初期行列として設定
-        this->_worldTransform =
-            Core::Math::Matrix4::CreateScale(this->_scale._fX, this->_scale._fY, this->_scale._fZ);
-
-        // 回転行列作成して掛け算
-        this->_worldTransform.Mul(Core::Math::Matrix4FormQuaternion(this->_rotation));
-
-        // 平行移動行列作成して掛け算
-        this->_worldTransform.Mul(Core::Math::Matrix4::CreateTranslation(this->_pos));
-    }
 }  // namespace Actor

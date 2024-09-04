@@ -10,4 +10,4 @@ namespace Core::Common
     /// </summary>
     extern const Uint64 HashName(const Char*);
 
-}  // namespace Common
+}  // namespace Core::Common

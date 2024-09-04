@@ -9,7 +9,7 @@ namespace UI
     /// UIのWidgetのタップやボタン入力を行い,
     /// 各Widgetへ結果を送信する
     /// </summary>
-    class UIInputRouterComponent : public Actor::InputComponent
+    class UIInputRouterComponent final : public Actor::InputComponent
     {
         HE_CLASS_COPY_NG(UIInputRouterComponent);
         GENERATED_CLASS_BODY_HEADER(UIInputRouterComponent, Actor::InputComponent);

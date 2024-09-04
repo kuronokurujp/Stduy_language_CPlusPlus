@@ -119,8 +119,8 @@ namespace AssetManager
                         auto resultCode = this->_parser->iterate(*this->_json).get(this->_doc);
                         if (resultCode != simdjson::error_code::SUCCESS)
                         {
-                            HE_PG_LOG_LINE(HE_STR_TEXT("%s ファイルエラー: %d"),
-                                           this->_path.Str(), resultCode);
+                            HE_PG_LOG_LINE(HE_STR_TEXT("%s ファイルエラー: %d"), this->_path.Str(),
+                                           resultCode);
                             HE_LOG_LINE(HE_STR_TEXT("エラーのjson内容"));
                             HE_LOG_LINE(HE_STR_TEXT("%s"), pReadTmpBuff);
 
@@ -135,8 +135,8 @@ namespace AssetManager
             }
             catch (const simdjson::simdjson_error& e)
             {
-                HE_PG_LOG_LINE(HE_STR_TEXT("%s ファイルの扱いに失敗: %s"),
-                               this->_path.Str(), e.what());
+                HE_PG_LOG_LINE(HE_STR_TEXT("%s ファイルの扱いに失敗: %s"), this->_path.Str(),
+                               e.what());
                 bRet = FALSE;
             }
             // jsonに展開した時のメモリを利用するので読み込んだメモリを解放
@@ -219,13 +219,11 @@ namespace AssetManager
                     pugi::xml_parse_result result = this->_doc.load_string(pReadTmpBuff);
                     if (result)
                     {
-                        HE_LOG_LINE(HE_STR_TEXT("XML Load Success: %s"),
-                                    this->_path.Str());
+                        HE_LOG_LINE(HE_STR_TEXT("XML Load Success: %s"), this->_path.Str());
                     }
                     else
                     {
-                        HE_LOG_LINE(HE_STR_TEXT("Error description: %s"),
-                                    result.description());
+                        HE_LOG_LINE(HE_STR_TEXT("Error description: %s"), result.description());
                         HE_LOG_LINE(HE_STR_TEXT("Error offset: %td (error at [...%s] "),
                                     result.offset, (pReadTmpBuff + result.offset));
                     }

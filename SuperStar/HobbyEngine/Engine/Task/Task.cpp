@@ -97,8 +97,7 @@ namespace Core
         // 子のタスクではなくなった
         pTask->_bChild = FALSE;
         // 親のリストから子のタスクを外す
-        auto itr     = Core::Common::CustomList<ChildTaskNode>::Iterator(&pTask->_chainNode);
-        auto nextItr = this->_lstChildTask.Erase(itr);
+        auto nextItr = this->_lstChildTask.Erase(&pTask->_chainNode);
 
         // 破棄フラグがあればタスク管理で消去
         if (pTask->_bKill)

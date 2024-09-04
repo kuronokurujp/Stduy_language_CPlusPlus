@@ -27,13 +27,13 @@ namespace Core::Math
             }
             case EAnchor_Center:
             {
-                auto halfW = in_fW * 0.5f;
-                auto halfH = in_fH * 0.5f;
+                Float32 fHalfW = in_fW * 0.5f;
+                Float32 fHalfH = in_fH * 0.5f;
 
-                this->_fLeft   = in_fX - halfW;
-                this->_fRight  = in_fX + halfW;
-                this->_fTop    = in_fY - halfH;
-                this->_fBottom = in_fY + halfH;
+                this->_fLeft   = in_fX - fHalfW;
+                this->_fRight  = in_fX + fHalfW;
+                this->_fTop    = in_fY - fHalfH;
+                this->_fBottom = in_fY + fHalfH;
 
                 break;
             }
@@ -46,7 +46,8 @@ namespace Core::Math
     /// </summary>
     const Vector2 Rect2::Pos() const
     {
-        Float32 fX, fY;
+        Float32 fX = 0.0f, fY = 0.0f;
+
         switch (this->_eAnchor)
         {
             case EAnchor_Left:
@@ -55,6 +56,7 @@ namespace Core::Math
                 fY = this->_fTop;
                 break;
             }
+
             case EAnchor_Center:
             {
                 fX = this->_fLeft + (this->Width() * 0.5f);
@@ -69,17 +71,16 @@ namespace Core::Math
     /// <summary>
     /// Ins the side rect.
     /// </summary>
-    const Bool Rect2::InSideRect(Rect2& in_rOrderRect)
+    const Bool Rect2::InSideRect(const Rect2& in_rOrderRect) const
     {
-        const Vector2&& crrPos  = this->Pos();
-        const Vector2&& crrLine = Vector2::Sub(crrPos, in_rOrderRect.Pos());
+        const Vector2& rPos  = this->Pos();
+        const Vector2& rLine = Vector2::Sub(rPos, in_rOrderRect.Pos());
 
-        const Float32 cfW = this->WidthHalf() + in_rOrderRect.WidthHalf();
-        const Float32 cfH = this->HeightHalf() + in_rOrderRect.HeightHalf();
+        const Float32 fW = this->WidthHalf() + in_rOrderRect.WidthHalf();
+        const Float32 fH = this->HeightHalf() + in_rOrderRect.HeightHalf();
 
-        if (cfW < fabs(crrLine._fX)) return FALSE;
-
-        if (cfH < fabs(crrLine._fY)) return FALSE;
+        if (fW < fabs(rLine._fX)) return FALSE;
+        if (fH < fabs(rLine._fY)) return FALSE;
 
         return TRUE;
     }

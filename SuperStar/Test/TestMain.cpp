@@ -10,14 +10,6 @@
 #include <fcntl.h>
 #include <io.h>
 
-#include "ActorModule.h"
-#include "AssetManagerModule.h"
-#include "DXLibModule.h"
-#include "LevelModule.h"
-#include "LocalizationModule.h"
-#include "RenderModule.h"
-#include "UIModule.h"
-
 // Catch.hppのカスタムメイン関数を実装
 #ifndef __OBJC__
 
@@ -94,12 +86,9 @@ int main(int argc, char* const argv[])
 // メモリ処理のテストコード
 #include "EngineTest/Memory/TestMemory.hpp"
 
-// プラグインのテストするためにプラグインのインクルードは特殊
-// インクルードしたらプラグインを使える状態になる
-// 使える状態にした後にエンジンを起動
-#include "ActorModule.h"
-
 // エンジン本体のテストコード
 #include "EngineTest/TestEngine.hpp"
 
-// TODO: ゲームアプリのテストコード
+// ゲームアプリのテストコード
+// イベントテスト
+#include "TestCode/Event/TestEvent.hpp"

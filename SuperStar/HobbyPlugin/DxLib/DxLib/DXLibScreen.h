@@ -7,7 +7,7 @@
 
 namespace DXLib
 {
-    class Screen : public Platform::ScreenInterface
+    class Screen final : public Platform::ScreenInterface
     {
     public:
         const Bool Init();

@@ -30,7 +30,8 @@ namespace AssetManager
         friend class AssetManagerModule;
 
     public:
-        AssetDataBase() {}
+        AssetDataBase()          = default;
+        virtual ~AssetDataBase() = default;
 
     protected:
         virtual void _VInit(const Char* in_szName, const Core::File::Path& in_rPath);
@@ -57,7 +58,7 @@ namespace AssetManager
         // Nodeをマップで扱う型
         using ToolNodeMapType = Core::Common::CustomFixMap<Core::Common::FixString128, Node, 64>;
 
-        class Node
+        class Node final
         {
         public:
             Node() {}
@@ -124,6 +125,7 @@ namespace AssetManager
 
     public:
         AssetDataJson() : AssetDataBase() {}
+        virtual ~AssetDataJson() = default;
 
         virtual const Bool _VLoad(Platform::FileInterface& in_rFileSystem) override;
         virtual void _VUnload() override;
@@ -166,6 +168,7 @@ namespace AssetManager
 
     public:
         AssetDataXml() : AssetDataBase() {}
+        virtual ~AssetDataXml() = default;
 
         virtual const Bool _VLoad(Platform::FileInterface& in_rFileSystem) override;
         virtual void _VUnload() override;

@@ -131,17 +131,17 @@ namespace Core::Math
     void Vector3::Normalize()
     {
         Float32 fMagSq = this->_fX * this->_fX + this->_fY * this->_fY + this->_fZ * this->_fZ;
-        if (fMagSq > 0.f)
+        if (0.0f < fMagSq)
         {
-            Float32 onew_over_mag = 1.f / static_cast<Float32>(sqrt(fMagSq));
-            this->_fX *= onew_over_mag;
-            this->_fY *= onew_over_mag;
-            this->_fZ *= onew_over_mag;
+            Float32 fOnewOverMag = 1.f / static_cast<Float32>(sqrt(fMagSq));
+            this->_fX *= fOnewOverMag;
+            this->_fY *= fOnewOverMag;
+            this->_fZ *= fOnewOverMag;
         }
     }
 
     // 内積
-    Float32 Vector3::Dot(const Vector3& in_rV, const Vector3& in_rV2)
+    const Float32 Vector3::Dot(const Vector3& in_rV, const Vector3& in_rV2)
     {
         return (in_rV._fX * in_rV2._fX + in_rV._fY * in_rV2._fY + in_rV._fZ * in_rV2._fZ);
     }
@@ -160,23 +160,23 @@ namespace Core::Math
     // ベクトルの大きさを2乗したのを取得
     // こちらの方が計算が早い
     // 比較などで利用できる
-    Float32 Vector3::GetLengthSquared(const Vector3& in_rV)
+    const Float32 Vector3::LengthSquared(const Vector3& in_rV)
     {
         return (in_rV._fX * in_rV._fX + in_rV._fY * in_rV._fY * in_rV._fZ * in_rV._fZ);
     }
 
     //	大きさ取得
-    Float32 Vector3::GetVector3Mag(const Vector3& in_v)
+    const Float32 Vector3::Mag(const Vector3& in_v)
     {
-        return static_cast<Float32>(sqrt(GetLengthSquared(in_v)));
+        return static_cast<Float32>(sqrt(LengthSquared(in_v)));
     }
 
     //	距離取得
-    Float32 Vector3::GetVector3Distance(const Vector3& in_v, const Vector3& in_v2)
+    Float32 Vector3::Distance(const Vector3& in_v, const Vector3& in_v2)
     {
         Vector3 size;
         size.SetSub(in_v2, in_v);
 
-        return (GetVector3Mag(size));
+        return (Mag(size));
     }
 }  // namespace Core::Math

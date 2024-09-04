@@ -14,7 +14,8 @@ TEST_CASE("Test Hash Duplication Check")
     for (auto i = 0; i < HE_ARRAY_NUM(aszTexts); ++i)
     {
         auuHash[i] = Core::Common::HashName(aszTexts[i]);
-        HE_LOG_LINE(HE_STR_TEXT("text: %s to hash: %lld %s"), aszTexts[i], auuHash[i], HE_STR_TEXT("日本"));
+        HE_LOG_LINE(HE_STR_TEXT("text: %s to hash: %lld %s"), aszTexts[i], auuHash[i],
+                    HE_STR_TEXT("日本"));
     }
 
     for (auto i = 0; i < HE_ARRAY_NUM(aszTexts); ++i)

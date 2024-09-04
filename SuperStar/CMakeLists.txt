@@ -144,7 +144,15 @@ add_subdirectory(Test)
 
 # アプリディレクトリのみをインクルード
 set(APP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Game)
-target_include_directories(${TEST_APP_NAME} PRIVATE ${APP_INCLUDE_DIR})
+target_include_directories(${TEST_APP_NAME} PRIVATE
+ ${APP_INCLUDE_DIR})
+
+# デバッグ実行時に参照する作業ディレクトリ.
+# バイナリ出力先のディレクトリ
+set_target_properties(${TEST_APP_NAME} PROPERTIES
+  VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Bin/Test/${CMAKE_CFG_INTDIR}
+  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Bin/Test
+)
 
 # テストしたいライブラリを設定
 # 設定プロジェクトのライブラリ・インクルードディレクトリ登録

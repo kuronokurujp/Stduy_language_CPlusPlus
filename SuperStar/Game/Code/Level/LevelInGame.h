@@ -7,7 +7,7 @@
 
 namespace Level
 {
-    class LevelInGame : public Level::Node
+    class LevelInGame final : public Level::Node
     {
         HE_CLASS_COPY_NG(LevelInGame);
         HE_CLASS_MOVE_NG(LevelInGame);

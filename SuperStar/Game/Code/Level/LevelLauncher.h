@@ -10,7 +10,7 @@ namespace Level
     /// <summary>
     /// デバッグメインレベル
     /// </summary>
-    class LevelLauncher : public Level::Node
+    class LevelLauncher final : public Level::Node
     {
         HE_CLASS_COPY_NG(LevelLauncher);
         HE_CLASS_MOVE_NG(LevelLauncher);

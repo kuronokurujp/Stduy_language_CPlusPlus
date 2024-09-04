@@ -11,7 +11,7 @@ namespace InGame
     /// <summary>
     /// 味方や敵の弾を管理するコンポーネント
     /// </summary>
-    class InGameShotManagerComponent : public Actor::Component
+    class InGameShotManagerComponent final : public Actor::Component
     {
         HE_CLASS_COPY_NG(InGameShotManagerComponent);
         HE_CLASS_MOVE_NG(InGameShotManagerComponent);

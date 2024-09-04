@@ -32,7 +32,7 @@ namespace UI
     /// ボタンのプッシュ通知
     /// デフォルト版
     /// </summary>
-    class UIButtonMessageHandlerDefault : public UIButtonMessageHandler
+    class UIButtonMessageHandlerDefault final : public UIButtonMessageHandler
     {
         HE_CLASS_COPY_NG(UIButtonMessageHandlerDefault);
 
@@ -55,7 +55,7 @@ namespace UI
     /// UIに表示するボタンコンポーネント
     /// タッチイベントはコンポーネントUIInputTerminalTouchで呼び出している
     /// </summary>
-    class UIButtonComponent : public UIWidgetComponent
+    class UIButtonComponent final : public UIWidgetComponent
     {
         HE_CLASS_COPY_NG(UIButtonComponent);
         GENERATED_CLASS_BODY_HEADER(UIButtonComponent, UIWidgetComponent);

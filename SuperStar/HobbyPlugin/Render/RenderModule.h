@@ -24,7 +24,7 @@ namespace Render
         using ViewHandleVector = Core::Common::CustomFixVector<Core::Common::Handle, 32>;
 
     public:
-        RenderModule() : ModuleBase(ModuleName(), Module::eLayer_View, 10) {}
+        RenderModule() : ModuleBase(ModuleName(), Module::ELayer_View, 10) {}
 
         /// <summary>
         /// レンダリングビューを追加

@@ -1,11 +1,15 @@
 ﻿#include "CustomString.h"
 
-#include <stdarg.h>
-#include <stdio.h>
+#include "Hash.h"
 
 #ifdef HE_WIN
 
 #include <windows.h>
+
+#else
+
+#include <stdarg.h>
+include<stdio.h>
 
 #endif
 
@@ -206,14 +210,17 @@ namespace Core::Common
     /// 文字列をハッシュ化して返す
     /// </summary>
     /// <returns></returns>
-    const Uint64 StringBase::Hash()
+    const Uint64 StringBase::Hash() const
     {
+        return HashName(this->Str());
+        /*
 #ifdef HE_WIN
         std::hash<std::wstring> hasher;
 #else
         std::hash<std::string> hasher;
 #endif
         return hasher(this->Str());
+        */
     }
 
     /// <summary>

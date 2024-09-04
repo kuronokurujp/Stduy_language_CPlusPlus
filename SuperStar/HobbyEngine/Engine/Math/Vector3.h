@@ -9,7 +9,7 @@ namespace Core::Math
     /// ベクトルクラス.
     /// このクラスはメモリを直接参照するので仮想関数を作ってはだめ.
     /// </summary>
-    class Vector3
+    class Vector3 final
     {
     public:
         explicit Vector3() : _fX(0.0f), _fY(0.0f), _fZ(0.0f) {}
@@ -17,18 +17,30 @@ namespace Core::Math
             : _fX(in_fX), _fY(in_fY), _fZ(in_fZ)
         {
         }
+
+        // 引数型異なるので=で代入は不可能にした
         explicit Vector3(const Vector2& in_rVec2) : _fX(in_rVec2._fX), _fY(in_rVec2._fY), _fZ(0.0f)
         {
         }
 
+        // = で代入できるようにする
         Vector3(Vector3& in_rVec3) : _fX(in_rVec3._fX), _fY(in_rVec3._fY), _fZ(in_rVec3._fZ) {}
 
+        // = で代入できるようにする
         Vector3(const Vector3& in_rVec3) : _fX(in_rVec3._fX), _fY(in_rVec3._fY), _fZ(in_rVec3._fZ)
         {
         }
 
         // 整数設定
         explicit Vector3(Sint32 in_iX, Sint32 in_iY, Sint32 in_iZ);
+
+        /// <summary>
+        /// 関数内のローカル変数の所有権の移動に=を使うのでexplicitを使わない
+        /// </summary>
+        Vector3(Vector3&& other)
+            : _fX(std::move(other._fX)), _fY(std::move(other._fY)), _fZ(std::move(other._fZ))
+        {
+        }
 
         // 情報をクリア
         inline void Clear() { this->_fX = this->_fY = this->_fZ = 0.0f; }
@@ -101,20 +113,8 @@ namespace Core::Math
             return reinterpret_cast<Float32*>(&this->_fX);
         }
 
-        // 頻繁にアクセスする変数にはprivate指定にはしない
-        Float32 _fX = 0.0f;
-        Float32 _fY = 0.0f;
-        Float32 _fZ = 0.0f;
-
-        // 各要素を1にしてそれ以外の要素を0にしたベクトル
-        static Vector3 UnitX;
-        static Vector3 UnitY;
-        static Vector3 UnitZ;
-        static Vector3 Zero;
-        static Vector3 One;
-
         // 内積
-        static float Dot(const Vector3& in_rV, const Vector3& in_rV2);
+        static const Float32 Dot(const Vector3& in_rV, const Vector3& in_rV2);
 
         // 外積
         static Vector3 Cross(const Vector3& in_rV, const Vector3& in_rV2);
@@ -122,12 +122,23 @@ namespace Core::Math
         // ベクトルの大きさを2乗したのを取得
         // こちらの方が計算が早い
         // 比較などで利用できる
-        static float GetLengthSquared(const Vector3& in_rV);
+        static const Float32 LengthSquared(const Vector3&);
 
         // 大きさ取得
-        static float GetVector3Mag(const Vector3& in_v);
+        static const Float32 Mag(const Vector3&);
 
         // 距離取得
-        static float GetVector3Distance(const Vector3& in_v, const Vector3& in_v2);
+        static float Distance(const Vector3& in_v, const Vector3& in_v2);
+
+    public:
+        // 頻繁にアクセスする変数にはprivate指定にはしない
+        Float32 _fX = 0.0f, _fY = 0.0f, _fZ = 0.0f;
+
+        // 各要素を1にしてそれ以外の要素を0にしたベクトル
+        static Vector3 UnitX;
+        static Vector3 UnitY;
+        static Vector3 UnitZ;
+        static Vector3 Zero;
+        static Vector3 One;
     };
 }  // namespace Core::Math

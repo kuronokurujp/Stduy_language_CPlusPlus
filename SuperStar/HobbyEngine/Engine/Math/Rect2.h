@@ -6,7 +6,7 @@
 namespace Core::Math
 {
     // 2Dの矩形クラス
-    class Rect2
+    class Rect2 final
     {
     public:
         /// <summary>
@@ -60,7 +60,7 @@ namespace Core::Math
         /// <summary>
         /// Ins the side rect.
         /// </summary>
-        const Bool InSideRect(Rect2& in_rOrderRect);
+        const Bool InSideRect(const Rect2& in_rOrderRect) const;
 
         /// <summary>
         /// 座標が矩形の中に入っているか

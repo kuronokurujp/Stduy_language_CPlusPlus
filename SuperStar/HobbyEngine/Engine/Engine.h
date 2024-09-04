@@ -22,7 +22,7 @@ namespace Platform
 /// ゲームエンジン本体
 /// インスタンスは一つのみなのでシングルトンにする
 /// </summary>
-class Engine : public Core::Common::Singleton<Engine>
+class Engine final : public Core::Common::Singleton<Engine>
 {
 public:
     /// <summary>

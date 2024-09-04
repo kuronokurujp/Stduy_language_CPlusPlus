@@ -1,7 +1,9 @@
 ﻿#include "Path.h"
 
 #ifdef HE_WIN
+
 #include <pathcch.h>
+
 #endif
 
 namespace Core::File

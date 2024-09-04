@@ -249,7 +249,7 @@ namespace Platform
     /// <summary>
     /// キーボード状態
     /// </summary>
-    class KeyboardInput
+    class KeyboardInput final
     {
     public:
         /// <summary>
@@ -273,7 +273,7 @@ namespace Platform
     /// <summary>
     /// タッチ状態
     /// </summary>
-    class TouchInput
+    class TouchInput final
     {
     public:
         const Core::Math::Vector2& GetWorldPos() const { return this->_pos; }
@@ -306,6 +306,8 @@ namespace Platform
     class InputInterface
     {
     public:
+        virtual ~InputInterface() = default;
+
         virtual void VInit()                              = 0;
         virtual void VUpdate(const Float32 in_fDeltaTime) = 0;
 

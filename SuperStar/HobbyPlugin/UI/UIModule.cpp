@@ -33,8 +33,7 @@ namespace UI
         HE_ASSERT(pLevelModule);
 
         Actor::Object* pActor = NULL;
-        // pActor                =  LEVEL_MODULE_CURRENT_LEVEL->GetActor(in_rWidget);
-        pActor = pLevelModule->GetCurrneLevel().GetActor(in_rHandle);
+        pActor                = pLevelModule->GetCurrneLevel().GetActor(in_rHandle);
         HE_ASSERT(pActor);
 
         return reinterpret_cast<Widget*>(pActor);
@@ -253,12 +252,11 @@ namespace UI
         pWidget = pLevelModule->GetCurrneLevel().GetActor(handle);
         if (pWidget == NULL) return handle;
 
-        pWidget->SetPos(Core::Math::Vector3(in_rTextRect.Pos()));
-
         // ボタンの上に表示するテキストコンポーネント追加と設定
         auto textHandle = this->AddComponent<UI::UITextComponent>(handle, in_uSort + 1);
         {
             UI::UITextComponent* pText = pWidget->GetComponent<UI::UITextComponent>(textHandle);
+            pText->SetPos(in_rTextRect.Pos());
             pText->SetViewHandle(in_rViewHandle);
             pText->SetText(in_szText);
             pText->SetRect(Core::Math::Rect2(0, 0, in_rTextRect.Width(), in_rTextRect.Height(),
@@ -287,12 +285,11 @@ namespace UI
         pWidget = reinterpret_cast<Widget*>(pLevelModule->GetCurrneLevel().GetActor(handle));
         if (pWidget == NULL) return InvalidHandle;
 
-        pWidget->SetPos(Core::Math::Vector3(in_rBtnRect.Pos()));
-
         // ボタンコンポーネント追加と設定
         auto hButton = this->AddComponent<UI::UIButtonComponent>(handle, in_uSort);
         {
             UI::UIButtonComponent* pButton = pWidget->GetComponent<UI::UIButtonComponent>(hButton);
+            pButton->SetPos(in_rBtnRect.Pos());
             pButton->SetViewHandle(in_rViewHandle);
             pButton->SetWidth(in_rBtnRect.Width());
             pButton->SetHeight(in_rBtnRect.Height());
@@ -316,9 +313,6 @@ namespace UI
 
         pWidget = pLevelModule->GetCurrneLevel().GetActor(handle);
         if (pWidget == NULL) return InvalidHandle;
-
-        // Widgetの初期設定
-        pWidget->SetName(in_szrName);
 
         return handle;
     }

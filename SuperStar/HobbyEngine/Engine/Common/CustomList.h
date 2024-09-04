@@ -6,7 +6,7 @@ namespace Core::Common
 {
     /// <summary>
     /// 双方向のリンクリストのノード
-    /// リストの利用者は必ずこのクラスを継承したクラスをリストで扱う
+    /// リストの利用者は必ずこのクラスを継承してリスト要素とする
     /// </summary>
     /// <typeparam name="T">リストで管理するデータ型</typeparam>
     template <typename T>
@@ -20,8 +20,12 @@ namespace Core::Common
         static const Uint32 uFlagLinked = 0x00000001;
 
     public:
+        virtual ~LinkedListNode() = default;
+
         inline LinkedListNode* GetPrev() const { return this->_pPrev; }
         inline LinkedListNode* GetNext() const { return this->_pNext; }
+
+        // TODO: イテレーターを生成
 
     private:
         LinkedListNode* _pPrev = NULL;
@@ -38,11 +42,13 @@ namespace Core::Common
     class ListNodeIterator
     {
     public:
-        ListNodeIterator() {}
+        ListNodeIterator() = default;
         ListNodeIterator(NODETYPE* in_pNode) : _pNode(in_pNode) {}
         ListNodeIterator(const ListNodeIterator<DATATYPE, NODETYPE>& in_rIt) : _pNode(in_rIt._pNode)
         {
         }
+
+        virtual ~ListNodeIterator() = default;
 
         /// <summary>
         /// データ参照
@@ -155,12 +161,14 @@ namespace Core::Common
     class ListNodeReverseIterator
     {
     public:
-        ListNodeReverseIterator() {}
+        ListNodeReverseIterator() = default;
         ListNodeReverseIterator(NODETYPE* in_pNode) : _pNode(in_pNode) {}
         ListNodeReverseIterator(const ListNodeReverseIterator<DATATYPE, NODETYPE>& it)
             : _pNode(it._pNode)
         {
         }
+
+        virtual ~ListNodeReverseIterator() = default;
 
         /// <summary>
         /// データ参照
@@ -265,13 +273,13 @@ namespace Core::Common
     class LinkedListBase
     {
     public:
-        LinkedListBase() {}
-        virtual ~LinkedListBase() {}
+        LinkedListBase()          = default;
+        virtual ~LinkedListBase() = default;
 
+    protected:
         /// <summary>
         /// ノードの消去
         /// </summary>
-        // Bool EraseByNode(LinkedListNode<T>* in_pNode)
         const Bool Erase(LinkedListNode<T>* in_pNode)
         {
             // 既にリンクから外されているノードは無視
@@ -290,8 +298,6 @@ namespace Core::Common
 
             return TRUE;
         }
-
-    protected:
         /// <summary>
         /// ノード挿入
         /// </summary>
@@ -330,7 +336,7 @@ namespace Core::Common
     /// </summary>
     /// <typeparam name="T">ノードで管理するデータ型</typeparam>
     template <typename T>
-    class CustomList : public LinkedListBase<T>
+    class CustomList final : public LinkedListBase<T>
     {
     public:
         // イテレータの型定義
@@ -397,6 +403,19 @@ namespace Core::Common
         }
 
         /// <summary>
+        /// ノードの消去
+        /// </summary>
+        Iterator Erase(LinkedListNode<T>* in_pNode)
+        {
+            HE_ASSERT(in_pNode);
+
+            LinkedListNode<T>* pNext = in_pNode->GetNext();
+            LinkedListBase<T>::Erase(in_pNode);
+
+            return Iterator(pNext);
+        }
+
+        /// <summary>
         /// 設定したイテレータのノードを取る
         /// </summary>
         Iterator Erase(const Iterator& in_rIt)
@@ -404,6 +423,7 @@ namespace Core::Common
             LinkedListNode<T>* pNode = in_rIt.GetNode();
             LinkedListNode<T>* pNext = pNode->GetNext();
             LinkedListBase<T>::Erase(pNode);
+
             return Iterator(pNext);
         }
 

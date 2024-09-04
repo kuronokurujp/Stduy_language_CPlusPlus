@@ -24,7 +24,7 @@ namespace Core::Common
     /// <typeparam name="SIZE">SIZEで指定した値が最大要素数,
     /// 最大要素数を超えたらエラーとなる</typeparam>
     template <typename KEY, typename DATA, Sint32 SIZE>
-    class CustomFixMap
+    class CustomFixMap final
     {
         HE_CLASS_MOVE_NG(CustomFixMap);
 
@@ -41,7 +41,7 @@ namespace Core::Common
 
         // カスタムマップのイテレーター
         // STL::Mapと同じように扱うために用意
-        class Iterator
+        class Iterator final
         {
         public:
             Iterator(Node* in_pNode) : _pNode(in_pNode) {}

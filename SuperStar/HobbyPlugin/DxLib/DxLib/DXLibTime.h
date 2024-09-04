@@ -7,7 +7,7 @@ namespace DXLib
     /// <summary>
     /// プラットフォームの時間インターフェイス
     /// </summary>
-    class Time : public Platform::TimeInterface
+    class Time final : public Platform::TimeInterface
     {
     public:
         const Uint32 VNowMSec() override final;

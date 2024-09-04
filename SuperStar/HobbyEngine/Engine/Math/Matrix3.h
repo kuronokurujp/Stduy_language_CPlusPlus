@@ -4,16 +4,17 @@
 
 namespace Core::Math
 {
-    class Matrix3
+    class Matrix3 final
     {
     public:
-        Float32 _faaMat[3][3];
-
-        Matrix3();
+        explicit Matrix3();
 
         /// <summary>
         /// 行列式を取得.
         /// </summary>
-        Float32 GetDet();
+        const Float32 GetDet();
+
+    public:
+        Float32 _faaMat[3][3];
     };
 }  // namespace Core::Math

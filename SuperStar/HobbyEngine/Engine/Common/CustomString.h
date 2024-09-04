@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "CustomArray.h"
 #include "Engine/Core.h"
 
@@ -49,7 +47,7 @@ namespace Core::Common
         /// 文字列をハッシュ化して返す
         /// </summary>
         /// <returns></returns>
-        const Uint64 Hash();
+        const Uint64 Hash() const;
 
         /// <summary>
         /// UTF8として出力
@@ -180,7 +178,7 @@ namespace Core::Common
     /// </summary>
     /// <typeparam name="SIZE"></typeparam>
     template <Uint32 CAPACITY>
-    class FixString : public StringBase
+    class FixString final : public StringBase
     {
         HE_CLASS_MOVE_NG(FixString);
 

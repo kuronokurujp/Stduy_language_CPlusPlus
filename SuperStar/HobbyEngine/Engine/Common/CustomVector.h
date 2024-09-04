@@ -135,7 +135,6 @@ namespace Core::Common
     {
     public:
         CustomFixVector() : VectorBase<TYPE>(this->_aBuff, CAPACITY) {}
-
         CustomFixVector(CustomFixVector& in_rSrc) : VectorBase<TYPE>(this->_aBuff, CAPACITY)
         {
             this->_DeepCopy(in_rSrc);
@@ -163,6 +162,8 @@ namespace Core::Common
 
             this->_uSize = uSize;
         }
+
+        virtual ~CustomFixVector() = default;
 
     private:
         TYPE _aBuff[CAPACITY];

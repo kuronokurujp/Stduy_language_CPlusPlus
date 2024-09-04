@@ -19,3 +19,5 @@ public:                                                          \
     }                                                            \
     static inline const Core::Common::RTTI CLASS_RTTI =          \
         Core::Common::RTTI(HE_STR_TEXT(#name), parentName::CLASS_RTTI);
+
+#define GENERATED_CHECK_RTTI(rtti, checkRtti) (rtti.VGetRTTI().DerivesFrom(&checkRtti::CLASS_RTTI)

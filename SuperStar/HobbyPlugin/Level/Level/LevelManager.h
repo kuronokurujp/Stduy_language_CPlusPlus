@@ -112,7 +112,7 @@ namespace Level
         /// <summary>
         /// レベルノードにつけるアクター管理のデコレーター
         /// </summary>
-        class ActorMaanagerDecorater : public Actor::ActorManagerDecoraterlnterface
+        class ActorMaanagerDecorater final : public Actor::ActorManagerDecoraterlnterface
         {
         public:
             const Bool VStart(Actor::ActorManager*) override final;
@@ -144,6 +144,7 @@ namespace Level
         };
 
         Node() : Actor::Object(), _actorManager(&this->_actorManagerDecorater) {}
+        virtual ~Node() = default;
 
         /// <summary>
         /// タスク開始

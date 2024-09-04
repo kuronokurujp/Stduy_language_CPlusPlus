@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+// 要素の数が動的に変わるので以下のデータ構造クラスを使っている
+// TODO: 自前で動的対応したのを作るのでそれまでの利用
 #include <list>
 #include <unordered_map>
 #include <vector>
@@ -245,7 +247,7 @@ namespace Core::Common
     /// </summary>
     /// <typeparam name="T"></typeparam>
     template <typename T, Uint32 CAPACITY>
-    class FixPoolManager
+    class FixPoolManager final
     {
     private:
         static const Uint32 NON_MAGIC_NUMBER = 0;
@@ -255,12 +257,12 @@ namespace Core::Common
         /// データ使用個数
         /// </summary>
         /// <returns></returns>
-        const Uint32 Size() const HE_NOEXCEPT { return this->_vUserSlot.Size(); }
+        inline const Uint32 Size() const HE_NOEXCEPT { return this->_vUserSlot.Size(); }
 
-        const bool Empty() const HE_NOEXCEPT { return (this->Size() <= 0); }
+        inline const Bool Empty() const HE_NOEXCEPT { return (this->Size() <= 0); }
 
         // 現在利用しているデータリストを取得
-        const std::list<T*>& GetUserDataList() const HE_NOEXCEPT { return this->_vUserSlot; }
+        inline const std::list<T*>& GetUserDataList() const HE_NOEXCEPT { return this->_vUserSlot; }
 
         /// <summary>
         /// プールしているデータの中で利用できるデータ枠を取得

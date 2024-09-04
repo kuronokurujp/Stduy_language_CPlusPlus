@@ -10,6 +10,12 @@ set(TARGET_FILES
 	Code/Main.cpp
 	Code/Main.h
 
+	Code/Event/EventData.h
+	Code/Event/EventManager.h
+	Code/Event/EventManager.cpp
+	Code/Event/EventInterface.h
+	Code/Event/Component/EventComponent.h
+
 	Code/Level/LevelLauncher.cpp
 	Code/Level/LevelLauncher.h
 	Code/Level/LevelTitle.cpp
@@ -25,6 +31,8 @@ set(TARGET_FILES
 	Code/InGame/Component/InGameShotManagerComponent.h
 	Code/InGame/Component/InGameStageManagerComponent.cpp
 	Code/InGame/Component/InGameStageManagerComponent.h
+	Code/InGame/Component/InGameCollisionComponent.cpp
+	Code/InGame/Component/InGameCollisionComponent.h
 
 	Code/InGame/Actor/Player/InGamePlayerActor.cpp
 	Code/InGame/Actor/Player/InGamePlayerActor.h
@@ -54,6 +62,7 @@ set(TARGET_FILES
 	Resource/Assets/Locate/JP/Debug.json
 	Resource/Assets/Locate/JP/Text.json
 	Resource/Assets/Locate/System.toml
-	Resource/Assets/UI/Builder/Debug/Launcher.xml
+	Resource/Assets/UI/Builder/Test/Launcher.xml
+	Resource/Assets/UI/Builder/Game/Title.xml
 )
 

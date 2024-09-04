@@ -9,10 +9,10 @@ namespace EnhancedInput
     /// <summary>
     /// 入力タイプ
     /// </summary>
-    enum eInputType
+    enum EInputType
     {
-        eInputType_Keyboard = 0,
-        eInputType_Touch,
+        EInputType_Keyboard = 0,
+        EInputType_Touch,
     };
 
     /// <summary>
@@ -57,7 +57,7 @@ namespace EnhancedInput
     /// </summary>
     struct InputData
     {
-        eInputType eType;
+        EInputType eType;
 
         union Item
         {

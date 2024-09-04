@@ -78,4 +78,4 @@ namespace Core::Common
 #undef DO16
     }
 
-}  // namespace Common
+}  // namespace Core::Common

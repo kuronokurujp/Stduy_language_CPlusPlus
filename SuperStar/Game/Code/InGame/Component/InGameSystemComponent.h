@@ -8,7 +8,7 @@ namespace InGame
     /// <summary>
     /// インゲームのシステムコンポーネント
     /// </summary>
-    class InGameSystemComponent : public Actor::Component
+    class InGameSystemComponent final : public Actor::Component
     {
         HE_CLASS_COPY_NG(InGameSystemComponent);
         HE_CLASS_MOVE_NG(InGameSystemComponent);

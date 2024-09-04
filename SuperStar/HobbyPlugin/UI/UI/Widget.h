@@ -17,6 +17,7 @@ namespace UI
 
     public:
         Widget() : Actor::Object() {}
+        virtual ~Widget() = default;
 
         /// <summary>
         /// 開始

@@ -10,12 +10,13 @@ namespace Core::Memory
     /// アプリで使用するメモリをリークを検知するためにアプリ独自のメモリ管理を使う
     /// メモリ管理のインスタンスは複数作るケースはメモリ管理が分散して複雑になるので絶対にだめ
     /// </summary>
-    class Manager : public Common::Singleton<Manager>
+    class Manager final : public Common::Singleton<Manager>
     {
         HE_CLASS_COPY_NG(Manager);
+        HE_CLASS_MOVE_NG(Manager);
 
     public:
-        Manager();
+        explicit Manager();
 
     public:
         // 最低アラインサイズ（ヘッダもこのアラインである必要あり）
@@ -332,6 +333,3 @@ namespace Core::Memory
         Bool _bEnable = TRUE;
     };
 }  // namespace Core::Memory
-
-// メモリ管理のアクセスマクロ
-#define HOBBY_MEM_MANGER Core::Memory::Manager::I()

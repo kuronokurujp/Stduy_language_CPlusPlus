@@ -51,7 +51,7 @@ namespace Core::Common
     /// テンプレートで要素を決めている
     /// </summary>
     template <class TYPE, Uint32 CAPACITY>
-    class CustomFixStack : public StackBase<TYPE>
+    class CustomFixStack final : public StackBase<TYPE>
     {
     public:
         CustomFixStack() : StackBase<TYPE>(_taBuff, CAPACITY) {}

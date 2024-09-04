@@ -20,10 +20,10 @@ namespace Core::Math
 
     Quaternion::Quaternion(const Vector3& in_rAxis, const Float32 in_fAngle)
     {
-        Float32 scaler = Sin(in_fAngle * 0.5f);
-        this->_fX      = in_rAxis._fX * scaler;
-        this->_fY      = in_rAxis._fY * scaler;
-        this->_fZ      = in_rAxis._fZ * scaler;
+        const Float32 scaler = Sin(in_fAngle * 0.5f);
+        this->_fX            = in_rAxis._fX * scaler;
+        this->_fY            = in_rAxis._fY * scaler;
+        this->_fZ            = in_rAxis._fZ * scaler;
 
         this->_fW = Cos(in_fAngle * 0.5f);
     }
@@ -31,12 +31,12 @@ namespace Core::Math
     void Quaternion::AngleUnitRadian(const Vector3& in_rAngle)
     {
         // オイラー角をクォータニオンとして設定
-        Float32 cosXAxis = Cos(in_rAngle._fX * 0.5f);
-        Float32 sinXAxis = Sin(in_rAngle._fX * 0.5f);
-        Float32 cosYAxis = Cos(in_rAngle._fY * 0.5f);
-        Float32 sinYAxis = Sin(in_rAngle._fY * 0.5f);
-        Float32 cosZAxis = Cos(in_rAngle._fZ * 0.5f);
-        Float32 sinZAxis = Sin(in_rAngle._fZ * 0.5f);
+        const Float32 cosXAxis = Cos(in_rAngle._fX * 0.5f);
+        const Float32 sinXAxis = Sin(in_rAngle._fX * 0.5f);
+        const Float32 cosYAxis = Cos(in_rAngle._fY * 0.5f);
+        const Float32 sinYAxis = Sin(in_rAngle._fY * 0.5f);
+        const Float32 cosZAxis = Cos(in_rAngle._fZ * 0.5f);
+        const Float32 sinZAxis = Sin(in_rAngle._fZ * 0.5f);
 
         // ローカル座標系からワールド座標系への変換
         this->_fW = cosYAxis * cosXAxis * cosZAxis + sinYAxis * sinXAxis * sinZAxis;
@@ -64,10 +64,10 @@ namespace Core::Math
         Vector3 pv(in_rP._fX, in_rP._fY, in_rP._fZ);
         Vector3 qv(in_rQ._fX, in_rQ._fY, in_rQ._fZ);
 
-        Vector3 newVec = (qv * in_rP._fW) + (pv * in_rQ._fW) + Vector3::Cross(pv, qv);
-        retVal._fX     = newVec._fX;
-        retVal._fY     = newVec._fY;
-        retVal._fZ     = newVec._fZ;
+        const Vector3 newVec = (qv * in_rP._fW) + (pv * in_rQ._fW) + Vector3::Cross(pv, qv);
+        retVal._fX           = newVec._fX;
+        retVal._fY           = newVec._fY;
+        retVal._fZ           = newVec._fZ;
 
         retVal._fW = in_rP._fW * in_rQ._fW - Vector3::Dot(pv, qv);
 

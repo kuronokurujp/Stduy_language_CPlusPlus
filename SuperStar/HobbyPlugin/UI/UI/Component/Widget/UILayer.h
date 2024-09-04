@@ -8,7 +8,7 @@ namespace UI
     /// UIのレイヤー
     /// このレイヤー以下でないとボタンやテキストのオブジェクト配置できない
     /// </summary>
-    class UILayerComponent : public UIWidgetComponent
+    class UILayerComponent final : public UIWidgetComponent
     {
         HE_CLASS_COPY_NG(UILayerComponent);
         GENERATED_CLASS_BODY_HEADER(UILayerComponent, UIWidgetComponent);

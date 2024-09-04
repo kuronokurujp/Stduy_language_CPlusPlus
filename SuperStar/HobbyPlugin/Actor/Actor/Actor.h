@@ -17,7 +17,6 @@ namespace Platform
 namespace Actor
 {
     // 前方宣言
-    // class ActorManagerPubliclnterface;
     class ActorManager;
 
     /// <summary>
@@ -151,6 +150,7 @@ namespace Actor
         /// </summary>
         void SetState(const EState in_eState) { this->_eState = in_eState; }
 
+#if 0
         /// <summary>
         /// オブジェクト名を設定 / 取得
         /// </summary>
@@ -158,10 +158,12 @@ namespace Actor
         {
             this->_szName = in_szrName.Str();
         }
+
         const Core::Common::StringBase& GetName() const { return this->_szName; }
 
+#endif
         /// <summary>
-        /// 取得コンポーネント(ハンドル)
+        /// コンポーネントのアドレスを取得(ハンドル)
         /// </summary>
         template <class T>
         T* GetComponent(Core::Common::Handle& in_rHandle)
@@ -176,7 +178,26 @@ namespace Actor
         }
 
         /// <summary>
-        /// RTTIから目的のコンポーネントを取得
+        /// コンポーネントのアドレスを取得
+        /// テンプレートの型から取得
+        /// </summary>
+        template <class T>
+        T* GetComponent()
+        {
+            static_assert(std::is_base_of<Component, T>::value,
+                          "TクラスはComponentクラスを継承していない");
+
+            auto handle = this->GetComponentHandle(&T::CLASS_RTTI);
+            if (handle.Null()) return NULL;
+
+            T* p = reinterpret_cast<T*>(this->_components.GetTask(handle));
+            HE_ASSERT(p);
+
+            return p;
+        }
+
+        /// <summary>
+        /// RTTIから目的のコンポーネントのハンドルを取得
         /// </summary>
         Core::Common::Handle GetComponentHandle(const Core::Common::RTTI*);
 
@@ -184,17 +205,6 @@ namespace Actor
         {
             return this->_components.GetUserDataList();
         }
-
-        /// <summary>
-        /// 親の位置を含めたワールド座標取得
-        /// </summary>
-        /// <returns></returns>
-        const Core::Math::Vector3 GetWorldPos();
-
-        /// <summary>
-        /// Sets the position.
-        /// </summary>
-        inline void SetPos(const Core::Math::Vector3& in_rPosition) { this->_pos = in_rPosition; }
 
         inline const Bool ValidComponent(const Core::Common::Handle& in_h)
         {
@@ -273,43 +283,22 @@ namespace Actor
         inline const Math::Matrix4& GetWorldTransform() const { return this->worldTransform; }
 
 #endif
-    protected:
-        /// <summary>
-        /// Computes the world transform.
-        /// </summary>
-        void _ComputeWorldTransform();
-
     private:
         void _Clear()
         {
             // Actorの状態
             this->_eState = EState_Active;
-            this->_pos.Clear();
-            this->_scale.Clear();
-            this->_bComputeTransform = FALSE;
-
             this->_pOwner = NULL;
             this->_components.RemoveAll();
         }
 
     protected:
-        // ActorManagerPubliclnterface* _pDataAccess = NULL;
         ActorManager* _pOwner = NULL;
 
     private:
         // Actorの状態
         EState _eState = EState_Active;
 
-        Core::Math::Vector3 _pos;
-        Core::Math::Vector3 _scale;
-        Core::Math::Quaternion _rotation;
-
-        Core::Math::Matrix4 _worldTransform;
-        Bool _bComputeTransform = FALSE;
-
         Core::TaskManager _components;
-
-        // オブジェクト名
-        Core::Common::FixString128 _szName;
     };
 }  // namespace Actor
