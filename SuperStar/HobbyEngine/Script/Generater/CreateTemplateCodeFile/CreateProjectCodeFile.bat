@@ -25,7 +25,7 @@ if "%INPUT_NAMESPACE_NAME%"=="" (
 )
 
 REM 元のファイル名と新しいファイル名を設定します
-set "SOURCE_FILE=Template.h"
+set "SOURCE_FILE=Template\Template.h"
 set "DESTINATION_FILE=%INPUT_FILENAME%.h"
 
 REM ファイルをコピーします
@@ -46,7 +46,7 @@ REM 一時ファイルを新しいファイルとして置き換え
 move /y "%TEMP_FILE%" "%DESTINATION_FILE%"
 
 REM 元のファイル名と新しいファイル名を設定します
-set "SOURCE_FILE=Template.cpp"
+set "SOURCE_FILE=Template\Template.cpp"
 set "DESTINATION_FILE=%INPUT_FILENAME%.cpp"
 
 REM ファイルをコピーします
