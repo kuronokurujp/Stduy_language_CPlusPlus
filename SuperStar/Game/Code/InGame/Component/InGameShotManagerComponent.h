@@ -3,19 +3,19 @@
 //	インクルード
 // #include "actor/ActorSystem.h"
 // #include "shot/InterfaceBulletEmit.h"
-#include "Actor/Component/Component.h"
 #include "Engine/MiniEngine.h"
+#include "Level/Component/LevelBaseComponent.h"
 
 namespace InGame
 {
     /// <summary>
     /// 味方や敵の弾を管理するコンポーネント
     /// </summary>
-    class InGameShotManagerComponent final : public Actor::Component
+    class InGameShotManagerComponent final : public Level::LevelBaseComponent
     {
         HE_CLASS_COPY_NG(InGameShotManagerComponent);
         HE_CLASS_MOVE_NG(InGameShotManagerComponent);
-        GENERATED_CLASS_BODY_HEADER(InGameShotManagerComponent, Actor::Component);
+        HE_GENERATED_CLASS_BODY_HEADER(InGameShotManagerComponent, Level::LevelBaseComponent);
 
     public:
         /*

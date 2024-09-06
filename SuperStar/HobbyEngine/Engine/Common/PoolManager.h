@@ -219,6 +219,7 @@ namespace Core::Common
             // 要素があるかチェック
             if (this->_spUserSlot->find(in_rHandle) != this->_spUserSlot->end())
                 return this->_spUserSlot->at(in_rHandle);
+
             return NULL;
         }
 

@@ -1,18 +1,18 @@
 ﻿#pragma once
 
-#include "Actor/Component/Component.h"
 #include "Engine/MiniEngine.h"
+#include "Level/Component/LevelBaseComponent.h"
 
 namespace InGame
 {
     /// <summary>
     /// インゲームのシステムコンポーネント
     /// </summary>
-    class InGameSystemComponent final : public Actor::Component
+    class InGameSystemComponent final : public Level::LevelBaseComponent
     {
         HE_CLASS_COPY_NG(InGameSystemComponent);
         HE_CLASS_MOVE_NG(InGameSystemComponent);
-        GENERATED_CLASS_BODY_HEADER(InGameSystemComponent, Actor::Component);
+        HE_GENERATED_CLASS_BODY_HEADER(InGameSystemComponent, Level::LevelBaseComponent);
 
     public:
         //	定義
@@ -21,7 +21,7 @@ namespace InGame
             ENEMY_MAX = 200,
         };
 
-        InGameSystemComponent() : Actor::Component() {}
+        InGameSystemComponent() : Level::LevelBaseComponent() {}
 
         /*
                 //	アクターハンドル

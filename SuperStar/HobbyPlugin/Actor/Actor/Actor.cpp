@@ -5,7 +5,7 @@
 
 namespace Actor
 {
-    Object::Object() : Task()
+    Object::Object() : TaskTree()
     {
         if (this->_components.Init(32, 32) == FALSE)
         {
@@ -33,52 +33,38 @@ namespace Actor
 
     void Object::VSetup(const Bool in_bAutoDelete)
     {
-        Task::VSetup(in_bAutoDelete);
+        TaskTree::VSetup(in_bAutoDelete);
 
         this->_Clear();
     }
 
     const Bool Object::VBegin()
     {
-        if (Task::VBegin() == FALSE) return FALSE;
-
-        return TRUE;
+        return TaskTree::VBegin();
     }
 
     const Bool Object::VEnd()
     {
-        if (Task::VEnd() == FALSE) return FALSE;
-
         // 設定しているコンポーネントを全て破棄
         this->RemoveAllComponent();
 
         this->_Clear();
 
-        return TRUE;
+        return TaskTree::VEnd();
     }
 
     /// <summary>
     /// Updates the specified in delta time.
     /// </summary>
-    void Object::VUpdate(const Float32 in_fDt, const Core::TaskData& in_rData)
+    void Object::VUpdate(const Float32 in_fDt)
     {
         if (this->_eState != EState_Active) return;
 
-        // 座標更新
-        // this->_ComputeWorldTransform();
-
         // コンポーネント更新
-        this->_components.UpdateAll(in_fDt, in_rData);
+        this->_components.UpdateAll(in_fDt);
 
-        // コンポーネント内で更新した座標を含めて更新
-        // this->_ComputeWorldTransform();
-
-        // コンポーネントがすべて更新してから実行
-        // コンポーネントの結果が同フレーム取れる
-        this->VUpdateActor(in_fDt);
-
-        // Actor内で更新した座標を含めて更新
-        // this->_ComputeWorldTransform();
+        // 子タスクの実行をしているので処理が全て終わった後に実行
+        Core::TaskTree::VUpdate(in_fDt);
     }
 
     /// <summary>
@@ -193,7 +179,19 @@ namespace Actor
             if (target->VGetRTTI().DerivesFrom(in_pRtti)) return itr->first;
         }
 
-        return InvalidHandle;
+        return NullHandle;
+    }
+
+    const Bool Object::_VSetupComponent(const Core::Common::Handle& in_rHandle)
+    {
+        HE_ASSERT(in_rHandle.Null() == FALSE);
+        Component* pComp = this->_components.GetTask<Component>(in_rHandle);
+
+        // コンポーネントを付けた自身を設定
+        pComp->SetOwner(this);
+        this->_pOwner->VOnActorRegistComponent(pComp);
+
+        return TRUE;
     }
 
 #if 0

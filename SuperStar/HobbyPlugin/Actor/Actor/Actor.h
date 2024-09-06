@@ -5,8 +5,8 @@
 #include "Engine/Common/CustomStack.h"
 #include "Engine/Math/Math.h"
 #include "Engine/MiniEngine.h"
-#include "Engine/Task/Task.h"
 #include "Engine/Task/TaskManager.h"
+#include "Engine/Task/TaskTree.h"
 
 // 前方宣言
 namespace Platform
@@ -22,10 +22,12 @@ namespace Actor
     /// <summary>
     /// ゲームアクター
     /// </summary>
-    class Object : public Core::Task
+    class Object : public Core::TaskTree
     {
         HE_CLASS_COPY_NG(Object);
         HE_CLASS_MOVE_NG(Object);
+
+        HE_GENERATED_CLASS_BODY_HEADER(Object, Core::TaskTree);
 
     public:
         /// <summary>
@@ -70,15 +72,10 @@ namespace Actor
         /// </summary>
         virtual const Bool VEnd() override;
 
-        /// <summary>
-        /// Updates the specified in delta time.
+        /// <summar>
+        /// 更新
         /// </summary>
-        void VUpdate(const Float32 in_fDt, const Core::TaskData&) override;
-
-        /// <summary>
-        /// 継承先でUpdateメソッドをoverride出来る.
-        /// </summary>
-        virtual void VUpdateActor(Float32 in_fDeltaTime) {}
+        void VUpdate(const Float32 in_fDt) override;
 
         /// <summary>
         /// コンポーネントを追加
@@ -97,11 +94,11 @@ namespace Actor
             // TODO: 更新優先準備による追加処理を指定が必要
             // コンポーネントは確保したメモリを使いまわす
             Core::Common::Handle handle = this->_components.CreateAndAdd<T>(in_uUpdateOrder, FALSE);
-            Component* pComp            = this->_components.GetTask<Component>(handle);
-
-            // コンポーネントを付けた自身を設定
-            pComp->SetOwner(this);
-            this->_pOwner->VOnActorRegistComponent(pComp);
+            if (this->_VSetupComponent(handle) == FALSE)
+            {
+                this->_components.RemoveTask(&handle);
+                return NullHandle;
+            }
 
             return handle;
         }
@@ -166,7 +163,7 @@ namespace Actor
         /// コンポーネントのアドレスを取得(ハンドル)
         /// </summary>
         template <class T>
-        T* GetComponent(Core::Common::Handle& in_rHandle)
+        T* GetComponent(const Core::Common::Handle& in_rHandle)
         {
             static_assert(std::is_base_of<Component, T>::value,
                           "TクラスはComponentクラスを継承していない");
@@ -283,6 +280,12 @@ namespace Actor
         inline const Math::Matrix4& GetWorldTransform() const { return this->worldTransform; }
 
 #endif
+    protected:
+        /// <summary>
+        /// 追加したコンポーネントのセットアップ
+        /// </summary>
+        virtual const Bool _VSetupComponent(const Core::Common::Handle&);
+
     private:
         void _Clear()
         {

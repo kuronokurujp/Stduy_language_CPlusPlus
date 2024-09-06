@@ -25,9 +25,4 @@ namespace Actor
         this->_Clear();
     }
 
-    void Component::VUpdate(const Float32 in_fDeltaTime, const Core::TaskData& in_rData)
-    {
-        this->VUpdate(in_fDeltaTime);
-    }
-
 }  // namespace Actor

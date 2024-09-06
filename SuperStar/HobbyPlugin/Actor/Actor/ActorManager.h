@@ -30,7 +30,7 @@ namespace Actor
         struct PendingData
         {
             Core::Common::Handle handle;
-            Sint32 sMoveGroupId;
+            Sint32 sMoveGroupId = 0;
         };
 
     public:
@@ -51,17 +51,28 @@ namespace Actor
         /// </summary>
         const Bool End();
 
-        void BeginUpdate(const Float32 in_fDt);
+        /// <summary>
+        /// 前更新
+        /// </summary>
+        void BeginUpdate(const Float32);
 
         /// <summary>
         /// 更新
         /// </summary>
-        void Update(const Float32 in_fDt, const Core::TaskData&);
-
-        void LateUpdate(const Float32 in_fDt);
+        void Update(const Float32);
 
         /// <summary>
-        /// Adds the actor.
+        /// 後更新
+        /// </summary>
+        void LateUpdate(const Float32);
+
+        /// <summary>
+        /// タスクイベント
+        /// </summary>
+        void Event(const Core::TaskData&);
+
+        /// <summary>
+        /// アクター追加
         /// </summary>
         template <class T>
         Core::Common::Handle Add()
@@ -69,23 +80,22 @@ namespace Actor
             static_assert(std::is_base_of<Object, T>::value,
                           "TクラスはアクターのObjectクラスを継承していない");
 
-            Core::Common::Handle handle;
             // Actorが更新中の場合は保留グループIDに一旦登録
             // Actorは確保したメモリを使いまわさない
-            if (this->_bUpdatingActors)
-            {
-                handle = this->_taskManager.CreateAndAdd<T>(this->_GetPendingGroupId(), TRUE);
-                Uint32 dataIdx = this->_pendingDataMap.Size();
-                this->_pendingDataMap.Add(handle, PendingData{handle, 0});
-            }
-            else
-            {
-                handle = this->_taskManager.CreateAndAdd<T>(0, TRUE);
-            }
+            Sint32 sGroupId = 0;
+            if (this->_bUpdatingActors) sGroupId = this->_GetPendingGroupId();
+
+            auto handle = this->_taskManager.CreateAndAdd<T>(sGroupId, TRUE);
 
             Object* pObject = this->_taskManager.GetTask<Object>(handle);
             HE_ASSERT(pObject != NULL);
             pObject->SetOwner(this);
+
+            if (this->_bUpdatingActors)
+            {
+                Uint32 dataIdx = this->_pendingDataMap.Size();
+                this->_pendingDataMap.Add(handle, PendingData{handle, 0});
+            }
 
             return handle;
         }
@@ -93,14 +103,14 @@ namespace Actor
         /// <summary>
         /// Removes the actor.
         /// </summary>
-        void Remove(Core::Common::Handle*);  // override final;
+        void Remove(Core::Common::Handle*);
 
         /// <summary>
         /// アクター取得
         /// </summary>
         /// <param name=""></param>
         /// <returns></returns>
-        Object* Get(const Core::Common::Handle&);  // override final;
+        Object* Get(const Core::Common::Handle&);
 
         /// <summary>
         /// アクターのコンポーネントの登録・解除イベント

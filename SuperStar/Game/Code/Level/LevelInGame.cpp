@@ -22,6 +22,12 @@ namespace Level
         // 背景のレベル追加
         this->AddLevel<LevelInGame_BG>();
 
+        // レンダリングビュー作成
+        {
+            auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
+            this->_viewHandle  = pRenderModule->AddView();
+        }
+
         // インゲームのシステムコンポーネントを追加
         {
             this->_systemComponentHandle = this->AddComponent<InGame::InGameSystemComponent>(0);
@@ -53,19 +59,19 @@ namespace Level
 
     const Bool LevelInGame::VEnd()
     {
+        auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
+        if (pRenderModule != NULL) pRenderModule->RemoveView(this->_viewHandle);
+
         /*
         C_ColisionActorManager& inst = C_ColisionActorManager::inst();
         inst.final();
         */
-        const Bool bRet = Node::VEnd();
-        HE_ASSERT(bRet);
-
-        return TRUE;
+        return Node::VEnd();
     }
 
-    void LevelInGame::VUpdate(const Float32 in_fDt, const Core::TaskData& in_rTaskData)
+    void LevelInGame::VUpdate(const Float32 in_fDt)
     {
-        Node::VUpdate(in_fDt, in_rTaskData);
+        Node::VUpdate(in_fDt);
 
         auto pSystemComponent =
             this->GetComponent<InGame::InGameSystemComponent>(this->_systemComponentHandle);

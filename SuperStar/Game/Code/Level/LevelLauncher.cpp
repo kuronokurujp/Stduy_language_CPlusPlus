@@ -54,8 +54,8 @@ namespace Level
                                  HE_STR_TEXT("Launcher.xml")));
             // widgetを作成
             // レベルが切り替わると自動的にwidgetは破棄される
-            this->_uIWidgetHandle =
-                pUIModule->NewLayoutByLayotuAsset(this->_layoutAssetHandle, 0, this->_viewHandle);
+            pUIModule->NewLayoutByLayotuAsset(this->_layoutAssetHandle, 0, this->_viewHandle,
+                                              this->GetHandle());
         }
 
         return bRet;

@@ -6,9 +6,113 @@
 
 #include "Engine/Task/Task.h"
 #include "Engine/Task/TaskManager.h"
+#include "Engine/Task/TaskTree.h"
 
 namespace Core
 {
+    namespace Local
+    {
+        /// <summary>
+        /// タスクグループ一覧
+        /// </summary>
+        enum EGroup
+        {
+            EGroup_System,
+            EGroup_Player,
+            EGroup_Enemy,
+            EGroup_Effect,
+            EGroup_Post,
+
+            EGroup_Num
+        };
+
+        // テスト用のタスクたち
+        class EffectTask : public Task
+        {
+            HE_GENERATED_CLASS_BODY_HEADER(EffectTask, Task);
+
+        public:
+            EffectTask() : Task() {}
+
+            const Bool VBegin() override final { return TRUE; }
+            const Bool VEnd() override final { return TRUE; }
+
+            void VUpdate(const Float32 in_fDt) override final
+            {
+                this->_time += in_fDt;
+                HE_LOG(HE_STR_TEXT("F"));
+
+                // 3秒経過したら自動的に死ぬ
+                if (this->_time >= 3000.0f) this->Kill();
+            }
+
+        private:
+            Float32 _time = 0.0f;
+        };
+
+        class ObjectTask : public Task
+        {
+            HE_GENERATED_CLASS_BODY_HEADER(ObjectTask, Task);
+
+        public:
+            ObjectTask() : Task() {}
+
+            const Bool VBegin() override final { return TRUE; }
+            const Bool VEnd() override final { return TRUE; }
+
+            void VUpdate(const Float32 in_fDt) override
+            {
+                this->_time += in_fDt;
+                HE_LOG(HE_STR_TEXT("P"));
+
+                // 1/30の確率でエフェクトを発生させる
+                if (rand() % 30 == 0)
+                    this->_pTaskManager->CreateAndAdd<EffectTask>(EGroup_System, TRUE);
+            }
+
+        private:
+            Float32 _time = 0.0f;
+        };
+
+        class EnemyTask : public ObjectTask
+        {
+            HE_GENERATED_CLASS_BODY_HEADER(EnemyTask, Task);
+
+        public:
+            EnemyTask() : ObjectTask() {}
+
+            void VUpdate(const Float32 in_fDt) override final
+            {
+                this->_time += in_fDt;
+                HE_LOG(HE_STR_TEXT("E"));
+            }
+
+        private:
+            Float32 _time = 0.0f;
+        };
+
+        class DummySystemTask : public Task
+        {
+            HE_GENERATED_CLASS_BODY_HEADER(DummySystemTask, Task);
+
+        public:
+            DummySystemTask() {}
+
+            const Bool VBegin() override final { return TRUE; }
+            const Bool VEnd() override final { return TRUE; }
+
+            void VUpdate(const Float32 in_fDt) override final
+            {
+                this->_time += in_fDt;
+                HE_LOG(HE_STR_TEXT("S"));
+            }
+
+        private:
+            Float32 _time = 0.0f;
+        };
+
+    }  // namespace Local
+
     TEST_CASE("Task Init and End")
     {
         Core::Memory::Manager memoryManager;
@@ -61,102 +165,11 @@ namespace Core
             CHECK(memoryManager.CheckAllMemoryBlock());
         }
 
-        /// <summary>
-        /// タスクグループ一覧
-        /// </summary>
-        enum
-        {
-            GROUP_SYSTEM,
-            GROUP_PLAYER,
-            GROUP_ENEMY,
-            GROUP_EFFECT,
-            GROUP_POST,
-
-            GROUP_NUM
-        };
-
-        // テスト用のタスクたち
-        class EffectTask : public Task
-        {
-        public:
-            EffectTask() : Task() {}
-
-            const Bool VBegin() override final { return TRUE; }
-            const Bool VEnd() override final { return TRUE; }
-
-            void VUpdate(const Float32 in_dt, const TaskData&) override final
-            {
-                this->_time += in_dt;
-                HE_LOG(HE_STR_TEXT("F"));
-
-                // 3秒経過したら自動的に死ぬ
-                if (this->_time >= 3000.0f) this->Kill();
-            }
-
-        private:
-            Float32 _time = 0.0f;
-        };
-
-        class ObjectTask : public Task
-        {
-        public:
-            ObjectTask() : Task() {}
-
-            const Bool VBegin() override final { return TRUE; }
-            const Bool VEnd() override final { return TRUE; }
-
-            void VUpdate(const Float32 in_dt, const TaskData&) override
-            {
-                this->_time += in_dt;
-                HE_LOG(HE_STR_TEXT("P"));
-
-                // 1/30の確率でエフェクトを発生させる
-                if (rand() % 30 == 0)
-                    this->_pTaskManager->CreateAndAdd<EffectTask>(GROUP_SYSTEM, TRUE);
-            }
-
-        private:
-            Float32 _time = 0.0f;
-        };
-
-        class EnemyTask : public ObjectTask
-        {
-        public:
-            EnemyTask() : ObjectTask() {}
-
-            void VUpdate(const Float32 in_dt, const TaskData&) override final
-            {
-                this->_time += in_dt;
-                HE_LOG(HE_STR_TEXT("E"));
-            }
-
-        private:
-            Float32 _time = 0.0f;
-        };
-
-        class DummySystemTask : public Task
-        {
-        public:
-            DummySystemTask() {}
-
-            const Bool VBegin() override final { return TRUE; }
-            const Bool VEnd() override final { return TRUE; }
-
-            void VUpdate(const Float32 in_dt, const TaskData&) override final
-            {
-                this->_time += in_dt;
-                HE_LOG(HE_STR_TEXT("S"));
-            }
-
-        private:
-            Float32 _time = 0.0f;
-        };
-
         static TaskManager manager;
         static const Uint32 taskNum = 32;
 
         // タスクシステムの初期化
-        CHECK(manager.Init(taskNum, GROUP_NUM));
+        CHECK(manager.Init(taskNum, Local::EGroup_Num));
         // タスクの確保数が意図通りか
         CHECK(manager.Max() == taskNum);
         // タスクの利用数が意図通りか
@@ -164,23 +177,24 @@ namespace Core
 
         // システムタスクを起動する
         {
-            auto h01 = manager.CreateAndAdd<DummySystemTask>(GROUP_SYSTEM, TRUE);
-            auto h02 = manager.CreateAndAdd<DummySystemTask>(GROUP_SYSTEM, TRUE);
+            auto h01 = manager.CreateAndAdd<Local::DummySystemTask>(Local::EGroup_System, TRUE);
+            auto h02 = manager.CreateAndAdd<Local::DummySystemTask>(Local::EGroup_System, TRUE);
             CHECK(manager.GetTask(h01) != manager.GetTask(h02));
         }
 
         // プレイヤータスクを起動する
-        Common::Handle&& hPlayer = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
+        Common::Handle&& hPlayer =
+            manager.CreateAndAdd<Local::ObjectTask>(Local::EGroup_Player, TRUE);
 
-        manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
+        manager.CreateAndAdd<Local::ObjectTask>(Local::EGroup_Player, TRUE);
 
         // エネミータスクを起動する
-        manager.CreateAndAdd<EnemyTask>(GROUP_ENEMY, TRUE);
-        manager.CreateAndAdd<EnemyTask>(GROUP_ENEMY, TRUE);
-        manager.CreateAndAdd<EnemyTask>(GROUP_ENEMY, TRUE);
+        manager.CreateAndAdd<Local::EnemyTask>(Local::EGroup_Enemy, TRUE);
+        manager.CreateAndAdd<Local::EnemyTask>(Local::EGroup_Enemy, TRUE);
+        manager.CreateAndAdd<Local::EnemyTask>(Local::EGroup_Enemy, TRUE);
 
         // エフェクトタスクを起動
-        manager.CreateAndAdd<EffectTask>(GROUP_EFFECT, TRUE);
+        manager.CreateAndAdd<Local::EffectTask>(Local::EGroup_Effect, TRUE);
 
         // タスクの利用数が意図通りか
         CHECK(manager.UseCount() == 8);
@@ -200,7 +214,7 @@ namespace Core
                 boot_time += delta_time;
 
                 // タスクの更新
-                manager.UpdateAll(delta_time, DEFAULT_TASK_DATA);
+                manager.UpdateAll(delta_time);
 
                 HE_LOG(HE_STR_TEXT(" (%d / %d)\n"), manager.UseCount(), manager.Max());
 
@@ -216,7 +230,8 @@ namespace Core
 
                 // 設定したタスクが取得できるか
                 {
-                    ObjectTask* pPlayer = dynamic_cast<ObjectTask*>(manager.GetTask(hPlayer));
+                    Local::ObjectTask* pPlayer =
+                        dynamic_cast<Local::ObjectTask*>(manager.GetTask(hPlayer));
                     CHECK(pPlayer != NULL);
                 }
             }
@@ -230,7 +245,7 @@ namespace Core
 
         // タスクシステムが終了しているので取得が失敗しているか
         {
-            ObjectTask* pPlayer = dynamic_cast<ObjectTask*>(manager.GetTask(hPlayer));
+            Local::ObjectTask* pPlayer = dynamic_cast<Local::ObjectTask*>(manager.GetTask(hPlayer));
             CHECK(pPlayer == NULL);
         }
 
@@ -253,110 +268,56 @@ namespace Core
                                                 HE_ARRAY_NUM(memoryPageSetupInfoArray)));
             CHECK(memoryManager.CheckAllMemoryBlock());
         }
-        /// <summary>
-        /// タスクグループ一覧
-        /// </summary>
-        enum
-        {
-            GROUP_SYSTEM,
-            GROUP_PLAYER,
-            GROUP_ENEMY,
-            GROUP_NUM
-        };
-
-        // テスト用のタスクたち
-        class EffectTask : public Task
-        {
-        public:
-            EffectTask() : Task() {}
-
-            const Bool VBegin() override final { return TRUE; }
-            const Bool VEnd() override final { return TRUE; }
-
-            void VUpdate(const Float32 in_fDt, const TaskData&) override
-            {
-                this->_time += in_fDt;
-                HE_LOG(HE_STR_TEXT("F"));
-
-                // 3秒経過したら自動的に死ぬ
-                if (this->_time >= 3000.0f) this->Kill();
-            }
-
-        private:
-            Float32 _time = 0.0f;
-        };
-
-        class ObjectTask : public Task
-        {
-        public:
-            ObjectTask() : Task() {}
-
-            const Bool VBegin() override final { return TRUE; }
-            const Bool VEnd() override final { return TRUE; }
-
-            void VUpdate(const Float32 in_fDt, const TaskData&) override
-            {
-                this->_time += in_fDt;
-                HE_LOG(HE_STR_TEXT("P"));
-
-                // 1/30の確率でエフェクトを発生させる
-                if (rand() % 30 == 0) this->_pTaskManager->CreateAndAdd<EffectTask>(0, FALSE);
-            }
-
-        private:
-            Float32 _time = 0.0f;
-        };
-
         static TaskManager manager;
         static const Uint32 taskNum = 32;
 
         // タスクシステムの初期化
-        CHECK(manager.Init(taskNum, GROUP_NUM));
+        CHECK(manager.Init(taskNum, Local::EGroup_Num));
         // タスクの確保数が意図通りか
         CHECK(manager.Max() == taskNum);
         // タスクの利用数が意図通りか
         CHECK(manager.UseCount() == 0);
 
         // タスクを起動する
-        auto h1 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
-        auto h2 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
-        auto h3 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
+        auto h1 = manager.CreateAndAdd<Local::ObjectTask>(Local::EGroup_Player, TRUE);
+        auto h2 = manager.CreateAndAdd<Local::ObjectTask>(Local::EGroup_Player, TRUE);
+        auto h3 = manager.CreateAndAdd<Local::ObjectTask>(Local::EGroup_Player, TRUE);
 
         // タスクの利用数が意図通りか
         CHECK(manager.UseCount() == 3);
 
         // グループ設定したタスクの総数が意図通りか
-        CHECK(manager.CountWithGroup(GROUP_PLAYER) == 3);
-        CHECK(manager.CountWithGroup(GROUP_SYSTEM) == 0);
-        CHECK(manager.CountWithGroup(GROUP_ENEMY) == 0);
+        CHECK(manager.CountWithGroup(Local::EGroup_Player) == 3);
+        CHECK(manager.CountWithGroup(Local::EGroup_System) == 0);
+        CHECK(manager.CountWithGroup(Local::EGroup_Enemy) == 0);
 
         // グループ移動
-        manager.MoveGroupAll(GROUP_PLAYER, GROUP_SYSTEM);
+        manager.MoveGroupAll(Local::EGroup_Player, Local::EGroup_System);
 
         // タスクの利用数が意図通りか
         CHECK(manager.UseCount() == 3);
 
         // グループ設定したタスクの総数が意図通りか
-        CHECK(manager.CountWithGroup(GROUP_PLAYER) == 0);
-        CHECK(manager.CountWithGroup(GROUP_SYSTEM) == 3);
-        CHECK(manager.CountWithGroup(GROUP_ENEMY) == 0);
+        CHECK(manager.CountWithGroup(Local::EGroup_Player) == 0);
+        CHECK(manager.CountWithGroup(Local::EGroup_System) == 3);
+        CHECK(manager.CountWithGroup(Local::EGroup_Enemy) == 0);
 
-        manager.MoveGropuTask(h1, GROUP_PLAYER);
-        CHECK(manager.CountWithGroup(GROUP_PLAYER) == 1);
-        CHECK(manager.CountWithGroup(GROUP_SYSTEM) == 2);
-        CHECK(manager.CountWithGroup(GROUP_ENEMY) == 0);
+        manager.MoveGropuTask(h1, Local::EGroup_Player);
+        CHECK(manager.CountWithGroup(Local::EGroup_Player) == 1);
+        CHECK(manager.CountWithGroup(Local::EGroup_System) == 2);
+        CHECK(manager.CountWithGroup(Local::EGroup_Enemy) == 0);
 
-        manager.MoveGropuTask(h2, GROUP_PLAYER);
-        CHECK(manager.CountWithGroup(GROUP_PLAYER) == 2);
-        CHECK(manager.CountWithGroup(GROUP_SYSTEM) == 1);
-        CHECK(manager.CountWithGroup(GROUP_ENEMY) == 0);
+        manager.MoveGropuTask(h2, Local::EGroup_Player);
+        CHECK(manager.CountWithGroup(Local::EGroup_Player) == 2);
+        CHECK(manager.CountWithGroup(Local::EGroup_System) == 1);
+        CHECK(manager.CountWithGroup(Local::EGroup_Enemy) == 0);
 
-        manager.MoveGropuTask(h1, GROUP_ENEMY);
-        manager.MoveGropuTask(h2, GROUP_PLAYER);
-        manager.MoveGropuTask(h3, GROUP_PLAYER);
-        CHECK(manager.CountWithGroup(GROUP_PLAYER) == 2);
-        CHECK(manager.CountWithGroup(GROUP_SYSTEM) == 0);
-        CHECK(manager.CountWithGroup(GROUP_ENEMY) == 1);
+        manager.MoveGropuTask(h1, Local::EGroup_Enemy);
+        manager.MoveGropuTask(h2, Local::EGroup_Player);
+        manager.MoveGropuTask(h3, Local::EGroup_Player);
+        CHECK(manager.CountWithGroup(Local::EGroup_Player) == 2);
+        CHECK(manager.CountWithGroup(Local::EGroup_System) == 0);
+        CHECK(manager.CountWithGroup(Local::EGroup_Enemy) == 1);
 
         // タスクシステムの終了
         manager.End();
@@ -383,64 +344,11 @@ namespace Core
                                                 HE_ARRAY_NUM(memoryPageSetupInfoArray)));
             CHECK(memoryManager.CheckAllMemoryBlock());
         }
-        /// <summary>
-        /// タスクグループ一覧
-        /// </summary>
-        enum
-        {
-            GROUP_SYSTEM,
-            GROUP_PLAYER,
-            GROUP_NUM
-        };
-
-        // テスト用のタスクたち
-        class EffectTask : public Task
-        {
-        public:
-            EffectTask() : Task() {}
-
-            const Bool VBegin() override final { return TRUE; }
-            const Bool VEnd() override final { return TRUE; }
-
-            void VUpdate(const Float32 in_fDt, const TaskData&) override
-            {
-                this->_time += in_fDt;
-                HE_LOG(HE_STR_TEXT("F"));
-
-                // 3秒経過したら自動的に死ぬ
-                if (this->_time >= 3000.0f) this->Kill();
-            }
-
-        private:
-            Float32 _time = 0.0f;
-        };
-
-        class ObjectTask : public Task
-        {
-        public:
-            ObjectTask() : Task() {}
-
-            const Bool VBegin() override final { return TRUE; }
-            const Bool VEnd() override final { return TRUE; }
-
-            void VUpdate(const Float32 in_fDt, const TaskData&) override
-            {
-                this->_time += in_fDt;
-                HE_LOG(HE_STR_TEXT("P"));
-
-                // 1/30の確率でエフェクトを発生させる
-                if (rand() % 30 == 0) this->_pTaskManager->CreateAndAdd<EffectTask>(0, TRUE);
-            }
-
-        private:
-            Float32 _time = 0.0f;
-        };
-
         static TaskManager manager;
         static const Uint32 taskNum = 32;
 
         // タスクシステムの初期化
-        CHECK(manager.Init(taskNum, GROUP_NUM));
+        CHECK(manager.Init(taskNum, Local::EGroup_Num));
         // タスクの確保数が意図通りか
         CHECK(manager.Max() == taskNum);
         // タスクの利用数が意図通りか
@@ -448,11 +356,11 @@ namespace Core
 
         // タスクを起動する
         // 削除した時にメモリから解放
-        auto h1 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, TRUE);
+        auto h1 = manager.CreateAndAdd<Local::EffectTask>(Local::EGroup_Player, TRUE);
         CHECK(!h1.Null());
-        auto h2 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, TRUE);
+        auto h2 = manager.CreateAndAdd<Local::EffectTask>(Local::EGroup_Player, TRUE);
         CHECK(!h2.Null());
-        auto h3 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, FALSE);
+        auto h3 = manager.CreateAndAdd<Local::EffectTask>(Local::EGroup_Player, FALSE);
         CHECK(!h3.Null());
 
         // タスクの利用数が意図通りか
@@ -467,7 +375,7 @@ namespace Core
         CHECK(manager.CacheCount() == 1);
         CHECK(manager.UseCount() == 1);
 
-        auto h4 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, TRUE);
+        auto h4 = manager.CreateAndAdd<Local::EffectTask>(Local::EGroup_Player, TRUE);
         CHECK(!h4.Null());
         CHECK(manager.CacheCount() == 0);
         // タスクの利用数が意図通りか
@@ -483,8 +391,10 @@ namespace Core
         memoryManager.Reset();
     }
 
-    TEST_CASE("Testg Child Task")
+    TEST_CASE("Test Task Tree")
     {
+        HE_LOG_LINE(HE_STR_TEXT("Test Task Tree: start"));
+
         Core::Memory::Manager memoryManager;
         CHECK(memoryManager.Start(0x1000000));
         // ページ確保テスト
@@ -503,22 +413,21 @@ namespace Core
         /// </summary>
         enum
         {
-            GROUP_SYSTEM,
-            GROUP_PLAYER,
-            GROUP_NUM
+            EGroup_System,
+            EGroup_Player,
+            EGroup_Num
         };
 
         // テスト用のタスクたち
-        class EffectTask : public Task
+        class EffectTask : public TaskTree
         {
         public:
-            EffectTask() : Task() {}
+            EffectTask() : TaskTree() {}
 
-            const Bool VBegin() override final { return TRUE; }
-            const Bool VEnd() override final { return TRUE; }
-
-            void VUpdate(const Float32 in_fDt, const TaskData&) override
+            void VUpdate(const Float32 in_fDt) override
             {
+                TaskTree::VUpdate(in_fDt);
+
                 this->_time += in_fDt;
                 HE_LOG(HE_STR_TEXT("F"));
 
@@ -530,15 +439,15 @@ namespace Core
             Float32 _time = 0.0f;
         };
 
-        class ObjectTask : public Task
+        class ObjectTask : public TaskTree
         {
         public:
-            ObjectTask() : Task() {}
+            ObjectTask() : TaskTree() {}
 
             const Bool VBegin() override final { return TRUE; }
             const Bool VEnd() override final { return TRUE; }
 
-            void VUpdate(const Float32 in_fDt, const TaskData&) override
+            void VUpdate(const Float32 in_fDt) override
             {
                 this->_time += in_fDt;
                 HE_LOG(HE_STR_TEXT("P"));
@@ -552,7 +461,7 @@ namespace Core
         static const Uint32 taskNum = 32;
 
         // タスクシステムの初期化
-        CHECK(manager.Init(taskNum, GROUP_NUM));
+        CHECK(manager.Init(taskNum, EGroup_Num));
         // タスクの確保数が意図通りか
         CHECK(manager.Max() == taskNum);
         // タスクの利用数が意図通りか
@@ -560,20 +469,27 @@ namespace Core
 
         // タスクを起動する
         // 削除した時にメモリから解放
-        auto h1 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, TRUE);
+        auto h1 = manager.CreateAndAdd<EffectTask>(EGroup_Player, TRUE);
         CHECK_FALSE(h1.Null());
-        auto h2 = manager.CreateAndAdd<ObjectTask>(GROUP_PLAYER, TRUE);
+        auto h2 = manager.CreateAndAdd<ObjectTask>(EGroup_Player, TRUE);
         CHECK_FALSE(h2.Null());
-        auto h3 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, FALSE);
+        auto h3 = manager.CreateAndAdd<EffectTask>(EGroup_Player, FALSE);
         CHECK_FALSE(h3.Null());
 
         // タスクの利用数が意図通りか
         CHECK(manager.UseCount() == 3);
         auto pTask = manager.GetTask(h1);
-        CHECK_FALSE(pTask->AddChildTask(h1));
-        CHECK(pTask->AddChildTask(h2));
+        if (HE_GENERATED_CHECK_RTTI(*pTask, Core::TaskTree) == FALSE)
+        {
+            CHECK(FALSE);
+            return;
+        }
+
+        auto pTaskTree = reinterpret_cast<TaskTree*>(pTask);
+        CHECK_FALSE(pTaskTree->AddChildTask(h1));
+        CHECK(pTaskTree->AddChildTask(h2));
         CHECK(manager.UseCount() == 3);
-        manager.UpdateAll(0, DEFAULT_TASK_DATA);
+        manager.UpdateAll(0);
         HE_LOG(HE_STR_TEXT(" (%d / %d)\n"), manager.UseCount(), manager.Max());
 
         // 親タスクが外したのだから子タスクも同時に外れているはず
@@ -584,18 +500,31 @@ namespace Core
         CHECK(manager.GetTask(h3));
         CHECK(manager.CacheCount() == 0);
 
-        auto h4 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, FALSE);
+        auto h4 = manager.CreateAndAdd<EffectTask>(EGroup_Player, FALSE);
         CHECK_FALSE(h4.Null());
 
-        auto h5 = manager.CreateAndAdd<EffectTask>(GROUP_PLAYER, FALSE);
+        auto h5 = manager.CreateAndAdd<EffectTask>(EGroup_Player, FALSE);
         CHECK_FALSE(h5.Null());
 
         pTask = manager.GetTask(h3);
-        pTask->AddChildTask(h4);
-        pTask = manager.GetTask(h4);
-        pTask->AddChildTask(h5);
+        if (HE_GENERATED_CHECK_RTTI(*pTask, Core::TaskTree) == FALSE)
+        {
+            CHECK(FALSE);
+            return;
+        }
+        pTaskTree = reinterpret_cast<TaskTree*>(pTask);
+        pTaskTree->AddChildTask(h4);
 
-        manager.UpdateAll(0, DEFAULT_TASK_DATA);
+        pTask = manager.GetTask(h4);
+        if (HE_GENERATED_CHECK_RTTI(*pTask, Core::TaskTree) == FALSE)
+        {
+            CHECK(FALSE);
+            return;
+        }
+        pTaskTree = reinterpret_cast<TaskTree*>(pTask);
+        pTaskTree->AddChildTask(h5);
+
+        manager.UpdateAll(0);
         HE_LOG(HE_STR_TEXT(" (%d / %d)\n"), manager.UseCount(), manager.Max());
 
         // タスクシステムの終了
@@ -612,7 +541,7 @@ namespace Core
         CHECK(memoryManager.VRelease());
         memoryManager.Reset();
 
-        HE_LOG_LINE(HE_STR_TEXT(""));
+        HE_LOG_LINE(HE_STR_TEXT("Test Task Tree: end"));
     }
 
 }  // namespace Core

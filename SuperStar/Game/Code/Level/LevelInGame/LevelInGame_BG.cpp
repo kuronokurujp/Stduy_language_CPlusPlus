@@ -12,6 +12,7 @@ namespace Level
 
         // レンダリングビュー作成
         {
+            // TODO: 一番奥にビュー追加
             auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
             this->_viewHandle  = pRenderModule->AddView();
         }
@@ -41,15 +42,12 @@ namespace Level
         auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
         if (pRenderModule != NULL) pRenderModule->RemoveView(this->_viewHandle);
 
-        const Bool bRet = Node::VEnd();
-        HE_ASSERT(bRet);
-
-        return TRUE;
+        return Node::VEnd();
     }
 
-    void LevelInGame_BG::VUpdate(const Float32 in_fDt, const Core::TaskData& in_rTaskData)
+    void LevelInGame_BG::VUpdate(const Float32 in_fDt)
     {
-        Node::VUpdate(in_fDt, in_rTaskData);
+        Node::VUpdate(in_fDt);
 
         // スクリーン情報を取得
         auto pPlatform = Module::ModuleManager::I().Get<Platform::PlatformModule>();

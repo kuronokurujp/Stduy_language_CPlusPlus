@@ -14,7 +14,7 @@ namespace UI
     class UIWidgetComponent : public Actor::Component
     {
         HE_CLASS_COPY_NG(UIWidgetComponent);
-        GENERATED_CLASS_BODY_HEADER(UIWidgetComponent, Actor::Component);
+        HE_GENERATED_CLASS_BODY_HEADER(UIWidgetComponent, Actor::Component);
 
     public:
         UIWidgetComponent() : Actor::Component() { this->_Clear(); }

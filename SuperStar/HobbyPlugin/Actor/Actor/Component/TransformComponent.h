@@ -14,7 +14,7 @@ namespace Actor
     class TransformComponent final : public Component
     {
         HE_CLASS_COPY_NG(TransformComponent);
-        GENERATED_CLASS_BODY_HEADER(TransformComponent, Component);
+        HE_GENERATED_CLASS_BODY_HEADER(TransformComponent, Component);
 
     public:
         TransformComponent() : Component() { this->_Clear(); }

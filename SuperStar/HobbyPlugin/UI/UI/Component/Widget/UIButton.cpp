@@ -35,6 +35,8 @@ namespace UI
     /// </summary>
     void UIButtonComponent::VUpdate(const Float32 in_fDeltaTime)
     {
+        UIWidgetComponent::VUpdate(in_fDeltaTime);
+
         Core::Math::Rect2 srcRect(0.0f, 0.0f, this->_fWidth, this->_fHeight, this->_eAnchor);
         Core::Math::Rect2 rect;
 

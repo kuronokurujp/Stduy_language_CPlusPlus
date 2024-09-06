@@ -59,13 +59,13 @@ namespace InGame
 
         // TODO: 異なるコリジョンタイプでもコリジョン処理をするようにしている
         // TODO: コリジョンクラス毎にコリジョン処理を分岐
-        if (GENERATED_CHECK_RTTI((*in_pCollisionComponent), InGameCircleCollision2DComponent)))
-            {
-                InGameCircleCollision2DComponent* p =
-                    reinterpret_cast<InGameCircleCollision2DComponent*>(in_pCollisionComponent);
+        if (HE_GENERATED_CHECK_RTTI((*in_pCollisionComponent), InGameCircleCollision2DComponent))
+        {
+            InGameCircleCollision2DComponent* p =
+                reinterpret_cast<InGameCircleCollision2DComponent*>(in_pCollisionComponent);
 
-                return in_pSelf->VCollision(*p);
-            }
+            return in_pSelf->VCollision(*p);
+        }
 
         return FALSE;
     }

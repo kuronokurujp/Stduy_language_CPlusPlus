@@ -19,12 +19,10 @@ namespace Level
         const Bool VEnd() override final;
 
     protected:
-        void _VProcessInput(const Float32 in_fDt,
-                            const EnhancedInput::InputMap* in_pInputMap) override final;
+        void _VProcessInput(const EnhancedInput::InputMap* in_pInputMap) override final;
 
     private:
         Core::Common::Handle _layoutAssetHandle;
-        Core::Common::Handle _uIWidgetHandle;
         Core::Common::Handle _viewHandle;
     };
 }  // namespace Level

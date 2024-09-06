@@ -12,7 +12,7 @@ namespace UI
     class UIInputRouterComponent final : public Actor::InputComponent
     {
         HE_CLASS_COPY_NG(UIInputRouterComponent);
-        GENERATED_CLASS_BODY_HEADER(UIInputRouterComponent, Actor::InputComponent);
+        HE_GENERATED_CLASS_BODY_HEADER(UIInputRouterComponent, Actor::InputComponent);
 
     public:
         UIInputRouterComponent() : Actor::InputComponent() {}

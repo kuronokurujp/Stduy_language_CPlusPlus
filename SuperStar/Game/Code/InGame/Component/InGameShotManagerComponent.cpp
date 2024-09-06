@@ -2,7 +2,7 @@
 
 namespace InGame
 {
-    InGameShotManagerComponent::InGameShotManagerComponent() : Actor::Component()
+    InGameShotManagerComponent::InGameShotManagerComponent() : Level::LevelBaseComponent()
     {
     }
 

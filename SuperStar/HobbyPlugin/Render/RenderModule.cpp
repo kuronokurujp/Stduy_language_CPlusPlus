@@ -2,12 +2,21 @@
 
 namespace Render
 {
-    const Core::Common::Handle RenderModule::AddView()
+    const Core::Common::Handle RenderModule::AddView(const Uint32 in_uPriority)
     {
         Core::Common::Handle handle;
-        if (this->_poolView.Alloc(&handle) == NULL) return InvalidHandle;
+        if (this->_poolView.Alloc(&handle) == NULL) return NullHandle;
 
-        this->_vViewHandle.PushBack(handle);
+        const Bool bFrontPriority =
+            (in_uPriority == EPriority_None) || (this->_vViewHandle.Size() <= in_uPriority);
+        if (bFrontPriority)
+        {
+            this->_vViewHandle.PushBack(handle);
+        }
+        else
+        {
+            this->_vViewHandle.Insert(in_uPriority, handle);
+        }
 
         return handle;
     }

@@ -12,13 +12,11 @@ namespace Core::Math
         explicit Vector2() {}
 
         // コントラクト
-        explicit Vector2(const Sint32 in_iX, const Sint32 in_iY)
-        {
-            this->_fX = static_cast<Float32>(in_iX);
-            this->_fY = static_cast<Float32>(in_iY);
-        }
-
         explicit Vector2(const Float32 in_fX, const Float32 in_fY) : _fX(in_fX), _fY(in_fY) {}
+
+        // コピーは代入文でできるようにするのがわかりやすいのでexplicitはつけない
+        Vector2(const Vector2& in_v) { this->_fX = in_v._fX, this->_fY = in_v._fY; }
+        Vector2(Vector2& in_v) { this->_fX = in_v._fX, this->_fY = in_v._fY; }
 
         /// <summary>
         /// Zeroes this instance.

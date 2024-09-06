@@ -12,7 +12,7 @@ namespace UI
     class UITextComponent final : public UIWidgetComponent
     {
         HE_CLASS_COPY_NG(UITextComponent);
-        GENERATED_CLASS_BODY_HEADER(UITextComponent, UIWidgetComponent);
+        HE_GENERATED_CLASS_BODY_HEADER(UITextComponent, UIWidgetComponent);
 
     public:
         UITextComponent() : UIWidgetComponent() { this->_Clear(); }

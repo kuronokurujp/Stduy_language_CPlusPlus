@@ -61,6 +61,8 @@ set(ENGINE_TARGET_FILES
     
     Engine/Task/Task.cpp
     Engine/Task/Task.h
+    Engine/Task/TaskTree.cpp
+    Engine/Task/TaskTree.h
     Engine/Task/TaskManager.cpp
     Engine/Task/TaskManager.h
     

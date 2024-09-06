@@ -14,6 +14,7 @@ namespace Core
         {
             HE_CLASS_COPY_NG(RootTask);
             HE_CLASS_MOVE_NG(RootTask);
+            HE_GENERATED_CLASS_BODY_HEADER(RootTask, Task);
 
         public:
             RootTask() : Task() {}
@@ -29,10 +30,9 @@ namespace Core
             const Bool VEnd() override final { return TRUE; }
 
             /// <summary>
-            /// 更新用で継承先が実装しないとだめ
-            /// TaskData型は更新に必要なデータなのでこのデータを保存してはいけない
+            /// 更新
             /// </summary>
-            void VUpdate(const Float32 in_fDt, const TaskData&) override final {}
+            void VUpdate(const Float32) override final {}
         };
 
     }  // namespace Local
@@ -83,18 +83,17 @@ namespace Core
         HE_SAFE_DELETE_ARRAY(this->_pTasks);
     }
 
-    void TaskManager::UpdateAll(const Float32 in_dt, const TaskData& in_rData)
+    void TaskManager::UpdateAll(const Float32 in_fDt)
     {
-        for (Sint32 i = 0; i < this->_iGroupNum; ++i) this->UpdateGroup(i, in_dt, in_rData);
+        for (Sint32 i = 0; i < this->_iGroupNum; ++i) this->UpdateByGroup(i, in_fDt);
     }
 
-    void TaskManager::UpdateGroup(const Sint32 in_groupId, const Float32 in_dt,
-                                  const TaskData& in_rData)
+    void TaskManager::UpdateByGroup(const Sint32 in_sGroupId, const Float32 in_fDt)
     {
-        HE_ASSERT(in_groupId < this->_iGroupNum);
+        HE_ASSERT(in_sGroupId < this->_iGroupNum);
 
         // 登録タスクを全更新
-        TaskGroup* pGroup = &this->_pTasks[in_groupId];
+        TaskGroup* pGroup = &this->_pTasks[in_sGroupId];
         Task* pTask       = pGroup->_pRootTask;
 
         // グループにポーズフラグが付いてるなら何もしない
@@ -118,8 +117,7 @@ namespace Core
                 }
 
                 // タスク更新
-                pTask->VUpdate(in_dt, in_rData);
-                pTask->_UpdateChild(in_dt, in_rData);
+                pTask->VUpdate(in_fDt);
             }
         }
 
@@ -141,6 +139,33 @@ namespace Core
         }
     }
 
+    void TaskManager::EventAll(const TaskData& in_rTaskData)
+    {
+        for (Sint32 i = 0; i < this->_iGroupNum; ++i) this->EventByGroup(i, in_rTaskData);
+    }
+
+    void TaskManager::EventByGroup(const Sint32 in_sGroupId, const TaskData& in_rTaskData)
+    {
+        HE_ASSERT(in_sGroupId < this->_iGroupNum);
+
+        TaskGroup* pGroup = &this->_pTasks[in_sGroupId];
+        Task* pTask       = pGroup->_pRootTask;
+
+        // グループにポーズフラグが付いてるなら何もしない
+        if ((pGroup->_uFlags & FLAG_PAUSE) == FALSE)
+        {
+            while (pTask->_pNext)
+            {
+                pTask = pTask->_pNext;
+
+                if (pTask->_bKill) continue;
+                if (pTask->_bStart) continue;
+
+                pTask->VEvent(in_rTaskData);
+            }
+        }
+    }
+
     void TaskManager::RemoveTask(Common::Handle* in_pTask)
     {
         // タスクのインスタンスを取得
@@ -151,7 +176,7 @@ namespace Core
         // 終了を呼ぶ
         if (pTask->_bStart == FALSE) pTask->VEnd();
         // タスクを破棄
-        pTask->_Destory();
+        pTask->_VDestory();
 
         // タスクの連結を解除
         this->_Dettach(pTask);

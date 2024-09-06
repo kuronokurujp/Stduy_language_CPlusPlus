@@ -11,7 +11,7 @@ namespace UI
     class UILayerComponent final : public UIWidgetComponent
     {
         HE_CLASS_COPY_NG(UILayerComponent);
-        GENERATED_CLASS_BODY_HEADER(UILayerComponent, UIWidgetComponent);
+        HE_GENERATED_CLASS_BODY_HEADER(UILayerComponent, UIWidgetComponent);
 
     public:
         UILayerComponent() : UIWidgetComponent() {}

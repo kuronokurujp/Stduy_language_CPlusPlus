@@ -24,35 +24,36 @@ namespace Core::Common
     {
         HE_ASSERT(in_cpBuff && in_uSize);
 
-        this->_cpBuff    = in_cpBuff;
+        this->_szBuff    = in_cpBuff;
         this->_uCapacity = in_uSize;
-        this->_cpBuff[0] = HE_STR_TEXT('\0');
+        this->_szBuff[0] = HE_STR_TEXT('\0');
     }
 
-    StringBase& StringBase::Replace(const Char* in_cszOld, const Char* in_cszNew)
+    StringBase& StringBase::Replace(const Char* in_szOld, const Char* in_szNew)
     {
-        if (in_cszOld == NULL) return *this;
+        if (in_szOld == NULL) return *this;
+        if (in_szNew == NULL) return *this;
 
-        if (in_cszNew == NULL) return *this;
-
-        Uint32 uOldLength = static_cast<Uint32>(HE_STR_LEN(in_cszOld));
-        Ptr pNewLength    = static_cast<Ptr>(HE_STR_LEN(in_cszNew));
-        const Char* szSrc = this->_cpBuff;
+        Uint32 uOldLength = static_cast<Uint32>(HE_STR_LEN(in_szOld));
+        Ptr pNewLength    = static_cast<Ptr>(HE_STR_LEN(in_szNew));
+        const Char* szSrc = this->_szBuff;
 
         // 対象を探す
         do
         {
-            const Char* szFind = HE_STR_STR(szSrc, in_cszOld);
+            const Char* szFind = HE_STR_STR(szSrc, in_szOld);
             if (szFind == NULL) break;
 
             // 見つかった場所を抜いて新しい文字列に差し替え
-            Ptr pAddr = szFind - this->_cpBuff;
-            Remove(static_cast<Uint32>(pAddr), uOldLength);
-            Insert(static_cast<Uint32>(pAddr), in_cszNew);
-            szSrc = this->_cpBuff + pAddr + pNewLength;
+            const Ptr pAddr            = szFind - this->_szBuff;
+            const Uint32 uReplaceIndex = static_cast<Uint32>(pAddr);
+
+            this->Remove(uReplaceIndex, uOldLength);
+            this->Insert(uReplaceIndex, in_szNew);
+            szSrc = this->_szBuff + pAddr + pNewLength;
 
             // もうこれ以上置き換えられない
-            if (static_cast<Uint32>(szSrc - this->_cpBuff) >= this->_uCapacity) break;
+            if (static_cast<Uint32>(szSrc - this->_szBuff) >= this->_uCapacity) break;
 
         } while (*szSrc != HE_STR_TEXT('\0'));
 
@@ -61,7 +62,7 @@ namespace Core::Common
 
     StringBase& StringBase::Insert(Uint32 in_uIndex, const Char* in_szInsert)
     {
-        Char* szBuffEnd   = this->_cpBuff + this->_uCapacity - 1;
+        Char* szBuffEnd   = this->_szBuff + this->_uCapacity - 1;
         Uint32 uOriginLen = this->Length();
         Uint32 uInsertLen = ((!in_szInsert) ? 1 : static_cast<Uint32>(HE_STR_LEN(in_szInsert)));
 
@@ -74,9 +75,9 @@ namespace Core::Common
 
         // 挿入箇所以降の文字を後ろへスライド
         {
-            const Char* cszSrcTopAddr = this->_cpBuff + in_uIndex;
-            Char* szSrcTail           = this->_cpBuff + uOriginLen;
-            Char* szDst               = this->_cpBuff + uOriginLen + uInsertLen;
+            const Char* cszSrcTopAddr = this->_szBuff + in_uIndex;
+            Char* szSrcTail           = this->_szBuff + uOriginLen;
+            Char* szDst               = this->_szBuff + uOriginLen + uInsertLen;
 
             // 溢れチェック
             if (szDst > szBuffEnd)
@@ -96,7 +97,7 @@ namespace Core::Common
 
         // 挿入処理
         {
-            Char* szDst       = this->_cpBuff + in_uIndex;
+            Char* szDst       = this->_szBuff + in_uIndex;
             const Char* szSrc = in_szInsert;
 
             if (in_szInsert)
@@ -115,10 +116,10 @@ namespace Core::Common
     StringBase& StringBase::Remove(Uint32 in_uIndex, Uint32 in_uCount)
     {
         Uint32 uSize = this->Capacity();
-        Char* szDst  = this->_cpBuff + ((in_uIndex > uSize) ? uSize : in_uIndex);
+        Char* szDst  = this->_szBuff + ((in_uIndex > uSize) ? uSize : in_uIndex);
         const Char* szSrc =
-            this->_cpBuff + (((in_uIndex + in_uCount) > uSize) ? uSize : (in_uIndex + in_uCount));
-        const Char* szSrcEnd = this->_cpBuff + uSize;
+            this->_szBuff + (((in_uIndex + in_uCount) > uSize) ? uSize : (in_uIndex + in_uCount));
+        const Char* szSrcEnd = this->_szBuff + uSize;
 
         while (szSrc <= szSrcEnd) *szDst++ = *szSrc++;
 
@@ -139,9 +140,9 @@ namespace Core::Common
     {
         if (in_szFormat && this->_uCapacity > 1)
         {
-            HE_STR_VSNPRINTF(this->_cpBuff, this->_uCapacity, this->_uCapacity - 1, in_szFormat,
+            HE_STR_VSNPRINTF(this->_szBuff, this->_uCapacity, this->_uCapacity - 1, in_szFormat,
                              in_vlist);
-            this->_cpBuff[this->_uCapacity - 1] = '\0';
+            this->_szBuff[this->_uCapacity - 1] = '\0';
         }
         else
         {
@@ -156,16 +157,16 @@ namespace Core::Common
         const Uint32 uLen = this->Length();
         if (uLen <= in_uStart) return -1;
 
-        const Char* szFind = HE_STR_STR(this->_cpBuff + in_uStart, in_szName);
+        const Char* szFind = HE_STR_STR(this->_szBuff + in_uStart, in_szName);
         if (szFind == NULL) return -1;
 
-        return static_cast<Sint32>(szFind - this->_cpBuff);
+        return static_cast<Sint32>(szFind - this->_szBuff);
     }
 
     const Uint32 StringBase::Length() const
     {
 #ifdef HE_WIN
-        return static_cast<Uint32>(HE_STR_LEN(this->_cpBuff));
+        return static_cast<Uint32>(HE_STR_LEN(this->_szBuff));
 #else
         Uint32 uSize = this->Capacity();
         Uint32 uLen  = 0;
@@ -253,7 +254,7 @@ namespace Core::Common
         HE_ASSERT(0 < this->_uCapacity && "コピー先のバッファサイズがない");
         if (in_szName && 0 < this->_uCapacity)
         {
-            HE_STR_ERRNO e = HE_STR_CPY_S(this->_cpBuff, this->_uCapacity, in_szName, in_uLen);
+            HE_STR_ERRNO e = HE_STR_CPY_S(this->_szBuff, this->_uCapacity, in_szName, in_uLen);
             HE_ASSERT(HE_STR_SUCCESS(e) && "文字列コピーに失敗");
         }
         else
@@ -275,11 +276,11 @@ namespace Core::Common
             if (iCatLen > 0)
             {
                 HE_STR_ERRNO e =
-                    HE_STR_CPY_S(this->_cpBuff + uLen, static_cast<Sint32>(this->_uCapacity - uLen),
+                    HE_STR_CPY_S(this->_szBuff + uLen, static_cast<Sint32>(this->_uCapacity - uLen),
                                  in_szName, iCatLen);
                 HE_ASSERT(HE_STR_SUCCESS(e) && "文字列コピーに失敗");
 
-                this->_cpBuff[this->_uCapacity - 1] = '\0';
+                this->_szBuff[this->_uCapacity - 1] = '\0';
             }
         }
         else
@@ -298,8 +299,8 @@ namespace Core::Common
 
         if (uLen + 1 < this->_uCapacity)
         {
-            this->_cpBuff[uLen]     = c;
-            this->_cpBuff[uLen + 1] = '\0';
+            this->_szBuff[uLen]     = c;
+            this->_szBuff[uLen + 1] = '\0';
         }
 
         return *this;

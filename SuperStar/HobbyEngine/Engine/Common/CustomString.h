@@ -28,11 +28,11 @@ namespace Core::Common
         StringBase& Remove(Uint32 in_uIndex, Uint32 in_uCount = 1);
         StringBase& Format(const Char* in_cszFormat, ...);
         StringBase& FormatV(const Char* in_szFormat, va_list in_vlist);
-        void Clear() HE_NOEXCEPT { this->_cpBuff[0] = '\0'; }
+        void Clear() HE_NOEXCEPT { this->_szBuff[0] = '\0'; }
 
         Sint32 Find(const Char* in_szName, Uint32 in_uStart = 0) const;
 
-        Bool Empty() const HE_NOEXCEPT { return this->_cpBuff[0] == '\0'; }
+        Bool Empty() const HE_NOEXCEPT { return this->_szBuff[0] == '\0'; }
 
         // 文字列の文字容量数
         inline Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
@@ -41,7 +41,7 @@ namespace Core::Common
         // ワイド文字型だと配列の要素数=文字数とは限らないのでSizeメソッドとは別途文字数を取得するメソッドを用意
         const Uint32 Length() const;
 
-        inline const Char* Str() const HE_NOEXCEPT { return this->_cpBuff; }
+        inline const Char* Str() const HE_NOEXCEPT { return this->_szBuff; }
 
         /// <summary>
         /// 文字列をハッシュ化して返す
@@ -58,8 +58,8 @@ namespace Core::Common
         void OutputUTF8(UTF8* out, const Uint32 in_uSize) const;
 
         // 大文字 / 小文字にする
-        void ToLower() { HE_STR_LOWER(this->_cpBuff); }
-        void ToUpper() { HE_STR_UPPER(this->_cpBuff); }
+        void ToLower() { HE_STR_LOWER(this->_szBuff); }
+        void ToUpper() { HE_STR_UPPER(this->_szBuff); }
 
         StringBase& operator=(const Char* in_szName)
         {
@@ -105,7 +105,7 @@ namespace Core::Common
 
         Bool operator==(const Char* in_szName) const
         {
-            return (in_szName && (HE_STR_CMP(this->_cpBuff, in_szName) == 0));
+            return (in_szName && (HE_STR_CMP(this->_szBuff, in_szName) == 0));
         }
 
         Bool operator==(const StringBase& in_szrName) const { return operator==(in_szrName.Str()); }
@@ -113,35 +113,35 @@ namespace Core::Common
         Bool operator!=(const StringBase& in_szrName) const { return !operator==(in_szrName); }
         Bool operator<(const Char* in_szName) const
         {
-            return HE_STR_CMP(this->_cpBuff, in_szName) < 0;
+            return HE_STR_CMP(this->_szBuff, in_szName) < 0;
         }
         Bool operator<(const StringBase& in_szrName) const
         {
-            return HE_STR_CMP(this->_cpBuff, in_szrName.Str()) < 0;
+            return HE_STR_CMP(this->_szBuff, in_szrName.Str()) < 0;
         }
         Bool operator<=(const Char* in_szName) const
         {
-            return HE_STR_CMP(this->_cpBuff, in_szName) <= 0;
+            return HE_STR_CMP(this->_szBuff, in_szName) <= 0;
         }
         Bool operator<=(const StringBase& in_szrName) const
         {
-            return HE_STR_CMP(this->_cpBuff, in_szrName.Str()) <= 0;
+            return HE_STR_CMP(this->_szBuff, in_szrName.Str()) <= 0;
         }
         Bool operator>(const Char* in_szName) const
         {
-            return HE_STR_CMP(this->_cpBuff, in_szName) > 0;
+            return HE_STR_CMP(this->_szBuff, in_szName) > 0;
         }
         Bool operator>(const StringBase& in_szrName) const
         {
-            return HE_STR_CMP(this->_cpBuff, in_szrName.Str()) > 0;
+            return HE_STR_CMP(this->_szBuff, in_szrName.Str()) > 0;
         }
         Bool operator>=(const Char* in_szName) const
         {
-            return HE_STR_CMP(this->_cpBuff, in_szName) >= 0;
+            return HE_STR_CMP(this->_szBuff, in_szName) >= 0;
         }
         Bool operator>=(const StringBase& in_szrName) const
         {
-            return HE_STR_CMP(this->_cpBuff, in_szrName.Str()) >= 0;
+            return HE_STR_CMP(this->_szBuff, in_szrName.Str()) >= 0;
         }
 
         const Char operator[](const Uint32 in_uCuIndex) const
@@ -151,7 +151,7 @@ namespace Core::Common
                 return '\0';
             }
 
-            return this->_cpBuff[in_uCuIndex];
+            return this->_szBuff[in_uCuIndex];
         }
 
     protected:
@@ -169,7 +169,7 @@ namespace Core::Common
         StringBase& _Add(Char c);
 
     private:
-        Char* _cpBuff     = NULL;
+        Char* _szBuff     = NULL;
         Uint32 _uCapacity = 0;
     };
 

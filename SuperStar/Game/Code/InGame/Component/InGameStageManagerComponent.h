@@ -3,16 +3,16 @@
 // #include <vector>
 
 // #include "actor/ActorSystem.h"
-#include "Actor/Component/Component.h"
 #include "Engine/MiniEngine.h"
+#include "Level/Component/LevelBaseComponent.h"
 
 namespace InGame
 {
-    class InGameStageManagerComponent final : public Actor::Component
+    class InGameStageManagerComponent final : public Level::LevelBaseComponent
     {
         HE_CLASS_COPY_NG(InGameStageManagerComponent);
         HE_CLASS_MOVE_NG(InGameStageManagerComponent);
-        GENERATED_CLASS_BODY_HEADER(InGameStageManagerComponent, Actor::Component);
+        HE_GENERATED_CLASS_BODY_HEADER(InGameStageManagerComponent, Level::LevelBaseComponent);
 
     public:
         //	コンストラクタ
@@ -67,6 +67,9 @@ namespace InGame
         //	関数
         //	クリア
         void _Clear();
+
+    private:
+        Core::Common::Handle _playerHandle;
 
         /*
                 void _CreateStageEvent(lua_State* in_pLuaState) {}

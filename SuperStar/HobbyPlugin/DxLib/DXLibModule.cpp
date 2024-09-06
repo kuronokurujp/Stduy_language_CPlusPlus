@@ -135,6 +135,7 @@ namespace DXLib
                                   static_cast<int>(pRect2D->fRightY), uColor, TRUE);
                         break;
                     }
+
                     // 2Dテキストを描画
                     case Render::CMD_TYPE_2D_TEXT_DRAW:
                     {

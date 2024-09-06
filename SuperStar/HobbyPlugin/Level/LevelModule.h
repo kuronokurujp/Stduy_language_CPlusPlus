@@ -10,8 +10,10 @@
 #include "Engine/Platform/PlatformModule.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
+#include "Level/Component/LevelBaseComponent.h"
 #include "Level/Component/LevelUserInputReceive.h"
 #include "Level/LevelManager.h"
+#include "Level/LevelNode.h"
 
 namespace Level
 {
@@ -30,7 +32,11 @@ namespace Level
         LevelModule();
 
         std::shared_ptr<Manager>& GetManager() { return this->_pLevelManager; }
-        Node& GetCurrneLevel() const { return *(this->_pLevelManager->CurrentLevel()); }
+        // Node& GetCurrneLevel() const { return *(this->_pLevelManager->CurrentLevel()); }
+        Node& GetLevel(const Core::Common::Handle& in_rHandle) const
+        {
+            return *(this->_pLevelManager->GetLevel(in_rHandle));
+        }
 
     protected:
         /// <summary>

@@ -13,7 +13,7 @@ namespace InGame::Event
     {
         HE_CLASS_COPY_NG(EventListenerComponent);
         HE_CLASS_MOVE_NG(EventListenerComponent);
-        GENERATED_CLASS_BODY_HEADER(EventListenerComponent, Actor::Component);
+        HE_GENERATED_CLASS_BODY_HEADER(EventListenerComponent, Actor::Component);
 
     public:
         //	コンストラクタ

@@ -1,3 +1,3 @@
 ﻿#include "Handle.h"
 
-static const Core::Common::Handle InvalidHandle;
+static const Core::Common::Handle NullHandle;

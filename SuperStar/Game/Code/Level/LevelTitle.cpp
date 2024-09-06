@@ -1,8 +1,6 @@
 ﻿#include "LevelTitle.h"
 
 #include "LevelInGame.h"
-
-// モジュール
 #include "UIModule.h"
 
 namespace Level
@@ -14,9 +12,9 @@ namespace Level
 
         static const EnhancedInput::ActionMap mInputAction =
             {{szInputActionNameByGameStart,
-              EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_A})},
+              EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_SPACE})},
              {szInputActionNameByGameEnd,
-              EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_SPACE})}};
+              EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_A})}};
     };  // namespace Local
 
     const Bool LevelTitle::VBegin()
@@ -57,8 +55,8 @@ namespace Level
 
             // widgetを作成
             // レベルが切り替わると自動的にwidgetは破棄される
-            this->_uIWidgetHandle =
-                pUIModule->NewLayoutByLayotuAsset(this->_layoutAssetHandle, 0, this->_viewHandle);
+            pUIModule->NewLayoutByLayotuAsset(this->_layoutAssetHandle, 0, this->_viewHandle,
+                                              this->GetHandle());
         }
 
         return bRet;
@@ -91,8 +89,7 @@ namespace Level
         return bRet;
     }
 
-    void LevelTitle::_VProcessInput(const Float32 in_fDt,
-                                    const EnhancedInput::InputMap* in_pInputMap)
+    void LevelTitle::_VProcessInput(const EnhancedInput::InputMap* in_pInputMap)
     {
         // メインゲーム開始入力があるか
         {

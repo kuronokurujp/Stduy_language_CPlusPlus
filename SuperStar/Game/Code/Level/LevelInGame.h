@@ -21,11 +21,12 @@ namespace Level
         /// <summary>
         /// 更新
         /// </summary>
-        void VUpdate(const Float32 in_fDt, const Core::TaskData&) override final;
+        void VUpdate(const Float32 in_fDt) override final;
 
     private:
         Core::Common::Handle _systemComponentHandle;
         Core::Common::Handle _shotManagerComponentHandle;
         Core::Common::Handle _stageManagerComponentHandle;
+        Core::Common::Handle _viewHandle;
     };
 }  // namespace Level

@@ -1,5 +1,6 @@
 ﻿#include "InGameStageManagerComponent.h"
 
+#include "InGame/Actor/Player/InGamePlayerActor.h"
 /*
 #include "actor/boss/BossStage1.h"
 #include "actor/enemy/Snake.h"
@@ -29,13 +30,14 @@ namespace InGame
     };
     */
 
-    InGameStageManagerComponent::InGameStageManagerComponent() : Actor::Component()
+    InGameStageManagerComponent::InGameStageManagerComponent() : Level::LevelBaseComponent()
     {
         _Clear();
     }
 
     const Bool InGameStageManagerComponent::VBegin()
     {
+        if (Level::LevelBaseComponent::VBegin() == FALSE) return FALSE;
         /*
             LuaStateManager::DoFile(s_pStageManagerScriptName[m_StageIndex], "Init");
 
@@ -43,17 +45,29 @@ namespace InGame
                 SystemProprtyInterfaceInGame::GetActorHandleData();
             C_ColisionActorManager& iActorManager = C_ColisionActorManager::inst();
 
-            //	自機登録
-            rHandle.player = iActorManager.add(new C_PlayerActor());
 
             m_State = _STATE_SCROLL;
             */
+
+        // プレイヤーアクター生成
+        this->_playerHandle = this->AddActor<InGamePlayerActor>();
+        // プレイヤーの外部からの初期設定
+        {
+            auto pPlayer = this->GetActor<InGamePlayerActor>(this->_playerHandle);
+            // 位置
+            pPlayer->SetPos(Core::Math::Vector2(100.0f, 100.0f));
+            // サイズ
+            pPlayer->SetSize(Core::Math::Vector2(30.0f, 30.0f));
+        }
 
         return TRUE;
     }
 
     const Bool InGameStageManagerComponent::VEnd()
     {
+        this->RemoveActor(&this->_playerHandle);
+        return LevelBaseComponent::VEnd();
+
         /*
             std::vector<C_EnemyActorBase*>::iterator it;
             for (it = m_aMapSettingEnemyList.begin(); it != m_aMapSettingEnemyList.end(); ++it)
@@ -61,8 +75,6 @@ namespace InGame
                 SAFE_DELETE(*it);
             }
             */
-
-        return TRUE;
     }
 
     /*
@@ -373,6 +385,7 @@ namespace InGame
     */
     void InGameStageManagerComponent::_Clear()
     {
+        this->_playerHandle.Clear();
         /*
             m_StageIndex    = 0;
             m_Speed         = 0;

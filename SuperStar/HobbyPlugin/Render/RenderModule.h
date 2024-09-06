@@ -23,6 +23,11 @@ namespace Render
     public:
         using ViewHandleVector = Core::Common::CustomFixVector<Core::Common::Handle, 32>;
 
+        enum EPriority
+        {
+            EPriority_None = 0xffff,
+        };
+
     public:
         RenderModule() : ModuleBase(ModuleName(), Module::ELayer_View, 10) {}
 
@@ -30,20 +35,16 @@ namespace Render
         /// レンダリングビューを追加
         /// </summary>
         /// <returns></returns>
-        const Core::Common::Handle AddView();
+        const Core::Common::Handle AddView(const Uint32 in_uPriority = EPriority_None);
 
         /// <summary>
         /// 追加したレンダリングビューを削除
         /// </summary>
-        /// <param name=""></param>
-        /// <returns></returns>
         const Bool RemoveView(const Core::Common::Handle&);
 
         /// <summary>
         /// レンダリングビュー取得
         /// </summary>
-        /// <param name=""></param>
-        /// <returns></returns>
         inline View* GetView(const Core::Common::Handle& in_rHandle)
         {
             if (in_rHandle.Null()) return NULL;

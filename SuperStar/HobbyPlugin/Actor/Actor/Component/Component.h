@@ -17,7 +17,7 @@ namespace Actor
     {
         HE_CLASS_COPY_NG(Component);
         HE_CLASS_MOVE_NG(Component);
-        GENERATED_CLASS_BASE_BODY_HEADER(Component);
+        HE_GENERATED_CLASS_BODY_HEADER(Component, Core::Task);
 
     public:
         Component();
@@ -32,25 +32,13 @@ namespace Actor
 
         /// <summary>
         /// コンポーネントの更新
-        /// 必ず処理を記述
         /// </summary>
-        virtual void VUpdate(const Float32 in_fDeltaTime) {}
-
-        /// <summary>
-        /// Gets the update order.
-        /// </summary>
-        const int GetUpdateOrder() const { return this->_iUpdateOrder; }
+        virtual void VUpdate(const Float32 in_fDt) override {}
 
         /// <summary>
         /// コンポーネントのオーターアクターを設定
         /// </summary>
         void SetOwner(Object* in_pOwner) { this->_pOwner = in_pOwner; }
-
-    protected:
-        /// <summary>
-        /// コンポーネントの更新
-        /// </summary>
-        void VUpdate(const Float32 in_fDeltaTime, const Core::TaskData& in_rData) override final;
 
     private:
         void _Clear()

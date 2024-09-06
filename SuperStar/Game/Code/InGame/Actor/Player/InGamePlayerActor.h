@@ -1,25 +1,41 @@
 ﻿#pragma once
 
+#include "Actor/Actor.h"
 #include "Engine/MiniEngine.h"
 
 #if 0
 
 #include "actor/ActorSystem.h"
 #include "actor/Shot/Manager.h"
+#endif
 
 namespace InGame
 {
-    class C_PlayerActor : public C_ColisionActor
+    class InGamePlayerActor final : public Actor::Object
     {
     public:
-        C_PlayerActor(void);
-        virtual ~C_PlayerActor(void);
+        InGamePlayerActor();
+        virtual ~InGamePlayerActor() = default;
 
-        //	関数
-        bool update(void);
-        void draw(void);
+        /// <summary>
+        /// 開始
+        /// 継承したクラスで必ず基本クラスのメソッドを呼ぶ
+        /// </summary>
+        const Bool VBegin() final override;
 
-        //	撃てる弾の名前を取得
+        /// <summary>
+        /// 終了
+        /// 継承したクラスで必ず基本クラスのメソッドを呼ぶ
+        /// </summary>
+        const Bool VEnd() final override;
+
+        void VUpdate(const Float32 in_fDt) final override;
+
+        void SetPos(const Core::Math::Vector2&);
+        void SetSize(const Core::Math::Vector2&);
+
+#if 0
+          //	撃てる弾の名前を取得
         const char* GetActiveShotName() const;
         const char* GetShotName(const int in_Type) const;
         const int GetShotTypeNum() const { return eSHOT_MAX; }
@@ -31,6 +47,18 @@ namespace InGame
 
         //	データ通知
         virtual void VOnCallbackSendMessage(const int in_DataType, void* in_pData);
+#endif
+
+    private:
+        void _Clear()
+        {
+            m_shotType      = eSHOT_BASIC;
+            m_life          = 4;
+            m_InvincibleCnt = 0;
+
+            this->_pos.Zero();
+            this->_transformHandle.Clear();
+        }
 
     private:
         //	定数
@@ -44,12 +72,14 @@ namespace InGame
             eSHOT_MAX
         };
 
-        //	変数
-        int m_aShotHandle[eSHOT_MAX];
+        Sint32 m_aShotHandle[eSHOT_MAX];
 
-        int m_shotType;
-        unsigned m_life;
-        int m_InvincibleCnt;
+        Uint32 m_shotType;
+        Uint32 m_life;
+        Sint32 m_InvincibleCnt;
+
+        Core::Math::Vector2 _pos;
+        Core::Math::Vector2 _size;
+        Core::Common::Handle _transformHandle;
     };
 }  // namespace InGame
-#endif

@@ -34,16 +34,22 @@ namespace Actor
 
         // 入力コンポーネントがついている場合は登録リストから外す
         auto pObject = this->Get(*in_pActorHandle);
-        {
-            auto components = pObject->GetComponents();
-            for (auto itr = components->begin(); itr != components->end(); ++itr)
-            {
-                if (itr->first.Null()) continue;
 
-                Component* pTarget = reinterpret_cast<Component*>(itr->second);
-                HE_ASSERT(pTarget);
-                this->VOnActorUnRegistComponent(pTarget);
-            }
+        // タスクの全削除処理ですでにタスクが存在しないケースがある
+        if (pObject == NULL)
+        {
+            in_pActorHandle->Clear();
+            return;
+        }
+
+        auto components = pObject->GetComponents();
+        for (auto itr = components->begin(); itr != components->end(); ++itr)
+        {
+            if (itr->first.Null()) continue;
+
+            Component* pTarget = reinterpret_cast<Component*>(itr->second);
+            HE_ASSERT(pTarget);
+            this->VOnActorUnRegistComponent(pTarget);
         }
 
         this->_taskManager.RemoveTask(in_pActorHandle);
@@ -73,7 +79,7 @@ namespace Actor
     {
     }
 
-    void ActorManager::Update(const Float32 in_fDt, const Core::TaskData& in_rTaskData)
+    void ActorManager::Update(const Float32 in_fDt)
     {
         // アクター処理内で新しいアクターが追加した場合は保留リストにまず登録させる
         this->_bUpdatingActors = TRUE;
@@ -81,7 +87,7 @@ namespace Actor
             const Uint32 uMax = this->_GetUpdateGroupMax();
             for (Uint32 i = 0; i < uMax; ++i)
             {
-                this->_taskManager.UpdateGroup(i, in_fDt, in_rTaskData);
+                this->_taskManager.UpdateByGroup(i, in_fDt);
             }
         }
         this->_bUpdatingActors = FALSE;
@@ -92,6 +98,11 @@ namespace Actor
         this->_UpdatePending();
 
         if (this->_pDecorator) this->_pDecorator->VLateUpdate(in_fDt, this);
+    }
+
+    void ActorManager::Event(const Core::TaskData& in_rTaskData)
+    {
+        this->_taskManager.EventAll(in_rTaskData);
     }
 
     void ActorManager::_UpdatePending()

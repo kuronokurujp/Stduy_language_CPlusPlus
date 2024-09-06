@@ -23,7 +23,7 @@ namespace InGame
     {
         HE_CLASS_COPY_NG(InGameCollisionComponent);
         HE_CLASS_MOVE_NG(InGameCollisionComponent);
-        GENERATED_CLASS_BODY_HEADER(InGameCollisionComponent, Actor::Component);
+        HE_GENERATED_CLASS_BODY_HEADER(InGameCollisionComponent, Actor::Component);
 
     public:
         InGameCollisionComponent();
@@ -56,7 +56,7 @@ namespace InGame
     {
         HE_CLASS_COPY_NG(InGameCircleCollision2DComponent);
         HE_CLASS_MOVE_NG(InGameCircleCollision2DComponent);
-        GENERATED_CLASS_BODY_HEADER(InGameCircleCollision2DComponent, InGameCollisionComponent);
+        HE_GENERATED_CLASS_BODY_HEADER(InGameCircleCollision2DComponent, InGameCollisionComponent);
 
     public:
         InGameCircleCollision2DComponent() : InGameCollisionComponent() {}

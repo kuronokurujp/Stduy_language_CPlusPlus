@@ -13,7 +13,7 @@ namespace Actor
     class InputComponent : public Component, public Core::Common::LinkedListNode<InputComponent>
     {
         HE_CLASS_COPY_NG(InputComponent);
-        GENERATED_CLASS_BODY_HEADER(InputComponent, Component);
+        HE_GENERATED_CLASS_BODY_HEADER(InputComponent, Component);
 
     public:
         InputComponent() : Component() {}

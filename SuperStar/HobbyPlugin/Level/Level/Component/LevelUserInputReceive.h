@@ -2,8 +2,8 @@
 
 #include <functional>
 
-#include "ActorModule.h"
 #include "Engine/MiniEngine.h"
+#include "LevelBaseComponent.h"
 
 namespace Level
 {
@@ -30,14 +30,14 @@ namespace Level
     /// <summary>
     /// UIの入力を受け取るレベル専用コンポーネント
     /// </summary>
-    class LevelUserInputReceiveComponent final : public Actor::Component
+    class LevelUserInputReceiveComponent final : public LevelBaseComponent
     {
         HE_CLASS_COPY_NG(LevelUserInputReceiveComponent);
         HE_CLASS_MOVE_NG(LevelUserInputReceiveComponent);
-        GENERATED_CLASS_BODY_HEADER(LevelUserInputReceiveComponent, Actor::Component);
+        HE_GENERATED_CLASS_BODY_HEADER(LevelUserInputReceiveComponent, LevelBaseComponent);
 
     public:
-        LevelUserInputReceiveComponent() : Actor::Component() {}
+        LevelUserInputReceiveComponent() : LevelBaseComponent() {}
 
         /// <summary>
         /// タスク利用した設定をした最初に実行

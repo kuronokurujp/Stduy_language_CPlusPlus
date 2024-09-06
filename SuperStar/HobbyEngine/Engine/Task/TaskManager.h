@@ -16,10 +16,11 @@ namespace Core
     /// </summary>
     class TaskManager final : public Common::RuntimePoolManager<Task>
     {
+        friend class Task;
+        friend class TaskTree;
+
         HE_CLASS_COPY_NG(TaskManager);
         HE_CLASS_MOVE_NG(TaskManager);
-
-        friend class Task;
 
     public:
         // タスクマネージャが使用するフラグ
@@ -41,12 +42,22 @@ namespace Core
         /// <summary>
         /// 全タスク更新
         /// </summary>
-        void UpdateAll(const Float32 in_fDt, const TaskData&);
+        void UpdateAll(const Float32);
 
         /// <summary>
         /// 指定グループを更新
         /// </summary>
-        void UpdateGroup(const Sint32 in_sGroupId, const Float32 in_fDt, const TaskData&);
+        void UpdateByGroup(const Sint32 in_sGroupId, const Float32 in_fDt);
+
+        /// <summary>
+        /// 全タスクに流すイベント
+        /// </summary>
+        void EventAll(const TaskData&);
+
+        /// <summary>
+        /// 指定グループのみイベントを流す
+        /// </summary>
+        void EventByGroup(const Sint32 in_sGroupId, const TaskData&);
 
         /// <summary>
         /// タスク作成して追加する

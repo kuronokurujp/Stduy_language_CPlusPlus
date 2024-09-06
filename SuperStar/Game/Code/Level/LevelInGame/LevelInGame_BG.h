@@ -23,7 +23,7 @@ namespace Level
         /// <summary>
         /// 更新
         /// </summary>
-        void VUpdate(const Float32 in_fDt, const Core::TaskData&) override final;
+        void VUpdate(const Float32 in_fDt) override final;
 
     private:
         Core::Common::CustomArray<Core::Math::Vector2, 64> _aPointPos;

@@ -112,4 +112,4 @@ namespace std
 
 // 空ハンドル
 // ハンドルを戻り値とする処理で失敗した時の戻り値に利用
-extern const Core::Common::Handle InvalidHandle;
+extern const Core::Common::Handle NullHandle;

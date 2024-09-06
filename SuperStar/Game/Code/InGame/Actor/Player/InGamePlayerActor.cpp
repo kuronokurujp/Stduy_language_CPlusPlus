@@ -1,6 +1,12 @@
 ﻿#include "InGamePlayerActor.h"
 
+#include "Actor/Component/TransformComponent.h"
+
+// 依存するモジュール一覧
+#include "RenderModule.h"
+
 #if 0
+
 #include "actor/ActorCommon.h"
 #include "common/Common.h"
 #include "game/GameSystem.h"
@@ -10,6 +16,7 @@
 #include "shot/WayBulletEmit.h"
 #include "system/System.h"
 #include "tips/Primitive.h"
+#endif
 
 namespace InGame
 {
@@ -23,15 +30,22 @@ namespace InGame
         "4Way",
     };
 
-    /*
-            @brief	コンストラクタ
-    */
-    C_PlayerActor::C_PlayerActor()
-        : C_ColisionActor(Vec3(100.f, 100.f, 0.0f), 16.f),
-          m_shotType(eSHOT_BASIC),
-          m_life(4),
-          m_InvincibleCnt(0)
+    InGamePlayerActor::InGamePlayerActor() : Actor::Object()
     {
+        this->_Clear();
+    }
+
+    const Bool InGamePlayerActor::VBegin()
+    {
+        if (Actor::Object::VBegin() == FALSE) return FALSE;
+
+        this->_transformHandle = this->AddComponent<Actor::TransformComponent>(0);
+        HE_ASSERT((this->_transformHandle.Null() == FALSE) &&
+                  "トランスフォームコンポーネントの追加失敗");
+
+        // 事前に設定していた座標をトランスフォームコンポーネントに設定
+        this->SetPos(this->_pos);
+#if 0
         //	自機が使用する弾を弾管理に追加する。
         {
             I_InterfaceBulletEmit* pShotList[eSHOT_MAX] = {NULL};
@@ -60,18 +74,36 @@ namespace InGame
                 }
             }
         }
+#endif
+
+        return TRUE;
     }
 
-    C_PlayerActor::~C_PlayerActor(void)
+    const Bool InGamePlayerActor::VEnd()
     {
+        this->RemoveComponent(&this->_transformHandle);
+
+        if (Actor::Object::VEnd() == FALSE) return FALSE;
+
+        return TRUE;
     }
 
-    /*
-            @brief	更新
-            @return	更新成功 : true / 更新失敗 : false
-    */
-    bool C_PlayerActor::update(void)
+    void InGamePlayerActor::VUpdate(const Float32 in_fDt)
     {
+        Actor::Object::VUpdate(in_fDt);
+
+        auto pTrans = this->GetComponent<Actor::TransformComponent>(this->_transformHandle);
+        HE_ASSERT(pTrans);
+
+        Core::Math::Rect2 srcRect(0.0f, 0.0f, this->_size._fX, this->_size._fY,
+                                  Core::Math::Rect2::EAnchor_Center);
+        Core::Math::Rect2 rect;
+        pTrans->TransformLocalToWorldRect2D(&rect, srcRect);
+
+        // 描画コマンドを追加
+        // Render::CreateCmd2DRectDraw(this->_viewHandle, rect,  Render::RGB::White);
+
+#if 0
         GameLib::C_GameSystem& r = GameLib::C_GameSystem::inst();
 
         //	パッド制御
@@ -106,21 +138,34 @@ namespace InGame
             --m_InvincibleCnt;
         }
 
-        return true;
-    }
-
-    /*
-            @brief	描画
-    */
-    void C_PlayerActor::draw(void)
-    {
+        // TODO: 描画コンポーネントに移行したほうがいいかも
         if ((m_InvincibleCnt % 2) == 0)
         {
             DrawPrimitive2DSimpleQuad(m_pos.x, m_pos.y, m_size, m_size, 0.f,
                                       D3DCOLOR_ARGB(255, 255, 255, 255));
         }
+#endif
     }
 
+    void InGamePlayerActor::SetPos(const Core::Math::Vector2& in_rPos)
+    {
+        this->_pos = in_rPos;
+
+        if (this->_transformHandle.Null()) return;
+
+        // 事前に設定していた座標をトランスフォームコンポーネントに設定
+        auto pTrans = this->GetComponent<Actor::TransformComponent>(this->_transformHandle);
+        HE_ASSERT(pTrans);
+
+        pTrans->SetPos(Core::Math::Vector3(this->_pos));
+    }
+
+    void InGamePlayerActor::SetSize(const Core::Math::Vector2& in_rSize)
+    {
+        this->_size = in_rSize;
+    }
+
+#if 0
     /*
             @brief	現在の操作しているショット名を取得
             @return	ショット名
@@ -236,5 +281,5 @@ namespace InGame
             }
         }
     }
-}  // namespace InGame
 #endif
+}  // namespace InGame
