@@ -6,17 +6,7 @@ namespace Core
 {
     void TaskTree::VEvent(const TaskData& in_rEvent)
     {
-        // TODO: 子タスクをなめるループ処理はまとめる
-        for (auto it = this->_lstChildTask.BeginItr(); it != this->_lstChildTask.EndItr(); ++it)
-        {
-            auto pTask = this->_pTaskManager->GetTask(it->GetHandle());
-            if (pTask == NULL)
-            {
-                this->_lstChildTask.Erase(it);
-                continue;
-            }
-            pTask->VEvent(in_rEvent);
-        }
+        this->_EachbyChildTask([this, in_rEvent](Task* in_pTask) { in_pTask->VEvent(in_rEvent); });
     }
 
     void TaskTree::_VDestory()
@@ -36,17 +26,11 @@ namespace Core
 
     const Bool TaskTree::AddChildTask(const Core::Common::Handle& in_rHandle)
     {
-        // TODO: TaskTreeを取得をまとめる
         HE_ASSERT(in_rHandle.Null() == FALSE);
         // 自分自身を子タスクとして設定できない
-        if (in_rHandle == this->_hSelf) return FALSE;
+        if (in_rHandle == this->_selfHandle) return FALSE;
 
-        auto pTask = this->_pTaskManager->GetTask(in_rHandle);
-        HE_ASSERT(pTask);
-        HE_ASSERT(HE_GENERATED_CHECK_RTTI(*pTask, TaskTree));
-
-        auto pTaskTree = reinterpret_cast<TaskTree*>(pTask);
-
+        auto pTaskTree = this->_GetTaskTree(in_rHandle);
         // 管理側でつながっているのであれば外す
         if (pTaskTree->_bChild == FALSE)
         {
@@ -59,7 +43,7 @@ namespace Core
                 return FALSE;
             }
 
-            this->_pTaskManager->_Dettach(pTask);
+            this->_pTaskManager->_Dettach(pTaskTree);
             // 子のタスクに変わった
             pTaskTree->_bChild = TRUE;
         }
@@ -78,7 +62,7 @@ namespace Core
         }
 
         // 子のタスク情報を作成してリストに追加
-        pTaskTree->_chainNode = ChildTaskNode(this->_hSelf, in_rHandle);
+        pTaskTree->_chainNode = ChildTaskNode(this->_selfHandle, in_rHandle);
 
         // つける対象のタスクハンドルとつけるタスクのハンドルをリストに追加
         this->_lstChildTask.PushBack(pTaskTree->_chainNode);
@@ -86,22 +70,16 @@ namespace Core
         return TRUE;
     }
 
-    const Core::Common::CustomList<TaskTree::ChildTaskNode>::Iterator TaskTree::RemoveChildTask(
+    const TaskTree::ChildTaskNodeIterator TaskTree::RemoveChildTask(
         Core::Common::Handle* in_pHandle)
     {
-        // TODO: TaskTreeを取得をまとめる
         HE_ASSERT(in_pHandle);
         HE_ASSERT(in_pHandle->Null() == FALSE);
-        auto pTask = this->_pTaskManager->GetTask(*in_pHandle);
-        HE_ASSERT(pTask);
-        HE_ASSERT(HE_GENERATED_CHECK_RTTI(*pTask, TaskTree));
 
-        auto pTaskTree = reinterpret_cast<TaskTree*>(pTask);
+        auto pTaskTree = this->_GetTaskTree(*in_pHandle);
+        if (pTaskTree->_chainNode.Empty()) return ChildTaskNodeIterator();
 
-        if (pTaskTree->_chainNode.Empty())
-            return Core::Common::CustomList<TaskTree::ChildTaskNode>::Iterator();
-
-        HE_ASSERT(pTaskTree->_chainNode.GetParentHandle() == this->_hSelf);
+        HE_ASSERT(pTaskTree->_chainNode.GetParentHandle() == this->_selfHandle);
 
         // 子のタスクではなくなった
         pTaskTree->_bChild = FALSE;
@@ -116,7 +94,7 @@ namespace Core
         else
         {
             // タスク管理につけなおす
-            this->_pTaskManager->_Attach(pTask, pTask->GetGropuId());
+            this->_pTaskManager->_Attach(pTaskTree, pTaskTree->GetGropuId());
         }
 
         return nextItr;
@@ -131,6 +109,36 @@ namespace Core
     void TaskTree::VUpdate(const Float32 in_fDt)
     {
         // 子タスクの実行
+        this->_EachbyChildTask(
+            [this, in_fDt](Task* in_pTask)
+            {
+                // 子タスクがまだ開始していない可能性がある
+                if (in_pTask->_bStart)
+                {
+                    if (in_pTask->VBegin())
+                    {
+                        in_pTask->_bStart = FALSE;
+                    }
+                }
+
+                in_pTask->VUpdate(in_fDt);
+            });
+    }
+
+    TaskTree* TaskTree::_GetTaskTree(const Core::Common::Handle& in_rHandle)
+    {
+        auto pTask = this->_pTaskManager->GetTask(in_rHandle);
+        HE_ASSERT(pTask);
+        HE_ASSERT(HE_GENERATED_CHECK_RTTI(*pTask, TaskTree));
+
+        auto pTaskTree = reinterpret_cast<TaskTree*>(pTask);
+        HE_ASSERT(pTaskTree);
+
+        return pTaskTree;
+    }
+
+    void TaskTree::_EachbyChildTask(std::function<void(Task*)> in_action)
+    {
         for (auto it = this->_lstChildTask.BeginItr(); it != this->_lstChildTask.EndItr(); ++it)
         {
             auto pTask = this->_pTaskManager->GetTask(it->GetHandle());
@@ -140,17 +148,7 @@ namespace Core
                 continue;
             }
 
-            // 子タスクがまだ開始していない可能性がある
-            // TODO: if文が乱立してるのでまとめる
-            if (pTask->_bStart)
-            {
-                if (pTask->VBegin())
-                {
-                    pTask->_bStart = FALSE;
-                }
-            }
-
-            pTask->VUpdate(in_fDt);
+            in_action(pTask);
         }
     }
 

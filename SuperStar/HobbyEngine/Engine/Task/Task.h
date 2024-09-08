@@ -69,14 +69,18 @@ namespace Core
         virtual void VEvent(const TaskData&) {}
 
         /// <summary>
-        /// タスク破棄指示
+        /// 破棄指示
+        /// 呼び出してもすぐには破棄されない
         /// </summary>
         void Kill();
 
-        inline const Common::Handle& GetHandle() const { return this->_hSelf; }
+        /// <summary>
+        /// タスクのオブジェクトハンドル
+        /// </summary>
+        inline const Common::Handle& Handle() const { return this->_selfHandle; }
 
         /// <summary>
-        /// タスクのグループID
+        /// グループID
         /// </summary>
         inline const Sint32 GetGropuId() const { return this->_iGroupId; }
 
@@ -96,6 +100,7 @@ namespace Core
             this->_pPrev       = NULL;
             this->_pNext       = NULL;
             this->_bReleaseMem = FALSE;
+            this->_selfHandle.Clear();
         }
 
     protected:
@@ -105,7 +110,7 @@ namespace Core
         Sint32 _iGroupId = Task::iNoneGroupId;
         Bool _bStart     = TRUE;
         Bool _bKill      = FALSE;
-        Common::Handle _hSelf;
+        Common::Handle _selfHandle;
 
         // タスクを解放した時にメモリからも解放するか
         // 解放しない場合はキャッシュして使いまわすことになる

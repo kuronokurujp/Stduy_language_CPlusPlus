@@ -25,7 +25,7 @@ namespace Core
     public:
         // タスクマネージャが使用するフラグ
         // 処理を停止するフラグ
-        static const Uint32 FLAG_PAUSE = 0x00000001;
+        static const Uint32 uFlagPause = 0x00000001;
 
     public:
         TaskManager() : RuntimePoolManager() {}
@@ -75,7 +75,7 @@ namespace Core
             Task* pTask                            = resAlloc._tpItem;
 
             pTask->VSetup(in_bReleaseMem);
-            pTask->_hSelf = resAlloc._handle;
+            pTask->_selfHandle = resAlloc._handle;
 
             this->_Attach(pTask, in_sGroupId);
 
@@ -98,12 +98,12 @@ namespace Core
         void RemoveAll();
 
         /// <summary>
-        /// 指定グループの全タスクを指定グループへ移動
+        /// 指定グループの全タスクをターゲットグループへ移動
         /// </summary>
         const Bool MoveGroupAll(const Sint32 in_sOrgGroupId, const Sint32 in_sTargetGroupId);
 
         /// <summary>
-        /// タスクのグループ移動
+        /// タスクを指定したグループ移動
         /// </summary>
         const Bool MoveGropuTask(const Common::Handle& in_rTask, const Sint32 in_sGroupId);
 
@@ -124,21 +124,21 @@ namespace Core
         /// <summary>
         /// 論理和を使ったフラグの設定
         /// </summary>
-        void EnableFlagWithGroup(const Sint32 in_sGroupId, const Uint32 in_uFlags);
+        void EnableFlag(const Sint32 in_sGroupId, const Uint32 in_uFlags);
 
         /// <summary>
         /// 論理和を使ったフラグの消去
         /// </summary>
-        void DisableFlagWithGroup(const Sint32 in_sGroupId, const Uint32 in_uFlags);
+        void DisableFlag(const Sint32 in_sGroupId, const Uint32 in_uFlags);
 
-        const Uint32 FlagWithGroup(const Sint32 in_sGroupId) const;
+        const Uint32 Flag(const Sint32 in_sGroupId) const;
 
         /// <summary>
         /// グループに設定しているタスクの総数
         /// </summary>
         /// <param name="in_groupId"></param>
         /// <returns></returns>
-        const Uint32 CountWithGroup(const Sint32 in_sGroupId) const;
+        const Uint32 Count(const Sint32 in_sGroupId) const;
 
         /// <summary>
         /// タスクグループの最大数

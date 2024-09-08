@@ -55,7 +55,7 @@ namespace Level
             // widgetを作成
             // レベルが切り替わると自動的にwidgetは破棄される
             pUIModule->NewLayoutByLayotuAsset(this->_layoutAssetHandle, 0, this->_viewHandle,
-                                              this->GetHandle());
+                                              this->Handle());
         }
 
         return bRet;

@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <functional>
+
 #include "Task.h"
 
 // エンジン最小インクルード
@@ -18,8 +20,6 @@ namespace Core
         HE_GENERATED_CLASS_BODY_HEADER(TaskTree, Task);
 
     public:
-        TaskTree() : Task() { this->_Clear(); }
-
         // 子タスクのリストノード
         class ChildTaskNode final : public Core::Common::LinkedListNode<ChildTaskNode>
         {
@@ -53,7 +53,11 @@ namespace Core
             Core::Common::Handle _handle;
         };
 
+        using ChildTaskNodeIterator = Core::Common::CustomList<TaskTree::ChildTaskNode>::Iterator;
+
     public:
+        TaskTree() : Task() { this->_Clear(); }
+
         virtual void VSetup(const Bool in_bAutoDelete);
 
         virtual void VUpdate(const Float32) override;
@@ -70,8 +74,7 @@ namespace Core
         /// <summary>
         /// 子タスクを外す
         /// </summary>
-        const Core::Common::CustomList<ChildTaskNode>::Iterator RemoveChildTask(
-            Core::Common::Handle*);
+        const ChildTaskNodeIterator RemoveChildTask(Core::Common::Handle*);
 
     protected:
         /// <summary>
@@ -80,6 +83,13 @@ namespace Core
         virtual void _VDestory() override;
 
     private:
+        TaskTree* _GetTaskTree(const Core::Common::Handle& in_rHandle);
+
+        /// <summary>
+        /// 子タスクのループ
+        /// </summary>
+        void _EachbyChildTask(std::function<void(Task*)>);
+
         void _Clear()
         {
             this->_lstChildTask.Clear();

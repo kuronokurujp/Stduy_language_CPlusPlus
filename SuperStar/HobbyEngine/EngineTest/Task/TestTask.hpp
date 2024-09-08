@@ -287,9 +287,9 @@ namespace Core
         CHECK(manager.UseCount() == 3);
 
         // グループ設定したタスクの総数が意図通りか
-        CHECK(manager.CountWithGroup(Local::EGroup_Player) == 3);
-        CHECK(manager.CountWithGroup(Local::EGroup_System) == 0);
-        CHECK(manager.CountWithGroup(Local::EGroup_Enemy) == 0);
+        CHECK(manager.Count(Local::EGroup_Player) == 3);
+        CHECK(manager.Count(Local::EGroup_System) == 0);
+        CHECK(manager.Count(Local::EGroup_Enemy) == 0);
 
         // グループ移動
         manager.MoveGroupAll(Local::EGroup_Player, Local::EGroup_System);
@@ -298,26 +298,26 @@ namespace Core
         CHECK(manager.UseCount() == 3);
 
         // グループ設定したタスクの総数が意図通りか
-        CHECK(manager.CountWithGroup(Local::EGroup_Player) == 0);
-        CHECK(manager.CountWithGroup(Local::EGroup_System) == 3);
-        CHECK(manager.CountWithGroup(Local::EGroup_Enemy) == 0);
+        CHECK(manager.Count(Local::EGroup_Player) == 0);
+        CHECK(manager.Count(Local::EGroup_System) == 3);
+        CHECK(manager.Count(Local::EGroup_Enemy) == 0);
 
         manager.MoveGropuTask(h1, Local::EGroup_Player);
-        CHECK(manager.CountWithGroup(Local::EGroup_Player) == 1);
-        CHECK(manager.CountWithGroup(Local::EGroup_System) == 2);
-        CHECK(manager.CountWithGroup(Local::EGroup_Enemy) == 0);
+        CHECK(manager.Count(Local::EGroup_Player) == 1);
+        CHECK(manager.Count(Local::EGroup_System) == 2);
+        CHECK(manager.Count(Local::EGroup_Enemy) == 0);
 
         manager.MoveGropuTask(h2, Local::EGroup_Player);
-        CHECK(manager.CountWithGroup(Local::EGroup_Player) == 2);
-        CHECK(manager.CountWithGroup(Local::EGroup_System) == 1);
-        CHECK(manager.CountWithGroup(Local::EGroup_Enemy) == 0);
+        CHECK(manager.Count(Local::EGroup_Player) == 2);
+        CHECK(manager.Count(Local::EGroup_System) == 1);
+        CHECK(manager.Count(Local::EGroup_Enemy) == 0);
 
         manager.MoveGropuTask(h1, Local::EGroup_Enemy);
         manager.MoveGropuTask(h2, Local::EGroup_Player);
         manager.MoveGropuTask(h3, Local::EGroup_Player);
-        CHECK(manager.CountWithGroup(Local::EGroup_Player) == 2);
-        CHECK(manager.CountWithGroup(Local::EGroup_System) == 0);
-        CHECK(manager.CountWithGroup(Local::EGroup_Enemy) == 1);
+        CHECK(manager.Count(Local::EGroup_Player) == 2);
+        CHECK(manager.Count(Local::EGroup_System) == 0);
+        CHECK(manager.Count(Local::EGroup_Enemy) == 1);
 
         // タスクシステムの終了
         manager.End();

@@ -97,7 +97,7 @@ namespace Core
         Task* pTask       = pGroup->_pRootTask;
 
         // グループにポーズフラグが付いてるなら何もしない
-        if ((pGroup->_uFlags & FLAG_PAUSE) == FALSE)
+        if ((pGroup->_uFlags & uFlagPause) == FALSE)
         {
             while (pTask->_pNext)
             {
@@ -131,7 +131,7 @@ namespace Core
             // 死亡フラグが付いてたら消す
             if (pTask->_bKill)
             {
-                this->RemoveTask(&pTask->_hSelf);
+                this->RemoveTask(&pTask->_selfHandle);
             }
 
             // 逃がしておいた次のポインタを得る
@@ -152,7 +152,7 @@ namespace Core
         Task* pTask       = pGroup->_pRootTask;
 
         // グループにポーズフラグが付いてるなら何もしない
-        if ((pGroup->_uFlags & FLAG_PAUSE) == FALSE)
+        if ((pGroup->_uFlags & uFlagPause) == FALSE)
         {
             while (pTask->_pNext)
             {
@@ -203,7 +203,7 @@ namespace Core
             // RemoveでタスクのpPrev/pNextの入れ替えが起きてしまうので,
             // 次に実行するタスクを事前に取得しておく
             Task* pNextTask = pTask->_pNext;
-            this->RemoveTask(&pTask->_hSelf);
+            this->RemoveTask(&pTask->_selfHandle);
 
             // 逃がしておいた次のポインタを得る
             pTask = pNextTask;
@@ -276,7 +276,7 @@ namespace Core
         return pTask;
     }
 
-    void TaskManager::EnableFlagWithGroup(const Sint32 in_groupId, const Uint32 in_flags)
+    void TaskManager::EnableFlag(const Sint32 in_groupId, const Uint32 in_flags)
     {
         HE_ASSERT(in_groupId < this->_iGroupNum);
 
@@ -284,21 +284,21 @@ namespace Core
         pGroup->_uFlags |= in_flags;
     }
 
-    void TaskManager::DisableFlagWithGroup(const Sint32 in_groupId, const Uint32 in_flags)
+    void TaskManager::DisableFlag(const Sint32 in_groupId, const Uint32 in_flags)
     {
         HE_ASSERT(in_groupId < this->_iGroupNum);
         TaskGroup* pGroup = &this->_pTasks[in_groupId];
         pGroup->_uFlags &= ~in_flags;
     }
 
-    const Uint32 TaskManager::FlagWithGroup(const Sint32 in_groupId) const
+    const Uint32 TaskManager::Flag(const Sint32 in_groupId) const
     {
         HE_ASSERT(in_groupId < this->_iGroupNum);
         TaskGroup* pGroup = &this->_pTasks[in_groupId];
         return pGroup->_uFlags;
     }
 
-    const Uint32 TaskManager::CountWithGroup(const Sint32 in_groupId) const
+    const Uint32 TaskManager::Count(const Sint32 in_groupId) const
     {
         HE_ASSERT(in_groupId < this->_iGroupNum);
         TaskGroup* pGroup = &this->_pTasks[in_groupId];
