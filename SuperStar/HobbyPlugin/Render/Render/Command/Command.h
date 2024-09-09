@@ -109,6 +109,7 @@ namespace Render
     /// <summary>
     /// 画面クリア
     /// </summary>
-    extern void CommandClsScreen(const Core::Common::Handle& in_rViewHandle, const Color& in_rColor);
+    extern void CommandClsScreen(const Core::Common::Handle& in_rViewHandle,
+                                 const Color& in_rColor);
 
 }  // namespace Render

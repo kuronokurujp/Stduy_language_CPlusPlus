@@ -94,7 +94,7 @@ namespace Render
         // 必要なコマンド情報を作る
         Command cmd;
         {
-            cmd.uType                  = ECmdType_ClsScreen;
+            cmd.uType                = ECmdType_ClsScreen;
             CmdClsScreen* pClsScreen = &cmd.data.clsScree;
             static_assert(sizeof(cmd.data.clsScree) <= sizeof(cmd.data.ulaWork));
         }

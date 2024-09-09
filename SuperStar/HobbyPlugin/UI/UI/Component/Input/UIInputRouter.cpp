@@ -7,12 +7,12 @@
 
 namespace UI
 {
-    /// <summary>
-    /// Processes the input.
-    /// </summary>
-    void UIInputRouterComponent::VProcessInput(const void* in_pInputMap)
+    void UIInputRouterStrategy::VProcessInput(const void* in_pInputMap,
+                                              Actor::Object* in_pSelfObject)
     {
         HE_ASSERT(in_pInputMap);
+        HE_ASSERT(in_pSelfObject);
+
         auto pInputMap = reinterpret_cast<const EnhancedInput::InputMap*>(in_pInputMap);
         HE_ASSERT(pInputMap);
 
@@ -22,7 +22,7 @@ namespace UI
         auto input = pInputMap->FindKey(HE_STR_TEXT("UIButton"))->data;
 
         // 入力結果をWidgetに通知
-        Widget* pWidget = reinterpret_cast<Widget*>(this->_pOwner);
+        Widget* pWidget = reinterpret_cast<Widget*>(in_pSelfObject);
         HE_ASSERT(pWidget != NULL);
 
         // Widgetアクターに設定しているUIWidgetコンポーネントを全て取得
@@ -48,4 +48,5 @@ namespace UI
             }
         }
     }
+
 }  // namespace UI

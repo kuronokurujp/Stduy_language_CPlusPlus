@@ -34,6 +34,6 @@ namespace UI
         pTrans->TransformLocalToWorldPos2D(&pos, this->_rect.Pos());
 
         Render::Command2DTextDraw(this->_viewHandle, pos, this->_szDrawText, {this->_color},
-                                    this->_eAnchor);
+                                  this->_eAnchor);
     }
 }  // namespace UI

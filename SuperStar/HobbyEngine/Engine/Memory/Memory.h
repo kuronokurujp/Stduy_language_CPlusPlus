@@ -185,26 +185,26 @@ extern void FreeMemory(void*);
 // メモリ解放をラップする構造体
 struct DeleterFreeMemory
 {
-    void operator()(void* ptr) const { FreeMemory(ptr); }
+    void operator()(void* ptr) const { ::FreeMemory(ptr); }
 };
 
 // deleteのマクロ
 // NEWで確保したメモリ解放で使用
-#define HE_DELETE(pPtr) FreeMemory(pPtr)
+#define HE_DELETE(pPtr) ::FreeMemory(pPtr)
 
 // 配列のdeleteマクロ
 // NEW_ARRAYで確保したメモリを解放に使用
-#define HE_DELETE_ARRAY(pPtr) FreeMemory(pPtr)
+#define HE_DELETE_ARRAY(pPtr) ::FreeMemory(pPtr)
 
 // deleteを安全する実行するためのマクロ
 // ポインターチェックをしてすでに解放済みの場合でもエラーにはならないようにしている
-#define HE_SAFE_DELETE(pPtr)  \
-    {                         \
-        if (pPtr)             \
-        {                     \
-            FreeMemory(pPtr); \
-            (pPtr) = NULL;    \
-        }                     \
+#define HE_SAFE_DELETE(pPtr)    \
+    {                           \
+        if (pPtr)               \
+        {                       \
+            ::FreeMemory(pPtr); \
+            (pPtr) = NULL;      \
+        }                       \
     }
 
 // 確保した配列メモリをdeleteで安全する実行するためのマクロ
@@ -213,7 +213,7 @@ struct DeleterFreeMemory
     {                              \
         if (pPtr)                  \
         {                          \
-            FreeMemory(pPtr);      \
+            ::FreeMemory(pPtr);    \
             (pPtr) = NULL;         \
         }                          \
     }
@@ -224,42 +224,43 @@ namespace Core::Memory
     /// 任意の型Tのスマートポインタをカスタムアロケータとデリータで作成する関数
     /// クラスの場合はデフォルトコンストラクターが必要
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="...Args"></typeparam>
-    /// <param name="...args"></param>
-    /// <returns></returns>
     template <typename T, typename... Args>
     std::shared_ptr<T> MakeCustomSharedPtr(Args&&... args)
     {
-        // メモリ確保
-        // クラスだとデフォルトコンストラクタが必要
-        void* pMem = HE_NEW(T, 0);
-        if (pMem == NULL)
+        // 配列の要素を構築し、shared_ptrを作成する
+        // 引数がない場合は配列要素を使わない
+        if (sizeof...(Args) <= 0)
         {
-            throw std::bad_alloc();
+            return std::shared_ptr<T>(HE_NEW(T, 0), DeleterFreeMemory());
         }
+        else
+        {
+            // メモリ確保
+            // クラスだとデフォルトコンストラクタが必要
+            void* pMem = HE_NEW(T, 0);
+            if (pMem == NULL)
+            {
+                throw std::bad_alloc();
+            }
 
-        try
-        {
-            // 配列の要素を構築し、shared_ptrを作成する
-            return std::shared_ptr<T>(new (pMem) T(std::forward<Args>(args)...),
-                                      DeleterFreeMemory());
-        }
-        catch (...)
-        {
-            // コンストラクタが失敗した場合はメモリを解放する
-            FreeMemory(pMem);
-            throw;
+            try
+            {
+                // 配列の要素を構築し、shared_ptrを作成する
+                return std::shared_ptr<T>(new (pMem) T(std::forward<Args>(args)...),
+                                          DeleterFreeMemory());
+            }
+            catch (...)
+            {
+                // コンストラクタが失敗した場合はメモリを解放する
+                ::FreeMemory(pMem);
+                throw;
+            }
         }
     }
 
     /// <summary>
     /// std::make_unique内で独自メモリシステムを利用
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="...Args"></typeparam>
-    /// <param name="...args"></param>
-    /// <returns></returns>
     template <typename T, typename... Args>
     std::unique_ptr<T, DeleterFreeMemory> MakeCustomUniquePtr(Args&&... args)
     {
@@ -269,16 +270,19 @@ namespace Core::Memory
             throw std::bad_alloc();
         }
 
-        try
+        if (0 < sizeof...(Args))
         {
-            // Placement newでオブジェクトを構築
-            new (pMem) T(std::forward<Args>(args)...);
-        }
-        catch (...)
-        {
-            // コンストラクタが失敗した場合はメモリを解放する
-            FreeMemory(pMem);
-            throw;
+            try
+            {
+                // Placement newでオブジェクトを構築
+                new (pMem) T(std::forward<Args>(args)...);
+            }
+            catch (...)
+            {
+                // コンストラクタが失敗した場合はメモリを解放する
+                ::FreeMemory(pMem);
+                throw;
+            }
         }
 
         return std::unique_ptr<T, DeleterFreeMemory>(pMem);

@@ -13,6 +13,17 @@ namespace InGame
 {
     class InGamePlayerActor final : public Actor::Object
     {
+        HE_GENERATED_CLASS_BODY_HEADER(InGamePlayerActor, Actor::Object);
+
+    public:
+        /// <summary>
+        /// 自機のパラメータ
+        /// </summary>
+        struct Parameter
+        {
+            Float32 speed = 2.0f;
+        };
+
     public:
         InGamePlayerActor();
         virtual ~InGamePlayerActor() = default;
@@ -34,6 +45,10 @@ namespace InGame
         void SetPos(const Core::Math::Vector2&);
         void SetSize(const Core::Math::Vector2&);
         void SetViewHandle(const Core::Common::Handle&);
+
+        void Move(const Core::Math::Vector2& in_rMove) { this->_move = in_rMove; }
+
+        const Parameter& GetParameter() const { return this->_parameter; }
 
 #if 0
           //	撃てる弾の名前を取得
@@ -58,6 +73,9 @@ namespace InGame
             m_InvincibleCnt = 0;
 
             this->_pos.Zero();
+            this->_size.Zero();
+            this->_move.Zero();
+
             this->_transformHandle.Clear();
             this->_viewHandle.Clear();
         }
@@ -82,8 +100,12 @@ namespace InGame
 
         Core::Math::Vector2 _pos;
         Core::Math::Vector2 _size;
+        Core::Math::Vector2 _move;
+
         Core::Common::Handle _transformHandle;
         Core::Common::Handle _viewHandle;
+
+        Parameter _parameter;
     };
 
 }  // namespace InGame

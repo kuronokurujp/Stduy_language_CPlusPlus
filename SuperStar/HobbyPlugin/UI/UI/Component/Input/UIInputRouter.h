@@ -9,17 +9,13 @@ namespace UI
     /// UIのWidgetのタップやボタン入力を行い,
     /// 各Widgetへ結果を送信する
     /// </summary>
-    class UIInputRouterComponent final : public Actor::InputComponent
+    class UIInputRouterStrategy final : public Actor::InputStrategyBase
     {
-        HE_CLASS_COPY_NG(UIInputRouterComponent);
-        HE_GENERATED_CLASS_BODY_HEADER(UIInputRouterComponent, Actor::InputComponent);
+        HE_CLASS_COPY_NG(UIInputRouterStrategy);
 
     public:
-        UIInputRouterComponent() : Actor::InputComponent() {}
+        UIInputRouterStrategy() : Actor::InputStrategyBase() {}
 
-        /// <summary>
-        /// Processes the input.
-        /// </summary>
-        void VProcessInput(const void* in_pInputMap) override final;
+        void VProcessInput(const void* in_pInputMap, Actor::Object*) override final;
     };
 }  // namespace UI

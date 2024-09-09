@@ -81,8 +81,15 @@ namespace UI
     {
         auto handlePack = this->NewWidget(in_szrName, in_uSort, in_rLevelHandle);
 
-        // 入力ルーターコンポーネントを設定
-        auto hInputRouter = this->AddComponent<UI::UIInputRouterComponent>(handlePack, 0);
+        auto hInputRouter = this->AddComponent<Actor::InputComponent>(handlePack, 0);
+        // 入力ルーター設定
+        {
+            auto pInputStrategy = Core::Memory::MakeCustomSharedPtr<UI::UIInputRouterStrategy>();
+
+            auto pWidget         = this->GetWidget(handlePack);
+            auto pInputComponent = pWidget->GetComponent<Actor::InputComponent>(hInputRouter);
+            pInputComponent->SetStrategy(pInputStrategy);
+        }
 
         // レイヤーコンポーネントを追加
         auto hLayer = this->AddComponent<UI::UILayerComponent>(handlePack, 0);

@@ -93,8 +93,7 @@ namespace Level
     {
         // メインゲーム開始入力があるか
         {
-            auto it = in_pInputMap->FindKey(Local::szInputActionNameByGameStart);
-            if (it != in_pInputMap->End())
+            if (in_pInputMap->Contains(Local::szInputActionNameByGameStart))
             {
                 // メインゲームに遷移
                 auto pLevelModule = Module::ModuleManager::I().Get<Level::LevelModule>();
@@ -105,8 +104,7 @@ namespace Level
 
         // ゲーム終了入力があるか
         {
-            auto it = in_pInputMap->FindKey(Local::szInputActionNameByGameEnd);
-            if (it != in_pInputMap->End())
+            if (in_pInputMap->Contains(Local::szInputActionNameByGameEnd))
             {
                 // TODO: ゲーム終了
                 return;

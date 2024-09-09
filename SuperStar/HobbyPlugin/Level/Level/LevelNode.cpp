@@ -126,7 +126,7 @@ namespace Level
         for (auto it = this->_lstInputComponent.BeginItr(); it != this->_lstInputComponent.EndItr();
              ++it)
         {
-            it->VProcessInput(pInputMap);
+            it->ProcessInput(pInputMap);
         }
     }
 

@@ -37,8 +37,10 @@ namespace Actor
 
         /// <summary>
         /// コンポーネントのオーターアクターを設定
+        /// TODO: コンストラクタで初回のみ設定に変えたほうがいいかも
+        /// TODO: ランタイム中になんども変えるものじゃないから
         /// </summary>
-        void SetOwner(Object* in_pOwner) { this->_pOwner = in_pOwner; }
+        inline void SetOwner(Object* in_pOwner) { this->_pOwner = in_pOwner; }
 
     private:
         void _Clear()

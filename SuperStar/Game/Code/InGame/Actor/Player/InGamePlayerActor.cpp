@@ -1,9 +1,10 @@
 ﻿#include "InGamePlayerActor.h"
 
-#include "Actor/Component/TransformComponent.h"
 #include "Actor/Component/InputComponent.h"
+#include "Actor/Component/TransformComponent.h"
 
 // 依存するモジュール一覧
+#include "EnhancedInputModule.h"
 #include "RenderModule.h"
 
 #if 0
@@ -31,6 +32,93 @@ namespace InGame
         "4Way",
     };
 
+    namespace Local
+    {
+        // TODO: プレイヤーのユーザー入力
+        static const Char* szInputMoveUp    = HE_STR_TEXT("Player_MoveUp");
+        static const Char* szInputMoveLeft  = HE_STR_TEXT("Player_MoveLeft");
+        static const Char* szInputMoveDown  = HE_STR_TEXT("Player_MoveDown");
+        static const Char* szInputMoveRight = HE_STR_TEXT("Player_MoveRight");
+        static const Char* szInputShot      = HE_STR_TEXT("Player_Shot");
+
+        static const EnhancedInput::ActionMap mInputActionByPlay =
+            {{szInputMoveUp, EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_W})},
+             {szInputMoveLeft, EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_A})},
+             {szInputMoveDown, EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_S})},
+             {szInputMoveRight, EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_D})},
+             {szInputShot, EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_SPACE})}};
+
+        /// <summary>
+        /// プレイヤーのユーザー入力
+        /// </summary>
+        class UserInputPlayerStrategy final : public Actor::InputStrategyBase
+        {
+            HE_CLASS_COPY_NG(UserInputPlayerStrategy);
+
+        public:
+            UserInputPlayerStrategy()
+            {
+                // ユーザー共通入力割り当て設定
+                {
+                    auto pInputModule =
+                        Module::ModuleManager::I().Get<EnhancedInput::EnhancedInputModule>();
+                    pInputModule->AddCommonMappingAction(Local::mInputActionByPlay);
+                }
+            }
+            virtual ~UserInputPlayerStrategy()
+            {
+                // 専用の入力アクションを外す
+                {
+                    auto pInputModule =
+                        Module::ModuleManager::I().Get<EnhancedInput::EnhancedInputModule>();
+                    if (pInputModule != NULL)
+                        pInputModule->RemoveCommonMappingAction(Local::mInputActionByPlay);
+                }
+            }
+
+            void VProcessInput(const void* in_pInputMap,
+                               Actor::Object* in_pSelfObject) override final
+            {
+                HE_ASSERT(in_pInputMap);
+                HE_ASSERT(in_pSelfObject);
+
+                auto pInputMap = reinterpret_cast<const EnhancedInput::InputMap*>(in_pInputMap);
+
+                if (HE_GENERATED_CHECK_RTTI(*in_pSelfObject, InGamePlayerActor) == FALSE) return;
+
+                auto pPlayer = reinterpret_cast<InGamePlayerActor*>(in_pSelfObject);
+
+                Core::Math::Vector2 move;
+                if (pInputMap->Contains(Local::szInputMoveUp))
+                {
+                    move += Core::Math::Vector2(0.0f, -1.0f);
+                }
+
+                if (pInputMap->Contains(Local::szInputMoveLeft))
+                {
+                    move += Core::Math::Vector2(-1.0f, 0.0f);
+                }
+
+                if (pInputMap->Contains(Local::szInputMoveDown))
+                {
+                    move += Core::Math::Vector2(0.0f, 1.0f);
+                }
+
+                if (pInputMap->Contains(Local::szInputMoveRight))
+                {
+                    move += Core::Math::Vector2(1.0f, 0.0f);
+                }
+
+                if (pInputMap->Contains(Local::szInputShot))
+                {
+                }
+
+                move.Normalize();
+                pPlayer->Move(move * pPlayer->GetParameter().speed);
+            }
+        };
+    };  // namespace Local
+
     InGamePlayerActor::InGamePlayerActor() : Actor::Object()
     {
         this->_Clear();
@@ -40,8 +128,9 @@ namespace InGame
     {
         if (Actor::Object::VBegin() == FALSE) return FALSE;
 
+        // 座標関連のコンポーネント追加
         {
-            this->_transformHandle = this->AddComponent<Actor::TransformComponent>(0);
+            this->_transformHandle = this->AddComponent<Actor::TransformComponent>(1);
             HE_ASSERT((this->_transformHandle.Null() == FALSE) &&
                       "トランスフォームコンポーネントの追加失敗");
 
@@ -49,10 +138,15 @@ namespace InGame
             this->SetPos(this->_pos);
         }
 
-        // TODO: ユーザー入力コンポーネントを追加
+        // ユーザー入力コンポーネントを追加
         {
-            //this->AddComponent<Actor::InputComponent>(0);
-}
+            auto handle = this->AddComponent<Actor::InputComponent>(0);
+            HE_ASSERT(handle.Null() == FALSE);
+
+            // プレイヤー用の入力ストラテジーを設定
+            auto pStrategy = Core::Memory::MakeCustomSharedPtr<Local::UserInputPlayerStrategy>();
+            this->GetComponent<Actor::InputComponent>(handle)->SetStrategy(pStrategy);
+        }
 #if 0
         //	自機が使用する弾を弾管理に追加する。
         {
@@ -98,14 +192,25 @@ namespace InGame
     {
         Actor::Object::VUpdate(in_fDt);
 
-        auto pTrans = this->GetComponent<Actor::TransformComponent>(this->_transformHandle);
-        HE_ASSERT(pTrans);
+        // TODO: 移動情報による座標更新
+        {
+            Core::Math::Vector2 newPos;
+            newPos.SetAdd(this->_pos, this->_move);
+            this->_move.Zero();
 
-        // 座標更新
-        Core::Math::Rect2 srcRect(0.0f, 0.0f, this->_size._fX, this->_size._fY,
-                                  Core::Math::Rect2::EAnchor_Center);
+            this->SetPos(newPos);
+        }
+
+        // 描画座標取得
         Core::Math::Rect2 rect;
-        pTrans->TransformLocalToWorldRect2D(&rect, srcRect);
+        {
+            auto pTrans = this->GetComponent<Actor::TransformComponent>(this->_transformHandle);
+            HE_ASSERT(pTrans);
+
+            Core::Math::Rect2 srcRect(0.0f, 0.0f, this->_size._fX, this->_size._fY,
+                                      Core::Math::Rect2::EAnchor_Center);
+            pTrans->TransformLocalToWorldRect2D(&rect, srcRect);
+        }
 
         // 描画コマンド追加
         Render::Command2DRectDraw(this->_viewHandle, rect, Render::RGB::White);

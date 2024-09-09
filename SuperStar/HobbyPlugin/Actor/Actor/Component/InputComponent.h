@@ -5,23 +5,53 @@
 
 namespace Actor
 {
+    // 前方宣言
+    class InputComponent;
+
+    /// <summary>
+    /// 入力コンポーネントのストラテジークラス
+    /// </summary>
+    class InputStrategyBase
+    {
+    public:
+        virtual ~InputStrategyBase() {}
+
+        virtual const Bool VBegin() { return TRUE; }
+        virtual const Bool VEnd() { return TRUE; }
+
+        virtual void VProcessInput(const void* in_pInputMap, Object*) = 0;
+    };
+
     /// <summary>
     /// 入力の基礎コンポーネント
-    /// 継承前提のクラス
-    /// このクラスのみのインスタンスを作れない
+    /// 機能拡張は継承したストラテジークラスで行う
     /// </summary>
-    class InputComponent : public Component, public Core::Common::LinkedListNode<InputComponent>
+    class InputComponent final : public Component,
+                                 public Core::Common::LinkedListNode<InputComponent>
     {
         HE_CLASS_COPY_NG(InputComponent);
         HE_GENERATED_CLASS_BODY_HEADER(InputComponent, Component);
 
     public:
         InputComponent() : Component() {}
-        virtual ~InputComponent() = default;
+        virtual ~InputComponent();
+
+        /// <summary>
+        /// タスク終了
+        /// </summary>
+        const Bool VEnd() override final;
 
         /// <summary>
         /// 入力処理
         /// </summary>
-        virtual void VProcessInput(const void* in_pInputMap) = 0;
+        void ProcessInput(const void* in_pInputMap);
+
+        /// <summary>
+        /// ストラテジー設定
+        /// </summary>
+        void SetStrategy(std::shared_ptr<InputStrategyBase>);
+
+    private:
+        std::shared_ptr<InputStrategyBase> _pStrategy = NULL;
     };
 }  // namespace Actor
