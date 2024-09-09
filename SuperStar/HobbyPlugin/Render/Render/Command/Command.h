@@ -8,16 +8,16 @@
 namespace Render
 {
     // コマンド一覧
-    enum CmdType
+    enum ECmdType
     {
         // 画面を指定色でクリア
-        CMD_TYPE_SCREEN_CLEAR = 0,
+        ECmdType_ClsScreen = 0,
         // テキスト描画
-        CMD_TYPE_2D_TEXT_DRAW,
+        ECmdType_2DTextDraw,
         // 矩形描画
-        CMD_TYPE_2D_RECT_DRAW,
+        ECmdType_2DRectDraw,
         // TODO: 点描画
-        CMD_TYPE_2D_POINT_DRAW,
+        ECmdType_2DPointDraw,
     };
 
     /// <summary>
@@ -60,7 +60,7 @@ namespace Render
     /// <summary>
     /// 画面を指定色でクリア
     /// </summary>
-    struct CmdScreenClaer
+    struct CmdClsScreen
     {
         Color color;
     };
@@ -78,7 +78,7 @@ namespace Render
             Uint64 ulaWork[128] = {};
 
             // TODO: バッファ超えていた場合はコンパイルエラーを出すことはできるのだろうか？
-            CmdScreenClaer screenClear;
+            CmdClsScreen clsScree;
             Cmd2DTextDraw text2DDraw;
             Cmd2DRectDraw rect2DDraw;
             Cmd2DPointDraw point2DDraw;
@@ -89,21 +89,26 @@ namespace Render
     /// <summary>
     /// 2Dテキスト描画
     /// </summary>
-    extern void CreateCmd2DTextDraw(const Core::Common::Handle& in_rViewHandle,
-                                    const Core::Math::Vector2& in_rPos,
-                                    const Core::Common::StringBase& in_str, const Color& in_rColor,
-                                    const Core::Math::Rect2::EAnchor in_eAnchor);
+    extern void Command2DTextDraw(const Core::Common::Handle& in_rViewHandle,
+                                  const Core::Math::Vector2& in_rPos,
+                                  const Core::Common::StringBase& in_str, const Color& in_rColor,
+                                  const Core::Math::Rect2::EAnchor in_eAnchor);
 
     /// <summary>
     /// 2D矩形描画
     /// </summary>
-    extern void CreateCmd2DRectDraw(const Core::Common::Handle& in_rViewHandle,
-                                    const Core::Math::Rect2& in_rRect, const Color& in_rColor);
+    extern void Command2DRectDraw(const Core::Common::Handle& in_rViewHandle,
+                                  const Core::Math::Rect2& in_rRect, const Color& in_rColor);
 
     /// <summary>
     /// 2D点描画
     /// </summary>
-    extern void CreateCmd2DPointDraw(const Core::Common::Handle& in_rViewHandle,
-                                     const Core::Math::Vector2& in_rPos, const Color& in_rColor);
+    extern void Command2DPointDraw(const Core::Common::Handle& in_rViewHandle,
+                                   const Core::Math::Vector2& in_rPos, const Color& in_rColor);
+
+    /// <summary>
+    /// 画面クリア
+    /// </summary>
+    extern void CommandClsScreen(const Core::Common::Handle& in_rViewHandle, const Color& in_rColor);
 
 }  // namespace Render

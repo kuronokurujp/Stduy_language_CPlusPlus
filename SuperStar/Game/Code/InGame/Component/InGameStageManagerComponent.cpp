@@ -58,6 +58,8 @@ namespace InGame
             pPlayer->SetPos(Core::Math::Vector2(100.0f, 100.0f));
             // サイズ
             pPlayer->SetSize(Core::Math::Vector2(30.0f, 30.0f));
+
+            pPlayer->SetViewHandle(this->_viewHandle);
         }
 
         return TRUE;
@@ -75,6 +77,12 @@ namespace InGame
                 SAFE_DELETE(*it);
             }
             */
+    }
+
+    void InGameStageManagerComponent::SetViewHandle(const Core::Common::Handle& in_rHandle)
+    {
+        HE_ASSERT(in_rHandle.Null() == FALSE);
+        this->_viewHandle = in_rHandle;
     }
 
     /*
@@ -386,6 +394,7 @@ namespace InGame
     void InGameStageManagerComponent::_Clear()
     {
         this->_playerHandle.Clear();
+        this->_viewHandle.Clear();
         /*
             m_StageIndex    = 0;
             m_Speed         = 0;

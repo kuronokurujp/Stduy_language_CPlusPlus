@@ -37,16 +37,20 @@ namespace Level
             pSystemComponent->SetPoint(0);
         }
 
-        // TODO: 味方や敵の弾を管理するコンポーネント追加
+        // 味方や敵の弾を管理するコンポーネント追加
         {
             this->_shotManagerComponentHandle =
                 this->AddComponent<InGame::InGameShotManagerComponent>(0);
         }
 
-        // TODO: インゲームのステージコンポーネント追加
+        // インゲームのステージコンポーネント追加
         {
             this->_stageManagerComponentHandle =
                 this->AddComponent<InGame::InGameStageManagerComponent>(0);
+            auto pStageManagerComponent = this->GetComponent<InGame::InGameStageManagerComponent>(
+                this->_stageManagerComponentHandle);
+            HE_ASSERT(pStageManagerComponent);
+            pStageManagerComponent->SetViewHandle(this->_viewHandle);
         }
 
         /*

@@ -46,7 +46,7 @@ namespace UI
         pTrans->TransformLocalToWorldRect2D(&rect, srcRect);
 
         // 描画コマンドを追加
-        Render::CreateCmd2DRectDraw(this->_viewHandle, rect, {this->_color});
+        Render::Command2DRectDraw(this->_viewHandle, rect, {this->_color});
     }
 
     void UIButtonComponent::VOnTouch(const EnhancedInput::InputData::Item::Touch& in_rTouch)

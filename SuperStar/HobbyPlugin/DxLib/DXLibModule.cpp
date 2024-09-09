@@ -100,6 +100,9 @@ namespace DXLib
     {
         if (this->_bQuit) return FALSE;
 
+        // 画面全体の色を初期化
+        ::SetBackgroundColor(0, 0, 0);
+
         // 画面の描画クリア
         ::ClearDrawScreen();
 
@@ -122,8 +125,22 @@ namespace DXLib
                 // コマンドに応じた描画処理をする
                 switch (pCmd.uType)
                 {
+                    case Render::ECmdType_ClsScreen:
+                    {
+                        const Render::CmdClsScreen* pClsScreen = &pCmd.data.clsScree;
+                        const auto& rColor                     = pClsScreen->color;
+
+                        // 画面全体の色を初期化
+                        ::SetBackgroundColor(rColor.c32.r, rColor.c32.g, rColor.c32.b);
+
+                        // 画面の描画クリア
+                        ::ClearDrawScreen();
+
+                        break;
+                    }
+
                     // 矩形を描画
-                    case Render::CMD_TYPE_2D_RECT_DRAW:
+                    case Render::ECmdType_2DRectDraw:
                     {
                         const Render::Cmd2DRectDraw* pRect2D = &pCmd.data.rect2DDraw;
 
@@ -137,7 +154,7 @@ namespace DXLib
                     }
 
                     // 2Dテキストを描画
-                    case Render::CMD_TYPE_2D_TEXT_DRAW:
+                    case Render::ECmdType_2DTextDraw:
                     {
                         const Render::Cmd2DTextDraw* pText2D = &pCmd.data.text2DDraw;
 
@@ -172,11 +189,14 @@ namespace DXLib
                         ::DrawString(x, y, pText2D->szChars, uColor);
                         break;
                     }
-                    case Render::CMD_TYPE_2D_POINT_DRAW:
+                    case Render::ECmdType_2DPointDraw:
                     {
                         const Render::Cmd2DPointDraw* pPoint2D = &pCmd.data.point2DDraw;
+
+                        const auto& rColor = pPoint2D->color;
+                        const auto uColor  = ::GetColor(rColor.c32.r, rColor.c32.g, rColor.c32.b);
                         ::DrawPixel(static_cast<int>(pPoint2D->fX), static_cast<int>(pPoint2D->fY),
-                                    pPoint2D->color.c);
+                                    uColor);
 
                         break;
                     }

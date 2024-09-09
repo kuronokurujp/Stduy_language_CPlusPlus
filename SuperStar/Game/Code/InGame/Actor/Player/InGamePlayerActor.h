@@ -33,6 +33,7 @@ namespace InGame
 
         void SetPos(const Core::Math::Vector2&);
         void SetSize(const Core::Math::Vector2&);
+        void SetViewHandle(const Core::Common::Handle&);
 
 #if 0
           //	撃てる弾の名前を取得
@@ -58,6 +59,7 @@ namespace InGame
 
             this->_pos.Zero();
             this->_transformHandle.Clear();
+            this->_viewHandle.Clear();
         }
 
     private:
@@ -81,5 +83,7 @@ namespace InGame
         Core::Math::Vector2 _pos;
         Core::Math::Vector2 _size;
         Core::Common::Handle _transformHandle;
+        Core::Common::Handle _viewHandle;
     };
+
 }  // namespace InGame

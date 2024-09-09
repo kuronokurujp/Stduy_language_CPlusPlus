@@ -1,6 +1,7 @@
 ﻿#include "InGamePlayerActor.h"
 
 #include "Actor/Component/TransformComponent.h"
+#include "Actor/Component/InputComponent.h"
 
 // 依存するモジュール一覧
 #include "RenderModule.h"
@@ -39,12 +40,19 @@ namespace InGame
     {
         if (Actor::Object::VBegin() == FALSE) return FALSE;
 
-        this->_transformHandle = this->AddComponent<Actor::TransformComponent>(0);
-        HE_ASSERT((this->_transformHandle.Null() == FALSE) &&
-                  "トランスフォームコンポーネントの追加失敗");
+        {
+            this->_transformHandle = this->AddComponent<Actor::TransformComponent>(0);
+            HE_ASSERT((this->_transformHandle.Null() == FALSE) &&
+                      "トランスフォームコンポーネントの追加失敗");
 
-        // 事前に設定していた座標をトランスフォームコンポーネントに設定
-        this->SetPos(this->_pos);
+            // 事前に設定していた座標をトランスフォームコンポーネントに設定
+            this->SetPos(this->_pos);
+        }
+
+        // TODO: ユーザー入力コンポーネントを追加
+        {
+            //this->AddComponent<Actor::InputComponent>(0);
+}
 #if 0
         //	自機が使用する弾を弾管理に追加する。
         {
@@ -83,9 +91,7 @@ namespace InGame
     {
         this->RemoveComponent(&this->_transformHandle);
 
-        if (Actor::Object::VEnd() == FALSE) return FALSE;
-
-        return TRUE;
+        return Actor::Object::VEnd();
     }
 
     void InGamePlayerActor::VUpdate(const Float32 in_fDt)
@@ -95,13 +101,14 @@ namespace InGame
         auto pTrans = this->GetComponent<Actor::TransformComponent>(this->_transformHandle);
         HE_ASSERT(pTrans);
 
+        // 座標更新
         Core::Math::Rect2 srcRect(0.0f, 0.0f, this->_size._fX, this->_size._fY,
                                   Core::Math::Rect2::EAnchor_Center);
         Core::Math::Rect2 rect;
         pTrans->TransformLocalToWorldRect2D(&rect, srcRect);
 
-        // 描画コマンドを追加
-        // Render::CreateCmd2DRectDraw(this->_viewHandle, rect,  Render::RGB::White);
+        // 描画コマンド追加
+        Render::Command2DRectDraw(this->_viewHandle, rect, Render::RGB::White);
 
 #if 0
         GameLib::C_GameSystem& r = GameLib::C_GameSystem::inst();
@@ -163,6 +170,12 @@ namespace InGame
     void InGamePlayerActor::SetSize(const Core::Math::Vector2& in_rSize)
     {
         this->_size = in_rSize;
+    }
+
+    void InGamePlayerActor::SetViewHandle(const Core::Common::Handle& in_rHandle)
+    {
+        HE_ASSERT(in_rHandle.Null() == FALSE);
+        this->_viewHandle = in_rHandle;
     }
 
 #if 0

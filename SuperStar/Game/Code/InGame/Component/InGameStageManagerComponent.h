@@ -39,6 +39,8 @@ namespace InGame
                 virtual void VOnCallbackSendMessage(const int in_DataType, void* in_pData);
                 */
 
+        void SetViewHandle(const Core::Common::Handle&);
+
     private:
         /*
             //	定義
@@ -69,6 +71,7 @@ namespace InGame
         void _Clear();
 
     private:
+        Core::Common::Handle _viewHandle;
         Core::Common::Handle _playerHandle;
 
         /*

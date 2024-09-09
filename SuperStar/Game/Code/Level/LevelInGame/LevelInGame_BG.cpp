@@ -12,9 +12,9 @@ namespace Level
 
         // レンダリングビュー作成
         {
-            // TODO: 一番奥にビュー追加
+            // 一番奥にビュー追加
             auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
-            this->_viewHandle  = pRenderModule->AddView();
+            this->_viewHandle  = pRenderModule->AddView(0);
         }
 
         //	点の位置を複数作成
@@ -69,14 +69,13 @@ namespace Level
             }
         }
 
-        // TODO: 背景を黒くする
-        // inst.setScreenColor(0x000000);
+        // 背景を黒くする
+        Render::CommandClsScreen(this->_viewHandle, Render::RGB::Black);
 
         // 点を描画
         for (Uint32 i = 0; i < this->_aPointPos.Capacity(); ++i)
         {
-            Render::CreateCmd2DPointDraw(this->_viewHandle, this->_aPointPos[i],
-                                         Render::RGB::White);
+            Render::Command2DPointDraw(this->_viewHandle, this->_aPointPos[i], Render::RGB::White);
         }
     }
 }  // namespace Level
