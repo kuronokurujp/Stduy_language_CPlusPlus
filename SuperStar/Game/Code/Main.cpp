@@ -10,6 +10,7 @@
 #include "AssetManagerModule.h"
 #include "DXLibModule.h"
 #include "EnhancedInputModule.h"
+#include "EventModule.h"
 #include "LevelModule.h"
 #include "LocalizationModule.h"
 #include "RenderModule.h"
@@ -105,6 +106,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
         HOBBY_ENGINE.CreateModule<Level::LevelModule>();
         HOBBY_ENGINE.CreateModule<Localization::LocalizationModule>();
         HOBBY_ENGINE.CreateModule<EnhancedInput::EnhancedInputModule>();
+        HOBBY_ENGINE.CreateModule<Event::EventModule>();
     }
 
     const Bool bInitRet = HOBBY_ENGINE.Start();

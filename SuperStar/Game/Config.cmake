@@ -10,12 +10,6 @@ set(TARGET_FILES
 	Code/Main.cpp
 	Code/Main.h
 
-	Code/Event/EventData.h
-	Code/Event/EventManager.h
-	Code/Event/EventManager.cpp
-	Code/Event/EventInterface.h
-	Code/Event/Component/EventComponent.h
-
 	Code/Level/LevelLauncher.cpp
 	Code/Level/LevelLauncher.h
 	Code/Level/LevelTitle.cpp
@@ -33,6 +27,11 @@ set(TARGET_FILES
 	Code/InGame/Component/InGameStageManagerComponent.h
 	Code/InGame/Component/InGameCollisionComponent.cpp
 	Code/InGame/Component/InGameCollisionComponent.h
+	Code/InGame/Component/InGameShotComponent.cpp
+	Code/InGame/Component/InGameShotComponent.h
+	Code/InGame/Component/Shot/InGameShotStrategy.cpp
+	Code/InGame/Component/Shot/InGameShotStrategy.h
+	Code/InGame/Component/Shot/InGameShotStrategyInterface.h
 
 	Code/InGame/Actor/Player/InGamePlayerActor.cpp
 	Code/InGame/Actor/Player/InGamePlayerActor.h
