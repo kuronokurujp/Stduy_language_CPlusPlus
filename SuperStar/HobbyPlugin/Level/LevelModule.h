@@ -31,11 +31,11 @@ namespace Level
     public:
         LevelModule();
 
-        std::shared_ptr<Manager>& GetManager() { return this->_pLevelManager; }
+        std::shared_ptr<Manager>& GetManager() { return this->_spLevelManager; }
         // Node& GetCurrneLevel() const { return *(this->_pLevelManager->CurrentLevel()); }
         Node& GetLevel(const Core::Common::Handle& in_rHandle) const
         {
-            return *(this->_pLevelManager->GetLevel(in_rHandle));
+            return *(this->_spLevelManager->GetLevel(in_rHandle));
         }
 
     protected:
@@ -65,6 +65,6 @@ namespace Level
         const Bool _VLateUpdate(const Float32) override final;
 
     private:
-        std::shared_ptr<Manager> _pLevelManager = NULL;
+        std::shared_ptr<Manager> _spLevelManager = NULL;
     };
 }  // namespace Level

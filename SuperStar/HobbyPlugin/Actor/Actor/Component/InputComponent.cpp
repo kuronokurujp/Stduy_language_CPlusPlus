@@ -4,14 +4,14 @@ namespace Actor
 {
     InputComponent::~InputComponent()
     {
-        if (this->_pStrategy) this->_pStrategy = NULL;
+        if (this->_spStrategy) this->_spStrategy = NULL;
     }
 
     const Bool InputComponent::VEnd()
     {
-        if (this->_pStrategy)
+        if (this->_spStrategy)
         {
-            this->_pStrategy = NULL;
+            this->_spStrategy = NULL;
         }
 
         return Component::VEnd();
@@ -19,14 +19,14 @@ namespace Actor
 
     void InputComponent::ProcessInput(const void* in_pInputMap)
     {
-        if (this->_pStrategy == NULL) return;
+        if (this->_spStrategy == NULL) return;
 
-        this->_pStrategy->VProcessInput(in_pInputMap, this->_pOwner);
+        this->_spStrategy->VProcessInput(in_pInputMap, this->_pOwner);
     }
 
     void InputComponent::SetStrategy(std::shared_ptr<InputStrategyBase> in_pStrategy)
     {
-        this->_pStrategy = in_pStrategy;
+        this->_spStrategy = in_pStrategy;
     }
 
 }  // namespace Actor

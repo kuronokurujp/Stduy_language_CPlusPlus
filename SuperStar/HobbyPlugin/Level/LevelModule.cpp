@@ -24,8 +24,8 @@ namespace Level
     {
         // レベル関連の準備
         {
-            this->_pLevelManager = Core::Memory::MakeCustomSharedPtr<Manager>();
-            this->_pLevelManager->Init();
+            this->_spLevelManager = Core::Memory::MakeCustomSharedPtr<Manager>();
+            this->_spLevelManager->Init();
         }
 
         return TRUE;
@@ -33,8 +33,8 @@ namespace Level
 
     const Bool LevelModule::_VRelease()
     {
-        this->_pLevelManager->Release();
-        this->_pLevelManager.reset();
+        this->_spLevelManager->Release();
+        this->_spLevelManager.reset();
 
         return TRUE;
     }
@@ -42,7 +42,7 @@ namespace Level
     const Bool LevelModule::_VBeforeUpdate(const Float32 in_fDt)
     {
         // 前更新でメインレベルの切り替えなどしている
-        this->_pLevelManager->BeforeUpdate(in_fDt);
+        this->_spLevelManager->BeforeUpdate(in_fDt);
 
         return TRUE;
     }
@@ -53,16 +53,16 @@ namespace Level
         auto pEnhancedInputModule = this->GetDependenceModule<EnhancedInput::EnhancedInputModule>();
 
         // 入力結果を渡す
-        this->_pLevelManager->ProcessInput(in_fDt, pEnhancedInputModule->GetInputMap());
+        this->_spLevelManager->ProcessInput(in_fDt, pEnhancedInputModule->GetInputMap());
 
         // マウスやキーボードなどの各入力を渡す
-        this->_pLevelManager->Update(in_fDt);
+        this->_spLevelManager->Update(in_fDt);
 
         return TRUE;
     }
     const Bool LevelModule::_VLateUpdate(const Float32 in_fDt)
     {
-        this->_pLevelManager->LateUpdate(in_fDt);
+        this->_spLevelManager->LateUpdate(in_fDt);
         return TRUE;
     }
 }  // namespace Level
