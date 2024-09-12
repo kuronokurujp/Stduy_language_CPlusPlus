@@ -147,6 +147,7 @@ OSSライセンスには以下のタイプがある
     |Ptr|p||
     |参照|r||
     |std::shared*ptr|sp||
+    |std::unique_ptr*ptr|up||
     |配列 または配列機能を持つクラス|a||
     |std::vector または 同様の機能を持つクラス|v||
     |std::list または 同様の機能を持つクラス|lst||
