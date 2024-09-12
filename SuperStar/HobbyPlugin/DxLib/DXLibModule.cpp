@@ -146,10 +146,9 @@ namespace DXLib
 
                         const Uint32 uColor = GetColor(pRect2D->color.c32.r, pRect2D->color.c32.g,
                                                        pRect2D->color.c32.b);
-                        ::DrawBox(static_cast<int>(pRect2D->fLeftX),
-                                  static_cast<int>(pRect2D->fLeftY),
-                                  static_cast<int>(pRect2D->fRightX),
-                                  static_cast<int>(pRect2D->fRightY), uColor, TRUE);
+                        // TODO: 整数版と切り替えた方がいいのだろうか
+                        ::DrawBoxAA(pRect2D->fLeftX, pRect2D->fLeftY, pRect2D->fRightX,
+                                    pRect2D->fRightY, uColor, TRUE);
                         break;
                     }
 
@@ -191,10 +190,11 @@ namespace DXLib
                     }
                     case Render::ECmdType_2DPointDraw:
                     {
-                        const Render::Cmd2DPointDraw* pPoint2D = &pCmd.data.point2DDraw;
+                        const Render::Cmd2DPointDraw* pCmdPoint2D = &pCmd.data.point2DDraw;
 
-                        const auto& rColor = pPoint2D->color;
-                        const auto uColor  = ::GetColor(rColor.c32.r, rColor.c32.g, rColor.c32.b);
+                        const Render::Point2D* pPoint2D = &pCmdPoint2D->point;
+                        const auto& rColor              = pPoint2D->color;
+                        const auto uColor = ::GetColor(rColor.c32.r, rColor.c32.g, rColor.c32.b);
                         ::DrawPixel(static_cast<int>(pPoint2D->fX), static_cast<int>(pPoint2D->fY),
                                     uColor);
 

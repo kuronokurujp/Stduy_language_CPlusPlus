@@ -70,13 +70,14 @@ namespace Render
         // 必要なコマンド情報を作る
         Command cmd;
         {
-            cmd.uType                = ECmdType_2DPointDraw;
-            Cmd2DPointDraw* pPoint2D = &cmd.data.point2DDraw;
+            cmd.uType                   = ECmdType_2DPointDraw;
+            Cmd2DPointDraw* pCmdPoint2D = &cmd.data.point2DDraw;
             static_assert(sizeof(cmd.data.point2DDraw) <= sizeof(cmd.data.ulaWork));
 
-            pPoint2D->fX    = in_rPos._fX;
-            pPoint2D->fY    = in_rPos._fY;
-            pPoint2D->color = in_rColor;
+            Point2D* pPoint2D = &pCmdPoint2D->point;
+            pPoint2D->fX      = in_rPos._fX;
+            pPoint2D->fY      = in_rPos._fY;
+            pPoint2D->color   = in_rColor;
         }
 
         auto pModule = Module::ModuleManager::I().Get<RenderModule>();
@@ -85,6 +86,13 @@ namespace Render
         if (pView == NULL) return;
 
         pView->AddCmd(std::move(cmd));
+    }
+
+    void Command2DPointCloudDraw(const Core::Common::Handle& in_rViewHandle,
+                                 const Point2D* in_pPoints, const Uint32 in_uCount)
+    {
+        // TODO: 点群描画コマンドを作る
+        HE_ASSERT(in_rViewHandle.Null() == FALSE);
     }
 
     void CommandClsScreen(const Core::Common::Handle& in_rViewHandle, const Color& in_rColor)

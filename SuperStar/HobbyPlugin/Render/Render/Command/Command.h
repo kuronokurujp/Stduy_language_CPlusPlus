@@ -7,6 +7,13 @@
 
 namespace Render
 {
+    struct Point2D
+    {
+        Float32 fX = 0.0f;
+        Float32 fY = 0.0f;
+        Color color;
+    };
+
     // コマンド一覧
     enum ECmdType
     {
@@ -16,8 +23,10 @@ namespace Render
         ECmdType_2DTextDraw,
         // 矩形描画
         ECmdType_2DRectDraw,
-        // TODO: 点描画
+        // 点描画
         ECmdType_2DPointDraw,
+        // TODO: 点群描画
+        ECmdType_2DPointCloudDraw,
     };
 
     /// <summary>
@@ -52,9 +61,16 @@ namespace Render
     /// </summary>
     struct Cmd2DPointDraw
     {
-        Float32 fX = 0.0f;
-        Float32 fY = 0.0f;
-        Color color;
+        Point2D point;
+    };
+
+    /// <summary>
+    /// 2D上で点群を描画
+    /// </summary>
+    struct Cmd2DPointCloudDraw
+    {
+        Point2D* pPoints = NULL;
+        Uint32 num       = 0;
     };
 
     /// <summary>
@@ -82,6 +98,7 @@ namespace Render
             Cmd2DTextDraw text2DDraw;
             Cmd2DRectDraw rect2DDraw;
             Cmd2DPointDraw point2DDraw;
+            Cmd2DPointCloudDraw pointCloud2DDraw;
 
         } data;
     };
@@ -105,6 +122,10 @@ namespace Render
     /// </summary>
     extern void Command2DPointDraw(const Core::Common::Handle& in_rViewHandle,
                                    const Core::Math::Vector2& in_rPos, const Color& in_rColor);
+    /// <summary>
+    /// 2D点群描画
+    /// </summary>
+    extern void Command2DPointCloudDraw(const Core::Common::Handle& in_rViewHandle, const Point2D* in_pPoints, const Uint32 in_uCount);
 
     /// <summary>
     /// 画面クリア
