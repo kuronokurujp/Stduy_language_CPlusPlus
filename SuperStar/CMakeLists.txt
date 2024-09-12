@@ -5,13 +5,13 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake NO_POLICTY_SCOPE)
 # 各プロジェクトの共通情報を取得
 # ゲームアプリ
 include(${CMAKE_CURRENT_SOURCE_DIR}/Game/Config.cmake NO_POLICTY_SCOPE)
-# ゲームエンジン.
+# ゲームエンジン
 include(${CMAKE_CURRENT_SOURCE_DIR}/HobbyEngine/Config.cmake NO_POLICTY_SCOPE)
-# DXLibプラグイン.
+# DXLibプラグイン
 include(${CMAKE_CURRENT_SOURCE_DIR}/HobbyPlugin/DxLib/Config.cmake NO_POLICTY_SCOPE)
-# 描画プラグイン.
+# 描画プラグイン
 include(${CMAKE_CURRENT_SOURCE_DIR}/HobbyPlugin/Render/Config.cmake NO_POLICTY_SCOPE)
-# アクタープラグイン.
+# アクタープラグイン
 include(${CMAKE_CURRENT_SOURCE_DIR}/HobbyPlugin/Actor/Config.cmake NO_POLICTY_SCOPE)
 # アセット管理プラグイン
 include(${CMAKE_CURRENT_SOURCE_DIR}/HobbyPlugin/AssetManager/Config.cmake NO_POLICTY_SCOPE)
@@ -23,6 +23,8 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/HobbyPlugin/Localization/Config.cmake NO_POL
 include(${CMAKE_CURRENT_SOURCE_DIR}/HobbyPlugin/UI/Config.cmake NO_POLICTY_SCOPE)
 # EnhancedInputプラグイン
 include(${CMAKE_CURRENT_SOURCE_DIR}/HobbyPlugin/EnhancedInput/Config.cmake NO_POLICTY_SCOPE)
+# Eventプラグイン
+include(${CMAKE_CURRENT_SOURCE_DIR}/HobbyPlugin/Event/Config.cmake NO_POLICTY_SCOPE)
 
 option(
   CORE_CRL_MD
@@ -100,6 +102,7 @@ add_subdirectory(HobbyPlugin/Level EXCLUDE_FROM_ALL)
 add_subdirectory(HobbyPlugin/Localization EXCLUDE_FROM_ALL)
 add_subdirectory(HobbyPlugin/UI EXCLUDE_FROM_ALL)
 add_subdirectory(HobbyPlugin/EnhancedInput EXCLUDE_FROM_ALL)
+add_subdirectory(HobbyPlugin/Event EXCLUDE_FROM_ALL)
 
 # テストプロジェクトを作る
 include(${CMAKE_CURRENT_SOURCE_DIR}/Test/Config.cmake NO_POLICTY_SCOPE)
@@ -115,6 +118,7 @@ set_target_properties(${APP_NAME} PROPERTIES
     ${CMAKE_CURRENT_SOURCE_DIR}/Bin/${WORKSPACE_NAME}/${CMAKE_CFG_INTDIR}
 )
 
+check_variable(EVENT_PLUGIN_NAME)
 check_variable(ENHANCED_INPUT_PLUGIN_NAME)
 check_variable(UI_PLUGIN_NAME)
 check_variable(LOCALIZATION_PLUGIN_NAME)
@@ -128,6 +132,7 @@ check_variable(ENGINE_NAME)
 # ゲームアプリがリンクするライブラリ
 # 設定プロジェクトのライブラリ・インクルードディレクトリ登録
 target_link_libraries(${APP_NAME}
+  ${EVENT_PLUGIN_NAME}
   ${ENHANCED_INPUT_PLUGIN_NAME}
   ${UI_PLUGIN_NAME}
   ${LOCALIZATION_PLUGIN_NAME}
@@ -157,6 +162,7 @@ set_target_properties(${TEST_APP_NAME} PROPERTIES
 # テストしたいライブラリを設定
 # 設定プロジェクトのライブラリ・インクルードディレクトリ登録
 target_link_libraries(${TEST_APP_NAME}
+  ${EVENT_PLUGIN_NAME}
   ${ENHANCED_INPUT_PLUGIN_NAME}
   ${UI_PLUGIN_NAME}
   ${LOCALIZATION_PLUGIN_NAME}
