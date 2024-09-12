@@ -223,6 +223,7 @@ namespace Core::Memory
     /// <summary>
     /// 任意の型Tのスマートポインタをカスタムアロケータとデリータで作成する関数
     /// クラスの場合はデフォルトコンストラクターが必要
+    /// TODO: メモリのページ指定が必要
     /// </summary>
     template <typename T, typename... Args>
     std::shared_ptr<T> MakeCustomSharedPtr(Args&&... args)

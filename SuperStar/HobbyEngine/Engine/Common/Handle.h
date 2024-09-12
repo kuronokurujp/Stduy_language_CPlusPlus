@@ -23,7 +23,6 @@ namespace Core::Common
         /// 初期化
         /// 管理するindexを設定
         /// </summary>
-        /// <param name="index"></param>
         void Init(const Uint32 in_uIndex)
         {
             HE_ASSERT(this->Null());
