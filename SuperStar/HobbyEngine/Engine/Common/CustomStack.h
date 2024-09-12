@@ -30,7 +30,18 @@ namespace Core::Common
             this->_pBuff[this->_uNum++] = in_rData;
         }
 
-        TYPE PopBack()
+        /// <summary>
+        /// データをプッシュで確保して利用側がデータ設定
+        /// </summary>
+        TYPE* PushBack()
+        {
+            HE_ASSERT(this->_uNum < this->Capacity());
+            ++this->_uNum;
+
+            return &this->_pBuff[(this->_uNum - 1)];
+        }
+
+        TYPE& PopBack()
         {
             Sint32 i = this->_uNum - 1;
             if (0 < this->_uNum) --this->_uNum;
