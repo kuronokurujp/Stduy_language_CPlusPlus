@@ -170,7 +170,7 @@ OSSライセンスには以下のタイプがある
         // Uintなのでu
         // *でポインターだからp
         // なのでupの記号をつける
-        const Uint32* u32pCount;
+        Uint32* u32pCount;
         ```
     -   例 2)
         ```
@@ -190,6 +190,9 @@ OSSライセンスには以下のタイプがある
             TYPE _taValue[32];
         }
         ```
+### constについて
+- 関数の戻り値の型が組み込み型の場合はconstはつけない
+    - ※ポインタ場合はconstを付けるのはあり
 
 ### クラスのメソッド名
 
@@ -199,7 +202,7 @@ OSSライセンスには以下のタイプがある
     class Object
     {
     private:
-        const Uint32 _GetIndex() { return 0; }
+        Uint32 _GetIndex() { return 0; }
     };
 ```
 #### 仮想メソッドはVをつける
@@ -282,7 +285,7 @@ OSSライセンスには以下のタイプがある
     class Object
     {
     public:
-        const Uint32 Count() const { this->_count; }
+        Uint32 Count() const { this->_count; }
     private:
         Uint32 _count;
     }
