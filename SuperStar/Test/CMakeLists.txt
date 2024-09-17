@@ -17,13 +17,6 @@ target_sources(${TEST_APP_NAME}
 # プロジェクトが参照できるインクルードディレクトリのパス.
 target_include_directories(${TEST_APP_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-# テスト用のマクロを設定
-target_compile_definitions(
-  ${TEST_APP_NAME}
-  PRIVATE
-  _USE_TEST
-)
-
 # ランタイムライブラリを設定
 target_compile_options(
   ${TEST_APP_NAME}
