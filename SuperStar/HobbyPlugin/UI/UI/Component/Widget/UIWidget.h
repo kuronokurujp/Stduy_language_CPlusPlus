@@ -30,13 +30,13 @@ namespace UI
         /// <summary>
         /// タスク開始
         /// </summary>
-        virtual const Bool VBegin() override;
+        virtual Bool VBegin() override;
 
         /// <summary>
         /// タスク終了
         /// </summary>
         /// <returns></returns>
-        virtual const Bool VEnd() override;
+        virtual Bool VEnd() override;
 
         virtual void VOnTouch(const EnhancedInput::InputData::Item::Touch& in_rTouch) {}
         virtual void VOnKey(const EnhancedInput::InputData::Item::Key& in_rKeyboard) {}

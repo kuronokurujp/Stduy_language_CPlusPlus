@@ -73,7 +73,7 @@ namespace UI
         /// <summary>
         /// コンポーネントの終了
         /// </summary>
-        virtual const Bool VEnd() override;
+        virtual Bool VEnd() override;
 
         /// <summary>
         /// コンポーネントの更新
@@ -85,7 +85,7 @@ namespace UI
         /// プッシュ通知のハンドラーを設定
         /// ユニークポインタで所有権を移譲している
         /// </summary>
-        void SetPushHandler(std::unique_ptr<UIButtonMessageHandler, DeleterFreeMemory> in_spHandler)
+        void SetPushHandler(Core::Memory::UniquePtr<UIButtonMessageHandler> in_spHandler)
         {
             this->_pushHandler = std::move(in_spHandler);
         }
@@ -111,7 +111,7 @@ namespace UI
         }
 
     private:
-        std::unique_ptr<UIButtonMessageHandler, DeleterFreeMemory> _pushHandler;
+        Core::Memory::UniquePtr<UIButtonMessageHandler> _pushHandler;
         Float32 _fWidth                     = 0.0f;
         Float32 _fHeight                    = 0.0f;
         Core::Math::Rect2::EAnchor _eAnchor = Core::Math::Rect2::EAnchor_Left;

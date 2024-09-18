@@ -125,7 +125,8 @@ namespace Render
     /// <summary>
     /// 2D点群描画
     /// </summary>
-    extern void Command2DPointCloudDraw(const Core::Common::Handle& in_rViewHandle, const Point2D* in_pPoints, const Uint32 in_uCount);
+    extern void Command2DPointCloudDraw(const Core::Common::Handle& in_rViewHandle,
+                                        const Point2D* in_pPoints, const Uint32 in_uCount);
 
     /// <summary>
     /// 画面クリア

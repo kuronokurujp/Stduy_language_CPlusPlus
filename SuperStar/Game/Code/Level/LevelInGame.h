@@ -3,6 +3,7 @@
 #include "Engine/MiniEngine.h"
 
 // 外部モジュール
+#include "EventModule.h"
 #include "LevelModule.h"
 
 namespace Level
@@ -15,8 +16,8 @@ namespace Level
     public:
         LevelInGame();
 
-        const Bool VBegin() override final;
-        const Bool VEnd() override final;
+        Bool VBegin() override final;
+        Bool VEnd() override final;
 
         /// <summary>
         /// 更新

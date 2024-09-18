@@ -71,7 +71,7 @@ namespace Core::Common
         /// <summary>
         /// ハンドルが存在するか
         /// </summary>
-        inline const Bool Valid(const Core::Common::Handle& in_h)
+        Bool Valid(const Core::Common::Handle& in_h)
         {
             return (this->_spUserSlot->at(in_h) != NULL);
         }
@@ -258,9 +258,9 @@ namespace Core::Common
         /// データ使用個数
         /// </summary>
         /// <returns></returns>
-        inline const Uint32 Size() const HE_NOEXCEPT { return this->_vUserSlot.Size(); }
+        inline Uint32 Size() const HE_NOEXCEPT { return this->_vUserSlot.Size(); }
 
-        inline const Bool Empty() const HE_NOEXCEPT { return (this->Size() <= 0); }
+        inline Bool Empty() const HE_NOEXCEPT { return (this->Size() <= 0); }
 
         // 現在利用しているデータリストを取得
         inline const std::list<T*>& GetUserDataList() const HE_NOEXCEPT { return this->_vUserSlot; }

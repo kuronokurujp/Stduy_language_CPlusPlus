@@ -36,10 +36,10 @@ namespace InGame
                 ACTOR_HANDLE_DATA_ST& GetActorHandleData() const { return this->_actorHandleData; }
                 */
 
-        const Bool IsGameEnd() const { return this->_bGameEnd; }
+        Bool IsGameEnd() const { return this->_bGameEnd; }
         void SetFlgGameEnd(const Bool in_bFlg) { this->_bGameEnd = in_bFlg; }
         void SetPoint(const Uint32 in_uPoint) { this->_uPoint = in_uPoint; }
-        const Uint32 GetPoint() const { return this->_uPoint; }
+        Uint32 GetPoint() const { return this->_uPoint; }
         void AddPoint(const Uint32 in_uAddPoint) { this->_uPoint += in_uAddPoint; }
 
     private:

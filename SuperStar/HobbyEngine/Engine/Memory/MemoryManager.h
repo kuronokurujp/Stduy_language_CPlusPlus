@@ -155,10 +155,10 @@ namespace Core::Memory
 
     public:
         // システムが稼働開始
-        const Bool Start(const Uint32 in_uManageSize);
+        Bool Start(const Uint32 in_uManageSize);
 
         // システムの解放
-        const Bool VRelease() override final;
+        Bool VRelease() override final;
 
 #ifdef HE_ENGINE_DEBUG
         // メモリ確保
@@ -168,46 +168,46 @@ namespace Core::Memory
 #else
         // メモリ確保
         void* AllocateMemory(const Uint32 in_uAllocateSize, const Uint8 in_page,
-                             const Uint8 in_alignSize, const ALLOCATE_LOCATE_TYPE in_eLocateType);
+                             const Uint8 in_alignSize, const EAllocateLocateType in_eLocateType);
 #endif
 
         // メモリ開放
         void FreeMemory(void* in_pAllocatedMemory);
 
         // 確保したメモリのサイズを取得
-        const Uint32 GetAllocatedMemorySize(void* in_pAllocatedMemory);
+        Uint32 GetAllocatedMemorySize(void* in_pAllocatedMemory);
 
         // メモリページのセットアップ
-        const Bool SetupMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_uNum);
+        Bool SetupMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_uNum);
         // メモリページのリマップ
         // 各メモリページを再構築する
         // しかしページ内に使用中のメモリが残っていると失敗してしまう
-        const Bool RemapMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_uNum);
+        Bool RemapMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_uNum);
 
         // メモリが管理対象のメモリかそうでないか
-        const Bool ValidMemory(void* in_pAllocatedMemory);
+        Bool ValidMemory(void* in_pAllocatedMemory);
 
         /// <summary>
         /// 全ページ内に利用中のメモリがあるか
         /// </summary>
         /// <returns></returns>
-        const Bool UsedAllMemoryBlock() const;
+        Bool UsedAllMemoryBlock() const;
 
         /// <summary>
         /// 指定ページに利用中のメモリがあるか
         /// </summary>
-        const Bool UsedMemoryBlock(const Uint8 in_page) const;
+        Bool UsedMemoryBlock(const Uint8 in_page) const;
 
     private:
         /// <summary>
         /// 利用準備ができているか
         /// </summary>
-        inline const Bool _IsReady() const { return (this->_pHeapTop != NULL); }
+        inline Bool _IsReady() const { return (this->_pHeapTop != NULL); }
 
         /// <summary>
         /// 指定ページが有効か
         /// </summary>
-        inline const Bool _ValidMemoryPage(const Uint8 in_page) const
+        inline Bool _ValidMemoryPage(const Uint8 in_page) const
         {
             return (this->_aMemoryPageInfoArray[in_page]._pTopAddr != NULL);
         }
@@ -216,13 +216,13 @@ namespace Core::Memory
         /// メモリブロックのヘッダーサイズを取得
         /// </summary>
         /// <returns></returns>
-        inline const Uint32 _GetMemoryBlockHeaderSize() const { return (sizeof(BlockHeader)); }
+        inline Uint32 _GetMemoryBlockHeaderSize() const { return (sizeof(BlockHeader)); }
 
         /// <summary>
         /// メモリブロックのフッターサイズを取得
         /// </summary>
         /// <returns></returns>
-        inline const Uint32 _GetMemoryBlockFooterSize() const
+        inline Uint32 _GetMemoryBlockFooterSize() const
         {
             // フッターはデバッグ用のしかないから
 #ifdef HE_ENGINE_DEBUG
@@ -236,14 +236,13 @@ namespace Core::Memory
         /// メモリブロックのシステム利用サイズを取得
         /// </summary>
         /// <returns></returns>
-        inline const Uint32 _GetMemoryBlockSystemDataSize() const
+        inline Uint32 _GetMemoryBlockSystemDataSize() const
         {
             return (this->_GetMemoryBlockHeaderSize() + this->_GetMemoryBlockFooterSize());
         }
 
         // メモリページの初期化
-        const Bool _InitMemoryPage(const Uint8 in_page, const Uint32 in_uOffset,
-                                   const Uint32 in_uSize);
+        Bool _InitMemoryPage(const Uint8 in_page, const Uint32 in_uOffset, const Uint32 in_uSize);
         // 指定のメモリブロックの前にメモリブロックを連結する
         void _AddListMemoryBlockPrev(BlockHeader* in_pMemoryBlock,
                                      BlockHeader* in_pTargetMemoryBlock);
@@ -266,9 +265,9 @@ namespace Core::Memory
         void PrintAllMemoryInfo();
 
         // 指定されたメモリページのメモリブロックが正常かチェックする
-        const Bool CheckMemoryBlockByPage(const Uint8 in_page);
+        Bool CheckMemoryBlockByPage(const Uint8 in_page);
         // すべてのメモリブロックが正常かチェックする
-        const Bool CheckAllMemoryBlock();
+        Bool CheckAllMemoryBlock();
 
     private:
         // TODO: ランタイムでエンディアンを判定する方法あるか?
@@ -286,7 +285,7 @@ namespace Core::Memory
         /// </summary>
         /// <param name="in_pMemoryBlock">メモリブロック</param>
         /// <returns>TRUE 有効 / FALSE 無効</returns>
-        const Bool _IsValidMemoryBlock(BlockHeader* in_pMemoryBlock)
+        Bool _IsValidMemoryBlock(BlockHeader* in_pMemoryBlock)
         {
             // ヘッダーの管理データをチェック
             if (in_pMemoryBlock->_uMagicNumber != uMagicNumber) return FALSE;
@@ -328,8 +327,6 @@ namespace Core::Memory
         Uint32 _uHeapSize = 0;
         // メモリページ情報
         // あまり柔軟性よくてもしょうがない(速度重視の配列)
-        PageInfo _aMemoryPageInfoArray[MemoryPageMax] = {0};
-
-        Bool _bEnable = TRUE;
+        PageInfo _aMemoryPageInfoArray[MemoryPageMax];
     };
 }  // namespace Core::Memory

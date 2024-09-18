@@ -10,7 +10,7 @@ namespace DXLib
     class System final : public Platform::SystemInterface
     {
     public:
-        const Uint32 VGetRand(const Uint32) override final;
-        const Bool VSetSeedRand(const Uint32) override final;
+        Uint32 VGetRand(const Uint32) override final;
+        Bool VSetSeedRand(const Uint32) override final;
     };
 }  // namespace DXLib

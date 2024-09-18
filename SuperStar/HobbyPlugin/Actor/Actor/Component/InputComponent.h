@@ -16,8 +16,8 @@ namespace Actor
     public:
         virtual ~InputStrategyBase() {}
 
-        virtual const Bool VBegin() { return TRUE; }
-        virtual const Bool VEnd() { return TRUE; }
+        virtual Bool VBegin() { return TRUE; }
+        virtual Bool VEnd() { return TRUE; }
 
         virtual void VProcessInput(const void* in_pInputMap, Object*) = 0;
     };
@@ -39,7 +39,7 @@ namespace Actor
         /// <summary>
         /// タスク終了
         /// </summary>
-        const Bool VEnd() override final;
+        Bool VEnd() override final;
 
         /// <summary>
         /// 入力処理

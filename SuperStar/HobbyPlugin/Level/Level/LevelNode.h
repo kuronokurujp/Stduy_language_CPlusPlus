@@ -25,7 +25,7 @@ namespace Level
         class ActorMaanagerDecorater final : public Actor::ActorManagerDecoraterlnterface
         {
         public:
-            const Bool VStart(Actor::ActorManager*) override final;
+            Bool VStart(Actor::ActorManager*) override final;
 
             void VLateUpdate(const Float32 in_fDt, Actor::ActorManager*) override final {}
 
@@ -59,12 +59,12 @@ namespace Level
         /// <summary>
         /// タスク開始
         /// </summary>
-        const Bool VBegin() override;
+        Bool VBegin() override;
 
         /// <summary>
         /// タスク終了
         /// </summary>
-        const Bool VEnd() override;
+        Bool VEnd() override;
 
         /// <summary>
         /// 更新
@@ -130,8 +130,8 @@ namespace Level
         /// <summary>
         /// アクター同士の関連付け設定
         /// </summary>
-        const Bool ChainActor(const Core::Common::Handle& in_rActor,
-                              const Core::Common::Handle& in_rParentActor);
+        Bool ChainActor(const Core::Common::Handle& in_rActor,
+                        const Core::Common::Handle& in_rParentActor);
 
     protected:
         virtual void _VProcessInput(const EnhancedInput::InputMap* in_pInputMap);
@@ -139,7 +139,7 @@ namespace Level
         /// <summary>
         /// 追加したコンポーネントのセットアップ
         /// </summary>
-        const Bool _VSetupComponent(const Core::Common::Handle&) final override;
+        Bool _VSetupComponent(const Core::Common::Handle&) final override;
 
     private:
         /// <summary>

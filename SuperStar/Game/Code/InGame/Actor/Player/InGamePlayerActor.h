@@ -1,7 +1,9 @@
 ﻿#pragma once
 
 #include "Actor/Actor.h"
+#include "Engine/Common/CustomMap.h"
 #include "Engine/MiniEngine.h"
+#include "InGame/Component/Shot/InGameShotStrategyInterface.h"
 
 #if 0
 
@@ -21,7 +23,13 @@ namespace InGame
         /// </summary>
         struct Parameter
         {
-            Float32 speed = 2.0f;
+            // 移動スピード
+            Float32 speed = 5.0f;
+
+            // 無敵時間
+            Float32 fInvincibleTimeSec = 1.5;
+            // HP
+            Uint32 ulife = 3;
         };
 
     public:
@@ -32,13 +40,13 @@ namespace InGame
         /// 開始
         /// 継承したクラスで必ず基本クラスのメソッドを呼ぶ
         /// </summary>
-        const Bool VBegin() final override;
+        Bool VBegin() final override;
 
         /// <summary>
         /// 終了
         /// 継承したクラスで必ず基本クラスのメソッドを呼ぶ
         /// </summary>
-        const Bool VEnd() final override;
+        Bool VEnd() final override;
 
         void VUpdate(const Float32 in_fDt) final override;
 
@@ -47,6 +55,7 @@ namespace InGame
         void SetViewHandle(const Core::Common::Handle&);
 
         void Move(const Core::Math::Vector2& in_rMove) { this->_move = in_rMove; }
+        void Shot();
 
         const Parameter& GetParameter() const { return this->_parameter; }
 
@@ -54,11 +63,10 @@ namespace InGame
           //	撃てる弾の名前を取得
         const char* GetActiveShotName() const;
         const char* GetShotName(const int in_Type) const;
-        const int GetShotTypeNum() const { return eSHOT_MAX; }
+        int GetShotTypeNum() const { return eSHOT_MAX; }
 
-        const int GetLifeNum() const { return m_life; }
+        int GetLifeNum() const { return m_life; }
 
-        void Shot();
         void MoveShotType(const int in_MoveNum);
 
         //	データ通知
@@ -68,10 +76,6 @@ namespace InGame
     private:
         void _Clear()
         {
-            m_shotType      = eSHOT_BASIC;
-            m_life          = 4;
-            m_InvincibleCnt = 0;
-
             this->_pos.Zero();
             this->_size.Zero();
             this->_move.Zero();
@@ -81,22 +85,20 @@ namespace InGame
         }
 
     private:
-        //	定数
-        enum
-        {
-            eSHOT_BASIC = 0,
-            eSHOT_LASER,
-            eSHOT_HOMING,
-            eSHOT_WAY,
+        /*
+            //	定数
+            enum
+            {
+                eSHOT_BASIC = 0,
+                eSHOT_LASER,
+                eSHOT_HOMING,
+                eSHOT_WAY,
 
-            eSHOT_MAX
-        };
+                eSHOT_MAX
+            };
 
-        Sint32 m_aShotHandle[eSHOT_MAX];
-
-        Uint32 m_shotType;
-        Uint32 m_life;
-        Sint32 m_InvincibleCnt;
+            Sint32 m_aShotHandle[eSHOT_MAX];
+            */
 
         Core::Math::Vector2 _pos;
         Core::Math::Vector2 _size;
@@ -104,8 +106,16 @@ namespace InGame
 
         Core::Common::Handle _transformHandle;
         Core::Common::Handle _viewHandle;
+        Core::Common::Handle _shotHandle;
 
+        // ランタイム中に変化するパラメータ
         Parameter _parameter;
+        // 初期パラメータ
+        Parameter _defaultParameter;
+
+        Core::Common::CustomFixMap<Core::Common::FixString32,
+                                   std::shared_ptr<InGameShotStrategyInterface>, 6>
+            _mShotStrategy;
     };
 
 }  // namespace InGame

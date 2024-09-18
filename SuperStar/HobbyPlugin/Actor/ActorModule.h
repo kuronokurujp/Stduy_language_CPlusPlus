@@ -28,11 +28,11 @@ namespace Actor
         /// モジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool _VStart() override final;
+        Bool _VStart() override final;
 
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool _VRelease() override final;
+        Bool _VRelease() override final;
     };
 }  // namespace Actor

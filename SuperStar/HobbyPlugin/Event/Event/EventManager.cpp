@@ -4,7 +4,7 @@
 
 namespace Event
 {
-    EventManager::EventManager(std::unique_ptr<EventManagerStrategyInterface> in_upStrategy)
+    EventManager::EventManager(Core::Memory::UniquePtr<EventManagerStrategyInterface> in_upStrategy)
         : _sActiveQueue(0)
     {
         this->_upStrategy = std::move(in_upStrategy);
@@ -12,10 +12,11 @@ namespace Event
 
     EventManager::~EventManager()
     {
+        this->VRelease();
         this->_sActiveQueue = 0;
     }
 
-    const Bool EventManager::EmptyEvent() const
+    Bool EventManager::EmptyEvent() const
     {
         for (Uint32 i = 0; i < HE_ARRAY_NUM(this->_aQueue); ++i)
         {
@@ -25,8 +26,41 @@ namespace Event
         return TRUE;
     }
 
-    const Bool EventManager::VAddListenr(EventListenerPtr const& in_rListener,
-                                         EventTypeStr const& in_rType)
+    void EventManager::VRelease()
+    {
+        // 詰んだイベントの解放
+        {
+            for (auto itr = this->_aQueue->begin(); itr != this->_aQueue->end(); ++itr)
+            {
+                itr->reset();
+            }
+        }
+
+        // 登録したリスナーを解放
+        {
+            // TODO: 名前は後で変える
+            for (auto itr = this->_mRegistry.Begin(); itr != this->_mRegistry.End(); ++itr)
+            {
+                for (auto itr2 = itr->data.begin(); itr2 != itr->data.end(); ++itr2)
+                {
+                    itr2->reset();
+                    (*itr2) = NULL;
+                }
+
+                itr->data.clear();
+            }
+        }
+
+        // 拡張ストラテジーを解放
+        if (this->_upStrategy)
+        {
+            this->_upStrategy.release();
+            this->_upStrategy = NULL;
+        }
+    }
+
+    Bool EventManager::VAddListenr(EventListenerPtr const& in_rListener,
+                                   EventTypeStr const& in_rType)
     {
         if (this->VValidateType(in_rType) == FALSE) return FALSE;
 
@@ -63,8 +97,8 @@ namespace Event
         return TRUE;
     }
 
-    const Bool EventManager::VRemoveListener(EventListenerPtr const& in_rListener,
-                                             EventTypeStr const& in_rType)
+    Bool EventManager::VRemoveListener(EventListenerPtr const& in_rListener,
+                                       EventTypeStr const& in_rType)
     {
         if (this->VValidateType(in_rType) == FALSE) return FALSE;
         Bool bErase = FALSE;
@@ -98,7 +132,7 @@ namespace Event
         return bErase;
     }
 
-    const Bool EventManager::VTrigger(EventDataInterfacePtr const& in_rEvent) const
+    Bool EventManager::VTrigger(EventDataInterfacePtr const& in_rEvent) const
     {
         Bool bProc = FALSE;
 
@@ -137,7 +171,7 @@ namespace Event
         return bProc;
     }
 
-    const Bool EventManager::VQueueEvent(EventDataInterfacePtr const& in_rEvent)
+    Bool EventManager::VQueueEvent(EventDataInterfacePtr const& in_rEvent)
     {
         HE_ASSERT(0 <= this->_sActiveQueue);
         HE_ASSERT(this->_sActiveQueue < EConstants_NumQueues);
@@ -149,7 +183,7 @@ namespace Event
         return TRUE;
     }
 #if 0
-    const Bool EventManager::VAbortEvent(EventTypeStr const& in_rType)
+    Bool EventManager::VAbortEvent(EventTypeStr const& in_rType)
     {
         HE_ASSERT(0 <= this->_sActiveQueue);
         HE_ASSERT(this->_sActiveQueue < EConstants_NumQueues);
@@ -181,7 +215,7 @@ namespace Event
     }
 #endif
 
-    const Bool EventManager::VTick(const Uint32 in_uMaxMillis)
+    Bool EventManager::VTick(const Uint32 in_uMaxMillis)
     {
         // 計測開始時間
         auto startClock = std::chrono::system_clock::now();
@@ -268,7 +302,7 @@ namespace Event
         return bQueueFlushed;
     }
 
-    const Bool EventManager::VValidateType(EventTypeStr const& in_rType) const
+    Bool EventManager::VValidateType(EventTypeStr const& in_rType) const
     {
         if (in_rType.Length() <= 0) return FALSE;
 
@@ -283,8 +317,8 @@ namespace Event
     // 情報探索メソッド
 
     // 特定のイベント型に関連づけられたリスナーのリストを取得
-    const Bool EventManager::OutputListenerList(EventListenerList* out,
-                                                EventTypeStr const& in_rEventType) const
+    Bool EventManager::OutputListenerList(EventListenerList* out,
+                                          EventTypeStr const& in_rEventType) const
     {
         HE_ASSERT(out);
 

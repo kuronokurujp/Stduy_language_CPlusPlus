@@ -17,7 +17,7 @@ namespace Level
               EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_A})}};
     };  // namespace Local
 
-    const Bool LevelTitle::VBegin()
+    Bool LevelTitle::VBegin()
     {
         const Bool bRet = Level::Node::VBegin();
         HE_ASSERT(bRet);
@@ -40,8 +40,9 @@ namespace Level
             auto h    = this->AddComponent<Level::LevelUserInputReceiveComponent>(0);
             auto comp = this->GetComponent<Level::LevelUserInputReceiveComponent>(h);
 
-            auto handler = Core::Memory::MakeCustomUniquePtr<Level::LevelUserInputMessage>(
-                [this](const Char* in_pMsg) { HE_LOG_LINE(in_pMsg); });
+            auto handler =
+                HE_MAKE_CUSTOM_UNIQUE_PTR(Level::LevelUserInputMessage,
+                                          [this](const Char* in_pMsg) { HE_LOG_LINE(in_pMsg); });
             comp->SetReceiver(std::move(handler));
         }
 
@@ -62,7 +63,7 @@ namespace Level
         return bRet;
     }
 
-    const Bool LevelTitle::VEnd()
+    Bool LevelTitle::VEnd()
     {
         // ビューのハンドルを外す
         {

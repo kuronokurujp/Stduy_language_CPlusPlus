@@ -28,15 +28,21 @@ void* operator new(size_t in_size, Uint8 in_page, Uint8 in_alignSize,
 /// <summary>
 /// メモリ解放
 /// </summary>
-/// <param name="in_pPtr"></param>
+
 void FreeMemory(void* in_pPtr)
 {
     // 初回の共有ポインターを生成したらここが呼ばれてin_pPtrが0になっている
     // ポインターがないのはおかしいので即終了している
     if (in_pPtr == 0) return;
+
+    if (Core::Memory::Manager::Exist())
     {
         Core::Memory::Manager::I().FreeMemory(in_pPtr);
-        return;
+    }
+    else
+    {
+        // メモリアロケーターがないという警告を出す
+        HE_LOG_LINE(HE_STR_TEXT("警告: メモリアロケーターが存在しないかすでに破棄されている"));
     }
 }
 
@@ -76,7 +82,7 @@ void* ::operator new[](size_t in_size, Uint8 in_page, Uint8 in_alignSize,
 /// <param name="in_line">呼び出したファイル行</param>
 /// <returns>NULL 失敗 / 非NULL 確保したメモリのアドレス</returns>
 void* operator new(size_t in_size, Uint8 in_page, Uint8 in_alignSize,
-                   Core::Memory::Manager::AllocateLocateType in_eLocateType)
+                   Core::Memory::Manager::EAllocateLocateType in_eLocateType)
 {
     // VSのx64だとsize_tがunsigned int64になるが, 8byteフルサイズでの確保はないと思うので,
     // Uint32でサイズを調整した
@@ -96,7 +102,7 @@ void* operator new(size_t in_size, Uint8 in_page, Uint8 in_alignSize,
 /// <param name="in_line">呼び出したファイル行数</param>
 /// <returns>NULL 失敗 / 非NULL 確保したメモリのアドレス</returns>
 void* operator new[](size_t in_size, Uint8 in_page, Uint8 in_alignSize,
-                     Core::Memory::Manager::AllocateLocateType in_eLocateType)
+                     Core::Memory::Manager::EAllocateLocateType in_eLocateType)
 {
     // VSのx64だとsize_tがunsigned int64になるが, 8byteフルサイズでの確保はないと思うので,
     // Uint32でサイズを調整した

@@ -36,7 +36,7 @@ namespace Localization
         using LocateMap =
             Core::Common::CustomFixMap<Core::Common::FixString128, SystemAssetData::LocateData, 32>;
 
-        virtual const Bool _VLoad(Platform::FileInterface& in_rFileSystem) override;
+        virtual Bool _VLoad(Platform::FileInterface& in_rFileSystem) override;
 
         /// <summary>
         /// ロケートマップデータを探して取得
@@ -82,14 +82,14 @@ namespace Localization
 
         // ローカライズ設定データをロード(テキストファイル版)
         // バイナリファイル版も用意する
-        const Bool LoadSystemFile(const Core::Common::StringBase&);
+        Bool LoadSystemFile(const Core::Common::StringBase&);
         // ローカライズ設定データをアンロード
-        const Bool UnloadSystemFile();
+        Bool UnloadSystemFile();
 
         // ローカライズデータをロード
-        const Bool LoadTextAll(const Core::Common::StringBase&);
+        Bool LoadTextAll(const Core::Common::StringBase&);
         // ローカライズデータをアンロード
-        const Bool UnloadTextAll(const Core::Common::StringBase&);
+        Bool UnloadTextAll(const Core::Common::StringBase&);
 
         // ローカライズテキストを取得
         const Char* Text(const Core::Common::StringBase& in_szrLocateName,
@@ -101,13 +101,14 @@ namespace Localization
         /// モジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool _VStart() override final;
+        Bool _VStart() override final;
+
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool _VRelease() override final;
+        Bool _VRelease() override final;
 
-        const Bool _VUpdate(const Float32 in_fDeltaTime) override final;
+        Bool _VUpdate(const Float32 in_fDeltaTime) override final;
 
     private:
         using LocateTextMap =

@@ -8,6 +8,6 @@ namespace Core::Common
     /// 文字列からハッシュ数を計算
     /// マークアドラーのAdler-32チェックサムをベースにしている。
     /// </summary>
-    extern const Uint64 HashName(const Char*);
+    extern Uint64 HashName(const Char*);
 
 }  // namespace Core::Common

@@ -8,7 +8,7 @@ namespace Core::Memory
     {
     }
 
-    const Bool Manager::VRelease()
+    Bool Manager::VRelease()
     {
         if (this->_IsReady() == FALSE) return TRUE;
 
@@ -33,7 +33,7 @@ namespace Core::Memory
     /// </summary>
     /// <param name="in_useHeepSize">管理側で利用するヒープサイズ</param>
     /// <returns></returns>
-    const Bool Manager::Start(const Uint32 in_uUseHeapSize)
+    Bool Manager::Start(const Uint32 in_uUseHeapSize)
     {
         //	既に初期化されているか、チェックする．
         if (this->_IsReady())
@@ -69,7 +69,7 @@ namespace Core::Memory
     /// <param name="in_pSetupInfoArray"></param>
     /// <param name="in_num">配列の個数</param>
     /// <returns>TRUE 成功 / FALSE 失敗</returns>
-    const Bool Manager::SetupMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_uNum)
+    Bool Manager::SetupMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_uNum)
     {
         HE_ASSERT(in_pSetupInfoArray && "ページ設定情報がない");
 
@@ -123,7 +123,7 @@ namespace Core::Memory
     /// <param name="in_pSetupInfoArray">メモリページ設定情報の配列</param>
     /// <param name="in_num">配列個数</param>
     /// <returns>TRUE 成功 / FALSE 失敗</returns>
-    const Bool Manager::RemapMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_uNum)
+    Bool Manager::RemapMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_uNum)
     {
         // 初期化されていない
         if (this->_IsReady() == FALSE)
@@ -246,25 +246,30 @@ namespace Core::Memory
         return TRUE;
     }
 
-    const Bool Manager::ValidMemory(void* in_pAllocatedMemory)
+    Bool Manager::ValidMemory(void* in_pAllocatedMemory)
     {
+#ifdef HE_ENGINE_DEBUG
         // 受け取ったのは使用できるメモリの先頭
         BlockHeader* pMemoryBlock = reinterpret_cast<BlockHeader*>(
             reinterpret_cast<Sint8*>(in_pAllocatedMemory) - this->_GetMemoryBlockHeaderSize());
 
         return this->_IsValidMemoryBlock(pMemoryBlock);
+#else
+        return TRUE;
+#endif
     }
 
-    const Bool Manager::UsedAllMemoryBlock() const
+    Bool Manager::UsedAllMemoryBlock() const
     {
         for (Uint8 i = 0; i < HE_ARRAY_NUM(this->_aMemoryPageInfoArray); ++i)
         {
             if (this->UsedMemoryBlock(i)) return TRUE;
         }
+
         return FALSE;
     }
 
-    const Bool Manager::UsedMemoryBlock(const Uint8 in_page) const
+    Bool Manager::UsedMemoryBlock(const Uint8 in_page) const
     {
         // ページのメモリブロック先頭にデータがなければ存在しない
         if (this->_aMemoryPageInfoArray[in_page]._pMemoryBlockTop == NULL) return FALSE;
@@ -286,8 +291,8 @@ namespace Core::Memory
     /// name="in_uHeepOffset">メモリページをどこから取るか(メモリマネージャー管理領域先頭からのオフセット。MINIMUM_ALIGN_SIZEの倍数であること)</param>
     /// <param
     /// name="in_uUseHeepSize">メモリページのサイズ（MINIMUM_ALIGN_SIZEの倍数であること）</param>
-    const Bool Manager::_InitMemoryPage(Uint8 in_page, Uint32 in_uHeepOffset,
-                                        Uint32 in_uUseHeepSize)
+    Bool Manager::_InitMemoryPage(const Uint8 in_page, const Uint32 in_uHeepOffset,
+                                  const Uint32 in_uUseHeepSize)
     {
         HE_ASSERT((in_page < HE_ARRAY_NUM(this->_aMemoryPageInfoArray)) &&
                   "指定ページが存在しない");
@@ -648,7 +653,7 @@ namespace Core::Memory
     /// </summary>
     /// <param name="in_pAllocatedMemory">管理側で確保したメモリのポインタ</param>
     /// <returns></returns>
-    const Uint32 Manager::GetAllocatedMemorySize(void* in_pAllocatedMemory)
+    Uint32 Manager::GetAllocatedMemorySize(void* in_pAllocatedMemory)
     {
         // 受け取ったのは使用できるメモリの先頭
         BlockHeader* pMemoryBlock = reinterpret_cast<BlockHeader*>(
@@ -1016,7 +1021,7 @@ namespace Core::Memory
     /// </summary>
     /// <param name="in_page">ページ</param>
     /// <returns>TRUE 全メモリブロックが正常 / FALSE 異常なメモリブロックがある</returns>
-    const Bool Manager::CheckMemoryBlockByPage(Uint8 in_page)
+    Bool Manager::CheckMemoryBlockByPage(Uint8 in_page)
     {
         BlockHeader* pMemoryBlock = this->_aMemoryPageInfoArray[in_page]._pMemoryBlockTop;
 
@@ -1039,7 +1044,7 @@ namespace Core::Memory
     /// </summary>
     /// <returns>TRUE 全てのページのメモリブロックは正常 / FALSE
     /// 異常なメモリブロックがある</returns>
-    const Bool Manager::CheckAllMemoryBlock()
+    Bool Manager::CheckAllMemoryBlock()
     {
         for (Uint8 i = 0; i < MemoryPageMax; ++i)
         {

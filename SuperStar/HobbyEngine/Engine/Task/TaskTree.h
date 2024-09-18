@@ -43,7 +43,7 @@ namespace Core
                 this->_parentHandle.Clear();
             }
 
-            inline const Bool Empty() const
+            inline Bool Empty() const
             {
                 return (this->_handle.Null()) && (this->_parentHandle.Null());
             }
@@ -64,12 +64,12 @@ namespace Core
         virtual void VEvent(const TaskData& in_rEvent) override;
 
         inline const ChildTaskNode GetChildTaskNode() const { return this->_chainNode; }
-        inline const Bool IsChild() const { return this->_bChild; }
+        inline Bool IsChild() const { return this->_bChild; }
 
         /// <summary>
         /// 子タスクの追加
         /// </summary>
-        const Bool AddChildTask(const Core::Common::Handle&);
+        Bool AddChildTask(const Core::Common::Handle&);
 
         /// <summary>
         /// 子タスクを外す

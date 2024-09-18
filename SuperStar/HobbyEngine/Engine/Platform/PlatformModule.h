@@ -27,13 +27,13 @@ namespace Platform
         PlatformModule() : ModuleBase(ModuleName(), Module::ELayer_App) {}
         virtual ~PlatformModule() = default;
 
-        virtual const Bool VCreateMainWindow() { return FALSE; }
-        virtual const Bool VReleaseAllWindows() { return FALSE; }
+        virtual Bool VCreateMainWindow() { return FALSE; }
+        virtual Bool VReleaseAllWindows() { return FALSE; }
 
         /// <summary>
         /// やめる状態になっているか
         /// </summary>
-        virtual const Bool VIsQuit() = 0;
+        virtual Bool VIsQuit() = 0;
 
         /// <summary>
         /// 時間関連の処理
@@ -64,7 +64,7 @@ namespace Platform
         /// <summary>
         /// モジュール開始
         /// </summary>
-        virtual const Bool _VStart() override
+        virtual Bool _VStart() override
         {
             HE_ASSERT(FALSE);
             return FALSE;
@@ -73,22 +73,16 @@ namespace Platform
         /// <summary>
         /// 前更新
         /// </summary>
-        /// <param name="in_fDeltaTime"></param>
-        /// <returns></returns>
-        virtual const Bool _VBeforeUpdate(const Float32 in_fDeltaTime) override = 0;
+        virtual Bool _VBeforeUpdate(const Float32 in_fDeltaTime) override = 0;
 
         /// <summary>
         /// 更新
         /// </summary>
-        /// <param name="in_fDeltaTime"></param>
-        /// <returns></returns>
-        virtual const Bool _VUpdate(const Float32 in_fDeltaTime) override = 0;
+        virtual Bool _VUpdate(const Float32 in_fDeltaTime) override = 0;
 
         /// <summary>
         /// 後更新
         /// </summary>
-        /// <param name="in_fDeltaTime"></param>
-        /// <returns></returns>
-        virtual const Bool _VLateUpdate(const Float32 in_fDeltaTime) override = 0;
+        virtual Bool _VLateUpdate(const Float32 in_fDeltaTime) override = 0;
     };
 }  // namespace Platform

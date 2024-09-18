@@ -10,7 +10,7 @@ namespace Module
     }
 
 #ifdef HE_ENGINE_DEBUG
-    const Bool ModuleBase::_ValidateDependenceModule()
+    Bool ModuleBase::_ValidateDependenceModule()
     {
         for (Uint32 i = 0; i < this->_vDependenceModule.Size(); ++i)
         {
@@ -54,7 +54,7 @@ namespace Module
         return NULL;
     }
 
-    const Bool ModuleManager::VRelease()
+    Bool ModuleManager::VRelease()
     {
         // 全モジュール解放
         // TODO: 依存関係に応じてモジュールを破棄する順序を変える事はできないか？
@@ -161,7 +161,7 @@ namespace Module
     /// <summary>
     /// ヒープ作成したモジュールを登録
     /// </summary>
-    const Bool ModuleManager::RegistHeapModule(ModuleBase* in_pModule)
+    Bool ModuleManager::RegistHeapModule(ModuleBase* in_pModule)
     {
         HE_ASSERT(in_pModule);
         // モジュールレイヤーに応じたリストに登録
@@ -187,7 +187,7 @@ namespace Module
         return FALSE;
     }
 
-    const Bool ModuleManager::Start(const ELayer in_eLayer)
+    Bool ModuleManager::Start(const ELayer in_eLayer)
     {
         switch (in_eLayer)
         {
@@ -259,7 +259,7 @@ namespace Module
         }
     }
 
-    const Bool ModuleManager::_StartModule(ModuleBase& in_rModule)
+    Bool ModuleManager::_StartModule(ModuleBase& in_rModule)
     {
         HE_LOG_LINE(HE_STR_TEXT("Start Module(%s)"), in_rModule.Name());
         if (in_rModule._VStart() == FALSE)

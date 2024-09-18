@@ -3,7 +3,7 @@
 namespace InGame
 {
     //	前方宣言
-    class I_InterfaceBulletEmit;
+    class InGameShotComponent;
 
     //	アクター通知タイプ
     enum
@@ -17,7 +17,7 @@ namespace InGame
     {
         int proprety;
         int bulletIndex;
-        I_InterfaceBulletEmit* pShotEmit;
+        InGameShotComponent* pShotEmit;
     } HIT_SHOT_SEND_DATA_ST;
 
 }  // namespace InGame

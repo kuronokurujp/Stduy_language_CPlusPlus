@@ -24,7 +24,7 @@ namespace Core::Math
             return Vector4(outputX, outputY, outputZ, outputW);
         }
 
-        const Float32 AddMul(const Vector4& in_rSrc)
+        Float32 AddMul(const Vector4& in_rSrc)
         {
             const Float32 outputX = this->_fX * in_rSrc._fX;
             const Float32 outputY = this->_fY * in_rSrc._fY;

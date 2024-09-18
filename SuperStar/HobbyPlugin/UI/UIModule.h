@@ -110,7 +110,7 @@ namespace UI
                                            const Core::Common::Handle& in_rLevelHandle);
 
         // 親Widgetに子Widgetを追加
-        const Bool AddChildWidget(UIWidgetHandlePack& in_rParent, UIWidgetHandlePack& in_rWidget);
+        Bool AddChildWidget(UIWidgetHandlePack& in_rParent, UIWidgetHandlePack& in_rWidget);
 
         // Widgetにコンポーネント追加
         template <class T>
@@ -128,13 +128,12 @@ namespace UI
         /// <summary>
         /// UIのモジュール初期化
         /// </summary>
-        /// <returns></returns>
-        const Bool _VStart() override final;
+        Bool _VStart() override final;
 
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool _VRelease() override final;
+        Bool _VRelease() override final;
     };
 
 }  // namespace UI

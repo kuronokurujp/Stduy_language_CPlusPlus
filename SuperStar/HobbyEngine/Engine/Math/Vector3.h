@@ -114,7 +114,7 @@ namespace Core::Math
         }
 
         // 内積
-        static const Float32 Dot(const Vector3& in_rV, const Vector3& in_rV2);
+        static Float32 Dot(const Vector3& in_rV, const Vector3& in_rV2);
 
         // 外積
         static Vector3 Cross(const Vector3& in_rV, const Vector3& in_rV2);
@@ -122,13 +122,13 @@ namespace Core::Math
         // ベクトルの大きさを2乗したのを取得
         // こちらの方が計算が早い
         // 比較などで利用できる
-        static const Float32 LengthSquared(const Vector3&);
+        static Float32 LengthSquared(const Vector3&);
 
         // 大きさ取得
-        static const Float32 Mag(const Vector3&);
+        static Float32 Mag(const Vector3&);
 
         // 距離取得
-        static float Distance(const Vector3& in_v, const Vector3& in_v2);
+        static Float32 Distance(const Vector3& in_v, const Vector3& in_v2);
 
     public:
         // 頻繁にアクセスする変数にはprivate指定にはしない

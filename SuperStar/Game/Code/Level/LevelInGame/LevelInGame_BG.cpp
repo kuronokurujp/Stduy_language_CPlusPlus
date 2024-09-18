@@ -5,7 +5,7 @@
 
 namespace Level
 {
-    const Bool LevelInGame_BG::VBegin()
+    Bool LevelInGame_BG::VBegin()
     {
         const Bool bRet = Node::VBegin();
         HE_ASSERT(bRet);
@@ -37,7 +37,7 @@ namespace Level
         return TRUE;
     }
 
-    const Bool LevelInGame_BG::VEnd()
+    Bool LevelInGame_BG::VEnd()
     {
         auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
         if (pRenderModule != NULL) pRenderModule->RemoveView(this->_viewHandle);
@@ -61,7 +61,7 @@ namespace Level
         // 左から右へ動かす
         for (Uint32 i = 0; i < this->_aPointPos.Capacity(); ++i)
         {
-            this->_aPointPos[i]._fX -= 0.1f;
+            this->_aPointPos[i]._fX -= 0.5f;
             if (0 > this->_aPointPos[i]._fX)
             {
                 this->_aPointPos[i]._fX = fMaxXPos;

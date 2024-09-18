@@ -15,8 +15,8 @@
 #define HE_STR_CPY_S(dst, dst_size, src, src_len) ::wcsncpy_s(dst, dst_size, src, src_len)
 #define HE_STR_STR(t01, t02) ::wcsstr(t01, t02)
 #define HE_STR_VSNPRINTF(dst, len, count, fmt, arg) ::_vsnwprintf_s(dst, len, count, fmt, arg)
-#define HE_STR_LOWER(s) ::_wcslwr(s)
-#define HE_STR_UPPER(s) ::_wcsupr(s)
+#define HE_STR_LOWER(s, size) ::_wcslwr_s(s, (size))
+#define HE_STR_UPPER(s, size) ::_wcsupr_s(s, (size))
 
 #define HE_STR_TEXT(t) L##t
 #define HE_STR_EMPTY L""
@@ -36,8 +36,8 @@
 #define HE_STR_VSNPRINTF(dst, len, count, fmt, arg) ::vsnprintf_s(dst, len, count, fmt, arg)
 
 // TODO: 未対応
-#define HE_STR_LOWER(s)
-#define HE_STR_UPPER(s)
+#define HE_STR_LOWER(s, size)
+#define HE_STR_UPPER(s, size)
 
 #define HE_STR_TEXT(t) t
 #define HE_STR_EMPTY ""

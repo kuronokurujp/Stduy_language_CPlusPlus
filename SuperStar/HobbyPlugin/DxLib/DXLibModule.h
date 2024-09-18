@@ -25,13 +25,13 @@ namespace DXLib
     public:
         DXLibModule();
 
-        const Bool VCreateMainWindow() override final;
-        const Bool VReleaseAllWindows() override final;
+        Bool VCreateMainWindow() override final;
+        Bool VReleaseAllWindows() override final;
 
         /// <summary>
         /// やめる状態になっているか
         /// </summary>
-        const Bool VIsQuit() override final { return this->_bQuit; }
+        Bool VIsQuit() override final { return this->_bQuit; }
 
         Platform::TimeInterface* VTime() override final { return &this->_time; }
         Platform::InputInterface* VInput() override final { return &this->_input; }
@@ -44,16 +44,16 @@ namespace DXLib
         /// モジュール初期化
         /// </summary>
         /// <returns></returns>
-        const Bool _VStart() override final;
+        Bool _VStart() override final;
 
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        const Bool _VRelease() override final;
+        Bool _VRelease() override final;
 
-        const Bool _VBeforeUpdate(const Float32 in_fDeltaTime) override final;
-        const Bool _VUpdate(const Float32 in_fDeltaTime) override final;
-        const Bool _VLateUpdate(const Float32 in_fDeltaTime) override final;
+        Bool _VBeforeUpdate(const Float32 in_fDeltaTime) override final;
+        Bool _VUpdate(const Float32 in_fDeltaTime) override final;
+        Bool _VLateUpdate(const Float32 in_fDeltaTime) override final;
 
     private:
         ::DXLib::Time _time;

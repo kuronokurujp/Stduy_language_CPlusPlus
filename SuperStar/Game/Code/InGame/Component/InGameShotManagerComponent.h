@@ -43,7 +43,7 @@ namespace InGame
         // void draw();
 
         //	弾オブジェクトを登録。
-        // const int Add(I_InterfaceBulletEmit* in_pShot, const PROPERTY_ENUM in_Property);
+        // int Add(I_InterfaceBulletEmit* in_pShot, const PROPERTY_ENUM in_Property);
         //	弾オブジェクトを取得
         // DATA_ST* GetData(const unsigned in_UniqId);
 

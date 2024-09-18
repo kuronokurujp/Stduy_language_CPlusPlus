@@ -10,8 +10,7 @@ namespace Core::Math
     /// <summary>
     /// 行列式を取得.
     /// </summary>
-    /// <returns></returns>
-    const Float32 Matrix3::GetDet()
+    Float32 Matrix3::GetDet()
     {
         const Float32 a = this->_faaMat[0][0] * (this->_faaMat[1][1] * this->_faaMat[2][2] -
                                                  this->_faaMat[1][2] * this->_faaMat[2][1]);

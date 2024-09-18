@@ -24,17 +24,16 @@ namespace Core::Time
         /// </summary>
         /// <param name="in_fps"></param>
         /// <returns></returns>
-        const Bool UpdateWait(Platform::TimeInterface* in_pTimeInterface,
-                              const Uint32 in_uWaitMSec);
+        Bool UpdateWait(Platform::TimeInterface* in_pTimeInterface, const Uint32 in_uWaitMSec);
 
         /// <summary>
         /// 更新時間取得(秒)
         /// </summary>
         /// <returns></returns>
-        const Float32 GetDeltaTimeSec(Platform::TimeInterface* in_pTimeInterface) const;
-        const Float32 GetDeltaTimeMSec(Platform::TimeInterface* in_pTimeInterface) const;
+        Float32 GetDeltaTimeSec(Platform::TimeInterface* in_pTimeInterface) const;
+        Float32 GetDeltaTimeMSec(Platform::TimeInterface* in_pTimeInterface) const;
 
-        inline const Uint32 GetFrameRate() const { return this->_uFrameRate; }
+        inline Uint32 GetFrameRate() const { return this->_uFrameRate; }
 
     private:
         static const Uint32 _uTimeAvgMax     = 5;

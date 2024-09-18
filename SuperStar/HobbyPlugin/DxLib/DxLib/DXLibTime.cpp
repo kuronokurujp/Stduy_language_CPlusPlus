@@ -8,7 +8,7 @@ namespace DXLib
     /// 現在の経過時間を取得(ミリセコンド)
     /// </summary>
     /// <returns></returns>
-    const Uint32 Time::VNowMSec()
+    Uint32 Time::VNowMSec()
     {
         return static_cast<Uint32>(GetNowCount());
     }

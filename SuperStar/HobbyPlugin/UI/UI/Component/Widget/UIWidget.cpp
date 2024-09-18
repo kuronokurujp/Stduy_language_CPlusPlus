@@ -8,7 +8,7 @@ namespace UI
         this->_Clear();
     }
 
-    const Bool UIWidgetComponent::VBegin()
+    Bool UIWidgetComponent::VBegin()
     {
         if (Component::VBegin() == FALSE) return FALSE;
 
@@ -22,7 +22,7 @@ namespace UI
         return TRUE;
     }
 
-    const Bool UIWidgetComponent::VEnd()
+    Bool UIWidgetComponent::VEnd()
     {
         if (Component::VEnd() == FALSE) return FALSE;
         if (this->_pOwner->RemoveComponent(&this->_transformHandle) == FALSE)

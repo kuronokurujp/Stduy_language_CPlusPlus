@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include <initializer_list>
 #include <type_traits>
 
 // 環境依存型のマクロ

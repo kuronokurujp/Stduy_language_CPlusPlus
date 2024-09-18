@@ -43,13 +43,13 @@ namespace Actor
         /// グループ最大数は2以上にする
         /// 保留のアクターを管理する専用グループを作るため
         /// </summary>
-        const Bool Start(const Uint32 in_uActorCapacity, const Uint32 in_uActorGroupMax);
+        Bool Start(const Uint32 in_uActorCapacity, const Uint32 in_uActorGroupMax);
 
         /// <summary>
         /// 終了
         /// これを呼び出した後は使えない
         /// </summary>
-        const Bool End();
+        Bool End();
 
         /// <summary>
         /// 前更新
@@ -119,19 +119,12 @@ namespace Actor
         void VOnActorUnRegistComponent(Component*);
 
     protected:
-        inline const Sint32 _GetPendingGroupId() const
-        {
-            return this->_taskManager.GetMaxGroup() - 1;
-        }
+        inline Sint32 _GetPendingGroupId() const { return this->_taskManager.GetMaxGroup() - 1; }
 
         /// <summary>
         /// 最後のグループが保留グループなので更新グループ数は最大グループ数-1になる
         /// </summary>
-        /// <returns></returns>
-        inline const Uint32 _GetUpdateGroupMax() const
-        {
-            return this->_taskManager.GetMaxGroup() - 1;
-        }
+        inline Uint32 _GetUpdateGroupMax() const { return this->_taskManager.GetMaxGroup() - 1; }
 
     private:
         /// <summary>

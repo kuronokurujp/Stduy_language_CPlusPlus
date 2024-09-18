@@ -40,7 +40,7 @@ namespace Render
         /// <summary>
         /// 追加したレンダリングビューを削除
         /// </summary>
-        const Bool RemoveView(const Core::Common::Handle&);
+        Bool RemoveView(const Core::Common::Handle&);
 
         /// <summary>
         /// レンダリングビュー取得
@@ -62,17 +62,17 @@ namespace Render
         /// <summary>
         /// モジュール初期化
         /// </summary>
-        /// <returns></returns>
-        const Bool _VStart() override final;
+        Bool _VStart() override final;
+
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        const Bool _VRelease() override final;
+        Bool _VRelease() override final;
 
         /// <summary>
         /// 前更新
         /// </summary>
-        const Bool _VBeforeUpdate(const Float32 in_fDeltaTime) override final;
+        Bool _VBeforeUpdate(const Float32 in_fDeltaTime) override final;
 
     private:
         Core::Common::FixPoolManager<View, 32> _poolView;

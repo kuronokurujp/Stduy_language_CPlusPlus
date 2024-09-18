@@ -51,12 +51,12 @@ namespace Core
         /// <summary>
         /// タスク開始
         /// </summary>
-        virtual const Bool VBegin() { return TRUE; }
+        virtual Bool VBegin() { return TRUE; }
 
         /// <summary>
         /// タスク終了
         /// </summary>
-        virtual const Bool VEnd() { return TRUE; }
+        virtual Bool VEnd() { return TRUE; }
 
         /// <summary>
         /// 更新
@@ -82,7 +82,7 @@ namespace Core
         /// <summary>
         /// グループID
         /// </summary>
-        inline const Sint32 GetGropuId() const { return this->_iGroupId; }
+        inline Sint32 GetGropuId() const { return this->_iGroupId; }
 
     protected:
         /// <summary>

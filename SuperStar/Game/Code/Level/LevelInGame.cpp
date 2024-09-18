@@ -5,19 +5,61 @@
 #include "InGame/Component/InGameStageManagerComponent.h"
 #include "InGame/Component/InGameSystemComponent.h"
 #include "LevelInGame/LevelInGame_BG.h"
+
+// 利用モジュール
 #include "RenderModule.h"
 
 namespace Level
 {
+    namespace Local
+    {
+        class EventManagerStrategy final : public Event::EventManagerStrategyInterface
+        {
+        public:
+            Bool VIsEventTypeStr(const Event::EventTypeStr& in_rTypeStr) { return FALSE; }
+        };
+
+        class EventListener final : public Event::EventListenerInterface
+        {
+            HE_CLASS_COPY_NG(EventListener);
+            HE_CLASS_MOVE_NG(EventListener);
+
+        public:
+            EventListener() = default;
+            EventListener(LevelInGame* in_pLevelInGame) { this->_pLevel = in_pLevelInGame; }
+
+            // リスナー名をテキストで返す
+            const Char* VName() { return HE_STR_TEXT("LevelInGame"); }
+
+            /// <summary>
+            /// リスナーがイベント受け取ったかどうか
+            /// </summary>
+            Bool VHandleEvent(Event::EventDataInterfacePtr const&) { return TRUE; }
+
+        private:
+            LevelInGame* _pLevel = NULL;
+        };
+    }  // namespace Local
 
     LevelInGame::LevelInGame() : Level::Node()
     {
     }
 
-    const Bool LevelInGame::VBegin()
+    Bool LevelInGame::VBegin()
     {
         const Bool bRet = Node::VBegin();
         HE_ASSERT(bRet);
+
+        // TODO: インゲーム内で利用するイベント管理を追加
+        {
+            auto pEventModule = Module::ModuleManager::I().Get<Event::EventModule>();
+
+            auto upStrategy = HE_MAKE_CUSTOM_UNIQUE_PTR(Local::EventManagerStrategy);
+            pEventModule->AddEventManager(std::move(upStrategy));
+
+            pEventModule->AddListenr(HE_MAKE_CUSTOM_SHARED_PTR(Local::EventListener, this),
+                                     HE_STR_TEXT("test"));
+        }
 
         // 背景のレベル追加
         this->AddLevel<LevelInGame_BG>();
@@ -61,7 +103,7 @@ namespace Level
         return TRUE;
     }
 
-    const Bool LevelInGame::VEnd()
+    Bool LevelInGame::VEnd()
     {
         auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
         if (pRenderModule != NULL) pRenderModule->RemoveView(this->_viewHandle);

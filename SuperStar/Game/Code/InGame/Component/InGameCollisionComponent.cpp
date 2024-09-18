@@ -12,7 +12,7 @@ namespace InGame
     {
     }
 
-    const Bool InGameCollisionComponent::VBegin()
+    Bool InGameCollisionComponent::VBegin()
     {
         if (Actor::Component::VBegin() == FALSE) return FALSE;
 
@@ -20,7 +20,7 @@ namespace InGame
         return TRUE;
     }
 
-    const Bool InGameCollisionComponent::VEnd()
+    Bool InGameCollisionComponent::VEnd()
     {
         if (Actor::Component::VEnd() == FALSE) return FALSE;
 
@@ -51,7 +51,7 @@ namespace InGame
         }
     }
 
-    const Bool InGameCollisionComponent::CollisionWithComponent(
+    Bool InGameCollisionComponent::CollisionWithComponent(
         CollisionInterface* in_pSelf, InGameCollisionComponent* in_pCollisionComponent)
     {
         HE_ASSERT(in_pSelf);
@@ -70,8 +70,7 @@ namespace InGame
         return FALSE;
     }
 
-    const Bool InGameCircleCollision2DComponent::VCollision(
-        InGameCircleCollision2DComponent& in_rOthor)
+    Bool InGameCircleCollision2DComponent::VCollision(InGameCircleCollision2DComponent& in_rOthor)
     {
         // TODO: 2D円の衝突
         if (this->_fRadius <= 0.0f) return FALSE;

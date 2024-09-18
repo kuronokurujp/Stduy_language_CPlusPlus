@@ -17,8 +17,8 @@ namespace Level
 
     public:
         LevelLauncher() : Level::Node() {}
-        const Bool VBegin() override final;
-        const Bool VEnd() override final;
+        Bool VBegin() override final;
+        Bool VEnd() override final;
 
     private:
         Core::Common::Handle _layoutAssetHandle;

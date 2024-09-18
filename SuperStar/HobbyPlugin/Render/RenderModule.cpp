@@ -21,7 +21,7 @@ namespace Render
         return handle;
     }
 
-    const Bool RenderModule::RemoveView(const Core::Common::Handle& in_rHandle)
+    Bool RenderModule::RemoveView(const Core::Common::Handle& in_rHandle)
     {
         if (in_rHandle.Null()) return FALSE;
 
@@ -39,8 +39,7 @@ namespace Render
     /// <summary>
     /// モジュール初期化
     /// </summary>
-    /// <returns></returns>
-    const Bool RenderModule::_VStart()
+    Bool RenderModule::_VStart()
     {
         return TRUE;
     }
@@ -48,8 +47,7 @@ namespace Render
     /// <summary>
     /// インスタンス破棄時に呼ばれる
     /// </summary>
-
-    const Bool RenderModule::_VRelease()
+    Bool RenderModule::_VRelease()
     {
         // ビュー解放
         for (Uint32 i = 0; i < this->_vViewHandle.Size(); ++i)
@@ -60,7 +58,7 @@ namespace Render
         return TRUE;
     }
 
-    const Bool RenderModule::_VBeforeUpdate(const Float32 in_fDeltaTime)
+    Bool RenderModule::_VBeforeUpdate(const Float32 in_fDeltaTime)
     {
         // ビューのコマンドクリア
         for (Uint32 i = 0; i < this->_vViewHandle.Size(); ++i)

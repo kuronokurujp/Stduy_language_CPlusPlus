@@ -53,7 +53,7 @@ void HE_LOG_UPDATE_FORMAT_STRING(std::wstring& in_szFormat, size_t& in_pos, cons
 
 // 共通処理を行う関数の作成
 template <typename... Args>
-const Bool HE_LOG_CREATE_FORMATERD_STRING(Char* out, const Char* in_szFormat, Args... in_args)
+Bool HE_LOG_CREATE_FORMATERD_STRING(Char* out, const Char* in_szFormat, Args... in_args)
 {
     std::wstring szDynamicFormat = in_szFormat;
     size_t pos                   = szDynamicFormat.find(L"%");

@@ -46,7 +46,7 @@ namespace Core::File
         Path& operator+=(const Path& in_crPath);
 
         inline const Char* Str() const { return this->_szPath.Str(); }
-        inline const Bool Empty() const { return this->_szPath.Empty(); }
+        inline Bool Empty() const { return this->_szPath.Empty(); }
 
     private:
         inline void _Set(const Char* in_szPath) HE_NOEXCEPT { this->_szPath = in_szPath; }

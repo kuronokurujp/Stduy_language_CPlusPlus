@@ -35,7 +35,7 @@ namespace Core
         /// 初期化
         /// 利用前に必ず呼び出す
         /// </summary>
-        const Bool Init(const Uint32 in_uTaskMax, const Sint32 in_sGroupNum);
+        Bool Init(const Uint32 in_uTaskMax, const Sint32 in_sGroupNum);
 
         void End();
 
@@ -100,12 +100,12 @@ namespace Core
         /// <summary>
         /// 指定グループの全タスクをターゲットグループへ移動
         /// </summary>
-        const Bool MoveGroupAll(const Sint32 in_sOrgGroupId, const Sint32 in_sTargetGroupId);
+        Bool MoveGroupAll(const Sint32 in_sOrgGroupId, const Sint32 in_sTargetGroupId);
 
         /// <summary>
         /// タスクを指定したグループ移動
         /// </summary>
-        const Bool MoveGropuTask(const Common::Handle& in_rTask, const Sint32 in_sGroupId);
+        Bool MoveGropuTask(const Common::Handle& in_rTask, const Sint32 in_sGroupId);
 
         /// <summary>
         /// タスクアドレスをハンドルから取得
@@ -131,20 +131,20 @@ namespace Core
         /// </summary>
         void DisableFlag(const Sint32 in_sGroupId, const Uint32 in_uFlags);
 
-        const Uint32 Flag(const Sint32 in_sGroupId) const;
+        Uint32 Flag(const Sint32 in_sGroupId) const;
 
         /// <summary>
         /// グループに設定しているタスクの総数
         /// </summary>
         /// <param name="in_groupId"></param>
         /// <returns></returns>
-        const Uint32 Count(const Sint32 in_sGroupId) const;
+        Uint32 Count(const Sint32 in_sGroupId) const;
 
         /// <summary>
         /// タスクグループの最大数
         /// </summary>
         /// <returns></returns>
-        inline const Uint32 GetMaxGroup() const { return this->_iGroupNum; }
+        inline Uint32 GetMaxGroup() const { return this->_iGroupNum; }
 
     private:
         // タスクグループ管理
@@ -166,12 +166,12 @@ namespace Core
         /// <summary>
         /// タスク追加する
         /// </summary>
-        const Bool _Attach(Task* in_pTask, const Sint32 in_sGroupId);
+        Bool _Attach(Task* in_pTask, const Sint32 in_sGroupId);
 
         /// <summary>
         /// タスクをグループから外す
         /// </summary>
-        const Sint32 _Dettach(Task* in_pTask);
+        Sint32 _Dettach(Task* in_pTask);
 
     private:
         TaskGroup* _pTasks = NULL;

@@ -63,7 +63,7 @@ namespace InGame
             @brief	タイプ名からIndex値を取得
             @return	インデックス値 / 失敗 : -1
     */
-    const int C_EnemyActorBase::GetTypeNameToIndex(const char* in_pName)
+    int C_EnemyActorBase::GetTypeNameToIndex(const char* in_pName)
     {
         for (int i = 0; i < ARRAY_NUM(s_apEnemyTypeName); ++i)
         {
@@ -133,7 +133,7 @@ namespace InGame
             TYPE_MAX;
         }
 
-        const int num = ARRAY_NUM(s_apEnemyTypeName);
+        int num = ARRAY_NUM(s_apEnemyTypeName);
         for (int i = 0; i < num; ++i)
         {
             if (strncmp(s_apEnemyTypeName[i], in_pString, strlen(in_pString)) == 0)
@@ -149,7 +149,7 @@ namespace InGame
             @brief	ステート設定
             @return	成功 : true / 失敗 : false
     */
-    const bool C_EnemyActorBase::_SetState(const char* in_pStateName)
+    bool C_EnemyActorBase::_SetState(const char* in_pStateName)
     {
         int index = _GetIndexState(in_pStateName);
         if (index >= 0)
@@ -165,7 +165,7 @@ namespace InGame
             @brief
             @return
     */
-    const bool C_EnemyActorBase::_SetState(const unsigned in_stateIndex)
+    bool C_EnemyActorBase::_SetState(const unsigned in_stateIndex)
     {
         if (in_stateIndex < ARRAY_NUM(m_aFuncTable))
         {
@@ -181,7 +181,7 @@ namespace InGame
             @param	[in]	:	ステート名
             @return	ステートIndex
     */
-    const int C_EnemyActorBase::_GetIndexState(const char* in_pStateName)
+    int C_EnemyActorBase::_GetIndexState(const char* in_pStateName)
     {
         if (in_pStateName == NULL)
         {

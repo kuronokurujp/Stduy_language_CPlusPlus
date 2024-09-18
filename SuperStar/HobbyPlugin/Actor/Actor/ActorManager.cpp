@@ -4,7 +4,7 @@
 
 namespace Actor
 {
-    const Bool ActorManager::Start(const Uint32 in_uActorCapacity, const Uint32 in_uActorGroupMax)
+    Bool ActorManager::Start(const Uint32 in_uActorCapacity, const Uint32 in_uActorGroupMax)
     {
         HE_ASSERT(1 < in_uActorGroupMax);
         if (this->_taskManager.Init(in_uActorCapacity, in_uActorGroupMax) == FALSE) return FALSE;
@@ -17,7 +17,7 @@ namespace Actor
         return TRUE;
     }
 
-    const Bool ActorManager::End()
+    Bool ActorManager::End()
     {
         this->_taskManager.End();
 

@@ -92,12 +92,12 @@ namespace UI::Builder
         /// <summary>
         /// 親ルート下にあるノードを名前で取得
         /// </summary>
-        const Bool OutputNodeByRootPos(Node* out, const UTF8* in_szName);
+        Bool OutputNodeByRootPos(Node* out, const UTF8* in_szName);
 
         /// <summary>
         /// 指定したノード下にあるノードを名前で取得
         /// </summary>
-        const Bool OutputNode(Node* out, const Node& in_rParentNode, const UTF8* in_szName);
+        Bool OutputNode(Node* out, const Node& in_rParentNode, const UTF8* in_szName);
 
         /// <summary>
         /// 指定したノード下にあるノード群を取得

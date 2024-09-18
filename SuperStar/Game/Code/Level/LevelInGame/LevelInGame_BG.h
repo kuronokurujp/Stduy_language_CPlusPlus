@@ -17,8 +17,8 @@ namespace Level
     public:
         LevelInGame_BG() : Level::Node() {}
 
-        const Bool VBegin() override final;
-        const Bool VEnd() override final;
+        Bool VBegin() override final;
+        Bool VEnd() override final;
 
         /// <summary>
         /// 更新

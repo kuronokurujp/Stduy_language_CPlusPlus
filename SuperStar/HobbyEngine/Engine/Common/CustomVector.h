@@ -20,9 +20,9 @@ namespace Core::Common
 
         virtual ~VectorBase() { this->Clear(); }
 
-        inline const Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
-        inline const Uint32 Size() const HE_NOEXCEPT { return this->_uSize; }
-        inline const Bool Empty() const HE_NOEXCEPT { return (this->_uSize <= 0); }
+        inline Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
+        inline Uint32 Size() const HE_NOEXCEPT { return this->_uSize; }
+        inline Bool Empty() const HE_NOEXCEPT { return (this->_uSize <= 0); }
 
         void Clear() HE_NOEXCEPT { this->_uSize = 0; }
 
@@ -76,7 +76,7 @@ namespace Core::Common
         /// </summary>
         /// <param name="in_tData"></param>
         /// <returns></returns>
-        const Bool Remove(const TYPE& in_rData)
+        Bool Remove(const TYPE& in_rData)
         {
             Bool bRet = FALSE;
             // 要素が重複している可能性があるので全要素チェック

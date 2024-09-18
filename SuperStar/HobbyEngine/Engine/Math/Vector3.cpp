@@ -141,7 +141,7 @@ namespace Core::Math
     }
 
     // 内積
-    const Float32 Vector3::Dot(const Vector3& in_rV, const Vector3& in_rV2)
+    Float32 Vector3::Dot(const Vector3& in_rV, const Vector3& in_rV2)
     {
         return (in_rV._fX * in_rV2._fX + in_rV._fY * in_rV2._fY + in_rV._fZ * in_rV2._fZ);
     }
@@ -160,13 +160,13 @@ namespace Core::Math
     // ベクトルの大きさを2乗したのを取得
     // こちらの方が計算が早い
     // 比較などで利用できる
-    const Float32 Vector3::LengthSquared(const Vector3& in_rV)
+    Float32 Vector3::LengthSquared(const Vector3& in_rV)
     {
         return (in_rV._fX * in_rV._fX + in_rV._fY * in_rV._fY * in_rV._fZ * in_rV._fZ);
     }
 
     //	大きさ取得
-    const Float32 Vector3::Mag(const Vector3& in_v)
+    Float32 Vector3::Mag(const Vector3& in_v)
     {
         return static_cast<Float32>(sqrt(LengthSquared(in_v)));
     }

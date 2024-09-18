@@ -49,7 +49,7 @@ namespace Core::Math
     /// 行列式を取得.
     /// </summary>
     /// <returns></returns>
-    const Float32 Matrix4::GetDet()
+    Float32 Matrix4::GetDet()
     {
         //	行と列を指定した余因子行列を求める(3x3)行列
         Matrix3 m11;
@@ -81,9 +81,9 @@ namespace Core::Math
     {
         Matrix3 tmpMat3;
         Float32 s = 1;
-        for (Uint32 i = 0; i < 4; ++i)
+        for (Sint32 i = 0; i < 4; ++i)
         {
-            for (Uint32 j = 0; j < 4; ++j)
+            for (Sint32 j = 0; j < 4; ++j)
             {
                 this->OutputYoinshi3x3(&tmpMat3, i, j);
                 out->_faaMat[i][j] = s * tmpMat3.GetDet();

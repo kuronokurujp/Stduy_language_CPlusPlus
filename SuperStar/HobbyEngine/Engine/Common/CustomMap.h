@@ -214,7 +214,7 @@ namespace Core::Common
         /// <summary>
         /// 指定キーの要素があるか
         /// </summary>
-        const Bool Contains(const KEY& in_rKey) const
+        Bool Contains(const KEY& in_rKey) const
         {
             // ツリーが空なのでキーの要素はない
             if (this->Empty()) return FALSE;
@@ -228,7 +228,7 @@ namespace Core::Common
         /// <summary>
         /// データ削除(キー版)
         /// </summary>
-        const Bool Erase(const KEY& in_rKey)
+        Bool Erase(const KEY& in_rKey)
         {
             if (this->Contains(in_rKey) == FALSE) return FALSE;
 
@@ -244,7 +244,7 @@ namespace Core::Common
         /// <summary>
         /// データ削除(イテレータ版)
         /// </summary>
-        const Bool Erase(Iterator in_iter)
+        Bool Erase(Iterator in_iter)
         {
             // 終端ノードは消させない
             if (in_iter == this->End()) return FALSE;
@@ -272,12 +272,12 @@ namespace Core::Common
         /// マップが空かどうか
         /// </summary>
         /// <returns>空(TRUE)</returns>
-        const Bool Empty() const HE_NOEXCEPT { return (this->_tpRoot == NULL); }
+        Bool Empty() const HE_NOEXCEPT { return (this->_tpRoot == NULL); }
 
         /// <summary>
         /// 要素数を返す
         /// </summary>
-        const Uint32 Size() const HE_NOEXCEPT { return this->_uNodeNum; }
+        Uint32 Size() const HE_NOEXCEPT { return this->_uNodeNum; }
 
         /// <summary>
         /// 先頭イテレーターを取得
@@ -346,7 +346,7 @@ namespace Core::Common
 #ifdef HE_ENGINE_DEBUG
     public:
         // ツリーの正当性チェック
-        const Bool CheckValidByDebug(const Uint32 in_uNodeNum)
+        Bool CheckValidByDebug(const Uint32 in_uNodeNum)
         {
             Uint32 uCheckCount = 0;
             Bool bResult       = this->CheckNodeByDebug(&uCheckCount, _tpRoot);
@@ -356,7 +356,7 @@ namespace Core::Common
         }
 
         // ノードの正当性チェック
-        const Bool CheckNodeByDebug(Uint32* out, Node* in_pNode)
+        Bool CheckNodeByDebug(Uint32* out, Node* in_pNode)
         {
             // 終端なのでOK
             if (in_pNode == NULL) return TRUE;
@@ -847,7 +847,7 @@ namespace Core::Common
         }
 
         // ノードが赤かどうか
-        const Bool _IsRed(Node* in_pNode)
+        Bool _IsRed(Node* in_pNode)
         {
             if (in_pNode) return (in_pNode->_uColor == Node::RED);
 

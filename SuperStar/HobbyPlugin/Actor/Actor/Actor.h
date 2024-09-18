@@ -64,13 +64,13 @@ namespace Actor
         /// 開始
         /// 継承したクラスで必ず基本クラスのメソッドを呼ぶ
         /// </summary>
-        virtual const Bool VBegin() override;
+        virtual Bool VBegin() override;
 
         /// <summary>
         /// 終了
         /// 継承したクラスで必ず基本クラスのメソッドを呼ぶ
         /// </summary>
-        virtual const Bool VEnd() override;
+        virtual Bool VEnd() override;
 
         /// <summar>
         /// 更新
@@ -111,7 +111,7 @@ namespace Actor
         /// <summary>
         /// Removes the component.
         /// </summary>
-        const Bool RemoveComponent(Core::Common::Handle*);
+        Bool RemoveComponent(Core::Common::Handle*);
 
         /// <summary>
         /// 親アクターがあればその親アクターのコンポーネントを取得
@@ -140,7 +140,7 @@ namespace Actor
         /// <summary>
         /// Gets the state.
         /// </summary>
-        const EState GetState() const { return this->_eState; }
+        EState GetState() const { return this->_eState; }
 
         /// <summary>
         /// Sets the state.
@@ -203,7 +203,7 @@ namespace Actor
             return this->_components.GetUserDataList();
         }
 
-        inline const Bool ValidComponent(const Core::Common::Handle& in_h)
+        inline Bool ValidComponent(const Core::Common::Handle& in_h)
         {
             if (in_h.Null()) return FALSE;
 
@@ -284,7 +284,7 @@ namespace Actor
         /// <summary>
         /// 追加したコンポーネントのセットアップ
         /// </summary>
-        virtual const Bool _VSetupComponent(const Core::Common::Handle&);
+        virtual Bool _VSetupComponent(const Core::Common::Handle&);
 
     private:
         void _Clear()

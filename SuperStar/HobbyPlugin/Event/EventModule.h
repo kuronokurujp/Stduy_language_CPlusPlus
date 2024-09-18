@@ -18,22 +18,38 @@ namespace Event
     public:
         EventModule() : ModuleBase(ModuleName()) {}
 
-        const Core::Common::Handle AddEventManager(std::unique_ptr<EventManagerStrategyInterface>);
-        const Bool RemoveEventManager(const Core::Common::Handle&);
+        const Core::Common::Handle AddEventManager(
+            Core::Memory::UniquePtr<EventManagerStrategyInterface>);
+        Bool RemoveEventManager(const Core::Common::Handle&);
+
+        /// <summary>
+        /// リスナー登録 / 解除
+        /// 登録したらTRUEを返す
+        /// すでに登録済みなど登録失敗したらFALSE
+        /// </summary>
+        Bool AddListenr(EventListenerPtr const&, EventTypeStr const&);
+        Bool RemoveListener(EventListenerPtr const&, EventTypeStr const&);
+
+        /// <summary>
+        /// 実行したいイベントを設定
+        /// </summary>
+        Bool QueueEvent(EventDataInterfacePtr const&);
 
     protected:
         /// <summary>
         /// モジュール初期化
         /// </summary>
-        const Bool _VStart() override final;
+        Bool _VStart() override final;
+
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        const Bool _VRelease() override final;
+        Bool _VRelease() override final;
+
         /// <summary>
         /// モジュール後更新
         /// </summary>
-        const Bool _VLateUpdate(const Float32 in_fDeltaTime) override final;
+        Bool _VLateUpdate(const Float32 in_fDeltaTime) override final;
 
     private:
         Uint32 _uAddEventMngCount = 0;

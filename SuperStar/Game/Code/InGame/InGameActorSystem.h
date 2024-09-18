@@ -22,7 +22,7 @@ namespace InGame
         virtual ~I_Actor(void) {}
 
         //	クラス型判定用
-        virtual const unsigned VGetRttiId() const = 0;
+        virtual unsigned VGetRttiId() const = 0;
 
         virtual bool init(const int in_Handle) = 0;
         virtual bool final(void)               = 0;
@@ -31,14 +31,14 @@ namespace InGame
 
         //	自殺用関数
         virtual void VDie()               = 0;
-        virtual const bool VIsDie() const = 0;
+        virtual bool VIsDie() const = 0;
 
         //	更新停止
         virtual void VStop(const bool in_Flg) = 0;
-        virtual const bool VIsStop() const    = 0;
+        virtual bool VIsStop() const    = 0;
 
         //	ハンドル取得
-        virtual const int VGetHandle() const = 0;
+        virtual int VGetHandle() const = 0;
     };
 
     // アクター管理クラス
@@ -108,7 +108,7 @@ namespace InGame
     public:
         //static InGameActorManager& inst(void) { return m_Manager; }
 
-        const Bool VStart(Actor::ActorManager*) override final;
+        Bool VStart(Actor::ActorManager*) override final;
 
         /// <summary>
         /// アクター更新
@@ -149,7 +149,7 @@ namespace InGame
         virtual ~C_PaketSendActor(void) {}
 
         //	クラス型判定用
-        virtual const unsigned VGetRttiId() const { return 0; }
+        virtual unsigned VGetRttiId() const { return 0; }
 
         // 初期化、終了
         // 更新、描画で十分
@@ -168,14 +168,14 @@ namespace InGame
 
         //	自殺用
         virtual void VDie() { m_bDie = true; }
-        virtual const bool VIsDie() const { return m_bDie; }
+        virtual bool VIsDie() const { return m_bDie; }
 
         //	更新停止
         virtual void VStop(const bool in_bFlg) { m_bStop = in_bFlg; }
-        virtual const bool VIsStop() const { return m_bStop; }
+        virtual bool VIsStop() const { return m_bStop; }
 
         //	ハンドル取得
-        virtual const int VGetHandle() const { return m_Handle; }
+        virtual int VGetHandle() const { return m_Handle; }
 
     private:
         //	登録した自分以外のアクターを取得する。
@@ -213,11 +213,11 @@ namespace InGame
         };
 
         //	クラス型判定用( これ以上仮想化しない )
-        const unsigned VGetRttiId() const { return RTTI_ID; }
+        unsigned VGetRttiId() const { return RTTI_ID; }
 
         //	データ取得
         const Vec3& GetPos() const { return m_pos; }
-        const float GetSize() const { return m_size; }
+        float GetSize() const { return m_size; }
 
         void SetPos(const Vec3& in_Pos)
         {

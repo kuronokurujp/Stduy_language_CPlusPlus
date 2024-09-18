@@ -29,15 +29,13 @@ public:
     /// 初期化
     /// メモリシステムなどエンジンを動かす上で最低元の初期化をする
     /// </summary>
-    /// <returns></returns>
-    const Bool Init();
+    Bool Init();
 
     /// <summary>
     /// モジュールを作成
     /// </summary>
-    /// <returns></returns>
     template <class T>
-    const Bool CreateModule()
+    Bool CreateModule()
     {
         HE_ASSERT(this->_bInit);
 
@@ -55,32 +53,28 @@ public:
     /// エンジン起動
     /// Initメソッドを事前に呼ばないとエラーになる
     /// </summary>
-    /// <returns></returns>
-    const Bool Start();
-    const Bool VRelease() override final;
+    Bool Start();
+    Bool VRelease() override final;
 
     /// <summary>
-    /// ゲームウィンドウ生成
+    /// メインゲームウィンドウ生成
     /// </summary>
-    /// <returns></returns>
-    const Bool CreateMainWindow();
+    Bool CreateMainWindow();
 
     /// <summary>
     /// ゲームウィンドウを解放
     /// </summary>
-    /// <returns></returns>
     void ReleseWindows();
 
     // エンジンを稼働させるためのループ用メソッド
-    const Bool BeforeUpdateLoop(const Float32 in_fDeltaSec);
-    const Bool WaitFrameLoop();
-    const Bool MainUpdateLoop(const Float32 in_fDeltaSec);
-    const Bool LateUpdateLoop(const Float32 in_fDeltaSec);
+    Bool BeforeUpdateLoop(const Float32 in_fDeltaSec);
+    Bool WaitFrameLoop();
+    Bool MainUpdateLoop(const Float32 in_fDeltaSec);
+    Bool LateUpdateLoop(const Float32 in_fDeltaSec);
 
     /// <summary>
     /// メモリ管理を取得
     /// </summary>
-    /// <returns></returns>
     Core::Memory::Manager& MemManager() { return this->_memoryManager; }
 
     /// <summary>
@@ -93,7 +87,7 @@ public:
     /// デバッグモードかどうか
     /// </summary>
     /// <returns></returns>
-    inline const Bool IsDebugMode() const
+    inline Bool IsDebugMode() const
     {
 #ifdef _DEBUG
         return TRUE;
@@ -105,13 +99,13 @@ public:
     /// １フレームの差分時間を秒で取得
     /// </summary>
     /// <returns></returns>
-    const Float32 GetDeltaTimeSec();
+    Float32 GetDeltaTimeSec();
 
     /// <summary>
     /// アプリを辞める状態か
     /// </summary>
     /// <returns></returns>
-    const Bool IsAppQuit();
+    Bool IsAppQuit();
 
 private:
     /// <summary>

@@ -33,7 +33,7 @@ namespace InGame
         //	データ通知
         virtual void VOnCallbackSendMessage(const int in_DataType, void* in_pData);
 
-        static const ABLITY_TYPE ChangeAblityTypeStringToNum(const char* in_pString);
+        static ABLITY_TYPE ChangeAblityTypeStringToNum(const char* in_pString);
 
     protected:
         //	定義
@@ -54,14 +54,14 @@ namespace InGame
 
         //	関数
         //	ステートがあるかチェック
-        const bool _SetState(const char* in_pStateName);
-        const bool _SetState(const unsigned in_stateIndex);
+        bool _SetState(const char* in_pStateName);
+        bool _SetState(const unsigned in_stateIndex);
 
-        const int _GetIndexState(const char* in_pStateName);
+        int _GetIndexState(const char* in_pStateName);
 
     protected:
         //	関数
-        static const int GetTypeNameToIndex(const char* in_pName);
+        static int GetTypeNameToIndex(const char* in_pName);
 
         //	変数
         int m_Hp;

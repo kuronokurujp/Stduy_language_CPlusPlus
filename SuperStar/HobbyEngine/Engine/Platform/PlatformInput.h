@@ -255,7 +255,7 @@ namespace Platform
         /// <summary>
         /// 指定キーを押しているか
         /// </summary>
-        const Bool GetKeyValue(const EKeyboard in_eKeyCode) const
+        Bool GetKeyValue(const EKeyboard in_eKeyCode) const
         {
             return (this->_aCurrState[in_eKeyCode] != EInputState_NONE);
         }
@@ -263,7 +263,7 @@ namespace Platform
         /// <summary>
         /// 指定キーの入力状態
         /// </summary>
-        const EInputState GetKeyState(const EKeyboard in_eKeyCode) const;
+        EInputState GetKeyState(const EKeyboard in_eKeyCode) const;
 
     public:
         Uint8 _aCurrState[EKeyboard::EKeyboard_MAX];
@@ -278,11 +278,11 @@ namespace Platform
     public:
         const Core::Math::Vector2& GetWorldPos() const { return this->_pos; }
 
-        const Bool GetTouchValue(const EInputMouseType) const;
-        const EInputState GetTouchState(const EInputMouseType) const;
+        Bool GetTouchValue(const EInputMouseType) const;
+        EInputState GetTouchState(const EInputMouseType) const;
 
         // TODO: 指定した矩形がタッチ範囲かどうか
-        const Bool IsTouchInRect(const Core::Math::Rect2&) const;
+        Bool IsTouchInRect(const Core::Math::Rect2&) const;
 
     public:
         Core::Math::Vector2 _pos;

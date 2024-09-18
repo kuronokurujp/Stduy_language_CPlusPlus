@@ -6,7 +6,7 @@
 
 namespace Level
 {
-    const Bool Manager::Init()
+    Bool Manager::Init()
     {
         // タスク管理を初期化
         // 利用するタスク設定は内部で固定する
@@ -15,7 +15,7 @@ namespace Level
         return TRUE;
     }
 
-    const Bool Manager::Release()
+    Bool Manager::Release()
     {
         if (this->_nodeManager.End() == FALSE) return FALSE;
 
@@ -70,7 +70,7 @@ namespace Level
         return pNode;
     }
 
-    const Bool Manager::_StartLevel(const Core::Common::Handle& in_rHandle)
+    Bool Manager::_StartLevel(const Core::Common::Handle& in_rHandle)
     {
         this->_nextLevelHandle = in_rHandle;
 

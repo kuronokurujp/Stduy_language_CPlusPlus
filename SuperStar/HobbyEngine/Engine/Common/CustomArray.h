@@ -30,7 +30,7 @@ namespace Core::Common
         }
         virtual ~ArrayBase() = default;
 
-        inline const Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
+        inline Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
 
         /// <summary>
         /// 指定した要素に値をコピーして設定
@@ -75,7 +75,7 @@ namespace Core::Common
         explicit CustomArray() : ArrayBase<TYPE>(this->_aBuff, CAPACITY) {}
 
         // コンストラクタ (initializer_listを受け取る)
-        CustomArray(const std::initializer_list<TYPE>& in_rInitList)
+        CustomArray(std::initializer_list<TYPE>& in_rInitList)
             : ArrayBase<TYPE>(this->_aBuff, CAPACITY)
         {
             const Uint32 uMinCapacity = HE_MIN(CAPACITY, in_rInitList.size());

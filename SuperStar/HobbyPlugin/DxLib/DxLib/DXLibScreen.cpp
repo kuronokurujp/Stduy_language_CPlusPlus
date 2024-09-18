@@ -6,7 +6,7 @@
 
 namespace DXLib
 {
-    const Bool Screen::Init()
+    Bool Screen::Init()
     {
         // WindowModeにしている
         ::ChangeWindowMode(TRUE);
@@ -45,12 +45,12 @@ namespace DXLib
         return TRUE;
     }
 
-    const Uint32 Screen::VWidth() const
+    Uint32 Screen::VWidth() const
     {
         return this->_w;
     }
 
-    const Uint32 Screen::VHeight() const
+    Uint32 Screen::VHeight() const
     {
         return this->_h;
     }

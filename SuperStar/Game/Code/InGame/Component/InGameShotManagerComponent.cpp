@@ -79,7 +79,7 @@ bool InGameShotManagerComponent::update()
 
                 */
     /*
-const int InGameShotManagerComponent::Add(I_InterfaceBulletEmit* in_pShot,
+int InGameShotManagerComponent::Add(I_InterfaceBulletEmit* in_pShot,
                                           const PROPERTY_ENUM in_Property)
 {
         if (in_pShot == NULL)

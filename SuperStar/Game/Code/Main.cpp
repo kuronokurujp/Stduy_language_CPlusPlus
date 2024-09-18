@@ -134,7 +134,7 @@ void EndInstance(HINSTANCE hInstance)
 #include "Level/LevelTitle.h"
 #endif
 
-const Bool AppEntryGameMain::VStart(const Bool in_bDebug)
+Bool AppEntryGameMain::VStart(const Bool in_bDebug)
 {
     HE_LOG_LINE(HE_STR_TEXT("game start"));
 
@@ -173,12 +173,12 @@ const Bool AppEntryGameMain::VStart(const Bool in_bDebug)
     return TRUE;
 }
 
-const Bool AppEntryGameMain::VUpdate(const Float32 in_fDeltaTime)
+Bool AppEntryGameMain::VUpdate(const Float32 in_fDeltaTime)
 {
     return TRUE;
 }
 
-const Bool AppEntryGameMain::VEnd()
+Bool AppEntryGameMain::VEnd()
 {
     HE_LOG_LINE(HE_STR_TEXT("game end"));
     return TRUE;

@@ -34,8 +34,8 @@ namespace Core
         public:
             EffectTask() : Task() {}
 
-            const Bool VBegin() override final { return TRUE; }
-            const Bool VEnd() override final { return TRUE; }
+            Bool VBegin() override final { return TRUE; }
+            Bool VEnd() override final { return TRUE; }
 
             void VUpdate(const Float32 in_fDt) override final
             {
@@ -57,8 +57,8 @@ namespace Core
         public:
             ObjectTask() : Task() {}
 
-            const Bool VBegin() override final { return TRUE; }
-            const Bool VEnd() override final { return TRUE; }
+            Bool VBegin() override final { return TRUE; }
+            Bool VEnd() override final { return TRUE; }
 
             void VUpdate(const Float32 in_fDt) override
             {
@@ -98,8 +98,8 @@ namespace Core
         public:
             DummySystemTask() {}
 
-            const Bool VBegin() override final { return TRUE; }
-            const Bool VEnd() override final { return TRUE; }
+            Bool VBegin() override final { return TRUE; }
+            Bool VEnd() override final { return TRUE; }
 
             void VUpdate(const Float32 in_fDt) override final
             {
@@ -444,8 +444,8 @@ namespace Core
         public:
             ObjectTask() : TaskTree() {}
 
-            const Bool VBegin() override final { return TRUE; }
-            const Bool VEnd() override final { return TRUE; }
+            Bool VBegin() override final { return TRUE; }
+            Bool VEnd() override final { return TRUE; }
 
             void VUpdate(const Float32 in_fDt) override
             {

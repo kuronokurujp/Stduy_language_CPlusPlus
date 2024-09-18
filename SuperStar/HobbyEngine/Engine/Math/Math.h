@@ -20,7 +20,7 @@ namespace Core::Math
     /// <summary>
     /// Radianses to degrees.
     /// </summary>
-    static inline const Float32 RadiansToDegrees(Float32 in_fRadians) HE_NOEXCEPT
+    static inline Float32 RadiansToDegrees(Float32 in_fRadians) HE_NOEXCEPT
     {
         return fInvertRadiansUnit * in_fRadians;
     }
@@ -28,7 +28,7 @@ namespace Core::Math
     /// <summary>
     /// Degreeses to radians.
     /// </summary>
-    static inline const Float32 DegreesToRadians(Float32 in_fDegrees) HE_NOEXCEPT
+    static inline Float32 DegreesToRadians(Float32 in_fDegrees) HE_NOEXCEPT
     {
         return fRadiansUnit * in_fDegrees;
     }

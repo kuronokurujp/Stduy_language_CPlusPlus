@@ -80,7 +80,7 @@ namespace Core::Math
         /// <summary>
         /// 行列式を取得.
         /// </summary>
-        const Float32 GetDet();
+        Float32 GetDet();
 
         /// <summary>
         /// 余因子行列を出力.

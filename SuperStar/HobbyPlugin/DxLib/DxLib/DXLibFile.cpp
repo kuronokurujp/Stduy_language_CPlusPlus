@@ -16,8 +16,8 @@ namespace DXLib
         return fileHandle;
     }
 
-    const Bool File::VFileRead(void* out_pBuff, const Core::Common::Handle& in_rHandle,
-                               const Sint32 in_size)
+    Bool File::VFileRead(void* out_pBuff, const Core::Common::Handle& in_rHandle,
+                         const Sint32 in_size)
     {
         HE_ASSERT(in_rHandle.Null() == FALSE && "ファイルのハンドルがない");
         HE_ASSERT(out_pBuff != NULL && "ファイルの読み込みのバッファの先頭アドレスがない");
@@ -33,14 +33,14 @@ namespace DXLib
         return TRUE;
     }
 
-    const Sint32 File::VFileSize(const Core::Common::Handle& in_rHandle)
+    Sint32 File::VFileSize(const Core::Common::Handle& in_rHandle)
     {
         HE_ASSERT(in_rHandle.Null() == FALSE);
         // ファイル読み込みのサイズがSint32なので合わせる
         return static_cast<Sint32>(FileRead_size_handle(in_rHandle.Index()));
     }
 
-    const Bool File::VFileClose(const Core::Common::Handle& in_rHandle)
+    Bool File::VFileClose(const Core::Common::Handle& in_rHandle)
     {
         if (in_rHandle.Null()) return FALSE;
 

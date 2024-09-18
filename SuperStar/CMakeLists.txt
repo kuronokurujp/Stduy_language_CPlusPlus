@@ -38,7 +38,10 @@ set(PROJECT_CACHE_SRC_FILES CACHE INTERNAL description)
 set(PROJECT_CACHE_INC_FILES CACHE INTERNAL description)
 
 # ワークスペース名と使用言語C++をプロジェクトに設定.
-project(${WORKSPACE_NAME} VERSION 1.0 LANGUAGES CXX)
+project(${WORKSPACE_NAME} VERSION 2.0 LANGUAGES CXX)
+
+# 単体テスト用のビルドUnitTestを追加
+# set(CMAKE_CONFIGURATION_TYPES "Debug;Release;UnitTest" CACHE STRING "Configs" FORCE)
 
 # ビルド成果物を出力するディレクトリ指定.
 # 実行ファイルの出力先
@@ -49,9 +52,13 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Bin/${WORKSPACE_N
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Bin/${WORKSPACE_NAME})
 
 # Set configuration (Release and Debug only).
+# set(CMAKE_CONFIGURATION_TYPES Debug Release UnitTest
+#   CACHE STRING "Configurations" FORCE
+# )
 set(CMAKE_CONFIGURATION_TYPES Debug Release
-  CACHE STRING "Configurations" FORCE
+   CACHE STRING "Configurations" FORCE
 )
+
 # Suppress generation of ZERO_CHECK project.
 set(CMAKE_SUPPRESS_REGENERATION ON)
 
@@ -69,6 +76,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Cコンパイラの設定.
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
+
+# 各ビルドタイプに対応するフラグを設定する
+# set(CMAKE_CXX_FLAGS_UNITTEST "${CMAKE_CXX_FLAGS_DEBUG}")
+# set(CMAKE_C_FLAGS_UNITTEST "${CMAKE_C_FLAGS_DEBUG}")
+# set(CMAKE_EXE_LINKER_FLAGS_UNITTEST "")
+# set(CMAKE_SHARED_LINKER_FLAGS_UNITTEST "")
 
 # アーキテクチャ指定.
 if(CMAKE_EXE_LINKER_FLAGS STREQUAL "/machine:x64")
@@ -129,9 +142,8 @@ check_variable(RENDER_PLUGIN_NAME)
 check_variable(DXLIB_PLUGIN_NAME)
 check_variable(ENGINE_NAME)
 
-# ゲームアプリがリンクするライブラリ
-# 設定プロジェクトのライブラリ・インクルードディレクトリ登録
-target_link_libraries(${APP_NAME}
+# ライブラリ名をリストにまとめる
+set(PLUGIN_LIBRARIES
   ${EVENT_PLUGIN_NAME}
   ${ENHANCED_INPUT_PLUGIN_NAME}
   ${UI_PLUGIN_NAME}
@@ -143,6 +155,10 @@ target_link_libraries(${APP_NAME}
   ${DXLIB_PLUGIN_NAME}
   ${ENGINE_NAME}
 )
+
+# ゲームアプリがリンクするライブラリ
+# 設定プロジェクトのライブラリ・インクルードディレクトリ登録
+target_link_libraries(${APP_NAME} ${PLUGIN_LIBRARIES})
 
 # テストプロジェクト作成
 add_subdirectory(Test)
@@ -161,15 +177,11 @@ set_target_properties(${TEST_APP_NAME} PROPERTIES
 
 # テストしたいライブラリを設定
 # 設定プロジェクトのライブラリ・インクルードディレクトリ登録
-target_link_libraries(${TEST_APP_NAME}
-  ${EVENT_PLUGIN_NAME}
-  ${ENHANCED_INPUT_PLUGIN_NAME}
-  ${UI_PLUGIN_NAME}
-  ${LOCALIZATION_PLUGIN_NAME}
-  ${LEVEL_PLUGIN_NAME}
-  ${ASSET_MANAGER_PLUGIN_NAME}
-  ${RENDER_PLUGIN_NAME}
-  ${ACTOR_PLUGIN_NAME}
-  ${DXLIB_PLUGIN_NAME}
-  ${ENGINE_NAME}
-)
+target_link_libraries(${TEST_APP_NAME} ${PLUGIN_LIBRARIES})
+
+# ループで全てのターゲットに対してプリプロセッサ定義を設定
+foreach(lib ${PLUGIN_LIBRARIES})
+  target_compile_definitions(${lib} PRIVATE
+    $<$<CONFIG:UnitTest>:HE_USE_STD_UNIQUE_PTR>
+  )
+endforeach()

@@ -2,6 +2,8 @@
 
 #include "Actor/Component/InputComponent.h"
 #include "Actor/Component/TransformComponent.h"
+#include "InGame/Component/InGameShotComponent.h"
+#include "InGame/Component/Shot/InGameShotStrategy.h"
 
 // 依存するモジュール一覧
 #include "EnhancedInputModule.h"
@@ -22,19 +24,9 @@
 
 namespace InGame
 {
-    //	変数
-    static const int s_PlayerInvCnt         = 30;
-    static const float s_PlayerMoveSpeed    = 1.f;
-    static const char* s_apPlayerShotName[] = {
-        "Normal",
-        "Laser",
-        "Homing",
-        "4Way",
-    };
-
     namespace Local
     {
-        // TODO: プレイヤーのユーザー入力
+        // プレイヤーのユーザー入力
         static const Char* szInputMoveUp    = HE_STR_TEXT("Player_MoveUp");
         static const Char* szInputMoveLeft  = HE_STR_TEXT("Player_MoveLeft");
         static const Char* szInputMoveDown  = HE_STR_TEXT("Player_MoveDown");
@@ -93,24 +85,23 @@ namespace InGame
                 {
                     move += Core::Math::Vector2(0.0f, -1.0f);
                 }
+                else if (pInputMap->Contains(Local::szInputMoveDown))
+                {
+                    move += Core::Math::Vector2(0.0f, 1.0f);
+                }
 
                 if (pInputMap->Contains(Local::szInputMoveLeft))
                 {
                     move += Core::Math::Vector2(-1.0f, 0.0f);
                 }
-
-                if (pInputMap->Contains(Local::szInputMoveDown))
-                {
-                    move += Core::Math::Vector2(0.0f, 1.0f);
-                }
-
-                if (pInputMap->Contains(Local::szInputMoveRight))
+                else if (pInputMap->Contains(Local::szInputMoveRight))
                 {
                     move += Core::Math::Vector2(1.0f, 0.0f);
                 }
 
                 if (pInputMap->Contains(Local::szInputShot))
                 {
+                    pPlayer->Shot();
                 }
 
                 move.Normalize();
@@ -124,9 +115,19 @@ namespace InGame
         this->_Clear();
     }
 
-    const Bool InGamePlayerActor::VBegin()
+    Bool InGamePlayerActor::VBegin()
     {
         if (Actor::Object::VBegin() == FALSE) return FALSE;
+
+        // ユーザー入力コンポーネントを追加
+        {
+            auto handle = this->AddComponent<Actor::InputComponent>(0);
+            HE_ASSERT(handle.Null() == FALSE);
+
+            // プレイヤー用の入力ストラテジーを設定
+            auto pStrategy = HE_MAKE_CUSTOM_SHARED_PTR(Local::UserInputPlayerStrategy);
+            this->GetComponent<Actor::InputComponent>(handle)->SetStrategy(pStrategy);
+        }
 
         // 座標関連のコンポーネント追加
         {
@@ -138,15 +139,27 @@ namespace InGame
             this->SetPos(this->_pos);
         }
 
-        // ユーザー入力コンポーネントを追加
+        // 弾を打つ機能一覧作成
+        // TODO: 各機能を実装する
         {
-            auto handle = this->AddComponent<Actor::InputComponent>(0);
-            HE_ASSERT(handle.Null() == FALSE);
-
-            // プレイヤー用の入力ストラテジーを設定
-            auto pStrategy = Core::Memory::MakeCustomSharedPtr<Local::UserInputPlayerStrategy>();
-            this->GetComponent<Actor::InputComponent>(handle)->SetStrategy(pStrategy);
+            this->_mShotStrategy.Add(HE_STR_TEXT("Normal"),
+                                     HE_MAKE_CUSTOM_SHARED_PTR(InGameShotStrategyNormalBullet));
+            this->_mShotStrategy.Add(HE_STR_TEXT("Laser"),
+                                     HE_MAKE_CUSTOM_SHARED_PTR(InGameShotStrategyNormalBullet));
+            this->_mShotStrategy.Add(HE_STR_TEXT("Homing"),
+                                     HE_MAKE_CUSTOM_SHARED_PTR(InGameShotStrategyNormalBullet));
+            this->_mShotStrategy.Add(HE_STR_TEXT("4Way"),
+                                     HE_MAKE_CUSTOM_SHARED_PTR(InGameShotStrategyNormalBullet));
         }
+
+        // 弾を打つコンポーネントを追加
+        {
+            this->_shotHandle = this->AddComponent<InGameShotComponent>(2);
+            HE_ASSERT(this->_shotHandle.Null() == FALSE);
+            auto pShotComponent = this->GetComponent<InGameShotComponent>(this->_shotHandle);
+            pShotComponent->SetStrategy(this->_mShotStrategy[HE_STR_TEXT("Normal")]);
+        }
+
 #if 0
         //	自機が使用する弾を弾管理に追加する。
         {
@@ -181,9 +194,13 @@ namespace InGame
         return TRUE;
     }
 
-    const Bool InGamePlayerActor::VEnd()
+    Bool InGamePlayerActor::VEnd()
     {
-        this->RemoveComponent(&this->_transformHandle);
+        // 弾の機能解放
+        for (auto itr = this->_mShotStrategy.Begin(); itr != this->_mShotStrategy.End(); ++itr)
+        {
+            itr->data.reset();
+        }
 
         return Actor::Object::VEnd();
     }
@@ -192,7 +209,7 @@ namespace InGame
     {
         Actor::Object::VUpdate(in_fDt);
 
-        // TODO: 移動情報による座標更新
+        // 移動情報による座標更新
         {
             Core::Math::Vector2 newPos;
             newPos.SetAdd(this->_pos, this->_move);
@@ -217,33 +234,6 @@ namespace InGame
 
 #if 0
         GameLib::C_GameSystem& r = GameLib::C_GameSystem::inst();
-
-        //	パッド制御
-        {
-            //	上
-            if (r.isButtonOn(Input::KEY_UP))
-            {
-                m_pos.y -= s_PlayerMoveSpeed;
-            }
-
-            //	下
-            if (r.isButtonOn(Input::KEY_DOWN))
-            {
-                m_pos.y += s_PlayerMoveSpeed;
-            }
-
-            //	右
-            if (r.isButtonOn(Input::KEY_RIGHT))
-            {
-                m_pos.x += s_PlayerMoveSpeed;
-            }
-
-            //	左
-            if (r.isButtonOn(Input::KEY_LEFT))
-            {
-                m_pos.x -= s_PlayerMoveSpeed;
-            }
-        }
 
         if (m_InvincibleCnt > 0)
         {
@@ -283,31 +273,21 @@ namespace InGame
         this->_viewHandle = in_rHandle;
     }
 
+    void InGamePlayerActor::Shot()
+    {
+        HE_ASSERT(this->_transformHandle.Null() == FALSE);
+        HE_ASSERT(this->_shotHandle.Null() == FALSE);
+
+        auto pShotComponent = this->GetComponent<InGameShotComponent>(this->_shotHandle);
+        HE_ASSERT(pShotComponent);
+
+        auto pTrans = this->GetComponent<Actor::TransformComponent>(this->_transformHandle);
+        HE_ASSERT(pTrans);
+
+        // 弾を打つ
+        auto pos = pTrans->GetWorldPos();
+        pShotComponent->Shot(Core::Math::Vector2(pos._fX, pos._fY));
 #if 0
-    /*
-            @brief	現在の操作しているショット名を取得
-            @return	ショット名
-    */
-    const char* C_PlayerActor::GetActiveShotName() const
-    {
-        return s_apPlayerShotName[m_shotType];
-    }
-
-    /*
-            @brief	撃てる弾の名前を取得
-            @return	ショット名を取得
-    */
-    const char* C_PlayerActor::GetShotName(const int in_Type) const
-    {
-        ASSERT(in_Type < eSHOT_MAX);
-        return s_apPlayerShotName[in_Type];
-    }
-
-    /*
-            @brief	弾を撃つ
-    */
-    void C_PlayerActor::Shot()
-    {
         C_ColisionActorManager& inst = C_ColisionActorManager::inst();
 
         SystemProprtyInterfaceInGame::ACTOR_HANDLE_DATA_ST& handle =
@@ -325,7 +305,7 @@ namespace InGame
                     // 誘導段の場合はどの座標に飛ぶか指定
                     C_HomingBulletEmit* pHomingBullteEmit = (C_HomingBulletEmit*)pShotData->pShot;
 
-                    const int homingBulletMax = pHomingBullteEmit->GetBulletMax();
+                    int homingBulletMax = pHomingBullteEmit->GetBulletMax();
 
                     int bulletIdx = 0;
                     //	敵を探す
@@ -353,7 +333,30 @@ namespace InGame
                 pShotData->pShot->shot(m_pos);
             }
         }
+#endif
     }
+
+#if 0
+    /*
+            @brief	現在の操作しているショット名を取得
+            @return	ショット名
+    */
+    const char* C_PlayerActor::GetActiveShotName() const
+    {
+        return s_apPlayerShotName[m_shotType];
+    }
+
+    /*
+            @brief	撃てる弾の名前を取得
+            @return	ショット名を取得
+    */
+    const char* C_PlayerActor::GetShotName(const int in_Type) const
+    {
+        ASSERT(in_Type < eSHOT_MAX);
+        return s_apPlayerShotName[in_Type];
+    }
+
+
 
     /*
             @brief	弾の種類を返す

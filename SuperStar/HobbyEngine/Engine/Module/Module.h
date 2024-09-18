@@ -34,17 +34,17 @@ namespace Module
         /// <summary>
         /// ヒープ作成したモジュールを登録
         /// </summary>
-        const Bool RegistHeapModule(ModuleBase* in_pModule);
+        Bool RegistHeapModule(ModuleBase* in_pModule);
 
         /// <summary>
         /// モジュールの利用開始
         /// </summary>
-        const Bool Start(const ELayer);
+        Bool Start(const ELayer);
 
         /// <summary>
         /// 解放
         /// </summary>
-        const Bool VRelease() override final;
+        Bool VRelease() override final;
 
         /// <summary>
         /// モジュール群の前更新
@@ -63,7 +63,7 @@ namespace Module
         void LateUpdate(const Float32 in_fDeltaTime);
 
     private:
-        const Bool _StartModule(ModuleBase&);
+        Bool _StartModule(ModuleBase&);
         void _SortModuleVector(Core::Common::VectorBase<ModuleBase*>* out);
 
     private:
@@ -126,40 +126,40 @@ namespace Module
         }
 
         inline const Char* Name() const HE_NOEXCEPT { return this->_szName.Str(); }
-        inline const ELayer Layer() const HE_NOEXCEPT { return this->_eLayer; }
+        inline ELayer Layer() const HE_NOEXCEPT { return this->_eLayer; }
 
         /// <summary>
         /// モジュール処理優先度
         /// 値が大きいほど後に処理
         /// </summary>
-        inline const Sint32 Priority() const { return this->_priority; }
+        inline Sint32 Priority() const { return this->_priority; }
 
     protected:
         /// <summary>
         /// モジュールの開始
         /// </summary>
-        virtual const Bool _VStart() = 0;
+        virtual Bool _VStart() = 0;
 
         /// <summary>
         /// モジュールの解放
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool _VRelease() = 0;
+        virtual Bool _VRelease() = 0;
 
         /// <summary>
         /// モジュール前更新
         /// </summary>
-        virtual const Bool _VBeforeUpdate(const Float32 in_fDeltaTime) { return TRUE; }
+        virtual Bool _VBeforeUpdate(const Float32 in_fDeltaTime) { return TRUE; }
 
         /// <summary>
         /// モジュール更新
         /// </summary>
-        virtual const Bool _VUpdate(const Float32 in_fDeltaTime) { return TRUE; }
+        virtual Bool _VUpdate(const Float32 in_fDeltaTime) { return TRUE; }
 
         /// <summary>
         /// モジュール後更新
         /// </summary>
-        virtual const Bool _VLateUpdate(const Float32 in_fDeltaTime) { return TRUE; }
+        virtual Bool _VLateUpdate(const Float32 in_fDeltaTime) { return TRUE; }
 
         template <class T>
         void _AppendDependenceModule()
@@ -169,7 +169,7 @@ namespace Module
 
     private:
 #ifdef HE_ENGINE_DEBUG
-        const Bool _ValidateDependenceModule();
+        Bool _ValidateDependenceModule();
 #endif
 
     private:

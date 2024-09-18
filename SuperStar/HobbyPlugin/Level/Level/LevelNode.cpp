@@ -4,7 +4,7 @@
 
 namespace Level
 {
-    const Bool Node::VBegin()
+    Bool Node::VBegin()
     {
         if (Actor::Object::VBegin() == FALSE) return FALSE;
 
@@ -17,7 +17,7 @@ namespace Level
         return TRUE;
     }
 
-    const Bool Node::VEnd()
+    Bool Node::VEnd()
     {
         if (this->_actorManager.End() == FALSE)
         {
@@ -77,8 +77,8 @@ namespace Level
         this->_actorManager.Remove(in_pActor);
     }
 
-    const Bool Node::ChainActor(const Core::Common::Handle& in_rChildActor,
-                                const Core::Common::Handle& in_rParentActor)
+    Bool Node::ChainActor(const Core::Common::Handle& in_rChildActor,
+                          const Core::Common::Handle& in_rParentActor)
     {
         HE_ASSERT(in_rChildActor.Null() == FALSE);
         HE_ASSERT(in_rParentActor.Null() == FALSE);
@@ -96,7 +96,7 @@ namespace Level
     /// <summary>
     /// 追加したコンポーネントのセットアップ
     /// </summary>
-    const Bool Node::_VSetupComponent(const Core::Common::Handle& in_rHandle)
+    Bool Node::_VSetupComponent(const Core::Common::Handle& in_rHandle)
     {
         HE_ASSERT(in_rHandle.Null() == FALSE);
 
@@ -111,7 +111,7 @@ namespace Level
         return Actor::Object::_VSetupComponent(in_rHandle);
     }
 
-    const Bool Node::ActorMaanagerDecorater::VStart(Actor::ActorManager*)
+    Bool Node::ActorMaanagerDecorater::VStart(Actor::ActorManager*)
     {
         this->_lstInputComponent.Clear();
 

@@ -10,7 +10,7 @@
 /// 事前初期化
 /// </summary>
 /// <returns></returns>
-const Bool Engine::Init()
+Bool Engine::Init()
 {
     HE_ASSERT(this->_bInit == FALSE);
     if (this->_bInit) return TRUE;
@@ -62,7 +62,7 @@ const Bool Engine::Init()
 /// 初期化
 /// </summary>
 /// <returns></returns>
-const Bool Engine::Start()
+Bool Engine::Start()
 {
     HE_ASSERT(this->_bStart == FALSE);
     if (this->_bStart) return TRUE;
@@ -81,7 +81,7 @@ const Bool Engine::Start()
     auto pPlatformModule = this->_PlatformModule();
     if (pPlatformModule)
     {
-        this->_spFPS = Core::Memory::MakeCustomSharedPtr<Core::Time::FPS>(pPlatformModule->VTime());
+        this->_spFPS = HE_MAKE_CUSTOM_SHARED_PTR(Core::Time::FPS, pPlatformModule->VTime());
     }
 
     this->_bStart = TRUE;
@@ -90,7 +90,7 @@ const Bool Engine::Start()
     return TRUE;
 }
 
-const Bool Engine::VRelease()
+Bool Engine::VRelease()
 {
     HE_ASSERT(this->_bInit);
     HE_ASSERT(this->_bStart);
@@ -119,7 +119,7 @@ const Bool Engine::VRelease()
 /// ゲームウィンドウ生成.
 /// </summary>
 /// <returns></returns>
-const Bool Engine::CreateMainWindow()
+Bool Engine::CreateMainWindow()
 {
     HE_ASSERT(this->_bStart);
 
@@ -144,13 +144,13 @@ void Engine::ReleseWindows()
     pPlatform->VReleaseAllWindows();
 }
 
-const Bool Engine::BeforeUpdateLoop(const Float32 in_fDeltaSec)
+Bool Engine::BeforeUpdateLoop(const Float32 in_fDeltaSec)
 {
     this->_moduleManager.BeforeUpdate(in_fDeltaSec);
     return TRUE;
 }
 
-const Bool Engine::WaitFrameLoop()
+Bool Engine::WaitFrameLoop()
 {
     auto pPlatform = this->_PlatformModule();
     if (pPlatform == NULL) return FALSE;
@@ -171,7 +171,7 @@ const Bool Engine::WaitFrameLoop()
     return TRUE;
 }
 
-const Bool Engine::MainUpdateLoop(const Float32 in_fDeltaSec)
+Bool Engine::MainUpdateLoop(const Float32 in_fDeltaSec)
 {
     // モジュール更新
     this->_moduleManager.Update(in_fDeltaSec);
@@ -179,7 +179,7 @@ const Bool Engine::MainUpdateLoop(const Float32 in_fDeltaSec)
     return TRUE;
 }
 
-const Bool Engine::LateUpdateLoop(const Float32 in_fDeltaSec)
+Bool Engine::LateUpdateLoop(const Float32 in_fDeltaSec)
 {
     this->_moduleManager.LateUpdate(in_fDeltaSec);
     return TRUE;
@@ -190,7 +190,7 @@ Platform::PlatformModule* Engine::_PlatformModule()
     return this->_moduleManager.Get<Platform::PlatformModule>();
 }
 
-const Float32 Engine::GetDeltaTimeSec()
+Float32 Engine::GetDeltaTimeSec()
 {
     if (this->_spFPS == NULL) return 0.0f;
 
@@ -200,7 +200,7 @@ const Float32 Engine::GetDeltaTimeSec()
     return this->_spFPS->GetDeltaTimeSec(pPlatform->VTime());
 }
 
-const Bool Engine::IsAppQuit()
+Bool Engine::IsAppQuit()
 {
     auto pPlatform = this->_PlatformModule();
     if (pPlatform == NULL) return TRUE;

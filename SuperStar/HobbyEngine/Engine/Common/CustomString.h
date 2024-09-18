@@ -39,7 +39,7 @@ namespace Core::Common
 
         // 文字列の文字数
         // ワイド文字型だと配列の要素数=文字数とは限らないのでSizeメソッドとは別途文字数を取得するメソッドを用意
-        const Uint32 Length() const;
+        Uint32 Length() const;
 
         inline const Char* Str() const HE_NOEXCEPT { return this->_szBuff; }
 
@@ -47,7 +47,7 @@ namespace Core::Common
         /// 文字列をハッシュ化して返す
         /// </summary>
         /// <returns></returns>
-        const Uint64 Hash() const;
+        Uint64 Hash() const;
 
         /// <summary>
         /// UTF8として出力
@@ -58,8 +58,8 @@ namespace Core::Common
         void OutputUTF8(UTF8* out, const Uint32 in_uSize) const;
 
         // 大文字 / 小文字にする
-        void ToLower() { HE_STR_LOWER(this->_szBuff); }
-        void ToUpper() { HE_STR_UPPER(this->_szBuff); }
+        void ToLower() { HE_STR_LOWER(this->_szBuff, HE_STR_LEN(this->_szBuff) * sizeof(Char)); }
+        void ToUpper() { HE_STR_UPPER(this->_szBuff, HE_STR_LEN(this->_szBuff) * sizeof(Char)); }
 
         StringBase& operator=(const Char* in_szName)
         {
@@ -78,11 +78,13 @@ namespace Core::Common
             this->_Add(c);
             return *this;
         }
+
         StringBase& operator+=(const Char* in_szName)
         {
             this->_Add(in_szName);
             return *this;
         }
+
         StringBase& operator+=(const StringBase& r)
         {
             this->_Add(r.Str());
@@ -144,7 +146,7 @@ namespace Core::Common
             return HE_STR_CMP(this->_szBuff, in_szrName.Str()) >= 0;
         }
 
-        const Char operator[](const Uint32 in_uCuIndex) const
+        Char operator[](const Uint32 in_uCuIndex) const
         {
             if (this->_uCapacity <= in_uCuIndex)
             {
@@ -236,7 +238,7 @@ namespace Core::Common
         /// </summary>
         /// <param name="in_pStr"></param>
         /// <param name="in_len"></param>
-        const Bool _ConvUTF8toWide(const UTF8* in_szNameUTF8, const Uint32 in_uLen)
+        Bool _ConvUTF8toWide(const UTF8* in_szNameUTF8, const Uint32 in_uLen)
         {
             HE_ASSERT(in_szNameUTF8);
             HE_ASSERT(in_uLen <= CAPACITY);

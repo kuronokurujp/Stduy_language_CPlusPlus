@@ -163,7 +163,7 @@ namespace Core::Common
         return static_cast<Sint32>(szFind - this->_szBuff);
     }
 
-    const Uint32 StringBase::Length() const
+    Uint32 StringBase::Length() const
     {
 #ifdef HE_WIN
         return static_cast<Uint32>(HE_STR_LEN(this->_szBuff));
@@ -211,17 +211,9 @@ namespace Core::Common
     /// 文字列をハッシュ化して返す
     /// </summary>
     /// <returns></returns>
-    const Uint64 StringBase::Hash() const
+    Uint64 StringBase::Hash() const
     {
         return HashName(this->Str());
-        /*
-#ifdef HE_WIN
-        std::hash<std::wstring> hasher;
-#else
-        std::hash<std::string> hasher;
-#endif
-        return hasher(this->Str());
-        */
     }
 
     /// <summary>
@@ -254,8 +246,9 @@ namespace Core::Common
         HE_ASSERT(0 < this->_uCapacity && "コピー先のバッファサイズがない");
         if (in_szName && 0 < this->_uCapacity)
         {
-            HE_STR_ERRNO e = HE_STR_CPY_S(this->_szBuff, this->_uCapacity, in_szName, in_uLen);
-            HE_ASSERT(HE_STR_SUCCESS(e) && "文字列コピーに失敗");
+            HE_ASSERT(
+                HE_STR_SUCCESS(HE_STR_CPY_S(this->_szBuff, this->_uCapacity, in_szName, in_uLen)) &&
+                "文字列コピーに失敗");
         }
         else
         {
@@ -275,10 +268,10 @@ namespace Core::Common
 
             if (iCatLen > 0)
             {
-                HE_STR_ERRNO e =
-                    HE_STR_CPY_S(this->_szBuff + uLen, static_cast<Sint32>(this->_uCapacity - uLen),
-                                 in_szName, iCatLen);
-                HE_ASSERT(HE_STR_SUCCESS(e) && "文字列コピーに失敗");
+                HE_ASSERT(HE_STR_SUCCESS(HE_STR_CPY_S(this->_szBuff + uLen,
+                                                      static_cast<Sint32>(this->_uCapacity - uLen),
+                                                      in_szName, iCatLen)) &&
+                          "文字列コピーに失敗");
 
                 this->_szBuff[this->_uCapacity - 1] = '\0';
             }

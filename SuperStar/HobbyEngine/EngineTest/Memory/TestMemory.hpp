@@ -163,7 +163,7 @@ TEST_CASE("Memory Custom Shader Ptr")
     Core::Common::CustomArray<std::shared_ptr<Data>, 10> memArray;
     for (Uint32 i = 0; i < 10; ++i)
     {
-        auto p = Core::Memory::MakeCustomSharedPtr<Data>(i);
+        auto p = HE_MAKE_CUSTOM_SHARED_PTR(Data, i);
         memArray.Set(i, p);
     }
 
@@ -208,10 +208,10 @@ TEST_CASE("Memory Custom Uniqe Ptr")
         Sint8 i = 0;
     };
 
-    Core::Common::CustomArray<std::unique_ptr<Data, DeleterFreeMemory>, 10> memArray;
+    Core::Common::CustomArray<Core::Memory::UniquePtr<Data>, 10> memArray;
     for (Uint32 i = 0; i < 10; ++i)
     {
-        auto p = Core::Memory::MakeCustomUniquePtr<Data>(i);
+        auto p = HE_MAKE_CUSTOM_UNIQUE_PTR(Data, i);
         memArray.Set(i, std::move(p));
     }
 

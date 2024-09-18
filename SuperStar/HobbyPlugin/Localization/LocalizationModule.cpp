@@ -7,12 +7,12 @@ namespace Localization
         this->_AppendDependenceModule<AssetManager::AssetManagerModule>();
     }
 
-    const Bool LocalizationModule::_VStart()
+    Bool LocalizationModule::_VStart()
     {
         return TRUE;
     }
 
-    const Bool LocalizationModule::_VRelease()
+    Bool LocalizationModule::_VRelease()
     {
         // ロードしたアセットを全て破棄
         for (auto it = this->_locateDataMap.Begin(); it != this->_locateDataMap.End(); ++it)
@@ -28,12 +28,12 @@ namespace Localization
         return TRUE;
     }
 
-    const Bool LocalizationModule::_VUpdate(const Float32 in_fDeltaTime)
+    Bool LocalizationModule::_VUpdate(const Float32 in_fDeltaTime)
     {
         return TRUE;
     }
 
-    const Bool LocalizationModule::LoadSystemFile(const Core::Common::StringBase& in_szrFilePath)
+    Bool LocalizationModule::LoadSystemFile(const Core::Common::StringBase& in_szrFilePath)
     {
         auto pLocalModule = this->GetDependenceModule<AssetManager::AssetManagerModule>();
         HE_ASSERT(pLocalModule);
@@ -49,7 +49,7 @@ namespace Localization
         return TRUE;
     }
 
-    const Bool LocalizationModule::UnloadSystemFile()
+    Bool LocalizationModule::UnloadSystemFile()
     {
         auto pLocalModule = this->GetDependenceModule<AssetManager::AssetManagerModule>();
         HE_ASSERT(pLocalModule);
@@ -58,7 +58,7 @@ namespace Localization
         return TRUE;
     }
 
-    const Bool LocalizationModule::LoadTextAll(const Core::Common::StringBase& in_szLocateName)
+    Bool LocalizationModule::LoadTextAll(const Core::Common::StringBase& in_szLocateName)
     {
         auto pLocalModule = this->GetDependenceModule<AssetManager::AssetManagerModule>();
         HE_ASSERT(pLocalModule);
@@ -84,7 +84,7 @@ namespace Localization
         return TRUE;
     }
 
-    const Bool LocalizationModule::UnloadTextAll(const Core::Common::StringBase& in_szLocateName)
+    Bool LocalizationModule::UnloadTextAll(const Core::Common::StringBase& in_szLocateName)
     {
         auto pLocalModule = this->GetDependenceModule<AssetManager::AssetManagerModule>();
         HE_ASSERT(pLocalModule);
@@ -117,7 +117,7 @@ namespace Localization
         return rData.GetText(in_szKey.Str()).Str();
     }
 
-    const Bool SystemAssetData::_VLoad(Platform::FileInterface& in_rFileSystem)
+    Bool SystemAssetData::_VLoad(Platform::FileInterface& in_rFileSystem)
     {
         const Bool bRet = AssetManager::AssetDataToml::_VLoad(in_rFileSystem);
         HE_ASSERT(bRet);
@@ -136,9 +136,11 @@ namespace Localization
         AssetManager::AssetDataToml::ToolNodeMapType mGroupNode;
 
         locateNode.OutputNodeMap(&mLocateNode, HE_STR_EMPTY);
+
+        Core::Common::FixString128 locateStr;
         for (auto it = mLocateNode.Begin(); it != mLocateNode.End(); ++it)
         {
-            Core::Common::FixString128 locateStr(it->key.Str());
+            locateStr = it->key.Str();
             locateStr.ToUpper();
 
             Core::Common::CustomFixMap<Core::Common::FixString128, LocateData, 32> mData;

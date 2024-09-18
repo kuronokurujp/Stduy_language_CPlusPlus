@@ -75,18 +75,18 @@ namespace AssetManager
         /// モジュール開始
         /// </summary>
         /// <returns></returns>
-        const Bool _VStart() override final;
+        Bool _VStart() override final;
 
         /// <summary>
         /// モジュール解放
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        virtual const Bool _VRelease() override final;
+        Bool _VRelease() override final;
 
-        const Bool _VUpdate(const Float32 in_fDeltaTime) override final;
+        Bool _VUpdate(const Float32 in_fDeltaTime) override final;
 
     private:
-        const Bool _Load(AssetDataBase* out_pAssetData);
+        Bool _Load(AssetDataBase* out_pAssetData);
 
     private:
         Core::File::Path _mountDirPath;

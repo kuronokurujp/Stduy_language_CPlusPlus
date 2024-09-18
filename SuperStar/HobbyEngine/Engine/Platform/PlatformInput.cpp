@@ -2,7 +2,7 @@
 
 namespace Platform
 {
-    const EInputState KeyboardInput::GetKeyState(const EKeyboard in_eKeyCode) const
+    EInputState KeyboardInput::GetKeyState(const EKeyboard in_eKeyCode) const
     {
         if (this->_aPrevState[in_eKeyCode] == EInputState::EInputState_NONE)
         {
@@ -30,12 +30,12 @@ namespace Platform
         return EInputState::EInputState_NONE;
     }
 
-    const Bool TouchInput::GetTouchValue(const EInputMouseType in_type) const
+    Bool TouchInput::GetTouchValue(const EInputMouseType in_type) const
     {
         return ((this->_uCurrTouchState & in_type) != 0);
     }
 
-    const EInputState TouchInput::GetTouchState(const EInputMouseType in_type) const
+    EInputState TouchInput::GetTouchState(const EInputMouseType in_type) const
     {
         if ((this->_uPrevTouchState & in_type) == 0)
         {
@@ -63,7 +63,7 @@ namespace Platform
         return EInputState::EInputState_NONE;
     }
 
-    const Bool TouchInput::IsTouchInRect(const Core::Math::Rect2& in_rRect) const
+    Bool TouchInput::IsTouchInRect(const Core::Math::Rect2& in_rRect) const
     {
         return in_rRect.InSidePoint(this->GetWorldPos());
     }

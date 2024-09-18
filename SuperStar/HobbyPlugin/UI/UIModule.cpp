@@ -43,8 +43,7 @@ namespace UI
     /// <summary>
     /// UIのモジュール初期化
     /// </summary>
-    /// <returns></returns>
-    const Bool UIModule::_VStart()
+    Bool UIModule::_VStart()
     {
         return TRUE;
     }
@@ -84,7 +83,7 @@ namespace UI
         auto hInputRouter = this->AddComponent<Actor::InputComponent>(handlePack, 0);
         // 入力ルーター設定
         {
-            auto pInputStrategy = Core::Memory::MakeCustomSharedPtr<UI::UIInputRouterStrategy>();
+            auto pInputStrategy = HE_MAKE_CUSTOM_SHARED_PTR(UI::UIInputRouterStrategy);
 
             auto pWidget         = this->GetWidget(handlePack);
             auto pInputComponent = pWidget->GetComponent<Actor::InputComponent>(hInputRouter);
@@ -206,9 +205,8 @@ namespace UI
                             UI::UIButtonComponent* pBtnComp =
                                 pWidget->GetComponent<UI::UIButtonComponent>(handle);
 
-                            auto handler = Core::Memory::MakeCustomUniquePtr<
-                                UI::UIButtonMessageHandlerDefault>(
-                                pNodeData->szId,
+                            auto handler = HE_MAKE_CUSTOM_UNIQUE_PTR(
+                                UI::UIButtonMessageHandlerDefault, pNodeData->szId,
                                 [this, &widgetHandlePack](Core::Common::StringBase& in_msg)
                                 {
                                     auto pLevelModule =
@@ -331,8 +329,7 @@ namespace UI
         return UIWidgetHandlePack(handle, in_rLevelHandle);
     }
 
-    const Bool UIModule::AddChildWidget(UIWidgetHandlePack& in_rParent,
-                                        UIWidgetHandlePack& in_rWidget)
+    Bool UIModule::AddChildWidget(UIWidgetHandlePack& in_rParent, UIWidgetHandlePack& in_rWidget)
     {
         HE_ASSERT(in_rParent._levelHandle == in_rWidget._levelHandle);
         auto pLevelModule = this->GetDependenceModule<Level::LevelModule>();
@@ -342,7 +339,7 @@ namespace UI
             .ChainActor(in_rWidget._widgetHandle, in_rParent._widgetHandle);
     }
 
-    const Bool UIModule::_VRelease()
+    Bool UIModule::_VRelease()
     {
         return TRUE;
     }

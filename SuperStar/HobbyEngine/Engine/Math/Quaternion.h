@@ -12,8 +12,6 @@ namespace Core::Math
                             const Float32 in_fW);
         explicit Quaternion(const Vector3& in_rAxis, const Float32 in_fAngle);
 
-        ~Quaternion() {}
-
         /// <summary>
         /// Sets the specified in x.
         /// </summary>

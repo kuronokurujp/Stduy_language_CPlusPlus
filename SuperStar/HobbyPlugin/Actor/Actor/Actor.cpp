@@ -38,12 +38,12 @@ namespace Actor
         this->_Clear();
     }
 
-    const Bool Object::VBegin()
+    Bool Object::VBegin()
     {
         return TaskTree::VBegin();
     }
 
-    const Bool Object::VEnd()
+    Bool Object::VEnd()
     {
         // 設定しているコンポーネントを全て破棄
         this->RemoveAllComponent();
@@ -86,7 +86,7 @@ namespace Actor
     /// <summary>
     /// Removes the component.
     /// </summary>
-    const Bool Object::RemoveComponent(Core::Common::Handle* in_pHandle)
+    Bool Object::RemoveComponent(Core::Common::Handle* in_pHandle)
     {
         HE_ASSERT(in_pHandle);
         HE_ASSERT(in_pHandle->Null() == FALSE);
@@ -182,7 +182,7 @@ namespace Actor
         return NullHandle;
     }
 
-    const Bool Object::_VSetupComponent(const Core::Common::Handle& in_rHandle)
+    Bool Object::_VSetupComponent(const Core::Common::Handle& in_rHandle)
     {
         HE_ASSERT(in_rHandle.Null() == FALSE);
         Component* pComp = this->_components.GetTask<Component>(in_rHandle);

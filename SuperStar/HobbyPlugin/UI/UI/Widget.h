@@ -23,12 +23,12 @@ namespace UI
         /// 開始
         /// 継承したクラスで必ず基本クラスのメソッドを呼ぶ
         /// </summary>
-        virtual const Bool VBegin() override;
+        virtual Bool VBegin() override;
 
         /// <summary>
         /// 終了
         /// 継承したクラスで必ず基本クラスのメソッドを呼ぶ
         /// </summary>
-        virtual const Bool VEnd() override;
+        virtual Bool VEnd() override;
     };
 }  // namespace UI

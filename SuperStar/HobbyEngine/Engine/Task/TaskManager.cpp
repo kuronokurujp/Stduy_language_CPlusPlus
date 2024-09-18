@@ -22,12 +22,12 @@ namespace Core
             /// <summary>
             /// タスク開始
             /// </summary>
-            const Bool VBegin() override final { return TRUE; }
+            Bool VBegin() override final { return TRUE; }
 
             /// <summary>
             /// タスク終了
             /// </summary>
-            const Bool VEnd() override final { return TRUE; }
+            Bool VEnd() override final { return TRUE; }
 
             /// <summary>
             /// 更新
@@ -42,7 +42,7 @@ namespace Core
         this->End();
     }
 
-    const Bool TaskManager::Init(const Uint32 in_taskMax, const Sint32 in_groupNum)
+    Bool TaskManager::Init(const Uint32 in_taskMax, const Sint32 in_groupNum)
     {
         // 管理グループ数が0以下なら失敗
         if (in_groupNum <= 0) return FALSE;
@@ -218,7 +218,7 @@ namespace Core
         for (Sint32 i = 0; i < this->_iGroupNum; ++i) this->RemoveGroup(i);
     }
 
-    const Bool TaskManager::MoveGroupAll(const Sint32 in_orgGroupId, const Sint32 in_targetGroupId)
+    Bool TaskManager::MoveGroupAll(const Sint32 in_orgGroupId, const Sint32 in_targetGroupId)
     {
         HE_ASSERT(in_orgGroupId < this->_iGroupNum && "グループ元のグループID値が間違っている");
         HE_ASSERT(in_targetGroupId < this->_iGroupNum &&
@@ -251,7 +251,7 @@ namespace Core
         return TRUE;
     }
 
-    const Bool TaskManager::MoveGropuTask(const Common::Handle& in_hTask, const Sint32 in_groupId)
+    Bool TaskManager::MoveGropuTask(const Common::Handle& in_hTask, const Sint32 in_groupId)
     {
         HE_ASSERT(in_hTask.Null() == FALSE);
 
@@ -291,14 +291,14 @@ namespace Core
         pGroup->_uFlags &= ~in_flags;
     }
 
-    const Uint32 TaskManager::Flag(const Sint32 in_groupId) const
+    Uint32 TaskManager::Flag(const Sint32 in_groupId) const
     {
         HE_ASSERT(in_groupId < this->_iGroupNum);
         TaskGroup* pGroup = &this->_pTasks[in_groupId];
         return pGroup->_uFlags;
     }
 
-    const Uint32 TaskManager::Count(const Sint32 in_groupId) const
+    Uint32 TaskManager::Count(const Sint32 in_groupId) const
     {
         HE_ASSERT(in_groupId < this->_iGroupNum);
         TaskGroup* pGroup = &this->_pTasks[in_groupId];
@@ -308,7 +308,7 @@ namespace Core
     /// <summary>
     /// タスク追加する
     /// </summary>
-    const Bool TaskManager::_Attach(Task* in_pTask, const Sint32 in_groupId)
+    Bool TaskManager::_Attach(Task* in_pTask, const Sint32 in_groupId)
     {
         HE_ASSERT(Task::iNoneGroupId < in_groupId);
         HE_ASSERT(in_groupId < this->_iGroupNum);
@@ -342,7 +342,7 @@ namespace Core
     /// <summary>
     /// タスクをグループから外す
     /// </summary>
-    const Sint32 TaskManager::_Dettach(Task* in_pTask)
+    Sint32 TaskManager::_Dettach(Task* in_pTask)
     {
         // タスクの前後付け替え
         Task* pPrevTask = in_pTask->_pPrev;

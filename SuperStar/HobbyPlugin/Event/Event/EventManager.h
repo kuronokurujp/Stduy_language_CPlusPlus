@@ -19,8 +19,9 @@ namespace Event
     class EventManagerStrategyInterface
     {
     public:
-        virtual ~EventManagerStrategyInterface()                            = default;
-        virtual const Bool VIsEventTypeStr(const EventTypeStr& in_rTypeStr) = 0;
+        EventManagerStrategyInterface()                               = default;
+        virtual ~EventManagerStrategyInterface()                      = default;
+        virtual Bool VIsEventTypeStr(const EventTypeStr& in_rTypeStr) = 0;
     };
 
     /// <summary>
@@ -29,39 +30,42 @@ namespace Event
     class EventManager final : public EventManagerInterface
     {
     public:
-        EventManager(std::unique_ptr<EventManagerStrategyInterface>);
+        EventManager(Core::Memory::UniquePtr<EventManagerStrategyInterface>);
         virtual ~EventManager();
 
         /// <summary>
         /// イベントがないかどうか
         /// </summary>
-        const Bool EmptyEvent() const;
+        Bool EmptyEvent() const;
+
+        // 手動解放
+        void VRelease() override final;
 
         /// <summary>
         /// リスナー登録
         /// 登録したらTRUEを返す
         /// すでに登録済みなど登録失敗したらFALSE
         /// </summary>
-        const Bool VAddListenr(EventListenerPtr const&, EventTypeStr const&) override final;
+        Bool VAddListenr(EventListenerPtr const&, EventTypeStr const&) override final;
 
-        const Bool VRemoveListener(EventListenerPtr const&, EventTypeStr const&) override final;
+        Bool VRemoveListener(EventListenerPtr const&, EventTypeStr const&) override final;
 
-        const Bool VTrigger(EventDataInterfacePtr const&) const override final;
+        Bool VTrigger(EventDataInterfacePtr const&) const override final;
 
-        const Bool VQueueEvent(EventDataInterfacePtr const&) override final;
+        Bool VQueueEvent(EventDataInterfacePtr const&) override final;
 
 #if 0
-        const Bool VAbortEvent(EventTypeStr const&) override final;
+        Bool VAbortEvent(EventTypeStr const&) override final;
 #endif
 
-        const Bool VTick(const Uint32) override final;
+        Bool VTick(const Uint32) override final;
 
-        const Bool VValidateType(EventTypeStr const&) const override final;
+        Bool VValidateType(EventTypeStr const&) const override final;
 
         // 情報探索メソッド
 
         // 特定のイベント型に関連づけられたリスナーのリストを取得
-        const Bool OutputListenerList(EventListenerList*, EventTypeStr const&) const;
+        Bool OutputListenerList(EventListenerList*, EventTypeStr const&) const;
 
     private:
         // TODO: stdのデータ構造はすべて自前で作成したカスタム用に差し替える予定
@@ -94,7 +98,7 @@ namespace Event
         // キューに入ろうとするイベントは他方のキューに置かれる
         Sint32 _sActiveQueue = 0;
 
-        std::unique_ptr<EventManagerStrategyInterface> _upStrategy;
+        Core::Memory::UniquePtr<EventManagerStrategyInterface> _upStrategy;
     };
 
 }  // namespace Event

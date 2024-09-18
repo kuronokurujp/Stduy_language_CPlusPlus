@@ -12,11 +12,11 @@ namespace Render
     class View final
     {
     public:
-        const Bool Release();
+        Bool Release();
 
         // 描画コマンドを追加
         // コマンドデータは呼び出し元のものにするためにstd::move()で渡す
-        const Bool AddCmd(const Command&& in_rrCmd);
+        Bool AddCmd(const Command&& in_rrCmd);
 
         /// <summary>
         /// コマンドをクリア

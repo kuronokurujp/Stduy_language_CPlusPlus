@@ -201,7 +201,7 @@ namespace UI::Builder
         }
     }  // namespace Local
 
-    const Bool UILayoutData::OutputNodeByRootPos(Node* out, const UTF8* in_szName)
+    Bool UILayoutData::OutputNodeByRootPos(Node* out, const UTF8* in_szName)
     {
         HE_ASSERT(out);
 
@@ -216,8 +216,7 @@ namespace UI::Builder
         return TRUE;
     }
 
-    const Bool UILayoutData::OutputNode(Node* out, const Node& in_rParentNode,
-                                        const UTF8* in_szName)
+    Bool UILayoutData::OutputNode(Node* out, const Node& in_rParentNode, const UTF8* in_szName)
     {
         HE_ASSERT(out);
         HE_ASSERT(in_rParentNode.pNode);

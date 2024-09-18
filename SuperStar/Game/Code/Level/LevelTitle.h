@@ -15,8 +15,8 @@ namespace Level
     public:
         LevelTitle() : Level::Node() {}
 
-        const Bool VBegin() override final;
-        const Bool VEnd() override final;
+        Bool VBegin() override final;
+        Bool VEnd() override final;
 
     protected:
         void _VProcessInput(const EnhancedInput::InputMap* in_pInputMap) override final;

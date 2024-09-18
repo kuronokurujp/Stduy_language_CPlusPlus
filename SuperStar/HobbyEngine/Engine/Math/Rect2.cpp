@@ -71,7 +71,7 @@ namespace Core::Math
     /// <summary>
     /// Ins the side rect.
     /// </summary>
-    const Bool Rect2::InSideRect(const Rect2& in_rOrderRect) const
+    Bool Rect2::InSideRect(const Rect2& in_rOrderRect) const
     {
         const Vector2& rPos  = this->Pos();
         const Vector2& rLine = Vector2::Sub(rPos, in_rOrderRect.Pos());
@@ -88,7 +88,7 @@ namespace Core::Math
     /// <summary>
     /// 座標が矩形の中に入っているか
     /// </summary>
-    const Bool Rect2::InSidePoint(const Vector2& in_rPos) const
+    Bool Rect2::InSidePoint(const Vector2& in_rPos) const
     {
         if (this->_fRight < in_rPos._fX) return FALSE;
 

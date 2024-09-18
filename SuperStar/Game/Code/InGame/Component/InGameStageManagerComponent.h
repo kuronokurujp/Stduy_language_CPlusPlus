@@ -22,12 +22,12 @@ namespace InGame
         /// <summary>
         /// タスク開始
         /// </summary>
-        const Bool VBegin() override final;
+        Bool VBegin() override final;
 
         /// <summary>
         /// タスク終了
         /// </summary>
-        const Bool VEnd() override final;
+        Bool VEnd() override final;
 
         /*
                 // 初期化、終了

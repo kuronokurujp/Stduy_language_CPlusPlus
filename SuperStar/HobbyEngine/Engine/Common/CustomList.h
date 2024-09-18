@@ -124,7 +124,7 @@ namespace Core::Common
         /// <summary>
         /// 比較
         /// </summary>
-        const Bool operator==(const ListNodeIterator<DATATYPE, NODETYPE>& in_rRhs) const
+        Bool operator==(const ListNodeIterator<DATATYPE, NODETYPE>& in_rRhs) const
         {
             return (this->_pNode == in_rRhs._pNode);
         }
@@ -132,7 +132,7 @@ namespace Core::Common
         /// <summary>
         /// 比較
         /// </summary>
-        const Bool operator!=(const ListNodeIterator<DATATYPE, NODETYPE>& in_rRhs) const
+        Bool operator!=(const ListNodeIterator<DATATYPE, NODETYPE>& in_rRhs) const
         {
             return ((*this == in_rRhs) == FALSE);
         }
@@ -236,7 +236,7 @@ namespace Core::Common
         /// <summary>
         /// 比較
         /// </summary>
-        const Bool operator==(const ListNodeReverseIterator<DATATYPE, NODETYPE>& in_rRhs) const
+        Bool operator==(const ListNodeReverseIterator<DATATYPE, NODETYPE>& in_rRhs) const
         {
             return (this->_pNode == in_rRhs._pNode);
         }
@@ -244,7 +244,7 @@ namespace Core::Common
         /// <summary>
         /// 比較
         /// </summary>
-        const Bool operator!=(const ListNodeReverseIterator<DATATYPE, NODETYPE>& in_rRhs) const
+        Bool operator!=(const ListNodeReverseIterator<DATATYPE, NODETYPE>& in_rRhs) const
         {
             return ((*this == in_rRhs) == FALSE);
         }
@@ -280,7 +280,7 @@ namespace Core::Common
         /// <summary>
         /// ノードの消去
         /// </summary>
-        const Bool Erase(LinkedListNode<T>* in_pNode)
+        Bool Erase(LinkedListNode<T>* in_pNode)
         {
             // 既にリンクから外されているノードは無視
             if ((in_pNode->_uFlag & LinkedListNode<T>::uFlagLinked) == 0)
@@ -301,7 +301,7 @@ namespace Core::Common
         /// <summary>
         /// ノード挿入
         /// </summary>
-        const Bool Insert(LinkedListNode<T>* in_pPrevNode, LinkedListNode<T>* in_pNewNode)
+        Bool Insert(LinkedListNode<T>* in_pPrevNode, LinkedListNode<T>* in_pNewNode)
         {
             HE_ASSERT(in_pNewNode != in_pPrevNode);
 
@@ -357,7 +357,7 @@ namespace Core::Common
         /// <summary>
         /// リストの終端につなげる
         /// </summary>
-        const Bool PushBack(LinkedListNode<T>& in_rNode)
+        Bool PushBack(LinkedListNode<T>& in_rNode)
         {
             return LinkedListBase::Insert(this->_tail.GetPrev(), &in_rNode);
         }
@@ -365,7 +365,7 @@ namespace Core::Common
         /// <summary>
         /// リストの先頭につなげる
         /// </summary>
-        const Bool PushFront(LinkedListNode<T>& in_rNode)
+        Bool PushFront(LinkedListNode<T>& in_rNode)
         {
             return LinkedListBase::Insert(&this->_head, &in_rNode);
         }
@@ -373,7 +373,7 @@ namespace Core::Common
         /// <summary>
         /// 任意の位置の直前にノードを挿入
         /// </summary>
-        const Bool Insert(Iterator& in_rIt, LinkedListNode<T>& in_rNode)
+        Bool Insert(Iterator& in_rIt, LinkedListNode<T>& in_rNode)
         {
             return LinkedListBase<T>::Insert(in_rIt.GetNode()->GetPrev(), &in_rNode);
         }
@@ -381,24 +381,26 @@ namespace Core::Common
         /// <summary>
         /// 終端のノードを取る
         /// </summary>
-        const Bool PopBack()
+        Bool PopBack()
         {
             if (this->Empty())
             {
                 return FALSE;
             }
+
             return LinkedListBase<T>::Erase(this->_tail.GetPrev());
         }
 
         /// <summary>
         /// 先頭のノードを取る
         /// </summary>
-        const Bool PopFront()
+        Bool PopFront()
         {
             if (this->Empty())
             {
                 return FALSE;
             }
+
             return LinkedListBase<T>::Erase(this->_head.GetNext());
         }
 
@@ -452,7 +454,7 @@ namespace Core::Common
         /// <returns></returns>
         RevIterator EndRevItr() { return RevIterator(&this->_head); }
 
-        const Bool Empty() const { return this->_head.GetNext() == &this->_tail; }
+        Bool Empty() const { return this->_head.GetNext() == &this->_tail; }
 
     private:
         LinkedListNode<T> _head;

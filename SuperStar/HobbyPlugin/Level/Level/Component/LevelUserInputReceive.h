@@ -48,12 +48,12 @@ namespace Level
 
         void Message(const Char* in_szMsg);
 
-        void SetReceiver(std::unique_ptr<LevelUserInputMessage, DeleterFreeMemory> in_spReciver)
+        void SetReceiver(Core::Memory::UniquePtr<LevelUserInputMessage> in_spReciver)
         {
             this->_spEventReceiver = std::move(in_spReciver);
         }
 
     private:
-        std::unique_ptr<LevelUserInputMessage, DeleterFreeMemory> _spEventReceiver;
+        Core::Memory::UniquePtr<LevelUserInputMessage> _spEventReceiver;
     };
 }  // namespace Level

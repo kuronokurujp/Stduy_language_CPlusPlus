@@ -19,7 +19,7 @@ namespace UI
     /// ボタンコンポーネントが終了
     /// </summary>
     /// <returns></returns>
-    const Bool UIButtonComponent::VEnd()
+    Bool UIButtonComponent::VEnd()
     {
         const Bool bRet = UIWidgetComponent::VEnd();
 

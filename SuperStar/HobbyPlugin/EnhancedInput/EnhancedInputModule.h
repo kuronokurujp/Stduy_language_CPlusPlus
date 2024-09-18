@@ -119,16 +119,15 @@ namespace EnhancedInput
         /// <summary>
         /// モジュール初期化
         /// </summary>
-        /// <returns></returns>
-        const Bool _VStart() override final;
+        Bool _VStart() override final;
 
         /// <summary>
         /// インスタンス破棄時に呼ばれる
         /// </summary>
-        const Bool _VRelease() override final;
+        Bool _VRelease() override final;
 
-        const Bool _VBeforeUpdate(const Float32 in_fDeltaTime) override final;
-        const Bool _VUpdate(const Float32 in_fDeltaTime) override final;
+        Bool _VBeforeUpdate(const Float32 in_fDeltaTime) override final;
+        Bool _VUpdate(const Float32 in_fDeltaTime) override final;
 
     private:
         /// <summary>

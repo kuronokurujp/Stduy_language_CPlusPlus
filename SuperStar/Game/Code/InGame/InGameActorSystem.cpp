@@ -112,7 +112,7 @@ namespace InGame
         return NULL;
     }
 
-    const Bool InGameActorManager::VStart(Actor::ActorManager* in_pOwner)
+    Bool InGameActorManager::VStart(Actor::ActorManager* in_pOwner)
     {
         // TODO: Luaの利用準備
         /*

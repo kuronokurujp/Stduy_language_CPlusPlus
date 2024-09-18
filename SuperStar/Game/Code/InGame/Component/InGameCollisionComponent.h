@@ -13,7 +13,7 @@ namespace InGame
     public:
         virtual ~CollisionInterface() = default;
         // 2D円のコリジョン
-        virtual const Bool VCollision(InGameCircleCollision2DComponent&) = 0;
+        virtual Bool VCollision(InGameCircleCollision2DComponent&) = 0;
     };
 
     /// <summary>
@@ -32,21 +32,21 @@ namespace InGame
         /// <summary>
         /// タスク開始
         /// </summary>
-        virtual const Bool VBegin() override;
+        virtual Bool VBegin() override;
 
         /// <summary>
         /// タスク終了
         /// </summary>
-        virtual const Bool VEnd() override;
+        virtual Bool VEnd() override;
 
         // 全ての衝突コンポーネント同士の衝突処理
         static void CollisionAll();
 
     protected:
-        virtual const Bool VCollision(InGameCircleCollision2DComponent&) = 0;
+        virtual Bool VCollision(InGameCircleCollision2DComponent&) = 0;
 
     private:
-        static const Bool CollisionWithComponent(CollisionInterface*, InGameCollisionComponent*);
+        static Bool CollisionWithComponent(CollisionInterface*, InGameCollisionComponent*);
 
         // コリジョンリスト
         static Core::Common::CustomFixVector<InGameCollisionComponent*, 1024> s_vCollision;
@@ -65,7 +65,7 @@ namespace InGame
         void SetRadius(const Float32 in_fRadius) { this->_fRadius = in_fRadius; }
 
     protected:
-        const Bool VCollision(InGameCircleCollision2DComponent&) override final;
+        Bool VCollision(InGameCircleCollision2DComponent&) override final;
 
     private:
         Float32 _fRadius = 0.0f;

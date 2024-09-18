@@ -31,13 +31,13 @@ namespace Level
         /// <summary>
         /// 必ず最初に呼び出す
         /// </summary>
-        const Bool Init();
+        Bool Init();
 
         /// <summary>
         /// 使い終わったら実行
         /// そのあとに利用したらエラーになる
         /// </summary>
-        const Bool Release();
+        Bool Release();
 
         /// <summary>
         /// ユーザー入力処理
@@ -63,7 +63,7 @@ namespace Level
         /// 起動するレベルを設定
         /// </summary>
         template <class T>
-        const Bool StartLevel()
+        Bool StartLevel()
         {
             static_assert(std::is_base_of<Node, T>::value,
                           "Tクラスはレベルのノードクラスを継承していない");
@@ -81,7 +81,7 @@ namespace Level
         Node* GetLevel(const Core::Common::Handle&);
 
     private:
-        const Bool _StartLevel(const Core::Common::Handle&);
+        Bool _StartLevel(const Core::Common::Handle&);
 
     private:
         // レベルのノードをアクターとして管理

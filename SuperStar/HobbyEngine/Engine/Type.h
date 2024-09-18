@@ -46,26 +46,26 @@ typedef char Char;
 #endif
 typedef char UTF8;
 
-typedef bool Bool;
+typedef char Bool;
 typedef float Float32;
 typedef double Float64;
 
 // 定数定義
 #ifndef FALSE
 
-#define FALSE (false)
+#define FALSE (0)
 
 #endif
 
 #ifndef TRUE
 
-#define TRUE (true)
+#define TRUE (1)
 
 #endif
 
 // ポインタのNULLなのでc++でのポインタNULLのnullptrに置き換える必要がある
 // NULLが整数0だポインタのNULLとc++コンパイラは解釈してくれない
-#ifdef NULL
+#if NULL
 
 #undef NULL
 

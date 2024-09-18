@@ -1,6 +1,6 @@
 ﻿#include "Task.h"
 
-static const Core::TaskData NullTaskData;
+const Core::TaskData NullTaskData;
 
 namespace Core
 {

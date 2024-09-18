@@ -30,7 +30,7 @@ TEST_CASE("Event System")
 
         const Char* VName() override final { return HE_STR_TEXT("C_TestListener"); }
 
-        const Bool VHandleEvent(Event::EventDataInterfacePtr const& in_rEvent) override final
+        Bool VHandleEvent(Event::EventDataInterfacePtr const& in_rEvent) override final
         {
             if (EventTest::EvtDataTextPut::_szEventType == in_rEvent->VEventTypeStr())
             {
@@ -50,38 +50,67 @@ TEST_CASE("Event System")
     class TestEventManagerStrategy final : public Event::EventManagerStrategyInterface
     {
     public:
-        const Bool VIsEventTypeStr(const Event::EventTypeStr& in_rTypeStr)
+        Bool VIsEventTypeStr(const Event::EventTypeStr& in_rTypeStr)
         {
             return (EventTest::EvtDataTextPut::_szEventType == in_rTypeStr);
         }
     };
 
-    std::unique_ptr<Event::EventManagerStrategyInterface> st =
-        std::make_unique<TestEventManagerStrategy>();
+    // カスタムヒープを使うのでメモリアロケーターを作成
+    Core::Memory::Manager memoryManager;
+    CHECK(memoryManager.Start(0x1000000));
+
+    // ページ確保テスト
+    {
+        // メモリサイズのイニシャライズ
+        Core::Memory::Manager::PageSetupInfo memoryPageSetupInfoArray[] = {
+            // 複数ページのサイズ
+            {0, 3 * 1024 * 1024}, {1, 4 * 1024 * 1024}, {2, 2 * 1024 * 1024},
+            {3, 2 * 1024 * 1024}, {4, 2 * 1024 * 1024}, {5, 3 * 1024 * 1024},
+        };
+
+        CHECK(memoryManager.SetupMemoryPage(memoryPageSetupInfoArray,
+                                            HE_ARRAY_NUM(memoryPageSetupInfoArray)));
+        CHECK(memoryManager.CheckAllMemoryBlock());
+    }
+
+    auto st = HE_MAKE_CUSTOM_UNIQUE_PTR(TestEventManagerStrategy);
     Event::EventManager eventMng(std::move(st));
 
     HE_LOG_LINE(HE_STR_TEXT("EventMangerTest"));
 
     // リスナー登録
-    auto spTestListenr = std::shared_ptr<TestListener>(new TestListener());
+    auto spTestListenr = HE_MAKE_CUSTOM_UNIQUE_PTR(TestListener);
 
     // リスナー追加は初回なので必ず成功する
-    CHECK(eventMng.VAddListenr(spTestListenr, EventTest::EvtDataTextPut::_szEventType));
+    CHECK(eventMng.VAddListenr(std::move(spTestListenr), EventTest::EvtDataTextPut::_szEventType));
 
-    auto spTestEvent = std::shared_ptr<EventTest::EvtDataTextPut>(new EventTest::EvtDataTextPut());
-    CHECK(eventMng.VQueueEvent(spTestEvent));
+    // イベントは生成して所有権は管理側に渡す
+    auto spTestEvent = HE_MAKE_CUSTOM_UNIQUE_PTR(EventTest::EvtDataTextPut);
+    CHECK(eventMng.VQueueEvent(std::move(spTestEvent)));
 
-    // 登録しているイベント型名をリストを出力
-    Event::EventListenerList typeList;
-
-    CHECK(eventMng.OutputListenerList(&typeList, EventTest::EvtDataTextPut::_szEventType));
-    for (Event::EventListenerList::const_iterator i = typeList.begin(); i != typeList.end(); i++)
+    // 登録しているイベント型名から登録リスナーを出力
+    // 共有ポインタなので取得したリストは解放しないとメモリが残る
     {
-        HE_LOG_LINE(HE_STR_TEXT("%s"), (*i)->VName());
+        Event::EventListenerList typeList;
+
+        CHECK(eventMng.OutputListenerList(&typeList, EventTest::EvtDataTextPut::_szEventType));
+        for (Event::EventListenerList::const_iterator i = typeList.begin(); i != typeList.end();
+             i++)
+        {
+            HE_LOG_LINE(HE_STR_TEXT("%s"), (*i)->VName());
+        }
     }
 
     while (eventMng.EmptyEvent() == FALSE)
     {
         CHECK(eventMng.VTick(Event::EventManagerInterface::EConstancs_Infinite));
     }
+
+    // 戦略アリゴリズムで確保したヒープを解放してメモリアロケーター破棄でエラーにならないようにする
+    eventMng.VRelease();
+
+    CHECK(memoryManager.VRelease());
+    memoryManager.Reset();
 }
+#undef HE_USE_STD_UNIQUE_PTR

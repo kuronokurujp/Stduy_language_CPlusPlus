@@ -43,21 +43,15 @@ namespace Core::Common
 
         void Clear() HE_NOEXCEPT { this->_ulHandle = 0; }
 
-        inline const Uint32 Index() const HE_NOEXCEPT { return this->_handleField._index; }
-        inline const Uint32 Magic() const HE_NOEXCEPT { return this->_handleField._magic; }
-        inline const Bool Null() const HE_NOEXCEPT { return (this->_ulHandle == 0); }
+        Uint32 Index() const HE_NOEXCEPT { return this->_handleField._index; }
+        Uint32 Magic() const HE_NOEXCEPT { return this->_handleField._magic; }
+        Bool Null() const HE_NOEXCEPT { return (this->_ulHandle == 0); }
 
-        operator const Uint64() const HE_NOEXCEPT { return this->_ulHandle; }
+        operator Uint64() const HE_NOEXCEPT { return this->_ulHandle; }
 
-        inline const Bool operator!=(Handle& r) HE_NOEXCEPT
-        {
-            return (this->_ulHandle != r._ulHandle);
-        }
+        Bool operator!=(Handle& r) HE_NOEXCEPT { return (this->_ulHandle != r._ulHandle); }
 
-        inline const Bool operator==(Handle& r) HE_NOEXCEPT
-        {
-            return (this->_ulHandle == r._ulHandle);
-        }
+        Bool operator==(Handle& r) HE_NOEXCEPT { return (this->_ulHandle == r._ulHandle); }
 
         void operator=(const Handle& r) HE_NOEXCEPT { this->_ulHandle = r._ulHandle; }
 
@@ -96,6 +90,7 @@ namespace Core::Common
 
 }  // namespace Core::Common
 
+// TODO: 使わないか確認
 // Handleクラスをunordered_mapで利用できるようにするための対応
 // 詳細は以下
 // https://qiita.com/izmktr/items/8e0fd1b6e37de59a9bd0
@@ -105,7 +100,7 @@ namespace std
     class hash<Core::Common::Handle>
     {
     public:
-        size_t operator()(const Core::Common::Handle& p) const { return p.operator const Uint64(); }
+        size_t operator()(const Core::Common::Handle& p) const { return p.operator Uint64(); }
     };
 }  // namespace std
 

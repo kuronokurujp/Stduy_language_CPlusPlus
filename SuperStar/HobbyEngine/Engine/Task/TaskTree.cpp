@@ -24,7 +24,7 @@ namespace Core
         }
     }
 
-    const Bool TaskTree::AddChildTask(const Core::Common::Handle& in_rHandle)
+    Bool TaskTree::AddChildTask(const Core::Common::Handle& in_rHandle)
     {
         HE_ASSERT(in_rHandle.Null() == FALSE);
         // 自分自身を子タスクとして設定できない

@@ -35,8 +35,8 @@ namespace AssetManager
 
     protected:
         virtual void _VInit(const Char* in_szName, const Core::File::Path& in_rPath);
-        virtual const Bool _VLoad(Platform::FileInterface& in_rFileSystem) = 0;
-        virtual void _VUnload()                                            = 0;
+        virtual Bool _VLoad(Platform::FileInterface& in_rFileSystem) = 0;
+        virtual void _VUnload()                                      = 0;
 
     protected:
         Core::Common::FixString128 _szName;
@@ -96,8 +96,8 @@ namespace AssetManager
             }
 
         private:
-            const Bool _OutputNodeMap(ToolNodeMapType* out, const Char* in_szaName[],
-                                      const Uint32 in_uCount);
+            Bool _OutputNodeMap(ToolNodeMapType* out, const Char* in_szaName[],
+                                const Uint32 in_uCount);
             Node _GetNode(const Char* in_szaName[], Uint32 in_uCount);
 
         private:
@@ -106,7 +106,7 @@ namespace AssetManager
 
         AssetDataToml() : AssetDataBase() {}
 
-        virtual const Bool _VLoad(Platform::FileInterface& in_rFileSystem) override;
+        virtual Bool _VLoad(Platform::FileInterface& in_rFileSystem) override;
         virtual void _VUnload() override;
 
         Node GetRootNode();
@@ -127,7 +127,7 @@ namespace AssetManager
         AssetDataJson() : AssetDataBase() {}
         virtual ~AssetDataJson() = default;
 
-        virtual const Bool _VLoad(Platform::FileInterface& in_rFileSystem) override;
+        virtual Bool _VLoad(Platform::FileInterface& in_rFileSystem) override;
         virtual void _VUnload() override;
 
     protected:
@@ -147,8 +147,8 @@ namespace AssetManager
         }
 
     private:
-        const Bool _OutputValue(simdjson::fallback::ondemand::value* out, const Char* in_szaName[],
-                                const Uint32 in_uCount);
+        Bool _OutputValue(simdjson::fallback::ondemand::value* out, const Char* in_szaName[],
+                          const Uint32 in_uCount);
 
     protected:
         Core::Common::Handle _fileHandle;
@@ -170,7 +170,7 @@ namespace AssetManager
         AssetDataXml() : AssetDataBase() {}
         virtual ~AssetDataXml() = default;
 
-        virtual const Bool _VLoad(Platform::FileInterface& in_rFileSystem) override;
+        virtual Bool _VLoad(Platform::FileInterface& in_rFileSystem) override;
         virtual void _VUnload() override;
 
     protected:

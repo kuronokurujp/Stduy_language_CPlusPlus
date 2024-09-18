@@ -35,7 +35,7 @@ namespace InGame
         _Clear();
     }
 
-    const Bool InGameStageManagerComponent::VBegin()
+    Bool InGameStageManagerComponent::VBegin()
     {
         if (Level::LevelBaseComponent::VBegin() == FALSE) return FALSE;
         /*
@@ -65,7 +65,7 @@ namespace InGame
         return TRUE;
     }
 
-    const Bool InGameStageManagerComponent::VEnd()
+    Bool InGameStageManagerComponent::VEnd()
     {
         this->RemoveActor(&this->_playerHandle);
         return LevelBaseComponent::VEnd();

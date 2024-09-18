@@ -18,9 +18,9 @@ namespace Core::Common
 
         virtual ~StackBase() { this->Clear(); }
 
-        inline const Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
-        inline const Uint32 Size() const HE_NOEXCEPT { return this->_uNum; }
-        inline const Bool Empty() const HE_NOEXCEPT { return (this->_uNum <= 0); }
+        inline Uint32 Capacity() const HE_NOEXCEPT { return this->_uCapacity; }
+        inline Uint32 Size() const HE_NOEXCEPT { return this->_uNum; }
+        inline Bool Empty() const HE_NOEXCEPT { return (this->_uNum <= 0); }
 
         void Clear() HE_NOEXCEPT { this->_uNum = 0; }
 
