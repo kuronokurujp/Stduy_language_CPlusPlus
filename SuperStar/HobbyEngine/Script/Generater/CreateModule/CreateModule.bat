@@ -77,8 +77,8 @@ for /L %%i in (0,1,%ARRAY_SIZE%) do (
         (for /f "usebackq delims=" %%A in ("!DEST_MODULEDIR!\!CURRENT_FILE!") do (
             set "line=%%A"
             setlocal enabledelayedexpansion
-            set "line=!line:{MODULE_NAME}=%INPUT_MODULENAME%!"
-            set "line=!line:{MODULE_UPPER_NAME}=%MODULE_UPPER_NAME%!"
+            set "line=!line:__MODULE_NAME__=%INPUT_MODULENAME%!"
+            set "line=!line:__MODULE_UPPER_NAME__=%MODULE_UPPER_NAME%!"
             echo !line!>> "%TEMP_FILE%"
             endlocal
         )) 

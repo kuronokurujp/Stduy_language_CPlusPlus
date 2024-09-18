@@ -4,17 +4,17 @@
 #include "Engine/Module/Module.h"
 
 // モジュールのヘッダーファイルは全てインクルードする
-namespace {MODULE_NAME}
+namespace __MODULE_NAME__
 {
     /// <summary>
-    /// {MODULE_NAME}アクター用の追加モジュール
+    /// __MODULE_NAME__アクター用の追加モジュール
     /// </summary>
-    class {MODULE_NAME}Module final : public Module::ModuleBase
+    class __MODULE_NAME__Module final : public Module::ModuleBase
     {
-        HE_MODULE_GENRATE_DECLARATION({MODULE_NAME}Module);
+        HE_MODULE_GENRATE_DECLARATION(__MODULE_NAME__Module);
 
     public:
-        {MODULE_NAME}Module() : ModuleBase(ModuleName()) {}
+        __MODULE_NAME__Module() : ModuleBase(ModuleName()) {}
 
     protected:
         /// <summary>
@@ -27,4 +27,4 @@ namespace {MODULE_NAME}
         /// </summary>
         const Bool _VRelease() override final;
     };
-} 
+}  // namespace __MODULE_NAME__

@@ -1,12 +1,12 @@
-set({MODULE_UPPER_NAME}_PLUGIN_NAME HoobyEnginePlugin_{MODULE_NAME})
+set(__MODULE_UPPER_NAME___PLUGIN_NAME HoobyEnginePlugin___MODULE_NAME__)
 
 # プロジェクトに登録するファイル群
 # ここに全て記載する
-set({MODULE_UPPER_NAME}_PLUGIN_TARGET_FILES
+set(__MODULE_UPPER_NAME___PLUGIN_TARGET_FILES
     .editorconfig
     LICENSE.txt
     README.md
 
-    {MODULE_NAME}Module.cpp
-    {MODULE_NAME}Module.h
+    __MODULE_NAME__Module.cpp
+    __MODULE_NAME__Module.h
 )

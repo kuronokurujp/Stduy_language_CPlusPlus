@@ -1,11 +1,11 @@
-﻿#include "{MODULE_NAME}Module.h"
+﻿#include "__MODULE_NAME__Module.h"
 
-namespace {MODULE_NAME}
+namespace __MODULE_NAME__
 {
     /// <summary>
     /// モジュール初期化
     /// </summary>
-    const Bool {MODULE_NAME}Module::_VStart()
+    const Bool __MODULE_NAME__Module::_VStart()
     {
         return TRUE;
     }
@@ -13,8 +13,8 @@ namespace {MODULE_NAME}
     /// <summary>
     /// インスタンス破棄時に呼ばれる
     /// </summary>
-    const Bool {MODULE_NAME}Module::_VRelease()
+    const Bool __MODULE_NAME__Module::_VRelease()
     {
         return TRUE;
     }
-}  // namespace Actor
+}  // namespace __MODULE_NAME__
