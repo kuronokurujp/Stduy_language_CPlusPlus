@@ -4,18 +4,15 @@
 
 namespace EventTest
 {
+    static const Event::EventTypeStr s_TestEventType(HE_STR_TEXT("TestEvent"));
+
     class EvtDataTextPut final : public Event::BaseEventData
     {
     public:
-        EvtDataTextPut() : _sCount(0) {}
-
-        const Event::EventTypeStr& VEventTypeStr() const override final
-        {
-            return EvtDataTextPut::_szEventType;
-        }
+        EvtDataTextPut() : Event::BaseEventData(s_TestEventType, _szDataType, 0), _sCount(0) {}
 
     public:
-        inline static Event::EventTypeStr _szEventType = HE_STR_TEXT("test");
+        inline static Event::EventTypeStr _szDataType = HE_STR_TEXT("test");
 
         Sint32 _sCount = 0;
     };
@@ -32,7 +29,7 @@ TEST_CASE("Event System")
 
         Bool VHandleEvent(Event::EventDataInterfacePtr const& in_rEvent) override final
         {
-            if (EventTest::EvtDataTextPut::_szEventType == in_rEvent->VEventTypeStr())
+            if (EventTest::EvtDataTextPut::_szDataType.Hash() == in_rEvent->VDataTypeHash())
             {
                 EventTest::EvtDataTextPut* pEvtData =
                     reinterpret_cast<EventTest::EvtDataTextPut*>(in_rEvent.get());
@@ -50,9 +47,9 @@ TEST_CASE("Event System")
     class TestEventManagerStrategy final : public Event::EventManagerStrategyInterface
     {
     public:
-        Bool VIsEventTypeStr(const Event::EventTypeStr& in_rTypeStr)
+        Bool VIsEventTypeHash(const Uint64 in_ulHash)
         {
-            return (EventTest::EvtDataTextPut::_szEventType == in_rTypeStr);
+            return (EventTest::s_TestEventType.Hash() == in_ulHash);
         }
     };
 
@@ -83,7 +80,7 @@ TEST_CASE("Event System")
     auto spTestListenr = HE_MAKE_CUSTOM_UNIQUE_PTR(TestListener);
 
     // リスナー追加は初回なので必ず成功する
-    CHECK(eventMng.VAddListenr(std::move(spTestListenr), EventTest::EvtDataTextPut::_szEventType));
+    CHECK(eventMng.VAddListenr(std::move(spTestListenr), EventTest::s_TestEventType));
 
     // イベントは生成して所有権は管理側に渡す
     auto spTestEvent = HE_MAKE_CUSTOM_UNIQUE_PTR(EventTest::EvtDataTextPut);
@@ -94,7 +91,7 @@ TEST_CASE("Event System")
     {
         Event::EventListenerList typeList;
 
-        CHECK(eventMng.OutputListenerList(&typeList, EventTest::EvtDataTextPut::_szEventType));
+        CHECK(eventMng.OutputListenerList(&typeList, EventTest::s_TestEventType));
         for (Event::EventListenerList::const_iterator i = typeList.begin(); i != typeList.end();
              i++)
         {

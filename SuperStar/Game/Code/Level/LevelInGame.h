@@ -29,5 +29,8 @@ namespace Level
         Core::Common::Handle _shotManagerComponentHandle;
         Core::Common::Handle _stageManagerComponentHandle;
         Core::Common::Handle _viewHandle;
+
+        Core::Common::Handle _shotEventHandle;
+        Core::Memory::SharedPtr<Event::EventListenerInterface> _shotEventListener;
     };
 }  // namespace Level

@@ -19,9 +19,9 @@ namespace Event
     class EventManagerStrategyInterface
     {
     public:
-        EventManagerStrategyInterface()                               = default;
-        virtual ~EventManagerStrategyInterface()                      = default;
-        virtual Bool VIsEventTypeStr(const EventTypeStr& in_rTypeStr) = 0;
+        EventManagerStrategyInterface()             = default;
+        virtual ~EventManagerStrategyInterface()    = default;
+        virtual Bool VIsEventTypeHash(const Uint64) = 0;
     };
 
     /// <summary>
@@ -49,8 +49,9 @@ namespace Event
         Bool VAddListenr(EventListenerPtr const&, EventTypeStr const&) override final;
 
         Bool VRemoveListener(EventListenerPtr const&, EventTypeStr const&) override final;
-
-        Bool VTrigger(EventDataInterfacePtr const&) const override final;
+        /*
+                Bool VTrigger(EventDataInterfacePtr const&) const override final;
+        */
 
         Bool VQueueEvent(EventDataInterfacePtr const&) override final;
 
@@ -61,6 +62,7 @@ namespace Event
         Bool VTick(const Uint32) override final;
 
         Bool VValidateType(EventTypeStr const&) const override final;
+        Bool VValidateHash(const Uint64) const override final;
 
         // 情報探索メソッド
 

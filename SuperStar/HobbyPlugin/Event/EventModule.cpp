@@ -10,7 +10,7 @@ namespace Event
         ++this->_uAddEventMngCount;
         handle.Init(this->_uAddEventMngCount);
 
-        // TODO: ストラテジーの所有権を管理インスタンスへ
+        // ストラテジーの所有権を管理インスタンスへ
         this->_mEventMng.Add(handle, HE_NEW(EventManager, 0)(std::move(in_upStrategy)));
 
         return handle;
@@ -31,7 +31,10 @@ namespace Event
     {
         for (auto itr = this->_mEventMng.Begin(); itr != this->_mEventMng.End(); ++itr)
         {
-            itr->data->VAddListenr(in_rListener, in_rType);
+            if (itr->data->VAddListenr(in_rListener, in_rType) == FALSE)
+            {
+                return FALSE;
+            }
         }
 
         return TRUE;
@@ -52,7 +55,10 @@ namespace Event
     {
         for (auto itr = this->_mEventMng.Begin(); itr != this->_mEventMng.End(); ++itr)
         {
-            itr->data->VQueueEvent(in_spEventData);
+            if (itr->data->VQueueEvent(in_spEventData) == FALSE)
+            {
+                return FALSE;
+            }
         }
 
         return TRUE;

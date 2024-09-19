@@ -59,9 +59,11 @@ namespace Event
         // 内部テーブルから、リスナーとイベント型のペアを削除
         virtual Bool VRemoveListener(EventListenerPtr const&, EventTypeStr const&) = 0;
 
-        // 同期的なイベント発信であり、たたぢに処理する
-        // 呼び出した瞬間にイベント呼ばれる
-        virtual Bool VTrigger(EventDataInterfacePtr const&) const = 0;
+        /*
+                // 同期的なイベント発信であり、たたぢに処理する
+                // 呼び出した瞬間にイベント呼ばれる
+                virtual Bool VTrigger(EventDataInterfacePtr const&) const = 0;
+        */
 
         // 非同期的なイベント発信
         // VTickメソッドでイベントが呼ばれる
@@ -83,6 +85,7 @@ namespace Event
 
         // イベント型の有効性を確認
         virtual Bool VValidateType(EventTypeStr const&) const = 0;
+        virtual Bool VValidateHash(const Uint64) const        = 0;
     };
 
 }  // namespace Event

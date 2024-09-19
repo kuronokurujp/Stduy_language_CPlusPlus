@@ -256,42 +256,12 @@ namespace Core::Memory
 #endif
     {
         // 配列の要素を構築し、shared_ptrを作成する
-        // 引数がない場合は配列要素を使わない
-        if (sizeof...(Args) <= 0)
-        {
 #ifdef HE_ENGINE_DEBUG
-            return SharedPtr<T>(HE_NEW(T, 0), DeleterFreeMemory(in_szFile, in_uLine));
+        return SharedPtr<T>(HE_NEW(T, 0)(std::forward<Args>(args)...),
+                            DeleterFreeMemory(in_szFile, in_uLine));
 #else
-            return SharedPtr<T>(HE_NEW(T, 0), DeleterFreeMemory());
+        return SharedPtr<T>(HE_NEW(T, 0)(std::forward<Args>(args)...), DeleterFreeMemory());
 #endif
-        }
-        else
-        {
-            // メモリ確保
-            // クラスだとデフォルトコンストラクタが必要
-            void* pMem = HE_NEW(T, 0);
-            if (pMem == NULL)
-            {
-                throw std::bad_alloc();
-            }
-
-            try
-            {
-                // 配列の要素を構築し、shared_ptrを作成する
-#ifdef HE_ENGINE_DEBUG
-                return SharedPtr<T>(new (pMem) T(std::forward<Args>(args)...),
-                                    DeleterFreeMemory(in_szFile, in_uLine));
-#else
-                return SharedPtr<T>(new (pMem) T(std::forward<Args>(args)...), DeleterFreeMemory());
-#endif
-            }
-            catch (...)
-            {
-                // コンストラクタが失敗した場合はメモリを解放する
-                ::FreeMemory(pMem);
-                throw;
-            }
-        }
     }
 
     /// <summary>
@@ -304,31 +274,11 @@ namespace Core::Memory
     UniquePtr<T> MakeCustomUniquePtr(Args&&... args)
 #endif
     {
-        T* pMem = HE_NEW(T, 0);
-        if (pMem == NULL)
-        {
-            throw std::bad_alloc();
-        }
-
-        if (0 < sizeof...(Args))
-        {
-            try
-            {
-                // Placement newでオブジェクトを構築
-                new (pMem) T(std::forward<Args>(args)...);
-            }
-            catch (...)
-            {
-                // コンストラクタが失敗した場合はメモリを解放する
-                ::FreeMemory(pMem);
-                throw;
-            }
-        }
-
 #ifdef HE_ENGINE_DEBUG
-        return UniquePtr<T>(pMem, DeleterFreeMemory(in_szFilename, in_uLine));
+        return UniquePtr<T>(HE_NEW(T, 0)(std::forward<Args>(args)...),
+                            DeleterFreeMemory(in_szFilename, in_uLine));
 #else
-        return UniquePtr<T>(pMem);
+        return UniquePtr<T>(HE_NEW(T, 0)(std::forward<Args>(args)...), DeleterFreeMemory());
 #endif
     }
 

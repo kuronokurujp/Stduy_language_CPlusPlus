@@ -53,6 +53,8 @@ set(TARGET_FILES
 	Code/Ingame/InGameActorSystem.h
 	Code/Ingame/InGameActorSystem.cpp
 	Code/Ingame/InGameActorCommon.h
+	
+	Code/Ingame/Event/InGameEvent.h
 
 	Code/framework.h
 	Code/Resource.h

@@ -132,51 +132,53 @@ namespace Event
         return bErase;
     }
 
-    Bool EventManager::VTrigger(EventDataInterfacePtr const& in_rEvent) const
-    {
-        Bool bProc = FALSE;
-
-        auto itrSpecalEvant = this->_mRegistry.FindKey(BaseEventData::EType_SpecalEvent);
-        if (itrSpecalEvant != this->_mRegistry.End())
+    /*
+        Bool EventManager::VTrigger(EventDataInterfacePtr const& in_rEvent) const
         {
-            EventListenerTable const& table = itrSpecalEvant->data;
+            Bool bProc = FALSE;
+
+            auto itrSpecalEvant = this->_mRegistry.FindKey(BaseEventData::EType_SpecalEvent);
+            if (itrSpecalEvant != this->_mRegistry.End())
+            {
+                EventListenerTable const& table = itrSpecalEvant->data;
+                for (EventListenerTable::const_iterator it2 = table.begin(), it2End = table.end();
+                     it2 != it2End; it2++)
+                {
+                    if ((*it2)->VHandleEvent(in_rEvent))
+                    {
+                        bProc = TRUE;
+                    }
+                }
+            }
+
+            if (this->VValidateType(in_rEvent->VHash()) == FALSE) return bProc;
+
+            auto itr = this->_mRegistry.FindKey(in_rEvent->VHash());
+            if (itr == this->_mRegistry.End()) return bProc;
+
+            EventListenerTable const& table = itr->data;
             for (EventListenerTable::const_iterator it2 = table.begin(), it2End = table.end();
                  it2 != it2End; it2++)
             {
-                if ((*it2)->VHandleEvent(in_rEvent))
+                EventListenerPtr listener = *it2;
+                if (listener->VHandleEvent(in_rEvent))
                 {
+                    // メッセージを受け入れる場合は trueにする
                     bProc = TRUE;
                 }
             }
+
+            // イベント処理が一つでも成功したか
+            return bProc;
         }
-
-        if (this->VValidateType(in_rEvent->VEventTypeStr()) == FALSE) return bProc;
-
-        auto itr = this->_mRegistry.FindKey(in_rEvent->VEventTypeStr().Hash());
-        if (itr == this->_mRegistry.End()) return bProc;
-
-        EventListenerTable const& table = itr->data;
-        for (EventListenerTable::const_iterator it2 = table.begin(), it2End = table.end();
-             it2 != it2End; it2++)
-        {
-            EventListenerPtr listener = *it2;
-            if (listener->VHandleEvent(in_rEvent))
-            {
-                // メッセージを受け入れる場合は trueにする
-                bProc = TRUE;
-            }
-        }
-
-        // イベント処理が一つでも成功したか
-        return bProc;
-    }
+    */
 
     Bool EventManager::VQueueEvent(EventDataInterfacePtr const& in_rEvent)
     {
         HE_ASSERT(0 <= this->_sActiveQueue);
         HE_ASSERT(this->_sActiveQueue < EConstants_NumQueues);
 
-        if (this->VValidateType(in_rEvent->VEventTypeStr()) == FALSE) return FALSE;
+        if (this->VValidateHash(in_rEvent->VEventTypeHash()) == FALSE) return FALSE;
 
         this->_aQueue[this->_sActiveQueue].push_back(in_rEvent);
 
@@ -255,8 +257,7 @@ namespace Event
             // イベントタイプに対応したリスナーにイベントを投げる
             {
                 // イベントタイプに対応したリスナーを取得
-                EventTypeStr const& rEventType = spEvent->VEventTypeStr();
-                auto itListeners               = this->_mRegistry.FindKey(rEventType.Hash());
+                auto itListeners = this->_mRegistry.FindKey(spEvent->VEventTypeHash());
 
                 // イベントで指定したタイプのリスナーがいないのでスキップ
                 if (itListeners == this->_mRegistry.End()) continue;
@@ -306,12 +307,16 @@ namespace Event
     {
         if (in_rType.Length() <= 0) return FALSE;
 
+        auto ulHash = in_rType.Hash();
         if ((in_rType.Hash() == 0) && (HE_STR_CMP(in_rType.Str(), HE_STR_TEXT("*")) != 0))
             return FALSE;
 
-        if (this->_upStrategy->VIsEventTypeStr(in_rType) == FALSE) return FALSE;
+        return this->VValidateHash(ulHash);
+    }
 
-        return TRUE;
+    Bool EventManager::VValidateHash(const Uint64 in_ulHash) const
+    {
+        return this->_upStrategy->VIsEventTypeHash(in_ulHash);
     }
 
     // 情報探索メソッド
