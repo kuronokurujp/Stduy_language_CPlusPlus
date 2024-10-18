@@ -1,5 +1,10 @@
 ﻿#pragma once
 
+// 利用頻度の多いマクロとテンプレート関数を用意
+// マクロとして利用するのでテンプレート関数名はマクロの表記ルールにしている
+
+#include <math.h>
+
 #include "Config.h"
 #include "Str.h"
 #include "Type.h"
@@ -257,9 +262,27 @@ private:                                  \
 // 下限値の制御
 #define HE_MIN(__src__, __min__) ((__src__) < (__min__) ? (__src__) : (__min__))
 
-// 値のループマクロ
-#define HE_LOOPER(__src__, __min__, __max__) \
-    ((__src__) > (__max__) ? (__min__) : ((__src__) < (__min__) ? (__max__) : (__src__)))
+// 最大・最小の値でリピートした値を返すマクロ
+// 浮動小数点数型の場合
+template <typename T>
+typename std::enable_if<std::is_floating_point<T>::value, T>::type HE_LOOP_IN_RANGE(T t, T min,
+                                                                                    T max)
+{
+    T length = max - min;
+    T offset = t - min;
+    T n      = std::floor(offset / length);
+    return offset - n * length + min;
+}
+
+// 整数型の場合
+template <typename T>
+typename std::enable_if<std::is_integral<T>::value, T>::type HE_LOOP_IN_RANGE(T t, T min, T max)
+{
+    T length = max - min + 1;
+    T offset = t - min;
+    T n      = offset / length;
+    return offset - n * length + min;
+}
 
 // 値をmin/max内で丸めるマクロ
 #define HE_CLAMP(__src__, __min__, __max__) \

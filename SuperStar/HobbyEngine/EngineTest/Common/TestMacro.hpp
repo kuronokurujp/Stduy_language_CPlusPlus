@@ -20,5 +20,12 @@ TEST_CASE("Macro Text")
     // 下限値の制御
     CHECK(HE_MIN(1, 1) == 1);
 
-    HE_LOG(HE_STR_TEXT("test"));
+    // 値のループ
+    CHECK(HE_LOOP_IN_RANGE(4, 0, 3) == 0);
+    CHECK(HE_LOOP_IN_RANGE(3, 0, 3) == 3);
+    CHECK(HE_LOOP_IN_RANGE(0, 0, 3) == 0);
+    CHECK(HE_LOOP_IN_RANGE(1, 0, 3) == 1);
+    CHECK(3.2f <= HE_LOOP_IN_RANGE(0.3f, 0.34f, 3.5f));
+    CHECK(HE_LOOP_IN_RANGE(0.35f, 0.34f, 3.5f) == 0.35f);
+    CHECK(HE_LOOP_IN_RANGE(3.6f, 0.34f, 3.5f) <= 0.44f);
 }
