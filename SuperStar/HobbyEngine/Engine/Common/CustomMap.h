@@ -271,7 +271,6 @@ namespace Core::Common
         /// <summary>
         /// マップが空かどうか
         /// </summary>
-        /// <returns>空(TRUE)</returns>
         Bool Empty() const HE_NOEXCEPT { return (this->_tpRoot == NULL); }
 
         /// <summary>
@@ -313,7 +312,6 @@ namespace Core::Common
         /// <summary>
         /// ノード破棄
         /// </summary>
-        /// <param name="pNode"></param>
         virtual void _VDestoryNode(const Core::Common::Handle& in_rHandle)
         {
             // DATA型で破棄する時にクラスのプロパティをクリアするためにデストラクタを呼ぶ
@@ -483,9 +481,6 @@ namespace Core::Common
         /// ノードを末尾位置へ挿入
         /// 末尾ノードに挿入するので再帰処理で末尾ノードを探索
         /// </summary>
-        /// <param name="pNode"></param>
-        /// <param name="pAdd"></param>
-        /// <returns></returns>
         Node* _Insert(Node* in_pNode, Node* in_pAdd)
         {
             // 親がいないので, そこに追加する
@@ -699,7 +694,6 @@ namespace Core::Common
         /// <summary>
         /// ディープコピー処理
         /// </summary>
-        /// <param name="other"></param>
         void _DeepCopy(const CustomFixMap* in_mpOther)
         {
             HE_ASSERT(in_mpOther);

@@ -432,26 +432,22 @@ namespace Core::Common
         /// <summary>
         /// 先頭のイテレータを取得
         /// </summary>
-        /// <returns></returns>
         Iterator BeginItr() { return Iterator(this->_head.GetNext()); }
 
         /// <summary>
         /// 終端のイテレータを取得
         /// </summary>
-        /// <returns></returns>
         Iterator EndItr() { return Iterator(&this->_tail); }
 
         /// <summary>
         /// 先頭の逆イテレータを取得
         /// リストの終端からリストの先端のループで利用
         /// </summary>
-        /// <returns></returns>
         RevIterator BeginRevItr() { return RevIterator(this->_tail.GetPrev()); }
 
         /// <summary>
         /// 終端の逆イテレータを取得
         /// </summary>
-        /// <returns></returns>
         RevIterator EndRevItr() { return RevIterator(&this->_head); }
 
         Bool Empty() const { return this->_head.GetNext() == &this->_tail; }

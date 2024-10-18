@@ -28,8 +28,8 @@ namespace Core
         static const Uint32 uFlagPause = 0x00000001;
 
     public:
-        TaskManager() : RuntimePoolManager() {}
-        ~TaskManager();
+        TaskManager() = default;
+        virtual ~TaskManager();
 
         /// <summary>
         /// 初期化
@@ -136,14 +136,11 @@ namespace Core
         /// <summary>
         /// グループに設定しているタスクの総数
         /// </summary>
-        /// <param name="in_groupId"></param>
-        /// <returns></returns>
         Uint32 Count(const Sint32 in_sGroupId) const;
 
         /// <summary>
         /// タスクグループの最大数
         /// </summary>
-        /// <returns></returns>
         inline Uint32 GetMaxGroup() const { return this->_iGroupNum; }
 
     private:
