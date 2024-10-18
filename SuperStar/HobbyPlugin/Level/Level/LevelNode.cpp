@@ -4,6 +4,68 @@
 
 namespace Level
 {
+    /// <summary>
+    /// レベルノードにつけるアクター管理のデコレーター
+    /// </summary>
+    class ActorManagerDecorater final : public Actor::ActorManagerDecoraterlnterface
+    {
+    public:
+        Bool VStart(Actor::ActorManager*) override final
+        {
+            this->_lstInputComponent.Clear();
+
+            return TRUE;
+        }
+
+        void VLateUpdate(const Float32 in_fDt, Actor::ActorManager*) override final {}
+
+        /// <summary>
+        /// 管理下にあるアクターに入力状態を送信
+        /// </summary>
+        void ProcessInput(const EnhancedInput::InputMap* in_pInputMap)
+        {
+            HE_ASSERT(in_pInputMap);
+
+            const void* pInputMap = reinterpret_cast<const void*>(in_pInputMap);
+            for (auto it = this->_lstInputComponent.BeginItr();
+                 it != this->_lstInputComponent.EndItr(); ++it)
+            {
+                it->ProcessInput(pInputMap);
+            }
+        }
+
+        /// <summary>
+        /// 入力コンポーネントの登録・解除
+        /// </summary>
+        void VOnActorRegistComponent(Actor::Component* in_pComponent) override final
+        {
+            HE_ASSERT(in_pComponent);
+
+            if (in_pComponent->VGetRTTI().DerivesFrom(&Actor::InputComponent::CLASS_RTTI) == FALSE)
+                return;
+
+            auto pInputComponent = reinterpret_cast<Actor::InputComponent*>(in_pComponent);
+            this->_lstInputComponent.PushBack(*pInputComponent);
+        }
+
+        void VOnActorUnRegistComponent(Actor::Component* in_pComponent) override final
+        {
+            HE_ASSERT(in_pComponent);
+            if (in_pComponent->VGetRTTI().DerivesFrom(&Actor::InputComponent::CLASS_RTTI) == FALSE)
+                return;
+
+            auto pInputComponent = reinterpret_cast<Actor::InputComponent*>(in_pComponent);
+            this->_lstInputComponent.Erase(pInputComponent);
+        }
+
+    private:
+        Core::Common::CustomList<Actor::InputComponent> _lstInputComponent;
+    };
+
+    Node::Node() : Actor::Object(), _actorManager(HE_MAKE_CUSTOM_UNIQUE_PTR(ActorManagerDecorater))
+    {
+    }
+
     Bool Node::VBegin()
     {
         if (Actor::Object::VBegin() == FALSE) return FALSE;
@@ -90,7 +152,11 @@ namespace Level
 
     void Node::_VProcessInput(const EnhancedInput::InputMap* in_pInputMap)
     {
-        this->_actorManagerDecorater.ProcessInput(in_pInputMap);
+        ActorManagerDecorater* pDecotrater =
+            reinterpret_cast<ActorManagerDecorater*>(this->_actorManager.GetDecorater());
+        pDecotrater->ProcessInput(in_pInputMap);
+
+        // this->_actorManagerDecorater.ProcessInput(in_pInputMap);
     }
 
     /// <summary>
@@ -109,46 +175,6 @@ namespace Level
         }
 
         return Actor::Object::_VSetupComponent(in_rHandle);
-    }
-
-    Bool Node::ActorMaanagerDecorater::VStart(Actor::ActorManager*)
-    {
-        this->_lstInputComponent.Clear();
-
-        return TRUE;
-    }
-
-    void Node::ActorMaanagerDecorater::ProcessInput(const EnhancedInput::InputMap* in_pInputMap)
-    {
-        HE_ASSERT(in_pInputMap);
-
-        const void* pInputMap = reinterpret_cast<const void*>(in_pInputMap);
-        for (auto it = this->_lstInputComponent.BeginItr(); it != this->_lstInputComponent.EndItr();
-             ++it)
-        {
-            it->ProcessInput(pInputMap);
-        }
-    }
-
-    void Node::ActorMaanagerDecorater::VOnActorRegistComponent(Actor::Component* in_rComponent)
-    {
-        HE_ASSERT(in_rComponent);
-
-        if (in_rComponent->VGetRTTI().DerivesFrom(&Actor::InputComponent::CLASS_RTTI) == FALSE)
-            return;
-
-        auto pInputComponent = reinterpret_cast<Actor::InputComponent*>(in_rComponent);
-        this->_lstInputComponent.PushBack(*pInputComponent);
-    }
-
-    void Node::ActorMaanagerDecorater::VOnActorUnRegistComponent(Actor::Component* in_rComponent)
-    {
-        HE_ASSERT(in_rComponent);
-        if (in_rComponent->VGetRTTI().DerivesFrom(&Actor::InputComponent::CLASS_RTTI) == FALSE)
-            return;
-
-        auto pInputComponent = reinterpret_cast<Actor::InputComponent*>(in_rComponent);
-        this->_lstInputComponent.Erase(pInputComponent);
     }
 
 }  // namespace Level

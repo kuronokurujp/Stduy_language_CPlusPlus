@@ -144,8 +144,8 @@ namespace DXLib
                     {
                         const Render::Cmd2DRectDraw* pRect2D = &pCmd.data.rect2DDraw;
 
-                        const Uint32 uColor = GetColor(pRect2D->color.c32.r, pRect2D->color.c32.g,
-                                                       pRect2D->color.c32.b);
+                        const Uint32 uColor = ::GetColor(pRect2D->color.c32.r, pRect2D->color.c32.g,
+                                                         pRect2D->color.c32.b);
                         // TODO: 整数版と切り替えた方がいいのだろうか
                         ::DrawBoxAA(pRect2D->fLeftX, pRect2D->fLeftY, pRect2D->fRightX,
                                     pRect2D->fRightY, uColor, TRUE);
@@ -157,8 +157,8 @@ namespace DXLib
                     {
                         const Render::Cmd2DTextDraw* pText2D = &pCmd.data.text2DDraw;
 
-                        const Uint32 uColor = GetColor(pText2D->color.c32.r, pText2D->color.c32.g,
-                                                       pText2D->color.c32.b);
+                        const Uint32 uColor = ::GetColor(pText2D->color.c32.r, pText2D->color.c32.g,
+                                                         pText2D->color.c32.b);
                         Core::Common::FixString1024 str(pText2D->szChars);
                         int x = static_cast<int>(pText2D->fX);
                         int y = static_cast<int>(pText2D->fY);
@@ -168,9 +168,10 @@ namespace DXLib
                             // 中央位置
                             case Core::Math::Rect2::EAnchor_Center:
                             {
-                                const int sWidth  = GetDrawStringWidth(pText2D->szChars,
-                                                                       HE_STR_LEN(pText2D->szChars));
-                                const int sHeight = GetDrawStringWidth(pText2D->szChars, 1);
+                                const int sWidth =
+                                    ::GetDrawStringWidth(pText2D->szChars,
+                                                         HE_STR_LEN(pText2D->szChars));
+                                const int sHeight = ::GetDrawStringWidth(pText2D->szChars, 1);
                                 if ((sWidth != -1) && (sHeight != -1))
                                 {
                                     x -= sWidth / 2;
@@ -188,6 +189,7 @@ namespace DXLib
                         ::DrawString(x, y, pText2D->szChars, uColor);
                         break;
                     }
+
                     case Render::ECmdType_2DPointDraw:
                     {
                         const Render::Cmd2DPointDraw* pCmdPoint2D = &pCmd.data.point2DDraw;
@@ -200,6 +202,22 @@ namespace DXLib
 
                         break;
                     }
+
+                    // 2次元の円描画
+                    case Render::ECmdType_2DCircleDraw:
+                    {
+                        const Render::Cmd2DCircleDraw* pCmdCircle = &pCmd.data.circle2DDraw;
+                        const Render::Color* pColor               = &pCmdCircle->color;
+                        const Uint32 uColor =
+                            ::GetColor(pColor->c32.r, pColor->c32.g, pColor->c32.b);
+
+                        // 円を描画
+                        ::DrawCircleAA(pCmdCircle->point.fX, pCmdCircle->point.fY,
+                                       pCmdCircle->fSize, 32, uColor, TRUE);
+
+                        break;
+                    }
+
                     default:
                         HE_ASSERT(0 && "存在しないコマンド");
                 }

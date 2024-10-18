@@ -4,7 +4,6 @@
 #include "Engine/Common/Handle.h"
 #include "Engine/Common/Singleton.h"
 #include "Engine/MiniEngine.h"
-#include "Engine/Module/Module.h"
 
 // 前方宣言
 
@@ -17,6 +16,12 @@ namespace Platform
 {
     class PlatformModule;
 }
+
+namespace Module
+{
+    class ModuleManager;
+    class ModuleBase;
+}  // namespace Module
 
 /// <summary>
 /// ゲームエンジン本体
@@ -32,15 +37,15 @@ public:
     Bool Init();
 
     /// <summary>
-    /// モジュールを作成
+    /// モジュールを作成して追加
     /// </summary>
     template <class T>
-    Bool CreateModule()
+    Bool AddModule()
     {
         HE_ASSERT(this->_bInit);
 
         T* pModule = HE_NEW_LAST(T, 0);
-        if (this->_moduleManager.RegistHeapModule(pModule) == FALSE)
+        if (this->_AddModule(pModule) == FALSE)
         {
             HE_DELETE(pModule);
             return FALSE;
@@ -54,6 +59,10 @@ public:
     /// Initメソッドを事前に呼ばないとエラーになる
     /// </summary>
     Bool Start();
+
+    /// <summary>
+    /// エンジン破棄
+    /// </summary>
     Bool VRelease() override final;
 
     /// <summary>
@@ -80,8 +89,7 @@ public:
     /// <summary>
     /// モジュール管理を取得
     /// </summary>
-    /// <returns></returns>
-    Module::ModuleManager& ModuleManager() { return this->_moduleManager; }
+    Module::ModuleManager& ModuleManager() { return *this->_upModuleManager.get(); }
 
     /// <summary>
     /// デバッグモードかどうか
@@ -98,29 +106,25 @@ public:
     /// <summary>
     /// １フレームの差分時間を秒で取得
     /// </summary>
-    /// <returns></returns>
     Float32 GetDeltaTimeSec();
 
     /// <summary>
     /// アプリを辞める状態か
     /// </summary>
-    /// <returns></returns>
     Bool IsAppQuit();
 
 private:
-    /// <summary>
-    /// Colisions this instance.
-    /// </summary>
-    /// <returns></returns>
-    void _Colision() {}
-
     /// <summary>
     /// プラットフォームのモジュールを取得
     /// windows / android / iosなどのプラットフォームが扱える予定
     /// 現在はwindowsのみ
     /// </summary>
-    /// <returns></returns>
     Platform::PlatformModule* _PlatformModule();
+
+    /// <summary>
+    /// モジュール追加
+    /// </summary>
+    Bool _AddModule(Module::ModuleBase* in_pModule);
 
 private:
     Bool _bInit  = FALSE;
@@ -129,17 +133,17 @@ private:
     // メモリ管理
     Core::Memory::Manager _memoryManager;
 
-    // fPS 制御
-    std::shared_ptr<Core::Time::FPS> _spFPS = NULL;
+    // FPS 制御
+    Core::Memory::SharedPtr<Core::Time::FPS> _spFPS = NULL;
 
     // モジュール管理
-    Module::ModuleManager _moduleManager;
+    Core::Memory::UniquePtr<Module::ModuleManager> _upModuleManager = NULL;
 };
 
 // エンジン参照マクロ
-#define HOBBY_ENGINE Engine::I()
+#define HE_ENGINE Engine::I()
 
 // エンジン作成
-#define CREATE_HOBBY_ENGINE static Engine s_engine
+#define HE_CREATE_ENGINE static Engine s_engine
 // エンジン削除
-#define DELETE_HOBBY_ENGINE Engine::I().Reset()
+#define HE_DELETE_ENGINE Engine::I().Reset()

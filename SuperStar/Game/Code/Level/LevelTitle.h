@@ -13,7 +13,7 @@ namespace Level
         HE_CLASS_MOVE_NG(LevelTitle);
 
     public:
-        LevelTitle() : Level::Node() {}
+        LevelTitle() = default;
 
         Bool VBegin() override final;
         Bool VEnd() override final;

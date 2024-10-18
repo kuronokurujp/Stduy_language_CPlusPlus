@@ -21,8 +21,8 @@ set(TARGET_FILES
 	
 	Code/InGame/Component/InGameSystemComponent.h
 	Code/InGame/Component/InGameSystemComponent.cpp
-	Code/InGame/Component/InGameShotManagerComponent.cpp
-	Code/InGame/Component/InGameShotManagerComponent.h
+	Code/InGame/Component/InGameBulletManagerComponent.cpp
+	Code/InGame/Component/InGameBulletManagerComponent.h
 	Code/InGame/Component/InGameStageManagerComponent.cpp
 	Code/InGame/Component/InGameStageManagerComponent.h
 	Code/InGame/Component/InGameCollisionComponent.cpp
@@ -49,6 +49,10 @@ set(TARGET_FILES
 
 	Code/InGame/Actor/Boss/InGameBoss01Actor.cpp
 	Code/InGame/Actor/Boss/InGameBoss01Actor.h
+	
+	Code/InGame/Bullet/InGameBulletInterface.h
+	Code/InGame/Bullet/InGameBulletNormal.h
+	Code/InGame/Bullet/InGameBulletNormal.cpp
 	
 	Code/Ingame/InGameActorSystem.h
 	Code/Ingame/InGameActorSystem.cpp

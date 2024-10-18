@@ -27,6 +27,8 @@ namespace Render
         ECmdType_2DPointDraw,
         // TODO: 点群描画
         ECmdType_2DPointCloudDraw,
+        // 円の描画
+        ECmdType_2DCircleDraw
     };
 
     /// <summary>
@@ -70,7 +72,7 @@ namespace Render
     struct Cmd2DPointCloudDraw
     {
         Point2D* pPoints = NULL;
-        Uint32 num       = 0;
+        Uint32 uNum      = 0;
     };
 
     /// <summary>
@@ -78,6 +80,13 @@ namespace Render
     /// </summary>
     struct CmdClsScreen
     {
+        Color color;
+    };
+
+    struct Cmd2DCircleDraw
+    {
+        Point2D point;
+        Float32 fSize = 0.0f;
         Color color;
     };
 
@@ -95,10 +104,12 @@ namespace Render
 
             // TODO: バッファ超えていた場合はコンパイルエラーを出すことはできるのだろうか？
             CmdClsScreen clsScree;
+
             Cmd2DTextDraw text2DDraw;
             Cmd2DRectDraw rect2DDraw;
             Cmd2DPointDraw point2DDraw;
             Cmd2DPointCloudDraw pointCloud2DDraw;
+            Cmd2DCircleDraw circle2DDraw;
 
         } data;
     };
@@ -133,5 +144,12 @@ namespace Render
     /// </summary>
     extern void CommandClsScreen(const Core::Common::Handle& in_rViewHandle,
                                  const Color& in_rColor);
+
+    /// <summary>
+    /// 2D円の描画
+    /// </summary>
+    extern void Command2DCircleDraw(const Core::Common::Handle& in_rViewHandle,
+                                    const Core::Math::Vector2& in_rPos, const Float32 in_fSize,
+                                    const Color& in_rColor);
 
 }  // namespace Render

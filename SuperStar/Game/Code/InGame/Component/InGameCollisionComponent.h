@@ -1,32 +1,50 @@
 ﻿#pragma once
 
+#include <functional>
+
 #include "Actor/Component/Component.h"
 #include "Engine/Common/CustomVector.h"
+#include "Engine/Math/Vector3.h"
 #include "Engine/MiniEngine.h"
 
 namespace InGame
 {
-    class InGameCircleCollision2DComponent;
-
-    class CollisionInterface
+    enum ECollisionType
     {
-    public:
-        virtual ~CollisionInterface() = default;
-        // 2D円のコリジョン
-        virtual Bool VCollision(InGameCircleCollision2DComponent&) = 0;
+
+        ECollisionType_None = 0,
+        ECollisionType_Circle2D,
+    };
+
+    struct CollisionData
+    {
+        ECollisionType eType;
+        Uint32 uHashCode = 0;
+
+        union
+        {
+            Uint8 aWork[256] = {0};
+
+            struct Circle2D
+            {
+                Core::Math::Vector2 pos;
+                Float32 fRadius;
+            } circle2D;
+
+        } data;
     };
 
     /// <summary>
     /// インゲームのアクター衝突コンポーネント
     /// </summary>
-    class InGameCollisionComponent : public Actor::Component, CollisionInterface
+    class InGameCollisionComponent : public Actor::Component
     {
         HE_CLASS_COPY_NG(InGameCollisionComponent);
         HE_CLASS_MOVE_NG(InGameCollisionComponent);
         HE_GENERATED_CLASS_BODY_HEADER(InGameCollisionComponent, Actor::Component);
 
     public:
-        InGameCollisionComponent();
+        InGameCollisionComponent()          = default;
         virtual ~InGameCollisionComponent() = default;
 
         /// <summary>
@@ -39,17 +57,26 @@ namespace InGame
         /// </summary>
         virtual Bool VEnd() override;
 
-        // 全ての衝突コンポーネント同士の衝突処理
-        static void CollisionAll();
+        virtual Uint32 VColCount() const                                           = 0;
+        virtual Bool VOutputColData(CollisionData* out, const Uint32 in_uColIndex) = 0;
+
+        void OnHit(const CollisionData& in_rSelfColData, const CollisionData& in_rHitColData);
+
+        void SetHashCode(const Char* in_szName);
+        void SetHashCode(const Uint32 in_uHashCode);
+
+        Uint32 HashCode() const { return this->_uHashCode; }
+
+        void SetHitAction(std::function<void(const CollisionData&, const CollisionData&)> in_func)
+        {
+            this->_hitAction = in_func;
+        }
 
     protected:
-        virtual Bool VCollision(InGameCircleCollision2DComponent&) = 0;
+        Uint32 _uHashCode = 0;
 
     private:
-        static Bool CollisionWithComponent(CollisionInterface*, InGameCollisionComponent*);
-
-        // コリジョンリスト
-        static Core::Common::CustomFixVector<InGameCollisionComponent*, 1024> s_vCollision;
+        std::function<void(const CollisionData&, const CollisionData&)> _hitAction = NULL;
     };
 
     class InGameCircleCollision2DComponent final : public InGameCollisionComponent
@@ -59,16 +86,19 @@ namespace InGame
         HE_GENERATED_CLASS_BODY_HEADER(InGameCircleCollision2DComponent, InGameCollisionComponent);
 
     public:
-        InGameCircleCollision2DComponent() : InGameCollisionComponent() {}
+        InGameCircleCollision2DComponent() = default;
 
         // 半径値
         void SetRadius(const Float32 in_fRadius) { this->_fRadius = in_fRadius; }
 
-    protected:
-        Bool VCollision(InGameCircleCollision2DComponent&) override final;
+        Uint32 VColCount() const override final { return 1; }
+        Bool VOutputColData(CollisionData* out, const Uint32 in_uColIndex) override final;
 
     private:
         Float32 _fRadius = 0.0f;
     };
+
+    // 全ての衝突コンポーネント同士の衝突処理
+    extern void CollisionAll();
 
 }  // namespace InGame

@@ -28,7 +28,7 @@ namespace Core::Common
     public:
         struct AllocData
         {
-            T* _tpItem = NULL;
+            T* _pItem = NULL;
             Core::Common::Handle _handle;
         };
 
@@ -180,7 +180,7 @@ namespace Core::Common
             }
 
             allocData._handle = handle;
-            allocData._tpItem = pObject;
+            allocData._pItem  = pObject;
 
             // 利用リストに追加
             this->_spUserSlot->insert(std::make_pair(handle, pObject));
@@ -257,19 +257,17 @@ namespace Core::Common
         /// <summary>
         /// データ使用個数
         /// </summary>
-        /// <returns></returns>
-        inline Uint32 Size() const HE_NOEXCEPT { return this->_vUserSlot.Size(); }
+        inline Uint32 Size() const HE_NOEXCEPT { return this->_uUseCount; }
 
-        inline Bool Empty() const HE_NOEXCEPT { return (this->Size() <= 0); }
-
-        // 現在利用しているデータリストを取得
-        inline const std::list<T*>& GetUserDataList() const HE_NOEXCEPT { return this->_vUserSlot; }
+        /// <summary>
+        /// オブジェクトが空かどうか
+        /// </summary>
+        inline Bool Empty() const HE_NOEXCEPT { return (this->_uUseCount <= 0); }
 
         /// <summary>
         /// プールしているデータの中で利用できるデータ枠を取得
         /// 利用するデータとそのデータを紐づけたハンドルを返す
         /// </summary>
-        /// <returns></returns>
         T* Alloc(Handle* out)
         {
             HE_ASSERT(out != NULL);
@@ -289,6 +287,10 @@ namespace Core::Common
                 (*this->_vMagicNum.GetPtr(uIndex)) = out->Magic();
             }
 
+            HE_ASSERT(uIndex < this->_vUserSlot.Capacity() &&
+                      "プールオブジェクトのフリーインデックス値が確保数を超えている");
+
+            ++this->_uUseCount;
             // 空きのあるスロットを使用する
             return &this->_vUserSlot[uIndex];
         }
@@ -296,18 +298,19 @@ namespace Core::Common
         /// <summary>
         /// 割り当てデータを解放
         /// </summary>
-        /// <param name="handle"></param>
-        void Free(const Handle& in_rHandle)
+        bool Free(const Handle& in_rHandle)
         {
-            if (in_rHandle.Null()) return;
+            --this->_uUseCount;
+            if (in_rHandle.Null()) return FALSE;
 
             const Uint32 uIndex = in_rHandle.Index();
             HE_ASSERT(this->_vMagicNum[uIndex] != NON_MAGIC_NUMBER);
             HE_ASSERT(this->_vMagicNum[uIndex] == in_rHandle.Magic());
-            HE_ASSERT(uIndex < this->_vUserSlot.Capacity());
 
             (*this->_vMagicNum.GetPtr(uIndex)) = NON_MAGIC_NUMBER;
             this->_sFreeSlot.PushBack(uIndex);
+
+            return TRUE;
         }
 
         // データの参照(非const版)
@@ -334,6 +337,8 @@ namespace Core::Common
         CustomArray<T, CAPACITY> _vUserSlot;
         CustomFixStack<Uint32, CAPACITY> _sFreeSlot;
         CustomFixVector<Uint32, CAPACITY> _vMagicNum;
+
+        Uint32 _uUseCount = 0;
     };
 }  // namespace Core::Common
 ;  // namespace Core

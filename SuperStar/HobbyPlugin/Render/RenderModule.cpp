@@ -24,9 +24,13 @@ namespace Render
     Bool RenderModule::RemoveView(const Core::Common::Handle& in_rHandle)
     {
         if (in_rHandle.Null()) return FALSE;
+        // すでに破棄されている
+        if (this->_poolView.Empty()) return FALSE;
 
         // Viewの解放処理をする
         auto pView = this->_poolView.Ref(in_rHandle);
+        HE_ASSERT(pView &&
+                  "レンダリングビューがないということは別の箇所でRemoveされいるので意図していない");
         pView->Release();
 
         // 解放が終わったらプールしているデータを解放

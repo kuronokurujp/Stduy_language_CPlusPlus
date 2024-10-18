@@ -13,10 +13,10 @@ namespace InGame
     class InGameShotStrategyNormalBullet final : public InGameShotStrategyInterface
     {
     public:
-        // TODO: 弾を打つ設定
+        // 弾を打つ設定
         void VConfigure(ShotConfig* out) override final;
 
-        // TODO: 弾を打つ処理
+        // 弾を打つ処理
         void VShot(const ShotConfig& in_rConfig) override final;
     };
 

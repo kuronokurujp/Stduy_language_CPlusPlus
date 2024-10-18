@@ -30,8 +30,6 @@ namespace Core::Common
         /// 配列の末尾に要素を追加
         /// クラスや構造体だとコピー処理が走るのでコピー処理ができるクラスのみ使える
         /// </summary>
-        /// <param name="in_data"></param>
-        /// <returns></returns>
         TYPE& PushBack(const TYPE& in_rData)
         {
             HE_ASSERT(this->_uSize < this->Capacity());
@@ -117,12 +115,13 @@ namespace Core::Common
             this->_uSize = uNewSize;
         }
 
-    private:
         /// <summary>
         /// 指定インデックス削除
         /// Vectorはデータを挿入するとデータ位置が変わってしまう
         /// 使う側がインデックスを保存して保存したインデックスを使って削除すると消したくないデータが削除される可能性がある
         /// このようなエラーを出来るだけ起こさないようにできるだけインデックスを使わせない作りにしている
+        /// しかし利用したいケースもあるので,
+        /// その場合はクラスを継承して呼び出すようにするのがいいかも
         /// </summary>
         void _RemoveAt(const Uint32 in_uIndex)
         {

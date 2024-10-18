@@ -275,11 +275,8 @@ namespace Core::Common
     /// <summary>
     /// 指定文字列を指定文字で区切って出力
     /// </summary>
-    /// <param name="out"></param>
-    /// <param name="in_rStr"></param>
-    /// <param name="in_delim"></param>
     static void OutputSplitString(ArrayBase<FixString1024>& out, StringBase& in_szrName,
-                                  const Char in_cDelim)
+                                  const Char in_delim)
     {
         FixString1024 name;
         Uint32 i          = 0;
@@ -287,7 +284,7 @@ namespace Core::Common
         Char c            = in_szrName[i];
         while (c != '\0')
         {
-            if (c == in_cDelim)
+            if (c == in_delim)
             {
                 if (name.Empty() == FALSE)
                 {
@@ -295,8 +292,6 @@ namespace Core::Common
                     ++arrayIndex;
                 }
                 name.Clear();
-                // TODO: 配列要素数 -
-                // 1が文字列分割できる回数なので回数を上回ったたら分割処理は終了
             }
             else
             {

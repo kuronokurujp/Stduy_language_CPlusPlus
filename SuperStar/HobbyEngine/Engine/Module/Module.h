@@ -3,12 +3,17 @@
 #include "Engine/Common/CustomMap.h"
 #include "Engine/Common/CustomVector.h"
 #include "Engine/Common/Singleton.h"
-#include "Engine/MiniEngine.h"
+#include "Engine/Engine.h"
 
 namespace Module
 {
     class ModuleBase;
 
+    /// <summary>
+    /// モジュールの実行レイヤー
+    /// 上から順にモジュールが実行される
+    /// 解放は下から順に実行する
+    /// </summary>
     enum ELayer
     {
         ELayer_App = 0,
@@ -19,7 +24,7 @@ namespace Module
     /// <summary>
     /// モジュール管理クラス
     /// </summary>
-    class ModuleManager final : public Core::Common::Singleton<ModuleManager>
+    class ModuleManager
     {
     public:
         ModuleBase* Get(const Char* in_szName) const;
@@ -28,7 +33,9 @@ namespace Module
         T* Get() const
         {
             Core::Common::FixString128 szName(T::ModuleName());
-            return reinterpret_cast<T*>(this->Get(szName.Str()));
+            auto pModule = reinterpret_cast<T*>(this->Get(szName.Str()));
+            HE_ASSERT(pModule && "モジュールが存在しない");
+            return pModule;
         }
 
         /// <summary>
@@ -44,12 +51,11 @@ namespace Module
         /// <summary>
         /// 解放
         /// </summary>
-        Bool VRelease() override final;
+        Bool Release();
 
         /// <summary>
         /// モジュール群の前更新
         /// </summary>
-        /// <param name="in_fDeltaTime"></param>
         void BeforeUpdate(const Float32 in_fDeltaTime);
 
         /// <summary>
@@ -94,7 +100,7 @@ namespace Module
         T* GetDependenceModule()
         {
             Core::Common::FixString64 szName(T::ModuleName());
-            auto pTargetModule = reinterpret_cast<T*>(ModuleManager::I().Get(szName.Str()));
+            auto pTargetModule = reinterpret_cast<T*>(HE_ENGINE.ModuleManager().Get(szName.Str()));
             if (pTargetModule == NULL)
             {
                 HE_PG_LOG_LINE(HE_STR_TEXT("指定したモジュール(%s)が存在しない"), szName.Str());

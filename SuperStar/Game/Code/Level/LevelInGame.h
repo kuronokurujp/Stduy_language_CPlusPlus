@@ -14,7 +14,7 @@ namespace Level
         HE_CLASS_MOVE_NG(LevelInGame);
 
     public:
-        LevelInGame();
+        LevelInGame() = default;
 
         Bool VBegin() override final;
         Bool VEnd() override final;
@@ -26,7 +26,6 @@ namespace Level
 
     private:
         Core::Common::Handle _systemComponentHandle;
-        Core::Common::Handle _shotManagerComponentHandle;
         Core::Common::Handle _stageManagerComponentHandle;
         Core::Common::Handle _viewHandle;
 

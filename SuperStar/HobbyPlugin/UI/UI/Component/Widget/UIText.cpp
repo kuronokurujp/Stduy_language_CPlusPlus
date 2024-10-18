@@ -15,7 +15,7 @@ namespace UI
         if (0 < this->_szLocGroup.Length())
         {
             // TODO: 言語切り替えが必要
-            auto pLocalModule = Module::ModuleManager::I().Get<Localization::LocalizationModule>();
+            auto pLocalModule = HE_ENGINE.ModuleManager().Get<Localization::LocalizationModule>();
             HE_ASSERT(pLocalModule);
 
             this->_szDrawText = pLocalModule->Text(Core::Common::FixString16(HE_STR_TEXT("JP")),

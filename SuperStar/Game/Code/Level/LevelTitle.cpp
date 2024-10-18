@@ -24,14 +24,13 @@ namespace Level
 
         // レンダリングビュー作成
         {
-            auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
+            auto pRenderModule = HE_ENGINE.ModuleManager().Get<Render::RenderModule>();
             this->_viewHandle  = pRenderModule->AddView();
         }
 
         // ユーザー共通入力割り当て設定
         {
-            auto pInputModule =
-                Module::ModuleManager::I().Get<EnhancedInput::EnhancedInputModule>();
+            auto pInputModule = HE_ENGINE.ModuleManager().Get<EnhancedInput::EnhancedInputModule>();
             pInputModule->AddCommonMappingAction(Local::mInputAction);
         }
 
@@ -48,7 +47,7 @@ namespace Level
 
         // UIのBuilderファイルからレイアウト作成
         {
-            auto pUIModule = Module::ModuleManager::I().Get<UI::UIModule>();
+            auto pUIModule = HE_ENGINE.ModuleManager().Get<UI::UIModule>();
 
             this->_layoutAssetHandle = pUIModule->LoadAssetWithLayoutBuild(
                 Core::File::Path(HE_STR_TEXT("UI"), HE_STR_TEXT("Builder"), HE_STR_TEXT("Game"),
@@ -67,21 +66,20 @@ namespace Level
     {
         // ビューのハンドルを外す
         {
-            auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
-            if (pRenderModule != NULL) pRenderModule->RemoveView(this->_viewHandle);
+            auto pRenderModule = HE_ENGINE.ModuleManager().Get<Render::RenderModule>();
+            pRenderModule->RemoveView(this->_viewHandle);
         }
 
         // 専用の入力アクションを外す
         {
-            auto pInputModule =
-                Module::ModuleManager::I().Get<EnhancedInput::EnhancedInputModule>();
-            if (pInputModule != NULL) pInputModule->RemoveCommonMappingAction(Local::mInputAction);
+            auto pInputModule = HE_ENGINE.ModuleManager().Get<EnhancedInput::EnhancedInputModule>();
+            pInputModule->RemoveCommonMappingAction(Local::mInputAction);
         }
 
         // ロードしたアセットを破棄
         {
-            auto pUIModule = Module::ModuleManager::I().Get<UI::UIModule>();
-            if (pUIModule != NULL) pUIModule->UnloadAssetWithLayoutBuild(this->_layoutAssetHandle);
+            auto pUIModule = HE_ENGINE.ModuleManager().Get<UI::UIModule>();
+            pUIModule->UnloadAssetWithLayoutBuild(this->_layoutAssetHandle);
         }
 
         const Bool bRet = Level::Node::VEnd();
@@ -97,7 +95,7 @@ namespace Level
             if (in_pInputMap->Contains(Local::szInputActionNameByGameStart))
             {
                 // メインゲームに遷移
-                auto pLevelModule = Module::ModuleManager::I().Get<Level::LevelModule>();
+                auto pLevelModule = HE_ENGINE.ModuleManager().Get<Level::LevelModule>();
                 pLevelModule->GetManager()->StartLevel<Level::LevelInGame>();
                 return;
             }

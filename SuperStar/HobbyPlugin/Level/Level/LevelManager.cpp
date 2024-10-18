@@ -10,14 +10,15 @@ namespace Level
     {
         // タスク管理を初期化
         // 利用するタスク設定は内部で固定する
-        if (this->_nodeManager.Start(32, 2) == FALSE) return FALSE;
+        this->_upNodeManager = HE_MAKE_CUSTOM_UNIQUE_PTR(Actor::ActorManager);
+        if (this->_upNodeManager->Start(32, 2) == FALSE) return FALSE;
 
         return TRUE;
     }
 
     Bool Manager::Release()
     {
-        if (this->_nodeManager.End() == FALSE) return FALSE;
+        if (this->_upNodeManager->End() == FALSE) return FALSE;
 
         return TRUE;
     }
@@ -29,7 +30,7 @@ namespace Level
             EnhancedInput::InputMap& rInputMap = const_cast<EnhancedInput::InputMap&>(in_rInputMap);
             Core::TaskData taskData{Node::ETaskUpdateId_Input, reinterpret_cast<void*>(&rInputMap)};
 
-            this->_nodeManager.Event(taskData);
+            this->_upNodeManager->Event(taskData);
         }
     }
 
@@ -39,34 +40,35 @@ namespace Level
         // 切り替えた後は古いカレントは破棄
         if ((this->_nextLevelHandle.Null() == FALSE))
         {
-            auto pNode = reinterpret_cast<Node*>(this->_nodeManager.Get(this->_nextLevelHandle));
+            auto pNode = reinterpret_cast<Node*>(this->_upNodeManager->Get(this->_nextLevelHandle));
             HE_ASSERT(pNode);
             pNode->SetState(Actor::Object::EState::EState_Active);
 
             if (this->_currentLevelHandle.Null() == FALSE)
-                this->_nodeManager.Remove(&this->_currentLevelHandle);
+                this->_upNodeManager->Remove(&this->_currentLevelHandle);
 
             this->_currentLevelHandle = this->_nextLevelHandle;
             this->_nextLevelHandle.Clear();
         }
 
-        this->_nodeManager.BeginUpdate(in_fDt);
+        // TODO: 各レベルノードに登録したアクターはコリジョン処理する
+        this->_upNodeManager->BeginUpdate(in_fDt);
     }
 
     void Manager::Update(const Float32 in_fDt)
     {
-        // アクター更新
-        this->_nodeManager.Update(in_fDt);
+        // レベルノードを更新
+        this->_upNodeManager->Update(in_fDt);
     }
 
     void Manager::LateUpdate(const Float32 in_fDt)
     {
-        this->_nodeManager.LateUpdate(in_fDt);
+        this->_upNodeManager->LateUpdate(in_fDt);
     }
 
     Node* Manager::GetLevel(const Core::Common::Handle& in_rHandle)
     {
-        Level::Node* pNode = reinterpret_cast<Level::Node*>(this->_nodeManager.Get(in_rHandle));
+        Level::Node* pNode = reinterpret_cast<Level::Node*>(this->_upNodeManager->Get(in_rHandle));
         return pNode;
     }
 
@@ -74,7 +76,7 @@ namespace Level
     {
         this->_nextLevelHandle = in_rHandle;
 
-        auto pNode = reinterpret_cast<Node*>(this->_nodeManager.Get(this->_nextLevelHandle));
+        auto pNode = reinterpret_cast<Node*>(this->_upNodeManager->Get(this->_nextLevelHandle));
         HE_ASSERT(pNode);
         if (pNode == NULL) return FALSE;
 

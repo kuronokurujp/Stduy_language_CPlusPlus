@@ -1,5 +1,6 @@
 ﻿#include "LevelInGame_BG.h"
 
+// 利用モジュール
 #include "Engine/Platform/PlatformModule.h"
 #include "RenderModule.h"
 
@@ -13,14 +14,14 @@ namespace Level
         // レンダリングビュー作成
         {
             // 一番奥にビュー追加
-            auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
+            auto pRenderModule = HE_ENGINE.ModuleManager().Get<Render::RenderModule>();
             this->_viewHandle  = pRenderModule->AddView(0);
         }
 
         //	点の位置を複数作成
         {
             // スクリーンサイズ取得
-            auto pPlatform = Module::ModuleManager::I().Get<Platform::PlatformModule>();
+            auto pPlatform = HE_ENGINE.ModuleManager().Get<Platform::PlatformModule>();
             auto pScreen   = pPlatform->VScreen();
             auto pSystem   = pPlatform->VSystem();
 
@@ -39,8 +40,8 @@ namespace Level
 
     Bool LevelInGame_BG::VEnd()
     {
-        auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
-        if (pRenderModule != NULL) pRenderModule->RemoveView(this->_viewHandle);
+        auto pRenderModule = HE_ENGINE.ModuleManager().Get<Render::RenderModule>();
+        pRenderModule->RemoveView(this->_viewHandle);
 
         return Node::VEnd();
     }
@@ -50,7 +51,7 @@ namespace Level
         Node::VUpdate(in_fDt);
 
         // スクリーン情報を取得
-        auto pPlatform = Module::ModuleManager::I().Get<Platform::PlatformModule>();
+        auto pPlatform = HE_ENGINE.ModuleManager().Get<Platform::PlatformModule>();
         auto pScreen   = pPlatform->VScreen();
         auto pSystem   = pPlatform->VSystem();
 

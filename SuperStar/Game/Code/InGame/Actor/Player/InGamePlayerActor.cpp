@@ -2,6 +2,7 @@
 
 #include "Actor/Component/InputComponent.h"
 #include "Actor/Component/TransformComponent.h"
+#include "InGame/Component/InGameCollisionComponent.h"
 #include "InGame/Component/InGameShotComponent.h"
 #include "InGame/Component/Shot/InGameShotStrategy.h"
 
@@ -53,7 +54,7 @@ namespace InGame
                 // ユーザー共通入力割り当て設定
                 {
                     auto pInputModule =
-                        Module::ModuleManager::I().Get<EnhancedInput::EnhancedInputModule>();
+                        HE_ENGINE.ModuleManager().Get<EnhancedInput::EnhancedInputModule>();
                     pInputModule->AddCommonMappingAction(Local::mInputActionByPlay);
                 }
             }
@@ -62,9 +63,8 @@ namespace InGame
                 // 専用の入力アクションを外す
                 {
                     auto pInputModule =
-                        Module::ModuleManager::I().Get<EnhancedInput::EnhancedInputModule>();
-                    if (pInputModule != NULL)
-                        pInputModule->RemoveCommonMappingAction(Local::mInputActionByPlay);
+                        HE_ENGINE.ModuleManager().Get<EnhancedInput::EnhancedInputModule>();
+                    pInputModule->RemoveCommonMappingAction(Local::mInputActionByPlay);
                 }
             }
 
@@ -139,6 +139,21 @@ namespace InGame
             this->SetPos(this->_pos);
         }
 
+        // 当たり判定コンポーネント追加
+        {
+            auto [handle, pComponent] =
+                this->AddComponentByHandleAndComp<InGameCircleCollision2DComponent>(0);
+            HE_ASSERT(handle.Null() == FALSE);
+
+            pComponent->SetRadius(HE_MIN(this->_size._fX, this->_size._fY));
+            pComponent->SetHashCode(HE_STR_TEXT("Player"));
+            //  TODO: 当たった時の処理を追加
+            pComponent->SetHitAction([](const CollisionData& in_rSelf, const CollisionData& in_rHit)
+                                     { HE_LOG_LINE(HE_STR_TEXT("Hit")); });
+
+            this->_collisoinHandle = handle;
+        }
+
         // 弾を打つ機能一覧作成
         // TODO: 各機能を実装する
         {
@@ -156,6 +171,7 @@ namespace InGame
         {
             this->_shotHandle = this->AddComponent<InGameShotComponent>(2);
             HE_ASSERT(this->_shotHandle.Null() == FALSE);
+
             auto pShotComponent = this->GetComponent<InGameShotComponent>(this->_shotHandle);
             pShotComponent->SetStrategy(this->_mShotStrategy[HE_STR_TEXT("Normal")]);
         }
@@ -166,7 +182,6 @@ namespace InGame
             I_InterfaceBulletEmit* pShotList[eSHOT_MAX] = {NULL};
 
             {
-                pShotList[eSHOT_BASIC]  = new C_NormalBulletEmit(20);
                 pShotList[eSHOT_LASER]  = new C_LaserBulletEmit(1);
                 pShotList[eSHOT_HOMING] = new C_HomingBulletEmit(8);
                 pShotList[eSHOT_WAY]    = new C_WayBulletEmit(4, 12);
@@ -230,23 +245,8 @@ namespace InGame
         }
 
         // 描画コマンド追加
+        // TODO: 画像表示に切り替えるかも
         Render::Command2DRectDraw(this->_viewHandle, rect, Render::RGB::White);
-
-#if 0
-        GameLib::C_GameSystem& r = GameLib::C_GameSystem::inst();
-
-        if (m_InvincibleCnt > 0)
-        {
-            --m_InvincibleCnt;
-        }
-
-        // TODO: 描画コンポーネントに移行したほうがいいかも
-        if ((m_InvincibleCnt % 2) == 0)
-        {
-            DrawPrimitive2DSimpleQuad(m_pos.x, m_pos.y, m_size, m_size, 0.f,
-                                      D3DCOLOR_ARGB(255, 255, 255, 255));
-        }
-#endif
     }
 
     void InGamePlayerActor::SetPos(const Core::Math::Vector2& in_rPos)
@@ -284,9 +284,16 @@ namespace InGame
         auto pTrans = this->GetComponent<Actor::TransformComponent>(this->_transformHandle);
         HE_ASSERT(pTrans);
 
-        // 弾を打つ
+        auto pCollision =
+            this->GetComponent<InGameCircleCollision2DComponent>(this->_collisoinHandle);
+        HE_ASSERT(pCollision);
+
         auto pos = pTrans->GetWorldPos();
-        pShotComponent->Shot(Core::Math::Vector2(pos._fX, pos._fY));
+
+        // 弾を打つ
+        // 自身が打った弾は接触しないようにコリジョンハッシュコードを設定
+        pShotComponent->Shot(Core::Math::Vector2(pos._fX, pos._fY), Core::Math::Vector2(1.0f, 0.0f),
+                             pCollision->HashCode());
 #if 0
         C_ColisionActorManager& inst = C_ColisionActorManager::inst();
 

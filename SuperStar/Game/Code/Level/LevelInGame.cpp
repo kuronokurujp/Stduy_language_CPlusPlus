@@ -1,7 +1,10 @@
 ﻿#include "LevelInGame.h"
 
+#include "Engine/Common/Hash.h"
+#include "Engine/Math/Vector2.h"
+#include "InGame/Bullet/InGameBulletNormal.h"
+#include "InGame/Component/InGameBulletManagerComponent.h"
 #include "InGame/Component/InGameCollisionComponent.h"
-#include "InGame/Component/InGameShotManagerComponent.h"
 #include "InGame/Component/InGameStageManagerComponent.h"
 #include "InGame/Component/InGameSystemComponent.h"
 #include "InGame/Event/InGameEvent.h"
@@ -39,8 +42,13 @@ namespace Level
 
         public:
             ShotEventListener() = default;
-            ShotEventListener(LevelInGame* in_pLevelInGame) { this->_pLevel = in_pLevelInGame; }
-            virtual ~ShotEventListener() { this->_pLevel = NULL; }
+            ShotEventListener(
+                std::function<InGame::InGameBulletManagerComponent*()> in_bulletManagerCompFunc)
+            {
+                this->_bulletManagerCompFunc = in_bulletManagerCompFunc;
+            }
+
+            virtual ~ShotEventListener() { this->_bulletManagerCompFunc = NULL; }
 
             // リスナー名
             const Char* VName() { return HE_STR_TEXT("LevelInGameListener"); }
@@ -50,55 +58,49 @@ namespace Level
             /// </summary>
             Bool VHandleEvent(Event::EventDataInterfacePtr const& in_rEventData)
             {
-                // TODO: ゲームのイベント処理を記述
+                // ゲームのイベント処理を記述
+
+                // 通常弾を打つ
                 if (in_rEventData->VDataTypeHash() ==
                     InGame::EventShotNormalBullet::EventType().Hash())
                 {
-                    // TODO: 通常弾の発射処理
-                    HE_LOG_LINE(HE_STR_TEXT("Shot!!"));
+                    // 通常弾の発射処理
+                    // HE_LOG_LINE(HE_STR_TEXT("Normal Shot!!"));
+
+                    InGame::EventShotNormalBullet* pEvent =
+                        reinterpret_cast<InGame::EventShotNormalBullet*>(in_rEventData.get());
+                    HE_ASSERT(pEvent != NULL);
+
+                    auto pBulletManagerComponent = this->_bulletManagerCompFunc();
+                    HE_ASSERT(pBulletManagerComponent);
+
+                    auto upFactor =
+                        HE_MAKE_CUSTOM_UNIQUE_PTR(InGame::InGameBulletNormalFactory, pEvent->_pos,
+                                                  pEvent->_dir, pEvent->_uCollisionHashCode);
+
+                    pBulletManagerComponent->MakeObject(std::move(upFactor));
                 }
 
                 return TRUE;
             }
 
         private:
-            LevelInGame* _pLevel = NULL;
+            std::function<InGame::InGameBulletManagerComponent*()> _bulletManagerCompFunc;
         };
 
     }  // namespace Local
-
-    LevelInGame::LevelInGame() : Level::Node()
-    {
-    }
 
     Bool LevelInGame::VBegin()
     {
         const Bool bRet = Node::VBegin();
         HE_ASSERT(bRet);
 
-        // TODO: インゲーム内で利用する弾を打つイベント管理を追加
-        {
-            auto pEventModule = Module::ModuleManager::I().Get<Event::EventModule>();
-
-            auto upStrategy        = HE_MAKE_CUSTOM_UNIQUE_PTR(Local::ShotEventManagerStrategy,
-                                                               INGAME_SHOT_EVENT_TYPE_NAME);
-            this->_shotEventHandle = pEventModule->AddEventManager(std::move(upStrategy));
-            HE_ASSERT(this->_shotEventHandle.Null() == FALSE);
-
-            this->_shotEventListener = HE_MAKE_CUSTOM_SHARED_PTR(Local::ShotEventListener, this);
-            if (pEventModule->AddListenr(this->_shotEventListener, INGAME_SHOT_EVENT_TYPE_NAME) ==
-                FALSE)
-            {
-                HE_ASSERT(0 && "イベントリスナー設定に失敗");
-            }
-        }
-
         // 背景のレベル追加
         this->AddLevel<LevelInGame_BG>();
 
-        // レンダリングビュー作成
+        // インゲームのレンダリングメインビュー作成
         {
-            auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
+            auto pRenderModule = HE_ENGINE.ModuleManager().Get<Render::RenderModule>();
             this->_viewHandle  = pRenderModule->AddView();
         }
 
@@ -111,10 +113,32 @@ namespace Level
             pSystemComponent->SetPoint(0);
         }
 
-        // 味方や敵の弾を管理するコンポーネント追加
+        // 味方や敵の弾を管理するオブジェクトとコンポーネント追加
+        Core::Common::Handle bulletManagerActorHandle;
+        Core::Common::Handle bulletManagerComponentHandle;
         {
-            this->_shotManagerComponentHandle =
-                this->AddComponent<InGame::InGameShotManagerComponent>(0);
+            bulletManagerActorHandle = this->AddActor<Actor::Object>();
+            auto pActor              = this->GetActor<Actor::Object>(bulletManagerActorHandle);
+
+            auto [handle, pComp] =
+                pActor->AddComponentByHandleAndComp<InGame::InGameBulletManagerComponent>(0);
+            HE_ASSERT(handle.Null() == FALSE);
+
+            bulletManagerComponentHandle = handle;
+
+            // 弾を描画ハンドルを渡す
+            pComp->SetViewHandle(this->_viewHandle);
+
+            pComp->SetHashCode(HE_STR_TEXT("Bullet"));
+
+            // 弾が当たった時のヒットアクション
+            pComp->SetHitAction(
+                [](const InGame::CollisionData& in_rSelf, const InGame::CollisionData& in_rTargtt)
+                { HE_LOG_LINE(HE_STR_TEXT("Hit Bullet")); });
+
+            // 利用する弾のアルゴリズムを登録
+            auto upStrategy = HE_MAKE_CUSTOM_UNIQUE_PTR(InGame::InGameBulletNormalStrategy);
+            pComp->AddStrategy(std::move(upStrategy));
         }
 
         // インゲームのステージコンポーネント追加
@@ -127,32 +151,51 @@ namespace Level
             pStageManagerComponent->SetViewHandle(this->_viewHandle);
         }
 
-        /*
-        C_ColisionActorManager& inst = C_ColisionActorManager::inst();
-        inst.init();
-        */
+        // インゲーム内で利用するイベントシステムを構築
+        {
+            auto pEventModule = HE_ENGINE.ModuleManager().Get<Event::EventModule>();
+
+            // 弾を打つイベント管理を追加
+            {
+                auto upStrategy        = HE_MAKE_CUSTOM_UNIQUE_PTR(Local::ShotEventManagerStrategy,
+                                                                   INGAME_SHOT_EVENT_TYPE_NAME);
+                this->_shotEventHandle = pEventModule->AddEventManager(std::move(upStrategy));
+                HE_ASSERT(this->_shotEventHandle.Null() == FALSE);
+
+                this->_shotEventListener = HE_MAKE_CUSTOM_SHARED_PTR(
+                    Local::ShotEventListener,
+                    // 弾管理コンポーネントを返す関数を登録
+                    [this, bulletManagerActorHandle, bulletManagerComponentHandle]()
+                    {
+                        auto pActor = this->GetActor<Actor::Object>(bulletManagerActorHandle);
+                        HE_ASSERT(pActor);
+
+                        return pActor->GetComponent<InGame::InGameBulletManagerComponent>(
+                            bulletManagerComponentHandle);
+                    });
+
+                if (pEventModule->AddListenr(this->_shotEventListener,
+                                             INGAME_SHOT_EVENT_TYPE_NAME) == FALSE)
+                {
+                    HE_ASSERT(0 && "イベントリスナー設定に失敗");
+                }
+            }
+        }
 
         return TRUE;
     }
 
     Bool LevelInGame::VEnd()
     {
-        auto pRenderModule = Module::ModuleManager::I().Get<Render::RenderModule>();
-        if (pRenderModule != NULL) pRenderModule->RemoveView(this->_viewHandle);
+        auto pRenderModule = HE_ENGINE.ModuleManager().Get<Render::RenderModule>();
+        pRenderModule->RemoveView(this->_viewHandle);
 
-        if (Module::ModuleManager::Exist())
-        {
-            auto pEventModule = Module::ModuleManager::I().Get<Event::EventModule>();
+        auto pEventModule = HE_ENGINE.ModuleManager().Get<Event::EventModule>();
 
-            // TODO: 設定したイベントを解放
-            pEventModule->RemoveListener(this->_shotEventListener, INGAME_SHOT_EVENT_TYPE_NAME);
-            pEventModule->RemoveEventManager(this->_shotEventHandle);
-        }
+        // 設定したイベントを解放
+        pEventModule->RemoveListener(this->_shotEventListener, INGAME_SHOT_EVENT_TYPE_NAME);
+        pEventModule->RemoveEventManager(this->_shotEventHandle);
 
-        /*
-        C_ColisionActorManager& inst = C_ColisionActorManager::inst();
-        inst.final();
-        */
         return Node::VEnd();
     }
 
@@ -165,14 +208,12 @@ namespace Level
         {
             if (pSystemComponent->IsGameEnd())
             {
-                // next = new C_TitleSeq();
+                // TODO: ゲームオーバー
             }
         }
 
-        // TODO: コリジョン処理をする
-        {
-            InGame::InGameCollisionComponent::CollisionAll();
-        }
+        // コリジョン処理をする
+        InGame::CollisionAll();
     }
 
 }  // namespace Level

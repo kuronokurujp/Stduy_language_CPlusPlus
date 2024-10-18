@@ -37,7 +37,7 @@ namespace AssetManager
             // インスタンスを確保
             auto p = this->_Alloc<T>();
 
-            AssetDataBase* pAsset = p._tpItem;
+            AssetDataBase* pAsset = p._pItem;
             pAsset->_VInit(in_pName,
                            Core::File::Path(this->_mountDirPath.Str(), in_rFilePath.Str()));
 

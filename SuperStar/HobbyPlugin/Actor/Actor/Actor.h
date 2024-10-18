@@ -79,6 +79,8 @@ namespace Actor
 
         /// <summary>
         /// コンポーネントを追加
+        /// TODO:
+        /// コンポーネントの型をチェックしてアクターにつけていいコンポーネントかチェック機能を入れる
         /// </summary>
         template <class T>
         Core::Common::Handle AddComponent(const Sint32 in_uUpdateOrder)
@@ -93,14 +95,45 @@ namespace Actor
 
             // TODO: 更新優先準備による追加処理を指定が必要
             // コンポーネントは確保したメモリを使いまわす
-            Core::Common::Handle handle = this->_components.CreateAndAdd<T>(in_uUpdateOrder, FALSE);
+            auto handle = this->_components.CreateAndAdd<T>(in_uUpdateOrder, FALSE);
             if (this->_VSetupComponent(handle) == FALSE)
             {
                 this->_components.RemoveTask(&handle);
                 return NullHandle;
             }
+            auto [h, p] = std::make_tuple(handle, NULL);
 
             return handle;
+        }
+
+        /// <summary>
+        /// コンポーネント追加
+        /// 作成ハンドルと追加コンポーネントを返す
+        /// </summary>
+        template <class T>
+        std::tuple<Core::Common::Handle, T*> AddComponentByHandleAndComp(
+            const Sint32 in_uUpdateOrder)
+        {
+            static_assert(std::is_base_of<Component, T>::value,
+                          "TクラスはComponentクラスを継承していない");
+
+            // TODO: アクターの準備が整う前に呼ばれるケースもある
+            // その場合はペンディングリストに追加して準備が整った時にコンポーネントを追加する
+            HE_ASSERT(0 <= in_uUpdateOrder);
+            HE_ASSERT(in_uUpdateOrder < static_cast<Sint32>(this->_components.GetMaxGroup()));
+
+            // TODO: 更新優先準備による追加処理を指定が必要
+            // コンポーネントは確保したメモリを使いまわす
+            auto handle   = this->_components.CreateAndAdd<T>(in_uUpdateOrder, FALSE);
+            T* pComponent = this->GetComponent<T>(handle);
+
+            if (this->_VSetupComponent(handle) == FALSE)
+            {
+                this->_components.RemoveTask(&handle);
+                return std::make_tuple(NullHandle, pComponent);
+            }
+
+            return std::make_tuple(handle, pComponent);
         }
 
         /// <summary>
@@ -216,8 +249,6 @@ namespace Actor
         /// </summary>
         void OutputChildrenComponent(Core::Common::StackBase<Component*>* out,
                                      const Core::Common::RTTI*);
-
-        // TODO: コリジョンイベント
 
 #if 0
         /// <summary>

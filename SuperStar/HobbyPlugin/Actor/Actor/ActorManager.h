@@ -34,8 +34,8 @@ namespace Actor
         };
 
     public:
-        ActorManager() : _pDecorator(NULL) {}
-        ActorManager(ActorManagerDecoraterlnterface* in_pDecorator) : _pDecorator(in_pDecorator) {}
+        ActorManager() = default;
+        ActorManager(Core::Memory::UniquePtr<ActorManagerDecoraterlnterface>);
 
         /// <summary>
         /// 起動する
@@ -112,6 +112,8 @@ namespace Actor
         /// <returns></returns>
         Object* Get(const Core::Common::Handle&);
 
+        ActorManagerDecoraterlnterface* GetDecorater() const { return this->_upDecorator.get(); }
+
         /// <summary>
         /// アクターのコンポーネントの登録・解除イベント
         /// </summary>
@@ -136,7 +138,7 @@ namespace Actor
         Bool _bUpdatingActors = FALSE;
 
     private:
-        ActorManagerDecoraterlnterface* _pDecorator = NULL;
+        Core::Memory::UniquePtr<ActorManagerDecoraterlnterface> _upDecorator = NULL;
 
         /// <summary>
         /// アクターを登録する管理

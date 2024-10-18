@@ -19,32 +19,6 @@ namespace Level
         HE_CLASS_MOVE_NG(Node);
 
     public:
-        /// <summary>
-        /// レベルノードにつけるアクター管理のデコレーター
-        /// </summary>
-        class ActorMaanagerDecorater final : public Actor::ActorManagerDecoraterlnterface
-        {
-        public:
-            Bool VStart(Actor::ActorManager*) override final;
-
-            void VLateUpdate(const Float32 in_fDt, Actor::ActorManager*) override final {}
-
-            /// <summary>
-            /// 管理下にあるアクターに入力状態を送信
-            /// </summary>
-            void ProcessInput(const EnhancedInput::InputMap*);
-
-            /// <summary>
-            /// 入力コンポーネントの登録・解除
-            /// </summary>
-            void VOnActorRegistComponent(Actor::Component*) override final;
-            void VOnActorUnRegistComponent(Actor::Component*) override final;
-
-        private:
-            Core::Common::CustomList<Actor::InputComponent> _lstInputComponent;
-        };
-
-    public:
         enum ETaskUpdateId
         {
             // 入力更新
@@ -53,7 +27,7 @@ namespace Level
             ETaskUpdateId_Actor,
         };
 
-        Node() : Actor::Object(), _actorManager(&this->_actorManagerDecorater) {}
+        Node();  // : Actor::Object(), _actorManager(&this->_actorManagerDecorater) {}
         virtual ~Node() = default;
 
         /// <summary>
@@ -146,6 +120,6 @@ namespace Level
         /// レベルに紐づけるアクター管理
         /// </summary>
         Actor::ActorManager _actorManager;
-        ActorMaanagerDecorater _actorManagerDecorater;
+        // ActorMaanagerDecorater _actorManagerDecorater;
     };
 }  // namespace Level

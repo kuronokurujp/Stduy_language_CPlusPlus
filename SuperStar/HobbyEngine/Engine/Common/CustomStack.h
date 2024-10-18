@@ -27,7 +27,8 @@ namespace Core::Common
         void PushBack(const TYPE& in_rData)
         {
             HE_ASSERT(this->_uNum < this->Capacity());
-            this->_pBuff[this->_uNum++] = in_rData;
+            this->_pBuff[this->_uNum] = in_rData;
+            ++this->_uNum;
         }
 
         /// <summary>

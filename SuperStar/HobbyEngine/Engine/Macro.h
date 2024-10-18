@@ -201,7 +201,7 @@ void HE_LOG_LINE(const Char* in_szFormat, Args... in_args)
 
 // 配列の要素数を返す
 // 配列のポイントでは利用できない
-#define HE_ARRAY_NUM(_array_) (sizeof((_array_)) / sizeof((_array_)[0]))
+#define HE_ARRAY_NUM(_array_) (sizeof((_array_)) / sizeof(((_array_)[0])))
 
 // 配列の全データサイズ取得
 // 配列のポイントでは利用できない

@@ -199,7 +199,7 @@ struct DeleterFreeMemory
     void operator()(void* ptr) const
     {
 #ifdef HE_ENGINE_DEBUG
-        HE_LOG_LINE(HE_STR_TEXT("DeleteFreeMemory: %s(%d)"), this->szFilename, this->uLine);
+//        HE_LOG_LINE(HE_STR_TEXT("DeleteFreeMemory: %s(%d)"), this->szFilename, this->uLine);
 #endif
         ::FreeMemory(ptr);
     }

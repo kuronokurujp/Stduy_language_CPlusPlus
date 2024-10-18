@@ -4,14 +4,20 @@
 
 namespace Actor
 {
+    ActorManager::ActorManager(
+        Core::Memory::UniquePtr<ActorManagerDecoraterlnterface> in_upDecorator)
+        : _upDecorator(std::move(in_upDecorator))
+    {
+    }
+
     Bool ActorManager::Start(const Uint32 in_uActorCapacity, const Uint32 in_uActorGroupMax)
     {
         HE_ASSERT(1 < in_uActorGroupMax);
         if (this->_taskManager.Init(in_uActorCapacity, in_uActorGroupMax) == FALSE) return FALSE;
 
-        if (this->_pDecorator)
+        if (this->_upDecorator)
         {
-            if (this->_pDecorator->VStart(this) == FALSE) return TRUE;
+            if (this->_upDecorator->VStart(this) == FALSE) return TRUE;
         }
 
         return TRUE;
@@ -63,16 +69,16 @@ namespace Actor
 
     void ActorManager::VOnActorRegistComponent(Component* in_pComponent)
     {
-        if (this->_pDecorator == NULL) return;
+        if (this->_upDecorator == NULL) return;
 
-        this->_pDecorator->VOnActorRegistComponent(in_pComponent);
+        this->_upDecorator->VOnActorRegistComponent(in_pComponent);
     }
 
     void ActorManager::VOnActorUnRegistComponent(Component* in_pComponent)
     {
-        if (this->_pDecorator == NULL) return;
+        if (this->_upDecorator == NULL) return;
 
-        this->_pDecorator->VOnActorUnRegistComponent(in_pComponent);
+        this->_upDecorator->VOnActorUnRegistComponent(in_pComponent);
     }
 
     void ActorManager::BeginUpdate(const Float32 in_fDt)
@@ -97,7 +103,7 @@ namespace Actor
     {
         this->_UpdatePending();
 
-        if (this->_pDecorator) this->_pDecorator->VLateUpdate(in_fDt, this);
+        if (this->_upDecorator) this->_upDecorator->VLateUpdate(in_fDt, this);
     }
 
     void ActorManager::Event(const Core::TaskData& in_rTaskData)

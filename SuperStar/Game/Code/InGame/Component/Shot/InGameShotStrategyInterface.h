@@ -15,6 +15,8 @@ namespace InGame
         struct ShotConfig
         {
             Core::Math::Vector2 pos;
+            Core::Math::Vector2 dir;
+            Uint32 uCollisionHashCoee = 0;
         };
 
     public:

@@ -6,13 +6,13 @@
 
 #include <wchar.h>
 
-#define HE_STR_LEN(t) static_cast<Uint32>(::wcslen(t))
+#define HE_STR_LEN(t) static_cast<Uint32>(::wcslen((t)))
 #define HE_STR_CMP(a, b) ::wcscmp(a, b)
 
 // 第二引数にはコピー配列の要素数を設定
 // wcharの配列サイズだと要素数x2の設定でコピー処理をしてオーバーフローを起こした
 // https://learn.microsoft.com/ja-jp/cpp/c-runtime-library/reference/strncpy-s-strncpy-s-l-wcsncpy-s-wcsncpy-s-l-mbsncpy-s-mbsncpy-s-l?view=msvc-170
-#define HE_STR_CPY_S(dst, dst_size, src, src_len) ::wcsncpy_s(dst, dst_size, src, src_len)
+#define HE_STR_CPY_S(dst, dst_len, src, src_len) ::wcsncpy_s(dst, (dst_len), src, (src_len))
 #define HE_STR_STR(t01, t02) ::wcsstr(t01, t02)
 #define HE_STR_VSNPRINTF(dst, len, count, fmt, arg) ::_vsnwprintf_s(dst, len, count, fmt, arg)
 #define HE_STR_LOWER(s, size) ::_wcslwr_s(s, (size))

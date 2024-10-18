@@ -28,7 +28,7 @@ namespace InGame
         /// <summary>
         /// 弾を打つ機能設定
         /// </summary>
-        void SetStrategy(std::shared_ptr<InGameShotStrategyInterface> in_spStrategy)
+        void SetStrategy(Core::Memory::SharedPtr<InGameShotStrategyInterface> in_spStrategy)
         {
             this->_spStrategy = in_spStrategy;
         }
@@ -36,10 +36,11 @@ namespace InGame
         /// <summary>
         /// 弾を打つ
         /// </summary>
-        void Shot(const Core::Math::Vector2& in_rPos);
+        void Shot(const Core::Math::Vector2& in_rPos, const Core::Math::Vector2& in_rDir,
+                  const Uint32 in_uCollisionHashCode);
 
     private:
-        std::shared_ptr<InGameShotStrategyInterface> _spStrategy;
+        Core::Memory::SharedPtr<InGameShotStrategyInterface> _spStrategy;
         Core::Common::CustomFixStack<InGameShotStrategyInterface::ShotConfig, 256> _sCatchShot;
     };
 

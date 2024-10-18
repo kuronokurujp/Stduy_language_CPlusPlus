@@ -105,6 +105,7 @@ namespace InGame
         Core::Math::Vector2 _move;
 
         Core::Common::Handle _transformHandle;
+        Core::Common::Handle _collisoinHandle;
         Core::Common::Handle _viewHandle;
         Core::Common::Handle _shotHandle;
 
@@ -114,7 +115,7 @@ namespace InGame
         Parameter _defaultParameter;
 
         Core::Common::CustomFixMap<Core::Common::FixString32,
-                                   std::shared_ptr<InGameShotStrategyInterface>, 6>
+                                   Core::Memory::SharedPtr<InGameShotStrategyInterface>, 6>
             _mShotStrategy;
     };
 

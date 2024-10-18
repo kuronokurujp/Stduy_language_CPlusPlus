@@ -2,6 +2,7 @@
 
 #include "Engine/Memory/Memory.h"
 #include "Engine/MiniEngine.h"
+#include "Engine/Module/Module.h"
 #include "Engine/Platform/PlatformModule.h"
 #include "Engine/Time/FPS.h"
 #include "GameMain.h"
@@ -9,7 +10,6 @@
 /// <summary>
 /// 事前初期化
 /// </summary>
-/// <returns></returns>
 Bool Engine::Init()
 {
     HE_ASSERT(this->_bInit == FALSE);
@@ -19,7 +19,6 @@ Bool Engine::Init()
 
     this->_bInit = TRUE;
 
-    this->_moduleManager.VRelease();
     this->_memoryManager.VRelease();
 
     // メモリ管理
@@ -54,27 +53,29 @@ Bool Engine::Init()
         HE_ASSERT(this->_memoryManager.CheckAllMemoryBlock());
     }
 
+    // モジュール管理を使えるようにする
+    this->_upModuleManager = HE_MAKE_CUSTOM_UNIQUE_PTR(Module::ModuleManager);
+
     // 成功
     return TRUE;
 }
 
 /// <summary>
-/// 初期化
+/// 起動
 /// </summary>
-/// <returns></returns>
 Bool Engine::Start()
 {
     HE_ASSERT(this->_bStart == FALSE);
     if (this->_bStart) return TRUE;
 
-    HE_LOG_LINE(HE_STR_TEXT("エンジンの初期化"));
+    HE_LOG_LINE(HE_STR_TEXT("エンジンの起動"));
 
     // OS固有のモジュールは先に開始させる
-    this->_moduleManager.Start(Module::ELayer_App);
+    this->_upModuleManager->Start(Module::ELayer_App);
 
     // ゲーム用のモジュールを開始
-    this->_moduleManager.Start(Module::ELayer_Logic);
-    this->_moduleManager.Start(Module::ELayer_View);
+    this->_upModuleManager->Start(Module::ELayer_Logic);
+    this->_upModuleManager->Start(Module::ELayer_View);
 
     // FPSタイマーを作成
     // ゲームを固定フレームレートにするため
@@ -100,7 +101,8 @@ Bool Engine::VRelease()
     if (this->_bInit == FALSE) return TRUE;
 
     // 確保したメモリを解放しないとEngineのデストラクタでエラーになる
-    this->_moduleManager.VRelease();
+    this->_upModuleManager->Release();
+    this->_upModuleManager.reset();
 
     this->_spFPS.reset();
 
@@ -146,7 +148,7 @@ void Engine::ReleseWindows()
 
 Bool Engine::BeforeUpdateLoop(const Float32 in_fDeltaSec)
 {
-    this->_moduleManager.BeforeUpdate(in_fDeltaSec);
+    this->_upModuleManager->BeforeUpdate(in_fDeltaSec);
     return TRUE;
 }
 
@@ -174,20 +176,15 @@ Bool Engine::WaitFrameLoop()
 Bool Engine::MainUpdateLoop(const Float32 in_fDeltaSec)
 {
     // モジュール更新
-    this->_moduleManager.Update(in_fDeltaSec);
+    this->_upModuleManager->Update(in_fDeltaSec);
 
     return TRUE;
 }
 
 Bool Engine::LateUpdateLoop(const Float32 in_fDeltaSec)
 {
-    this->_moduleManager.LateUpdate(in_fDeltaSec);
+    this->_upModuleManager->LateUpdate(in_fDeltaSec);
     return TRUE;
-}
-
-Platform::PlatformModule* Engine::_PlatformModule()
-{
-    return this->_moduleManager.Get<Platform::PlatformModule>();
 }
 
 Float32 Engine::GetDeltaTimeSec()
@@ -206,4 +203,21 @@ Bool Engine::IsAppQuit()
     if (pPlatform == NULL) return TRUE;
 
     return pPlatform->VIsQuit();
+}
+
+Platform::PlatformModule* Engine::_PlatformModule()
+{
+    return this->_upModuleManager->Get<Platform::PlatformModule>();
+}
+
+Bool Engine::_AddModule(class Module::ModuleBase* in_pModule)
+{
+    HE_ASSERT(in_pModule);
+
+    if (this->_upModuleManager->RegistHeapModule(in_pModule) == FALSE)
+    {
+        return FALSE;
+    }
+
+    return TRUE;
 }

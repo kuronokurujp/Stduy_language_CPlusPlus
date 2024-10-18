@@ -72,7 +72,7 @@ namespace Core
 
             // 利用するタスクを割り当て
             RuntimePoolManager::AllocData resAlloc = this->_Alloc<T>();
-            Task* pTask                            = resAlloc._tpItem;
+            Task* pTask                            = resAlloc._pItem;
 
             pTask->VSetup(in_bReleaseMem);
             pTask->_selfHandle = resAlloc._handle;

@@ -54,7 +54,7 @@ namespace Module
         return NULL;
     }
 
-    Bool ModuleManager::VRelease()
+    Bool ModuleManager::Release()
     {
         // 全モジュール解放
         // TODO: 依存関係に応じてモジュールを破棄する順序を変える事はできないか？
@@ -65,33 +65,32 @@ namespace Module
             }
             this->_vViewModule.Clear();
 
-            for (auto b = this->_mViewModule.Begin(); b != this->_mViewModule.End(); ++b)
-            {
-                HE_DELETE(b->data);
-            }
-            this->_mViewModule.Clear();
-        }
-
-        {
             for (Uint32 i = 0; i < this->_vLogicModule.Size(); ++i)
             {
                 this->_vLogicModule[i]->_VRelease();
             }
             this->_vLogicModule.Clear();
 
-            for (auto b = this->_mLogicModule.Begin(); b != this->_mLogicModule.End(); ++b)
-            {
-                HE_DELETE(b->data);
-            }
-            this->_mLogicModule.Clear();
-        }
-
-        {
             for (Uint32 i = 0; i < this->_vAppModule.Size(); ++i)
             {
                 this->_vAppModule[i]->_VRelease();
             }
             this->_vAppModule.Clear();
+        }
+
+        // 全モジュール破棄
+        {
+            for (auto b = this->_mViewModule.Begin(); b != this->_mViewModule.End(); ++b)
+            {
+                HE_DELETE(b->data);
+            }
+            this->_mViewModule.Clear();
+
+            for (auto b = this->_mLogicModule.Begin(); b != this->_mLogicModule.End(); ++b)
+            {
+                HE_DELETE(b->data);
+            }
+            this->_mLogicModule.Clear();
 
             for (auto b = this->_mAppModule.Begin(); b != this->_mAppModule.End(); ++b)
             {

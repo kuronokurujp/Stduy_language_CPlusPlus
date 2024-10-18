@@ -50,28 +50,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
     if (InitInstance(hInstance, nCmdShow))
     {
         // エンジンに設定したアプリを開始
-        s_app.VStart(HOBBY_ENGINE.IsDebugMode());
+        s_app.VStart(HE_ENGINE.IsDebugMode());
 
         // ゲームループ
-        while (HOBBY_ENGINE.IsAppQuit() == FALSE)
+        while (HE_ENGINE.IsAppQuit() == FALSE)
         {
             // 前処理
             {
-                const Float32 d = HOBBY_ENGINE.GetDeltaTimeSec();
-                if (HOBBY_ENGINE.BeforeUpdateLoop(d) == FALSE) break;
+                const Float32 d = HE_ENGINE.GetDeltaTimeSec();
+                if (HE_ENGINE.BeforeUpdateLoop(d) == FALSE) break;
             }
 
-            if (HOBBY_ENGINE.WaitFrameLoop() == FALSE) break;
+            if (HE_ENGINE.WaitFrameLoop() == FALSE) break;
 
             {
-                const Float32 d = HOBBY_ENGINE.GetDeltaTimeSec();
+                const Float32 d = HE_ENGINE.GetDeltaTimeSec();
 
                 // アプリメイン
                 if (s_app.VUpdate(d) == FALSE) break;
 
-                if (HOBBY_ENGINE.MainUpdateLoop(d) == FALSE) break;
+                if (HE_ENGINE.MainUpdateLoop(d) == FALSE) break;
 
-                if (HOBBY_ENGINE.LateUpdateLoop(d) == FALSE) break;
+                if (HE_ENGINE.LateUpdateLoop(d) == FALSE) break;
             }
         }
 
@@ -89,38 +89,38 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     hInst = hInstance;
 
     // エンジン起動
-    CREATE_HOBBY_ENGINE;
+    HE_CREATE_ENGINE;
 
     // TODO: エンジン用の設定ファイルが必要
 
-    const Bool bPreInitRet = HOBBY_ENGINE.Init();
+    const Bool bPreInitRet = HE_ENGINE.Init();
     HE_ASSERT(bPreInitRet && "事前初期化に失敗");
 
     // 利用モジュールを登録
     {
-        HOBBY_ENGINE.CreateModule<DXLib::DXLibModule>();
-        HOBBY_ENGINE.CreateModule<Render::RenderModule>();
-        HOBBY_ENGINE.CreateModule<Actor::ActorModule>();
-        HOBBY_ENGINE.CreateModule<UI::UIModule>();
-        HOBBY_ENGINE.CreateModule<AssetManager::AssetManagerModule>();
-        HOBBY_ENGINE.CreateModule<Level::LevelModule>();
-        HOBBY_ENGINE.CreateModule<Localization::LocalizationModule>();
-        HOBBY_ENGINE.CreateModule<EnhancedInput::EnhancedInputModule>();
-        HOBBY_ENGINE.CreateModule<Event::EventModule>();
+        HE_ENGINE.AddModule<DXLib::DXLibModule>();
+        HE_ENGINE.AddModule<Render::RenderModule>();
+        HE_ENGINE.AddModule<Actor::ActorModule>();
+        HE_ENGINE.AddModule<UI::UIModule>();
+        HE_ENGINE.AddModule<AssetManager::AssetManagerModule>();
+        HE_ENGINE.AddModule<Level::LevelModule>();
+        HE_ENGINE.AddModule<Localization::LocalizationModule>();
+        HE_ENGINE.AddModule<EnhancedInput::EnhancedInputModule>();
+        HE_ENGINE.AddModule<Event::EventModule>();
     }
 
-    const Bool bInitRet = HOBBY_ENGINE.Start();
+    const Bool bInitRet = HE_ENGINE.Start();
     HE_ASSERT(bInitRet && "初期化に失敗");
 
     // ゲームウィンドウを作成
-    if (HOBBY_ENGINE.CreateMainWindow() == FALSE) return FALSE;
+    if (HE_ENGINE.CreateMainWindow() == FALSE) return FALSE;
 
     return TRUE;
 }
 
 void EndInstance(HINSTANCE hInstance)
 {
-    DELETE_HOBBY_ENGINE;
+    HE_DELETE_ENGINE;
 }
 
 // アプリの起動エントリークラス
@@ -147,7 +147,7 @@ Bool AppEntryGameMain::VStart(const Bool in_bDebug)
         EnhancedInput::ActionMap mInputAction;
         mInputAction.Add(HE_STR_TEXT("UIButton"), EnhancedInput::ActionData(aKeys, aTouchs));
 
-        auto pInputModule = Module::ModuleManager::I().Get<EnhancedInput::EnhancedInputModule>();
+        auto pInputModule = HE_ENGINE.ModuleManager().Get<EnhancedInput::EnhancedInputModule>();
         pInputModule->SetCommonMappingAction(mInputAction);
     }
 
@@ -155,14 +155,14 @@ Bool AppEntryGameMain::VStart(const Bool in_bDebug)
     //		LuaStateManager::Init();
 
     // リソースの起点ディレクトリを設定
-    auto pAssetManagerModule = Module::ModuleManager::I().Get<AssetManager::AssetManagerModule>();
+    auto pAssetManagerModule = HE_ENGINE.ModuleManager().Get<AssetManager::AssetManagerModule>();
     pAssetManagerModule->SetMountDir(HE_STR_TEXT("Assets"));
 
-    auto pLocateModule = Module::ModuleManager::I().Get<Localization::LocalizationModule>();
+    auto pLocateModule = HE_ENGINE.ModuleManager().Get<Localization::LocalizationModule>();
     pLocateModule->LoadSystemFile(Core::Common::FixString256(HE_STR_TEXT("Locate/System.toml")));
     pLocateModule->LoadTextAll(Core::Common::FixString16(HE_STR_TEXT("JP")));
 
-    auto pLevelModule = Module::ModuleManager::I().Get<Level::LevelModule>();
+    auto pLevelModule = HE_ENGINE.ModuleManager().Get<Level::LevelModule>();
 #ifdef HE_ENGINE_DEBUG
     // デバッグレベルを開始
     pLevelModule->GetManager()->StartLevel<Level::LevelLauncher>();

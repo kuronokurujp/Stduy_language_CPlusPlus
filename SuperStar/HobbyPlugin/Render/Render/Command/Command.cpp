@@ -28,7 +28,7 @@ namespace Render
             HE_ASSERT(HE_STR_SUCCESS(e) && "文字列コピーに失敗");
         }
 
-        auto pModule = Module::ModuleManager::I().Get<RenderModule>();
+        auto pModule = HE_ENGINE.ModuleManager().Get<RenderModule>();
         auto pView   = pModule->GetView(in_rViewHandle);
         HE_ASSERT(pView);
         if (pView == NULL) return;
@@ -55,7 +55,7 @@ namespace Render
             pRect2D->color   = in_rColor;
         }
 
-        auto pModule = Module::ModuleManager::I().Get<RenderModule>();
+        auto pModule = HE_ENGINE.ModuleManager().Get<RenderModule>();
         auto pView   = pModule->GetView(in_rViewHandle);
         HE_ASSERT(pView);
         if (pView == NULL) return;
@@ -80,7 +80,7 @@ namespace Render
             pPoint2D->color   = in_rColor;
         }
 
-        auto pModule = Module::ModuleManager::I().Get<RenderModule>();
+        auto pModule = HE_ENGINE.ModuleManager().Get<RenderModule>();
         auto pView   = pModule->GetView(in_rViewHandle);
         HE_ASSERT(pView);
         if (pView == NULL) return;
@@ -107,9 +107,37 @@ namespace Render
             static_assert(sizeof(cmd.data.clsScree) <= sizeof(cmd.data.ulaWork));
         }
 
-        auto pModule = Module::ModuleManager::I().Get<RenderModule>();
+        auto pModule = HE_ENGINE.ModuleManager().Get<RenderModule>();
         auto pView   = pModule->GetView(in_rViewHandle);
         HE_ASSERT(pView);
+        if (pView == NULL) return;
+
+        pView->AddCmd(std::move(cmd));
+    }
+
+    void Command2DCircleDraw(const Core::Common::Handle& in_rViewHandle,
+                             const Core::Math::Vector2& in_rPos, const Float32 in_fSize,
+                             const Color& in_rColor)
+    {
+        // TODO: 2D円の描画コマンドを作る
+        HE_ASSERT(in_rViewHandle.Null() == FALSE);
+
+        // 必要なコマンド情報を作る
+        Command cmd;
+        {
+            cmd.uType             = ECmdType_2DCircleDraw;
+            Cmd2DCircleDraw* pCmd = &cmd.data.circle2DDraw;
+            static_assert(sizeof(cmd.data.circle2DDraw) <= sizeof(cmd.data.ulaWork));
+            pCmd->point.fX = in_rPos._fX;
+            pCmd->point.fY = in_rPos._fY;
+            pCmd->color    = in_rColor;
+            pCmd->fSize    = in_fSize;
+        }
+
+        auto pModule = HE_ENGINE.ModuleManager().Get<RenderModule>();
+        auto pView   = pModule->GetView(in_rViewHandle);
+        HE_ASSERT(pView);
+
         if (pView == NULL) return;
 
         pView->AddCmd(std::move(cmd));

@@ -11,10 +11,11 @@ namespace InGame
 
     void InGameShotStrategyNormalBullet::VShot(const ShotConfig& in_rConfig)
     {
-        // TODO: 弾発生イベント通知
-        auto pEventModule = Module::ModuleManager::I().Get<Event::EventModule>();
+        // 弾発生イベント通知
+        auto pEventModule = HE_ENGINE.ModuleManager().Get<Event::EventModule>();
 
-        auto spEvent = HE_MAKE_CUSTOM_SHARED_PTR(EventShotNormalBullet, 0);
+        auto spEvent = HE_MAKE_CUSTOM_SHARED_PTR(EventShotNormalBullet, 0, in_rConfig.pos,
+                                                 in_rConfig.dir, in_rConfig.uCollisionHashCoee);
         pEventModule->QueueEvent(std::move(spEvent));
     }
 

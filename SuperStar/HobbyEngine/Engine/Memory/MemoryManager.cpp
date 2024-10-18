@@ -29,10 +29,8 @@ namespace Core::Memory
 
     /// <summary>
     /// 初期化
-    /// 利用するヒープサイズ確保
+    /// 利用するメモリヒープ確保
     /// </summary>
-    /// <param name="in_useHeepSize">管理側で利用するヒープサイズ</param>
-    /// <returns></returns>
     Bool Manager::Start(const Uint32 in_uUseHeapSize)
     {
         //	既に初期化されているか、チェックする．
@@ -46,7 +44,7 @@ namespace Core::Memory
         // TODO: プラットフォーム用のヒープ取得に切り替え
         // プラットフォームのアライメントに合わせたい
         // とり方は各プラットフォームによって変えること
-        this->_pHeapTop = ::_aligned_malloc(in_uUseHeapSize, MinimumAlignSize);
+        this->_pHeapTop = ::_aligned_malloc(in_uUseHeapSize, Manager::MinimumAlignSize);
         if (this->_pHeapTop == NULL)
         {
             //	取れなかった．
@@ -67,7 +65,7 @@ namespace Core::Memory
     /// 一度構築したら変える事はできない
     /// </summary>
     /// <param name="in_pSetupInfoArray"></param>
-    /// <param name="in_num">配列の個数</param>
+    /// <param name="in_uNum">ぺーズ数</param>
     /// <returns>TRUE 成功 / FALSE 失敗</returns>
     Bool Manager::SetupMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_uNum)
     {
@@ -80,7 +78,7 @@ namespace Core::Memory
         }
 
         // メモリページが一つでも初期化状態であればエラーにする
-        for (Uint8 i = 0; i < MemoryPageMax; i++)
+        for (Uint8 i = 0; i < Manager::MemoryPageMax; i++)
         {
             if (this->_ValidMemoryPage(i))
             {
@@ -121,7 +119,7 @@ namespace Core::Memory
     /// メモリページ全体のリマップ
     /// </summary>
     /// <param name="in_pSetupInfoArray">メモリページ設定情報の配列</param>
-    /// <param name="in_num">配列個数</param>
+    /// <param name="in_uNum">ぺーズ数</param>
     /// <returns>TRUE 成功 / FALSE 失敗</returns>
     Bool Manager::RemapMemoryPage(PageSetupInfo* in_pSetupInfoArray, const Uint32 in_uNum)
     {
@@ -136,9 +134,9 @@ namespace Core::Memory
         // メモリブロックが壊れていないかチェック
         this->CheckAllMemoryBlock();
 #endif
-        Uint32 uaOffset[MemoryPageMax]     = {0};
-        Uint32 uaSize[MemoryPageMax]       = {0};
-        Bool baNeedInitFlag[MemoryPageMax] = {FALSE};
+        Uint32 uaOffset[Manager::MemoryPageMax]     = {0};
+        Uint32 uaSize[Manager::MemoryPageMax]       = {0};
+        Bool baNeedInitFlag[Manager::MemoryPageMax] = {FALSE};
 
         //	サイズをクリアしておく(サイズが0ならいらないページ)
         ::memset(uaSize, 0, HE_ARRAY_SIZE(uaSize));
@@ -211,7 +209,7 @@ namespace Core::Memory
         // 指定されていないページは消す
         // これも先にやっておかないと
         // DEBUG時で一個前のサイズが大きくなったときメモリブロックのところがデバッグ情報で埋められてしまう．
-        for (Uint8 i = 0; i < MemoryPageMax; ++i)
+        for (Uint8 i = 0; i < Manager::MemoryPageMax; ++i)
         {
             // サイズが0になっているページは指定していないページなので消す
             if (uaSize[i] == 0)
@@ -230,7 +228,7 @@ namespace Core::Memory
         }
 
         // 最後に初期化が必要な場所を初期化
-        for (Uint8 i = 0; i < MemoryPageMax; ++i)
+        for (Uint8 i = 0; i < Manager::MemoryPageMax; ++i)
         {
             //	初期化が必要ならしろ．
             if (baNeedInitFlag[i])
@@ -317,7 +315,7 @@ namespace Core::Memory
         pPageInfo->_pMemoryBlockTop->_pPrev       = NULL;
         pPageInfo->_pMemoryBlockTop->_pNext       = NULL;
         pPageInfo->_pMemoryBlockTop->_useFlag     = 0;
-        pPageInfo->_pMemoryBlockTop->_alignSize   = MinimumAlignSize;
+        pPageInfo->_pMemoryBlockTop->_alignSize   = Manager::MinimumAlignSize;
         pPageInfo->_pMemoryBlockTop->_page        = in_page;
         pPageInfo->_pMemoryBlockTop->_paddingSize = 0;
 
@@ -385,14 +383,14 @@ namespace Core::Memory
         }
 
         // メモリブロックヘッダの都合上最低アラインサイズを守る
-        if ((in_alignSize % MinimumAlignSize) != 0)
+        if ((in_alignSize % Manager::MinimumAlignSize) != 0)
         {
             HE_ASSERT(0 && "alignSizeがMINIMUM_ALIGN_SIZEの倍数ではない．");
             return NULL;
         }
 
         // 0の時はMinimumAlignSizeに
-        in_alignSize = in_alignSize == 0 ? MinimumAlignSize : in_alignSize;
+        in_alignSize = in_alignSize == 0 ? Manager::MinimumAlignSize : in_alignSize;
 
         // 空きメモリブロックをたどって, 確保したい容量より大きい奴を探す
         BlockHeader* pFreeMemoryBlock = this->_aMemoryPageInfoArray[in_page]._pMemoryBlockTop;
@@ -433,11 +431,11 @@ namespace Core::Memory
                 // 後ろはMinimumAlignSizeの倍数であればいい
                 // また頭の方は最低MinimumAlignSizeの倍数のはずなので
                 // 単純に要求サイズから割り出せる
-                uPaddingSize = in_uAllocateSize % MinimumAlignSize;
+                uPaddingSize = in_uAllocateSize % Manager::MinimumAlignSize;
                 if (uPaddingSize != 0)
                 {
                     // 0じゃないならパディング必要
-                    uPaddingSize = MinimumAlignSize - uPaddingSize;
+                    uPaddingSize = Manager::MinimumAlignSize - uPaddingSize;
                 }
 
                 // 後ろからとる場合オフセットの割り出しが違う
@@ -507,8 +505,8 @@ namespace Core::Memory
                     // マイナス（Uintなので最上位ビットが1で判断）になったり
                     // システム使用サイズより小さくなったら絶対とれないので,
                     // 極端に大きくしてとれないようにする．
-                    if (uOffsetSize != 0 &&
-                        (uOffsetSize & 0x80000000 || uOffsetSize < _GetMemoryBlockSystemDataSize()))
+                    if (uOffsetSize != 0 && (uOffsetSize & 0x80000000 ||
+                                             uOffsetSize < this->_GetMemoryBlockSystemDataSize()))
                     {
                         // 適当に
                         // これで2G弱までなら問題ないはず
@@ -819,7 +817,7 @@ namespace Core::Memory
         pSplitMemoryBlock->_uAllocateSize -= in_uSplitSize;
 
         // アライン初期化
-        pSplitMemoryBlock->_alignSize = MinimumAlignSize;
+        pSplitMemoryBlock->_alignSize = Manager::MinimumAlignSize;
 
 #ifdef HE_ENGINE_DEBUG
         // マジックNoセット

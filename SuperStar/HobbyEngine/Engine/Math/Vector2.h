@@ -177,7 +177,7 @@ namespace Core::Math
         // ベクトルの大きさを2乗したのを取得
         // こちらの方が計算が早い
         // 比較などで利用できる
-        static inline Float32 GetLengthSquared(const Vector2& in_rVec) HE_NOEXCEPT
+        static inline Float32 LengthSquared(const Vector2& in_rVec) HE_NOEXCEPT
         {
             return (in_rVec._fX * in_rVec._fX + in_rVec._fY * in_rVec._fY);
         }
@@ -188,29 +188,26 @@ namespace Core::Math
         /// <param name="in_v">The in v.</param>
         /// <param name="in_v2">The in v2.</param>
         /// <returns></returns>
-        static inline Float32 GetDistanceSquared(const Vector2& in_rRight,
-                                                 const Vector2& in_rLeft) HE_NOEXCEPT
+        static inline Float32 DistanceSquared(const Vector2& in_rRight,
+                                              const Vector2& in_rLeft) HE_NOEXCEPT
         {
             Vector2 size;
             size.SetSub(in_rLeft, in_rRight);
 
-            return GetLengthSquared(size);
+            return LengthSquared(size);
         }
 
         //	ベクトルの大きさ取得
-        static inline Float32 GetLength(const Vector2& in_v)
-        {
-            return sqrtf(GetLengthSquared(in_v));
-        }
+        static inline Float32 Length(const Vector2& in_v) { return sqrtf(LengthSquared(in_v)); }
 
         //	2つのベクトルの距離取得
-        static inline Float32 GetDistance(const Vector2& in_rRight,
-                                          const Vector2& in_rLeft) HE_NOEXCEPT
+        static inline Float32 Distance(const Vector2& in_rRight,
+                                       const Vector2& in_rLeft) HE_NOEXCEPT
         {
             Vector2 size;
             size.SetSub(in_rLeft, in_rRight);
 
-            return GetLength(size);
+            return Length(size);
         }
 
         /// <summary>

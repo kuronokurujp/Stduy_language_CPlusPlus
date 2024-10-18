@@ -16,7 +16,7 @@ namespace Level
         HE_CLASS_MOVE_NG(LevelLauncher);
 
     public:
-        LevelLauncher() : Level::Node() {}
+        LevelLauncher() = default;
         Bool VBegin() override final;
         Bool VEnd() override final;
 

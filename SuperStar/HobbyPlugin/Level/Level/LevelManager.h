@@ -69,7 +69,7 @@ namespace Level
                           "Tクラスはレベルのノードクラスを継承していない");
 
             // レベルのノードは使いまわさない
-            Core::Common::Handle handle = this->_nodeManager.Add<T>();
+            Core::Common::Handle handle = this->_upNodeManager->Add<T>();
             if (handle.Null()) return FALSE;
 
             return this->_StartLevel(handle);
@@ -85,7 +85,7 @@ namespace Level
 
     private:
         // レベルのノードをアクターとして管理
-        Actor::ActorManager _nodeManager;
+        Core::Memory::UniquePtr<Actor::ActorManager> _upNodeManager;
 
         /// <summary>
         /// カレントレベルのハンドル
