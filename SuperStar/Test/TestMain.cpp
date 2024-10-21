@@ -92,6 +92,5 @@ int main(int argc, char* const argv[])
 // エンジン本体のテストコード
 #include "EngineTest/TestEngine.hpp"
 
-// ゲームアプリのテストコード
 // イベントテスト
 #include "TestCode/Event/TestEvent.hpp"

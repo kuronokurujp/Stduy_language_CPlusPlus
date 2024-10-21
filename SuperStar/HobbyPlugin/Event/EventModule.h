@@ -29,6 +29,8 @@ namespace Event
         /// </summary>
         Bool AddListenr(EventListenerPtr const&, EventTypeStr const&);
         Bool RemoveListener(EventListenerPtr const&, EventTypeStr const&);
+        // 指定タイプのリスナーを一括で破棄
+        Bool RemoveAllListener(EventTypeStr const&);
 
         /// <summary>
         /// 実行したいイベントを設定

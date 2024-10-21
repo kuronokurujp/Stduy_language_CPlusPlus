@@ -95,6 +95,8 @@ namespace Level
         const Bool bRet = Node::VBegin();
         HE_ASSERT(bRet);
 
+        // TODO: アセットのロード
+
         // 背景のレベル追加
         this->AddLevel<LevelInGame_BG>();
 
@@ -192,8 +194,9 @@ namespace Level
 
         auto pEventModule = HE_ENGINE.ModuleManager().Get<Event::EventModule>();
 
-        // 設定したイベントを解放
-        pEventModule->RemoveListener(this->_shotEventListener, INGAME_SHOT_EVENT_TYPE_NAME);
+        // 設定したイベントリスナーを解放
+        pEventModule->RemoveAllListener(INGAME_SHOT_EVENT_TYPE_NAME);
+        // 作成したイベント管理を解放
         pEventModule->RemoveEventManager(this->_shotEventHandle);
 
         return Node::VEnd();

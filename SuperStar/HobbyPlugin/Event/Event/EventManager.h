@@ -26,9 +26,17 @@ namespace Event
 
     /// <summary>
     /// イベント管理
+    /// 複数のイベントタイプを扱える
     /// </summary>
-    class EventManager final : public EventManagerInterface
+    class EventManager final
     {
+    public:
+        enum EConstants
+        {
+            EConstants_NumQueues = 2,
+            EConstancs_Infinite  = 0xffffffff
+        };
+
     public:
         EventManager(Core::Memory::UniquePtr<EventManagerStrategyInterface>);
         virtual ~EventManager();
@@ -39,30 +47,31 @@ namespace Event
         Bool EmptyEvent() const;
 
         // 手動解放
-        void VRelease() override final;
+        void Release();
 
         /// <summary>
         /// リスナー登録
         /// 登録したらTRUEを返す
         /// すでに登録済みなど登録失敗したらFALSE
         /// </summary>
-        Bool VAddListenr(EventListenerPtr const&, EventTypeStr const&) override final;
+        Bool AddListenr(EventListenerPtr const&, EventTypeStr const&);
 
-        Bool VRemoveListener(EventListenerPtr const&, EventTypeStr const&) override final;
+        Bool RemoveListener(EventListenerPtr const&, EventTypeStr const&);
+        Bool RemoveAllListener(EventTypeStr const&);
         /*
-                Bool VTrigger(EventDataInterfacePtr const&) const override final;
+                Bool VTrigger(EventDataInterfacePtr const&) const ;
         */
 
-        Bool VQueueEvent(EventDataInterfacePtr const&) override final;
+        Bool QueueEvent(EventDataInterfacePtr const&);
 
 #if 0
         Bool VAbortEvent(EventTypeStr const&) override final;
 #endif
 
-        Bool VTick(const Uint32) override final;
+        Bool Tick(const Uint32);
 
-        Bool VValidateType(EventTypeStr const&) const override final;
-        Bool VValidateHash(const Uint64) const override final;
+        Bool ValidateType(EventTypeStr const&) const;
+        Bool ValidateHash(const Uint64) const;
 
         // 情報探索メソッド
 
@@ -84,11 +93,6 @@ namespace Event
         using EventListenerMapEnt = std::pair<Uint32, EventListenerTable>;
         // 処理待ちイベントのキュー、または処理中のイベントのキュー
         using EventQueue = std::list<EventDataInterfacePtr>;
-
-        enum EConstants
-        {
-            EConstants_NumQueues = 2
-        };
 
         // イベント型をリスナーにマッピング
         EventListenerMap _mRegistry;

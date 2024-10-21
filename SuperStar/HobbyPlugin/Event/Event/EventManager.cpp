@@ -12,7 +12,7 @@ namespace Event
 
     EventManager::~EventManager()
     {
-        this->VRelease();
+        this->Release();
         this->_sActiveQueue = 0;
     }
 
@@ -26,7 +26,7 @@ namespace Event
         return TRUE;
     }
 
-    void EventManager::VRelease()
+    void EventManager::Release()
     {
         // 詰んだイベントの解放
         {
@@ -59,10 +59,10 @@ namespace Event
         }
     }
 
-    Bool EventManager::VAddListenr(EventListenerPtr const& in_rListener,
-                                   EventTypeStr const& in_rType)
+    Bool EventManager::AddListenr(EventListenerPtr const& in_rListener,
+                                  EventTypeStr const& in_rType)
     {
-        if (this->VValidateType(in_rType) == FALSE) return FALSE;
+        if (this->ValidateType(in_rType) == FALSE) return FALSE;
 
         // リスナーマップのエントリ探し、
         // エントリに対応するテーブルがなければエントリ作成
@@ -97,10 +97,10 @@ namespace Event
         return TRUE;
     }
 
-    Bool EventManager::VRemoveListener(EventListenerPtr const& in_rListener,
-                                       EventTypeStr const& in_rType)
+    Bool EventManager::RemoveListener(EventListenerPtr const& in_rListener,
+                                      EventTypeStr const& in_rType)
     {
-        if (this->VValidateType(in_rType) == FALSE) return FALSE;
+        if (this->ValidateType(in_rType) == FALSE) return FALSE;
         Bool bErase = FALSE;
 
         // 総当りの手法 合致するリスナーが見つかるまで、
@@ -130,6 +130,26 @@ namespace Event
         // TODO: リスナーが一つもないならリスナー枠を削除
 
         return bErase;
+    }
+
+    Bool EventManager::RemoveAllListener(EventTypeStr const& in_rType)
+    {
+        if (this->ValidateType(in_rType) == FALSE) return FALSE;
+
+        auto tableItr = this->_mRegistry.FindKey(in_rType.Hash());
+        if (tableItr == this->_mRegistry.End()) return FALSE;
+
+        // 共有ポインターを完全破棄
+        for (auto itr = tableItr->data.begin(); itr != tableItr->data.end(); ++itr)
+        {
+            itr->reset();
+            (*itr) = NULL;
+        }
+
+        // イベントタイプのリスナーを丸ごと破棄
+        this->_mRegistry.Erase(in_rType.Hash());
+
+        return TRUE;
     }
 
     /*
@@ -173,12 +193,12 @@ namespace Event
         }
     */
 
-    Bool EventManager::VQueueEvent(EventDataInterfacePtr const& in_rEvent)
+    Bool EventManager::QueueEvent(EventDataInterfacePtr const& in_rEvent)
     {
         HE_ASSERT(0 <= this->_sActiveQueue);
         HE_ASSERT(this->_sActiveQueue < EConstants_NumQueues);
 
-        if (this->VValidateHash(in_rEvent->VEventTypeHash()) == FALSE) return FALSE;
+        if (this->ValidateHash(in_rEvent->VEventTypeHash()) == FALSE) return FALSE;
 
         this->_aQueue[this->_sActiveQueue].push_back(in_rEvent);
 
@@ -217,7 +237,7 @@ namespace Event
     }
 #endif
 
-    Bool EventManager::VTick(const Uint32 in_uMaxMillis)
+    Bool EventManager::Tick(const Uint32 in_uMaxMillis)
     {
         // 計測開始時間
         auto startClock = std::chrono::system_clock::now();
@@ -274,7 +294,7 @@ namespace Event
                 }
 
                 // 指定時間を超えた場合はイベント処理を中断
-                if (in_uMaxMillis != EventManagerInterface::EConstancs_Infinite)
+                if (in_uMaxMillis != EventManager::EConstancs_Infinite)
                 {
                     auto endClock = std::chrono::system_clock::now();
 
@@ -303,7 +323,7 @@ namespace Event
         return bQueueFlushed;
     }
 
-    Bool EventManager::VValidateType(EventTypeStr const& in_rType) const
+    Bool EventManager::ValidateType(EventTypeStr const& in_rType) const
     {
         if (in_rType.Length() <= 0) return FALSE;
 
@@ -311,10 +331,10 @@ namespace Event
         if ((in_rType.Hash() == 0) && (HE_STR_CMP(in_rType.Str(), HE_STR_TEXT("*")) != 0))
             return FALSE;
 
-        return this->VValidateHash(ulHash);
+        return this->ValidateHash(ulHash);
     }
 
-    Bool EventManager::VValidateHash(const Uint64 in_ulHash) const
+    Bool EventManager::ValidateHash(const Uint64 in_ulHash) const
     {
         return this->_upStrategy->VIsEventTypeHash(in_ulHash);
     }
@@ -328,7 +348,7 @@ namespace Event
         HE_ASSERT(out);
 
         // 無効なイベント型
-        if (this->VValidateType(in_rEventType) == FALSE) return FALSE;
+        if (this->ValidateType(in_rEventType) == FALSE) return FALSE;
 
         auto itListeners = this->_mRegistry.FindKey(in_rEventType.Hash());
 

@@ -31,9 +31,10 @@ namespace Event
     {
         for (auto itr = this->_mEventMng.Begin(); itr != this->_mEventMng.End(); ++itr)
         {
-            if (itr->data->VAddListenr(in_rListener, in_rType) == FALSE)
+            // in_rTypeのリスナー管理データに登録
+            if (itr->data->AddListenr(in_rListener, in_rType) == FALSE)
             {
-                return FALSE;
+                continue;
             }
         }
 
@@ -45,7 +46,18 @@ namespace Event
     {
         for (auto itr = this->_mEventMng.Begin(); itr != this->_mEventMng.End(); ++itr)
         {
-            itr->data->VRemoveListener(in_rListener, in_rType);
+            itr->data->RemoveListener(in_rListener, in_rType);
+        }
+
+        return TRUE;
+    }
+
+    Bool EventModule::RemoveAllListener(EventTypeStr const& in_rType)
+    {
+        for (auto itr = this->_mEventMng.Begin(); itr != this->_mEventMng.End(); ++itr)
+        {
+            // 指定タイプの全リスナーを破棄
+            itr->data->RemoveAllListener(in_rType);
         }
 
         return TRUE;
@@ -55,7 +67,7 @@ namespace Event
     {
         for (auto itr = this->_mEventMng.Begin(); itr != this->_mEventMng.End(); ++itr)
         {
-            if (itr->data->VQueueEvent(in_spEventData) == FALSE)
+            if (itr->data->QueueEvent(in_spEventData) == FALSE)
             {
                 return FALSE;
             }
@@ -96,7 +108,7 @@ namespace Event
         {
             // TODO: 指定時間でイベント処理を途中終了しないようにする
             // TODO: マルチコアかマルチスレッドを使うかも
-            itr->data->VTick(EventManagerInterface::EConstancs_Infinite);
+            itr->data->Tick(EventManager::EConstancs_Infinite);
         }
 
         return TRUE;
