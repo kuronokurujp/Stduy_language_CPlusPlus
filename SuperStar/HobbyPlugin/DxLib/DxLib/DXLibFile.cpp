@@ -9,6 +9,7 @@ namespace DXLib
         auto handle = FileRead_open(in_rPath.Str(), FALSE);
         if (handle == 0) return Core::Common::Handle();
 
+        // ファイルハンドルをハンドルインデックスにしている
         Core::Common::Handle fileHandle;
         fileHandle.Init(handle);
         this->_mFileHandle.Add(fileHandle.Magic(), fileHandle);
