@@ -10,7 +10,6 @@ namespace InGame
     namespace Local
     {
         static const Char* szObjectName = HE_STR_TEXT("InGameBulletNormal");
-
     }
 
     const Char* InGameBulletNormalFactory::VName() const
