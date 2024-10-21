@@ -79,7 +79,8 @@ TEST_CASE("Memory Allocate And Free")
         CHECK(pPtr);
         {
             *pPtr = static_cast<Uint8>(i);
-            HE_LOG(HE_STR_TEXT("%d\n"), *pPtr);
+            HE_LOG_LINE(HE_STR_TEXT("メモリページ(%d)の前確保したメモリに設定した値(%d)"), page,
+                        *pPtr);
         }
 
         // メモリの後確保がうまくいっているか
@@ -89,7 +90,8 @@ TEST_CASE("Memory Allocate And Free")
         CHECK(pPtr2);
         {
             *pPtr2 = i + 1234;
-            HE_LOG(HE_STR_TEXT("%d\n"), *pPtr2);
+            HE_LOG_LINE(HE_STR_TEXT("メモリページ(%d)の後確保したメモリに設定した値(%d)"), page,
+                        *pPtr2);
         }
 
         memoryManager.HE_FREE_MEMORY(pPtr);
@@ -120,6 +122,7 @@ TEST_CASE("Memory New and Delete")
         CHECK(memoryManager.CheckAllMemoryBlock());
     }
 
+    // メモリ確報がうまくいっているかチェック
     struct Data
     {
         Data() { this->i = 0; };
@@ -129,7 +132,7 @@ TEST_CASE("Memory New and Delete")
 
     HE_DELETE_ARRAY(pData);
 
-    // TODO new と deleteがうまくいっているかチェック
+    // new と deleteがうまくいっているかチェック
     CHECK(memoryManager.VRelease());
     memoryManager.Reset();
 }
@@ -153,6 +156,7 @@ TEST_CASE("Memory Custom Shader Ptr")
         CHECK(memoryManager.CheckAllMemoryBlock());
     }
 
+    // 共有ポインターのメモリ確報がうまくいっているかチェック
     struct Data
     {
         Data() { this->i = 0; };
@@ -167,15 +171,14 @@ TEST_CASE("Memory Custom Shader Ptr")
         memArray.Set(i, p);
     }
 
-    Uint32 memIdx[10] = {1, 3, 4, 2, 5, 9, 7, 8, 0, 6};
     for (Uint32 i = 0; i < 10; ++i)
     {
-        HE_LOG(HE_STR_TEXT("%d"), memArray[i]->i);
+        HE_LOG_LINE(HE_STR_TEXT("メモリページ(%d)の解放"), memArray[i]->i);
         CHECK(i == memArray[i]->i);
         memArray[i].reset();
     }
 
-    // TODO new と deleteがうまくいっているかチェック
+    // new と deleteがうまくいっているかチェック
     CHECK(memoryManager.UsedAllMemoryBlock() == FALSE);
 
     CHECK(memoryManager.VRelease());
@@ -201,6 +204,7 @@ TEST_CASE("Memory Custom Uniqe Ptr")
         CHECK(memoryManager.CheckAllMemoryBlock());
     }
 
+    // ユニークポインターのメモリ確保と解放がうまくいっているかチェック
     struct Data
     {
         Data() { this->i = 0; };
@@ -215,15 +219,14 @@ TEST_CASE("Memory Custom Uniqe Ptr")
         memArray.Set(i, std::move(p));
     }
 
-    Uint32 memIdx[10] = {1, 3, 4, 2, 5, 9, 7, 8, 0, 6};
     for (Uint32 i = 0; i < 10; ++i)
     {
-        HE_LOG_LINE(HE_STR_TEXT("%d"), memArray[i]->i);
+        HE_LOG_LINE(HE_STR_TEXT("メモリページ(%d)の解放"), memArray[i]->i);
         CHECK(i == memArray[i]->i);
         memArray[i].reset();
     }
 
-    // TODO new と deleteがうまくいっているかチェック
+    // new と deleteがうまくいっているかチェック
     CHECK(memoryManager.UsedAllMemoryBlock() == FALSE);
 
     CHECK(memoryManager.VRelease());
