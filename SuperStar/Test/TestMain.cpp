@@ -60,6 +60,9 @@ int main(int argc, char* const argv[])
 // マクロテストコード
 #include "EngineTest/Common/TestMacro.hpp"
 
+// UUIDのテストコード
+#include "EngineTest/Common/TestUUID.hpp"
+
 // ハッシュのテストコード
 #include "EngineTest/Common/TestHash.hpp"
 

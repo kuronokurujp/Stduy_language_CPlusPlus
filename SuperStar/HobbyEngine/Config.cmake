@@ -35,6 +35,8 @@ set(ENGINE_TARGET_FILES
     Engine/Common/Singleton.h
     Engine/Common/Hash.h
     Engine/Common/Hash.cpp
+    Engine/Common/UUID.h
+    Engine/Common/UUID.cpp
     
     Engine/File/Path.cpp
     Engine/File/Path.h
@@ -79,4 +81,6 @@ set(ENGINE_TARGET_FILES
     Engine/Platform/PlatformSystem.h
     Engine/Platform/PlatformTime.h
     Engine/Platform/PlatformModule.h
+    
+    
 )
