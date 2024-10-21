@@ -48,6 +48,8 @@ namespace InGame
         pWork->pos += shotVec;
 
         // 描画コマンド追加
+        // TODO: 描画内容を動的に切り替える
+        // 円描画や矩形描画とか
         Render::Command2DCircleDraw(in_rViewHandle, pWork->pos, pWork->fSize * 0.5f,
                                     Render::RGB::White);
 
