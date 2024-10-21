@@ -616,8 +616,10 @@ namespace Core::Memory
         pMemoryBlock->_paddingSize = 0;
 
 #ifdef HE_ENGINE_DEBUG
+        /*
         HE_LOG_LINE(HE_STR_TEXT("FreeMemory: %s Line: %lu"), pMemoryBlock->_szFileName,
                     pMemoryBlock->_uLine);
+                    */
         ::memset(pMemoryBlock->_szFileName, 0, HE_ARRAY_SIZE(pMemoryBlock->_szFileName));
         pMemoryBlock->_uLine = 0;
 #endif
