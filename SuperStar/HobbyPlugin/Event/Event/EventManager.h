@@ -54,7 +54,7 @@ namespace Event
         /// 登録したらTRUEを返す
         /// すでに登録済みなど登録失敗したらFALSE
         /// </summary>
-        Bool AddListenr(EventListenerPtr const&, EventTypeStr const&);
+        Bool AddListener(EventListenerPtr const&, EventTypeStr const&);
 
         Bool RemoveListener(EventListenerPtr const&, EventTypeStr const&);
         Bool RemoveAllListener(EventTypeStr const&);

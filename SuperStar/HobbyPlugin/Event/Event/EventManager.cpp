@@ -59,7 +59,7 @@ namespace Event
         }
     }
 
-    Bool EventManager::AddListenr(EventListenerPtr const& in_rListener,
+    Bool EventManager::AddListener(EventListenerPtr const& in_rListener,
                                   EventTypeStr const& in_rType)
     {
         if (this->ValidateType(in_rType) == FALSE) return FALSE;

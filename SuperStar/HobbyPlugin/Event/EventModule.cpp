@@ -27,12 +27,12 @@ namespace Event
         return this->_mEventMng.Erase(in_rHandle);
     }
 
-    Bool EventModule::AddListenr(EventListenerPtr const& in_rListener, EventTypeStr const& in_rType)
+    Bool EventModule::AddListener(EventListenerPtr const& in_rListener, EventTypeStr const& in_rType)
     {
         for (auto itr = this->_mEventMng.Begin(); itr != this->_mEventMng.End(); ++itr)
         {
             // in_rTypeのリスナー管理データに登録
-            if (itr->data->AddListenr(in_rListener, in_rType) == FALSE)
+            if (itr->data->AddListener(in_rListener, in_rType) == FALSE)
             {
                 continue;
             }

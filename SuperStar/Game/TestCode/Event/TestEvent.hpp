@@ -84,7 +84,7 @@ TEST_CASE("Event System")
     auto spTestListenr = HE_MAKE_CUSTOM_UNIQUE_PTR(TestListener);
 
     // リスナー追加は初回なので必ず成功する
-    CHECK(eventMng.AddListenr(std::move(spTestListenr), EventTest::s_TestEventType));
+    CHECK(eventMng.AddListener(std::move(spTestListenr), EventTest::s_TestEventType));
 
     // イベントは生成して所有権は管理側に渡す
     auto spTestEvent =
@@ -172,8 +172,8 @@ TEST_CASE("Event System All Remove Listener")
         auto spTestListenr2 = HE_MAKE_CUSTOM_UNIQUE_PTR(TestListener);
 
         // リスナー追加は初回なので必ず成功する
-        CHECK(eventMng.AddListenr(std::move(spTestListenr), EventTest::s_TestEventType));
-        CHECK(eventMng.AddListenr(std::move(spTestListenr2), EventTest::s_TestEventType2));
+        CHECK(eventMng.AddListener(std::move(spTestListenr), EventTest::s_TestEventType));
+        CHECK(eventMng.AddListener(std::move(spTestListenr2), EventTest::s_TestEventType2));
     }
 
     // 指定タイプのリスナーを一括破棄

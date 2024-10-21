@@ -176,7 +176,7 @@ namespace Level
                             bulletManagerComponentHandle);
                     });
 
-                if (pEventModule->AddListenr(this->_shotEventListener,
+                if (pEventModule->AddListener(this->_shotEventListener,
                                              INGAME_SHOT_EVENT_TYPE_NAME) == FALSE)
                 {
                     HE_ASSERT(0 && "イベントリスナー設定に失敗");
