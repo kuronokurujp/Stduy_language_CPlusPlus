@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Engine/Common/UUID.h"
 #include "Engine/Core.h"
 
 namespace Core::Common
@@ -23,23 +24,7 @@ namespace Core::Common
         /// 初期化
         /// 管理するindexを設定
         /// </summary>
-        void Init(const Uint32 in_uIndex)
-        {
-            HE_ASSERT(this->Null());
-            HE_ASSERT(in_uIndex <= E_MAX_INDEX);
-
-            // マジックナンバーを割り当てる数を作成
-            // TODO: GUIDの方がいいのだろうか？
-            // 24時間で1年中稼働するシステムなら対応が必要
-            static Uint32 s_magicNumber = 0;
-            ++s_magicNumber;
-            // マジックナンバーが枯渇しているかチェック
-            HE_ASSERT(s_magicNumber < E_MAX_MAGIC);
-
-            // インデックスとマジックナンバーを割り当て
-            this->_handleField._index = in_uIndex;
-            this->_handleField._magic = s_magicNumber;
-        }
+        void Init(const Uint32 in_uIndex);
 
         void Clear() HE_NOEXCEPT { this->_ulHandle = 0; }
 
