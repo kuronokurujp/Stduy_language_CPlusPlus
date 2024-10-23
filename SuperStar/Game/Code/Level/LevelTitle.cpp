@@ -90,6 +90,8 @@ namespace Level
 
     void LevelTitle::_VProcessInput(const EnhancedInput::InputMap* in_pInputMap)
     {
+        Level::Node::_VProcessInput(in_pInputMap);
+
         // メインゲーム開始入力があるか
         {
             if (in_pInputMap->Contains(Local::szInputActionNameByGameStart))
