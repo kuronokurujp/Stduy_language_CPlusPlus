@@ -17,8 +17,8 @@ namespace Core::Common
         ++uMagicNumber;
 
         // インデックスとマジックナンバーを割り当て
-        this->_handleField._index = in_uIndex;
-        this->_handleField._magic = uMagicNumber;
+        this->_handleField._uIndex = in_uIndex;
+        this->_handleField._uMagic = uMagicNumber;
     }
 }  // namespace Core::Common
 

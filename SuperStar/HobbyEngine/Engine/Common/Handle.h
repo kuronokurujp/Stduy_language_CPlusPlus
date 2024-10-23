@@ -27,8 +27,8 @@ namespace Core::Common
 
         void Clear() HE_NOEXCEPT { this->_ulHandle = 0; }
 
-        Uint32 Index() const HE_NOEXCEPT { return this->_handleField._index; }
-        Uint32 Magic() const HE_NOEXCEPT { return this->_handleField._magic; }
+        Uint32 Index() const HE_NOEXCEPT { return this->_handleField._uIndex; }
+        Uint32 Magic() const HE_NOEXCEPT { return this->_handleField._uMagic; }
         Bool Null() const HE_NOEXCEPT { return (this->_ulHandle == 0); }
 
         operator Uint64() const HE_NOEXCEPT { return this->_ulHandle; }
@@ -63,9 +63,9 @@ namespace Core::Common
             struct
             {
                 // インデックス
-                Uint32 _index : E_SIZE_INDEX_BIT;
+                Uint32 _uIndex : E_SIZE_INDEX_BIT;
                 // マジックナンバー
-                Uint32 _magic : E_SIZE_MAGIC_BIT;
+                Uint32 _uMagic : E_SIZE_MAGIC_BIT;
             } _handleField;
 
             Uint64 _ulHandle = 0;
