@@ -1,7 +1,9 @@
 ﻿#include "InGameShotStrategy.h"
 
+#include "InGame/Event/InGameEventShot.h"
+
+// モジュール利用
 #include "EventModule.h"
-#include "InGame/Event/InGameEvent.h"
 
 namespace InGame
 {

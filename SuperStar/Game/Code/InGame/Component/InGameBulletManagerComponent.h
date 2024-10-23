@@ -3,16 +3,21 @@
 #include <functional>
 
 #include "Engine/Common/CustomMap.h"
+
+// エンジンの最小インクルード
 #include "Engine/MiniEngine.h"
 #include "InGame/Bullet/InGameBulletInterface.h"
 #include "InGame/Component/InGameCollisionComponent.h"
+
+// イベントモジュールを使う
+#include "EventModule.h"
 
 namespace InGame
 {
     /// <summary>
     /// 味方や敵の弾を管理するコンポーネント
     /// </summary>
-    class InGameBulletManagerComponent final : public InGame::InGameCollisionComponent
+    class InGameBulletManagerComponent final : public InGameCollisionComponent
     {
         HE_CLASS_COPY_NG(InGameBulletManagerComponent);
         HE_CLASS_MOVE_NG(InGameBulletManagerComponent);
@@ -39,6 +44,11 @@ namespace InGame
         /// 初期化
         /// </summary>
         void VSetup(const Bool in_bReleaseMem) override final;
+
+        /// <summary>
+        /// コンポーネント開始
+        /// </summary>
+        Bool VBegin() override final;
 
         /// <summary>
         /// コンポーネント終了
@@ -68,6 +78,8 @@ namespace InGame
         void _ForEachObject(std::function<Bool(InGame::InGameBulletObject*,
                                                InGame::InGameBulletStrategyInterface*)>);
 
+        Bool _HandleEvent(Event::EventDataInterfacePtr const&);
+
     private:
         Core::Common::CustomFixMap<Core::Common::FixString128,
                                    Core::Memory::SharedPtr<InGame::InGameBulletStrategyInterface>,
@@ -76,5 +88,8 @@ namespace InGame
 
         WorkFixVector _vBullet;
         Core::Common::Handle _viewHandle;
+
+        Core::Common::Handle _shotEventHandle;
+        Core::Memory::SharedPtr<Event::EventListenerInterface> _shotEventListener;
     };
 }  // namespace InGame

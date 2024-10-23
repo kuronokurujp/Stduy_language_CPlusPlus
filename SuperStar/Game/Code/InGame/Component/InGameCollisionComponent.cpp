@@ -122,12 +122,12 @@ namespace InGame
         this->_hitAction(in_rSelfColData, in_rHitColData);
     }
 
-    void InGameCollisionComponent::SetHashCode(const Char* in_szName)
+    void InGameCollisionComponent::SetCollisionHashCode(const Char* in_szName)
     {
-        this->SetHashCode(Core::Common::HashName(in_szName));
+        this->SetCollisionHashCode(Core::Common::HashName(in_szName));
     }
 
-    void InGameCollisionComponent::SetHashCode(const Uint32 in_uHashCode)
+    void InGameCollisionComponent::SetCollisionHashCode(const Uint32 in_uHashCode)
     {
         this->_uHashCode = in_uHashCode;
     }

@@ -19,6 +19,7 @@ namespace Event
         // virtual void VSerialize(std::ostrstream& out) const = 0;
     };
 
+    // イベントデータのポインタ
     using EventDataInterfacePtr = Core::Memory::SharedPtr<EventDataInterface>;
 
     class BaseEventData : public EventDataInterface
@@ -38,11 +39,10 @@ namespace Event
         }
 
         virtual ~BaseEventData() = default;
-        // virtual const EventTypeStr& VEventTypeStr() const = 0;
+
         Uint64 VEventTypeHash() const override final { return this->_ulEventTypeHash; }
         Uint64 VDataTypeHash() const override final { return this->_ulDataTypeHash; }
         Float32 VTimeStamp() const override final { return this->_fTimeStamp; }
-        // virtual void VSerialize(std::ostrstream& out) const {}
 
     protected:
         const Float32 _fTimeStamp     = 0.0f;

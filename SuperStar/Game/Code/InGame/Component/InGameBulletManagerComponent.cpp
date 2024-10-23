@@ -2,6 +2,11 @@
 
 #include "Engine/Math/Rect2.h"
 
+// 弾制御一覧
+#include "InGame/Bullet/InGameBulletNormal.h"
+// 弾を打つイベント
+#include "InGame/Event/InGameEventShot.h"
+
 // 利用モジュール
 #include "Engine/Platform/PlatformModule.h"
 
@@ -13,8 +18,47 @@ namespace InGame
         this->_mBulletStrategy.Clear();
     }
 
+    Bool InGameBulletManagerComponent::VBegin()
+    {
+        // 利用する弾のアルゴリズムを登録
+        {
+            auto upStrategy = HE_MAKE_CUSTOM_UNIQUE_PTR(InGame::InGameBulletNormalStrategy);
+            this->AddStrategy(std::move(upStrategy));
+        }
+
+        // 弾を打つイベント管理を追加
+        {
+            auto pEventModule = HE_ENGINE.ModuleManager().Get<Event::EventModule>();
+
+            auto upStrategy = HE_MAKE_CUSTOM_UNIQUE_PTR(InGame::InGameShotEventManagerStrategy);
+            this->_shotEventHandle = pEventModule->AddEventManager(std::move(upStrategy));
+            HE_ASSERT(this->_shotEventHandle.Null() == FALSE);
+
+            this->_shotEventListener =
+                HE_MAKE_CUSTOM_SHARED_PTR(Event::EventListenerWithRegistEventFunc,
+                                          HE_STR_TEXT("LevelInGameShotListener"),
+                                          [this](Event::EventDataInterfacePtr const& in_spEventData)
+                                          { return this->_HandleEvent(in_spEventData); });
+
+            if (pEventModule->AddListener(this->_shotEventListener, INGAME_SHOT_EVENT_TYPE_NAME) ==
+                FALSE)
+            {
+                HE_ASSERT(0 && "イベントリスナー設定に失敗");
+            }
+        }
+
+        return InGame::InGameCollisionComponent::VBegin();
+    }
+
     Bool InGameBulletManagerComponent::VEnd()
     {
+        auto pEventModule = HE_ENGINE.ModuleManager().Get<Event::EventModule>();
+
+        // 設定したイベントリスナーを解放
+        pEventModule->RemoveAllListener(INGAME_SHOT_EVENT_TYPE_NAME);
+        // 作成したイベント管理を解放
+        pEventModule->RemoveEventManager(this->_shotEventHandle);
+
         this->_mBulletStrategy.Clear();
         return InGame::InGameCollisionComponent::VEnd();
     }
@@ -119,5 +163,31 @@ namespace InGame
                 this->_vBullet.RemoveAt(i);
             }
         }
+    }
+
+    /// <summary>
+    /// リスナーがイベント受け取ったかどうか
+    /// </summary>
+    Bool InGameBulletManagerComponent::_HandleEvent(
+        Event::EventDataInterfacePtr const& in_spEventData)
+    {
+        // ゲームのイベント処理を記述
+
+        // 通常弾を打つ
+        if (in_spEventData->VDataTypeHash() == EventShotNormalBullet::EventTypeHash())
+        {
+            // 通常弾の発射処理
+
+            EventShotNormalBullet* pEvent =
+                reinterpret_cast<EventShotNormalBullet*>(in_spEventData.get());
+            HE_ASSERT(pEvent != NULL);
+
+            auto upFactor = HE_MAKE_CUSTOM_UNIQUE_PTR(InGameBulletNormalFactory, pEvent->_pos,
+                                                      pEvent->_dir, pEvent->_uCollisionHashCode);
+
+            this->MakeObject(std::move(upFactor));
+        }
+
+        return TRUE;
     }
 }  // namespace InGame

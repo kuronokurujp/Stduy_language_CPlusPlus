@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <functional>
+
 #include "Engine/Common/Singleton.h"
 #include "Engine/MiniEngine.h"
 #include "EventData.h"
@@ -34,6 +36,42 @@ namespace Event
             // ここで新しいイベント発行はNG
             return TRUE;
         }
+    };
+
+    /// <summary>
+    /// イベント関数を登録できるリスナー
+    /// </summary>
+    class EventListenerWithRegistEventFunc : public Event::EventListenerInterface
+    {
+        HE_CLASS_COPY_NG(EventListenerWithRegistEventFunc);
+        HE_CLASS_MOVE_NG(EventListenerWithRegistEventFunc);
+
+    public:
+        EventListenerWithRegistEventFunc(
+            const Core::Common::FixString128& in_szrName,
+            std::function<Bool(Event::EventDataInterfacePtr const&)> in_func)
+        {
+            this->_func   = in_func;
+            this->_szName = in_szrName;
+        }
+
+        virtual ~EventListenerWithRegistEventFunc() { this->_func = NULL; }
+
+        // リスナー名
+        const Char* VName() { return this->_szName.Str(); }
+
+        /// <summary>
+        /// リスナーがイベント受け取ったかどうか
+        /// </summary>
+        Bool VHandleEvent(Event::EventDataInterfacePtr const& in_spEventData) override final
+        {
+            HE_ASSERT(this->_func != NULL);
+            return this->_func(in_spEventData);
+        }
+
+    private:
+        std::function<Bool(Event::EventDataInterfacePtr const&)> _func;
+        Core::Common::FixString128 _szName;
     };
 
     using EventListenerPtr = Core::Memory::SharedPtr<EventListenerInterface>;

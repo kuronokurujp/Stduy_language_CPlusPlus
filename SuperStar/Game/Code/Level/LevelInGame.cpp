@@ -2,93 +2,44 @@
 
 #include "Engine/Common/Hash.h"
 #include "Engine/Math/Vector2.h"
-#include "InGame/Bullet/InGameBulletNormal.h"
+
+// インゲーム専用コンポーネント一覧
 #include "InGame/Component/InGameBulletManagerComponent.h"
 #include "InGame/Component/InGameCollisionComponent.h"
 #include "InGame/Component/InGameStageManagerComponent.h"
 #include "InGame/Component/InGameSystemComponent.h"
-#include "InGame/Event/InGameEvent.h"
+#include "InGame/InGameTag.h"
+
+// 子レベル一覧
 #include "LevelInGame/LevelInGame_BG.h"
 
+// イベント一覧
+#include "InGame/Event/InGameEventCharacter.h"
+
 // 利用モジュール
+#include "EnhancedInputModule.h"
+#include "EventModule.h"
 #include "RenderModule.h"
 
 namespace Level
 {
     namespace Local
     {
-        class ShotEventManagerStrategy final : public Event::EventManagerStrategyInterface
-        {
-        public:
-            ShotEventManagerStrategy() = default;
-            ShotEventManagerStrategy(const Event::EventTypeStr& in_rEventType)
-                : _eventTypeHash(in_rEventType.Hash())
-            {
-            }
+        // プレイヤーのユーザー入力
+        static const Char* szInputMoveUp    = HE_STR_TEXT("Player_MoveUp");
+        static const Char* szInputMoveLeft  = HE_STR_TEXT("Player_MoveLeft");
+        static const Char* szInputMoveDown  = HE_STR_TEXT("Player_MoveDown");
+        static const Char* szInputMoveRight = HE_STR_TEXT("Player_MoveRight");
+        static const Char* szInputShot      = HE_STR_TEXT("Player_Shot");
 
-            Bool VIsEventTypeHash(const Uint64 in_ulHash)
-            {
-                return (this->_eventTypeHash == in_ulHash);
-            }
+        static const EnhancedInput::ActionMap mInputActionByPlay =
+            {{szInputMoveUp, EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_W})},
+             {szInputMoveLeft, EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_A})},
+             {szInputMoveDown, EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_S})},
+             {szInputMoveRight, EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_D})},
+             {szInputShot, EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_SPACE})}};
 
-        private:
-            Uint64 _eventTypeHash = 0;
-        };
-
-        class ShotEventListener final : public Event::EventListenerInterface
-        {
-            HE_CLASS_COPY_NG(ShotEventListener);
-            HE_CLASS_MOVE_NG(ShotEventListener);
-
-        public:
-            ShotEventListener() = default;
-            ShotEventListener(
-                std::function<InGame::InGameBulletManagerComponent*()> in_bulletManagerCompFunc)
-            {
-                this->_bulletManagerCompFunc = in_bulletManagerCompFunc;
-            }
-
-            virtual ~ShotEventListener() { this->_bulletManagerCompFunc = NULL; }
-
-            // リスナー名
-            const Char* VName() { return HE_STR_TEXT("LevelInGameListener"); }
-
-            /// <summary>
-            /// リスナーがイベント受け取ったかどうか
-            /// </summary>
-            Bool VHandleEvent(Event::EventDataInterfacePtr const& in_rEventData)
-            {
-                // ゲームのイベント処理を記述
-
-                // 通常弾を打つ
-                if (in_rEventData->VDataTypeHash() ==
-                    InGame::EventShotNormalBullet::EventType().Hash())
-                {
-                    // 通常弾の発射処理
-                    // HE_LOG_LINE(HE_STR_TEXT("Normal Shot!!"));
-
-                    InGame::EventShotNormalBullet* pEvent =
-                        reinterpret_cast<InGame::EventShotNormalBullet*>(in_rEventData.get());
-                    HE_ASSERT(pEvent != NULL);
-
-                    auto pBulletManagerComponent = this->_bulletManagerCompFunc();
-                    HE_ASSERT(pBulletManagerComponent);
-
-                    auto upFactor =
-                        HE_MAKE_CUSTOM_UNIQUE_PTR(InGame::InGameBulletNormalFactory, pEvent->_pos,
-                                                  pEvent->_dir, pEvent->_uCollisionHashCode);
-
-                    pBulletManagerComponent->MakeObject(std::move(upFactor));
-                }
-
-                return TRUE;
-            }
-
-        private:
-            std::function<InGame::InGameBulletManagerComponent*()> _bulletManagerCompFunc;
-        };
-
-    }  // namespace Local
+    };  // namespace Local
 
     Bool LevelInGame::VBegin()
     {
@@ -96,6 +47,12 @@ namespace Level
         HE_ASSERT(bRet);
 
         // TODO: アセットのロード
+
+        // ユーザー共通入力割り当て設定
+        {
+            auto pInputModule = HE_ENGINE.ModuleManager().Get<EnhancedInput::EnhancedInputModule>();
+            pInputModule->AddCommonMappingAction(Local::mInputActionByPlay);
+        }
 
         // 背景のレベル追加
         this->AddLevel<LevelInGame_BG>();
@@ -131,57 +88,23 @@ namespace Level
             // 弾を描画ハンドルを渡す
             pComp->SetViewHandle(this->_viewHandle);
 
-            pComp->SetHashCode(HE_STR_TEXT("Bullet"));
+            pComp->SetCollisionHashCode(HE_STR_TEXT("Bullet"));
 
             // 弾が当たった時のヒットアクション
             pComp->SetHitAction(
                 [](const InGame::CollisionData& in_rSelf, const InGame::CollisionData& in_rTargtt)
                 { HE_LOG_LINE(HE_STR_TEXT("Hit Bullet")); });
-
-            // 利用する弾のアルゴリズムを登録
-            auto upStrategy = HE_MAKE_CUSTOM_UNIQUE_PTR(InGame::InGameBulletNormalStrategy);
-            pComp->AddStrategy(std::move(upStrategy));
         }
 
         // インゲームのステージコンポーネント追加
+        InGame::InGameStageManagerComponent* pStageManagerComponent = NULL;
         {
             this->_stageManagerComponentHandle =
                 this->AddComponent<InGame::InGameStageManagerComponent>(0);
-            auto pStageManagerComponent = this->GetComponent<InGame::InGameStageManagerComponent>(
+            pStageManagerComponent = this->GetComponent<InGame::InGameStageManagerComponent>(
                 this->_stageManagerComponentHandle);
             HE_ASSERT(pStageManagerComponent);
             pStageManagerComponent->SetViewHandle(this->_viewHandle);
-        }
-
-        // インゲーム内で利用するイベントシステムを構築
-        {
-            auto pEventModule = HE_ENGINE.ModuleManager().Get<Event::EventModule>();
-
-            // 弾を打つイベント管理を追加
-            {
-                auto upStrategy        = HE_MAKE_CUSTOM_UNIQUE_PTR(Local::ShotEventManagerStrategy,
-                                                                   INGAME_SHOT_EVENT_TYPE_NAME);
-                this->_shotEventHandle = pEventModule->AddEventManager(std::move(upStrategy));
-                HE_ASSERT(this->_shotEventHandle.Null() == FALSE);
-
-                this->_shotEventListener = HE_MAKE_CUSTOM_SHARED_PTR(
-                    Local::ShotEventListener,
-                    // 弾管理コンポーネントを返す関数を登録
-                    [this, bulletManagerActorHandle, bulletManagerComponentHandle]()
-                    {
-                        auto pActor = this->GetActor<Actor::Object>(bulletManagerActorHandle);
-                        HE_ASSERT(pActor);
-
-                        return pActor->GetComponent<InGame::InGameBulletManagerComponent>(
-                            bulletManagerComponentHandle);
-                    });
-
-                if (pEventModule->AddListener(this->_shotEventListener,
-                                             INGAME_SHOT_EVENT_TYPE_NAME) == FALSE)
-                {
-                    HE_ASSERT(0 && "イベントリスナー設定に失敗");
-                }
-            }
         }
 
         return TRUE;
@@ -192,12 +115,11 @@ namespace Level
         auto pRenderModule = HE_ENGINE.ModuleManager().Get<Render::RenderModule>();
         pRenderModule->RemoveView(this->_viewHandle);
 
-        auto pEventModule = HE_ENGINE.ModuleManager().Get<Event::EventModule>();
-
-        // 設定したイベントリスナーを解放
-        pEventModule->RemoveAllListener(INGAME_SHOT_EVENT_TYPE_NAME);
-        // 作成したイベント管理を解放
-        pEventModule->RemoveEventManager(this->_shotEventHandle);
+        // 専用の入力アクションを外す
+        {
+            auto pInputModule = HE_ENGINE.ModuleManager().Get<EnhancedInput::EnhancedInputModule>();
+            pInputModule->RemoveCommonMappingAction(Local::mInputActionByPlay);
+        }
 
         return Node::VEnd();
     }
@@ -217,6 +139,48 @@ namespace Level
 
         // コリジョン処理をする
         InGame::CollisionAll();
+    }
+
+    void LevelInGame::_VProcessInput(const EnhancedInput::InputMap* in_pInputMap)
+    {
+        HE_ASSERT(in_pInputMap);
+        Level::Node::_VProcessInput(in_pInputMap);
+
+        auto pEventModule = HE_ENGINE.ModuleManager().Get<Event::EventModule>();
+
+        Core::Math::Vector2 move;
+        if (in_pInputMap->Contains(Local::szInputMoveUp))
+        {
+            move += Core::Math::Vector2(0.0f, -1.0f);
+        }
+        else if (in_pInputMap->Contains(Local::szInputMoveDown))
+        {
+            move += Core::Math::Vector2(0.0f, 1.0f);
+        }
+
+        if (in_pInputMap->Contains(Local::szInputMoveLeft))
+        {
+            move += Core::Math::Vector2(-1.0f, 0.0f);
+        }
+        else if (in_pInputMap->Contains(Local::szInputMoveRight))
+        {
+            move += Core::Math::Vector2(1.0f, 0.0f);
+        }
+
+        if (in_pInputMap->Contains(Local::szInputShot))
+        {
+            auto spEvent = HE_MAKE_CUSTOM_SHARED_PTR(InGame::EventCharacterAttack, 0,
+                                                     InGame::EObjectTag_Player, 0);
+            pEventModule->QueueEvent(spEvent);
+        }
+
+        if (move.IsZero() == FALSE)
+        {
+            move.Normalize();
+            auto spEvent = HE_MAKE_CUSTOM_SHARED_PTR(InGame::EventCharacterMove, 0,
+                                                     InGame::EObjectTag_Player, 0, move);
+            pEventModule->QueueEvent(spEvent);
+        }
     }
 
 }  // namespace Level

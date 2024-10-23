@@ -31,12 +31,12 @@ TEST_CASE("Event System")
 
         const Char* VName() override final { return HE_STR_TEXT("C_TestListener"); }
 
-        Bool VHandleEvent(Event::EventDataInterfacePtr const& in_rEvent) override final
+        Bool VHandleEvent(Event::EventDataInterfacePtr const& in_spEvent) override final
         {
-            if (EventTest::EvtDataTextPut::_szDataType.Hash() == in_rEvent->VDataTypeHash())
+            if (EventTest::EvtDataTextPut::_szDataType.Hash() == in_spEvent->VDataTypeHash())
             {
                 EventTest::EvtDataTextPut* pEvtData =
-                    reinterpret_cast<EventTest::EvtDataTextPut*>(in_rEvent.get());
+                    reinterpret_cast<EventTest::EvtDataTextPut*>(in_spEvent.get());
                 HE_ASSERT(pEvtData);
 
                 pEvtData->_sCount += 1;
@@ -125,10 +125,7 @@ TEST_CASE("Event System All Remove Listener")
 
         const Char* VName() override final { return HE_STR_TEXT("C_TestListener"); }
 
-        Bool VHandleEvent(Event::EventDataInterfacePtr const& in_rEvent) override final
-        {
-            return TRUE;
-        }
+        Bool VHandleEvent(Event::EventDataInterfacePtr const&) override final { return TRUE; }
     };
 
     class TestEventManagerStrategy final : public Event::EventManagerStrategyInterface

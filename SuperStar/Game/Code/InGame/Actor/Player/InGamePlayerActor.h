@@ -54,7 +54,7 @@ namespace InGame
         void SetSize(const Core::Math::Vector2&);
         void SetViewHandle(const Core::Common::Handle&);
 
-        void Move(const Core::Math::Vector2& in_rMove) { this->_move = in_rMove; }
+        void Move(const Core::Math::Vector2&);
         void Shot();
 
         const Parameter& GetParameter() const { return this->_parameter; }

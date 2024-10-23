@@ -24,12 +24,12 @@ namespace Level
         /// </summary>
         void VUpdate(const Float32 in_fDt) override final;
 
+    protected:
+        void _VProcessInput(const EnhancedInput::InputMap* in_pInputMap) override final;
+
     private:
         Core::Common::Handle _systemComponentHandle;
         Core::Common::Handle _stageManagerComponentHandle;
         Core::Common::Handle _viewHandle;
-
-        Core::Common::Handle _shotEventHandle;
-        Core::Memory::SharedPtr<Event::EventListenerInterface> _shotEventListener;
     };
 }  // namespace Level

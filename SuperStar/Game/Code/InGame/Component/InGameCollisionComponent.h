@@ -62,8 +62,8 @@ namespace InGame
 
         void OnHit(const CollisionData& in_rSelfColData, const CollisionData& in_rHitColData);
 
-        void SetHashCode(const Char* in_szName);
-        void SetHashCode(const Uint32 in_uHashCode);
+        void SetCollisionHashCode(const Char* in_szName);
+        void SetCollisionHashCode(const Uint32 in_uHashCode);
 
         Uint32 HashCode() const { return this->_uHashCode; }
 

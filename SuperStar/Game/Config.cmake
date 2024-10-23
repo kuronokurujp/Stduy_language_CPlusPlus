@@ -54,11 +54,15 @@ set(TARGET_FILES
 	Code/InGame/Bullet/InGameBulletNormal.h
 	Code/InGame/Bullet/InGameBulletNormal.cpp
 	
-	Code/Ingame/InGameActorSystem.h
-	Code/Ingame/InGameActorSystem.cpp
-	Code/Ingame/InGameActorCommon.h
+	Code/InGame/InGameActorSystem.h
+	Code/InGame/InGameActorSystem.cpp
+	Code/InGame/InGameActorCommon.h
+	Code/InGame/InGameTag.h
 	
-	Code/Ingame/Event/InGameEvent.h
+	Code/InGame/Event/InGameEventCharacter.h
+	Code/InGame/Event/InGameEventCharacter.cpp
+	Code/InGame/Event/InGameEventShot.h
+	Code/InGame/Event/InGameEventShot.cpp
 
 	Code/framework.h
 	Code/Resource.h
@@ -70,4 +74,3 @@ set(TARGET_FILES
 	Resource/Assets/UI/Builder/Test/Launcher.xml
 	Resource/Assets/UI/Builder/Game/Title.xml
 )
-

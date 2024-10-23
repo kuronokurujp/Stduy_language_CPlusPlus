@@ -1,6 +1,9 @@
 ﻿#include "InGameStageManagerComponent.h"
 
 #include "InGame/Actor/Player/InGamePlayerActor.h"
+
+// ゲームキャラクター用のイベント
+#include "InGame/Event/InGameEventCharacter.h"
 /*
 #include "actor/boss/BossStage1.h"
 #include "actor/enemy/Snake.h"
@@ -62,12 +65,42 @@ namespace InGame
             pPlayer->SetViewHandle(this->_viewHandle);
         }
 
+        // TODO: イベント追加
+        {
+            auto pEventModule = HE_ENGINE.ModuleManager().Get<Event::EventModule>();
+
+            auto upStrategy =
+                HE_MAKE_CUSTOM_UNIQUE_PTR(InGame::InGameCharacterEventManagerStrategy);
+            this->_characterEventHandle = pEventModule->AddEventManager(std::move(upStrategy));
+            HE_ASSERT(this->_characterEventHandle.Null() == FALSE);
+
+            this->_characterEventListener =
+                HE_MAKE_CUSTOM_SHARED_PTR(Event::EventListenerWithRegistEventFunc,
+                                          HE_STR_TEXT("LevelInGameCharacterListener"),
+                                          [this](Event::EventDataInterfacePtr const& in_spEventData)
+                                          { return this->_HandleCharacterEvent(in_spEventData); });
+
+            if (pEventModule->AddListener(this->_characterEventListener,
+                                          INGAME_CHARACTER_EVENT_TYPE_NAME) == FALSE)
+            {
+                HE_ASSERT(0 && "キャラクターイベントリスナー設定に失敗");
+            }
+        }
+
         return TRUE;
     }
 
     Bool InGameStageManagerComponent::VEnd()
     {
+        auto pEventModule = HE_ENGINE.ModuleManager().Get<Event::EventModule>();
+
+        // 設定したイベントリスナーを解放
+        pEventModule->RemoveAllListener(INGAME_CHARACTER_EVENT_TYPE_NAME);
+        // 作成したイベント管理を解放
+        pEventModule->RemoveEventManager(this->_characterEventHandle);
+
         this->RemoveActor(&this->_playerHandle);
+
         return LevelBaseComponent::VEnd();
 
         /*
@@ -83,6 +116,58 @@ namespace InGame
     {
         HE_ASSERT(in_rHandle.Null() == FALSE);
         this->_viewHandle = in_rHandle;
+    }
+
+    Bool InGameStageManagerComponent::_HandleCharacterEvent(
+        Event::EventDataInterfacePtr const& in_spEventData)
+    {
+        // ゲームのキャラクターイベント処理
+        const Uint32 uEventHash = in_spEventData->VDataTypeHash();
+
+        // 移動処理をする
+        if (uEventHash == EventCharacterMove::EventTypeHash())
+        {
+            EventCharacterMove* pEvent =
+                reinterpret_cast<EventCharacterMove*>(in_spEventData.get());
+            HE_ASSERT(pEvent != NULL);
+
+            switch (pEvent->_eTag)
+            {
+                case EObjectTag_Player:
+                {
+                    HE_ASSERT(this->_playerHandle.Null() == FALSE);
+                    auto pPlayer = this->GetActor<InGamePlayerActor>(this->_playerHandle);
+                    pPlayer->Move(pEvent->_move);
+
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+        // 攻撃処理をする
+        else if (uEventHash == EventCharacterAttack::EventTypeHash())
+        {
+            EventCharacterAttack* pEvent =
+                reinterpret_cast<EventCharacterAttack*>(in_spEventData.get());
+            HE_ASSERT(pEvent != NULL);
+
+            switch (pEvent->_eTag)
+            {
+                case EObjectTag_Player:
+                {
+                    HE_ASSERT(this->_playerHandle.Null() == FALSE);
+                    auto pPlayer = this->GetActor<InGamePlayerActor>(this->_playerHandle);
+                    pPlayer->Shot();
+
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+
+        return TRUE;
     }
 
     /*

@@ -1,13 +1,18 @@
 ﻿#pragma once
 
-// #include <vector>
-
-// #include "actor/ActorSystem.h"
 #include "Engine/MiniEngine.h"
+#include "InGame/Event/InGameEventCharacter.h"
 #include "Level/Component/LevelBaseComponent.h"
+
+// イベントモジュールを使う
+#include "EventModule.h"
 
 namespace InGame
 {
+    /// <summary>
+    /// ステージに配置するオブジェクト生成(敵/プレイヤー/ボス/建造物...)
+    /// ステージのワークフロー制御
+    /// </summary>
     class InGameStageManagerComponent final : public Level::LevelBaseComponent
     {
         HE_CLASS_COPY_NG(InGameStageManagerComponent);
@@ -41,7 +46,14 @@ namespace InGame
 
         void SetViewHandle(const Core::Common::Handle&);
 
+        /// <summary>
+        /// リスナーがイベント受け取ったかどうか
+        /// </summary>
+        // Bool VHandleEvent(Event::EventDataInterfacePtr const& in_rEventData) override final;
+
     private:
+        Bool _HandleCharacterEvent(Event::EventDataInterfacePtr const&);
+
         /*
             //	定義
             typedef struct
@@ -90,6 +102,8 @@ namespace InGame
 
                 std::vector<class C_EnemyActorBase*> m_aMapSettingEnemyList;
                 */
+        Core::Common::Handle _characterEventHandle;
+        Core::Memory::SharedPtr<Event::EventListenerInterface> _characterEventListener;
     };
 
 }  // namespace InGame

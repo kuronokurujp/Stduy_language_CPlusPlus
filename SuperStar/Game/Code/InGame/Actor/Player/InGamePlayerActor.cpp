@@ -7,7 +7,6 @@
 #include "InGame/Component/Shot/InGameShotStrategy.h"
 
 // 依存するモジュール一覧
-#include "EnhancedInputModule.h"
 #include "RenderModule.h"
 
 #if 0
@@ -25,91 +24,6 @@
 
 namespace InGame
 {
-    namespace Local
-    {
-        // プレイヤーのユーザー入力
-        static const Char* szInputMoveUp    = HE_STR_TEXT("Player_MoveUp");
-        static const Char* szInputMoveLeft  = HE_STR_TEXT("Player_MoveLeft");
-        static const Char* szInputMoveDown  = HE_STR_TEXT("Player_MoveDown");
-        static const Char* szInputMoveRight = HE_STR_TEXT("Player_MoveRight");
-        static const Char* szInputShot      = HE_STR_TEXT("Player_Shot");
-
-        static const EnhancedInput::ActionMap mInputActionByPlay =
-            {{szInputMoveUp, EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_W})},
-             {szInputMoveLeft, EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_A})},
-             {szInputMoveDown, EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_S})},
-             {szInputMoveRight, EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_D})},
-             {szInputShot, EnhancedInput::ActionData({Platform::EKeyboard::EKeyboard_SPACE})}};
-
-        /// <summary>
-        /// プレイヤーのユーザー入力
-        /// </summary>
-        class UserInputPlayerStrategy final : public Actor::InputStrategyBase
-        {
-            HE_CLASS_COPY_NG(UserInputPlayerStrategy);
-
-        public:
-            UserInputPlayerStrategy()
-            {
-                // ユーザー共通入力割り当て設定
-                {
-                    auto pInputModule =
-                        HE_ENGINE.ModuleManager().Get<EnhancedInput::EnhancedInputModule>();
-                    pInputModule->AddCommonMappingAction(Local::mInputActionByPlay);
-                }
-            }
-            virtual ~UserInputPlayerStrategy()
-            {
-                // 専用の入力アクションを外す
-                {
-                    auto pInputModule =
-                        HE_ENGINE.ModuleManager().Get<EnhancedInput::EnhancedInputModule>();
-                    pInputModule->RemoveCommonMappingAction(Local::mInputActionByPlay);
-                }
-            }
-
-            void VProcessInput(const void* in_pInputMap,
-                               Actor::Object* in_pSelfObject) override final
-            {
-                HE_ASSERT(in_pInputMap);
-                HE_ASSERT(in_pSelfObject);
-
-                auto pInputMap = reinterpret_cast<const EnhancedInput::InputMap*>(in_pInputMap);
-
-                if (HE_GENERATED_CHECK_RTTI(*in_pSelfObject, InGamePlayerActor) == FALSE) return;
-
-                auto pPlayer = reinterpret_cast<InGamePlayerActor*>(in_pSelfObject);
-
-                Core::Math::Vector2 move;
-                if (pInputMap->Contains(Local::szInputMoveUp))
-                {
-                    move += Core::Math::Vector2(0.0f, -1.0f);
-                }
-                else if (pInputMap->Contains(Local::szInputMoveDown))
-                {
-                    move += Core::Math::Vector2(0.0f, 1.0f);
-                }
-
-                if (pInputMap->Contains(Local::szInputMoveLeft))
-                {
-                    move += Core::Math::Vector2(-1.0f, 0.0f);
-                }
-                else if (pInputMap->Contains(Local::szInputMoveRight))
-                {
-                    move += Core::Math::Vector2(1.0f, 0.0f);
-                }
-
-                if (pInputMap->Contains(Local::szInputShot))
-                {
-                    pPlayer->Shot();
-                }
-
-                move.Normalize();
-                pPlayer->Move(move * pPlayer->GetParameter().speed);
-            }
-        };
-    };  // namespace Local
-
     InGamePlayerActor::InGamePlayerActor() : Actor::Object()
     {
         this->_Clear();
@@ -118,16 +32,6 @@ namespace InGame
     Bool InGamePlayerActor::VBegin()
     {
         if (Actor::Object::VBegin() == FALSE) return FALSE;
-
-        // ユーザー入力コンポーネントを追加
-        {
-            auto handle = this->AddComponent<Actor::InputComponent>(0);
-            HE_ASSERT(handle.Null() == FALSE);
-
-            // プレイヤー用の入力ストラテジーを設定
-            auto pStrategy = HE_MAKE_CUSTOM_SHARED_PTR(Local::UserInputPlayerStrategy);
-            this->GetComponent<Actor::InputComponent>(handle)->SetStrategy(pStrategy);
-        }
 
         // 座標関連のコンポーネント追加
         {
@@ -146,7 +50,7 @@ namespace InGame
             HE_ASSERT(handle.Null() == FALSE);
 
             pComponent->SetRadius(HE_MIN(this->_size._fX, this->_size._fY));
-            pComponent->SetHashCode(HE_STR_TEXT("Player"));
+            pComponent->SetCollisionHashCode(HE_STR_TEXT("Player"));
             //  TODO: 当たった時の処理を追加
             pComponent->SetHitAction([](const CollisionData& in_rSelf, const CollisionData& in_rHit)
                                      { HE_LOG_LINE(HE_STR_TEXT("Hit")); });
@@ -271,6 +175,12 @@ namespace InGame
     {
         HE_ASSERT(in_rHandle.Null() == FALSE);
         this->_viewHandle = in_rHandle;
+    }
+
+    void InGamePlayerActor::Move(const Core::Math::Vector2& in_rMove)
+    {
+        this->_move.Zero();
+        this->_move.Madd(in_rMove, this->_parameter.speed);
     }
 
     void InGamePlayerActor::Shot()

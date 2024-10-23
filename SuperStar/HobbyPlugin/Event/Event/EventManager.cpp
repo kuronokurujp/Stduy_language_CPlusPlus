@@ -60,7 +60,7 @@ namespace Event
     }
 
     Bool EventManager::AddListener(EventListenerPtr const& in_rListener,
-                                  EventTypeStr const& in_rType)
+                                   EventTypeStr const& in_rType)
     {
         if (this->ValidateType(in_rType) == FALSE) return FALSE;
 
@@ -193,14 +193,14 @@ namespace Event
         }
     */
 
-    Bool EventManager::QueueEvent(EventDataInterfacePtr const& in_rEvent)
+    Bool EventManager::QueueEvent(EventDataInterfacePtr const& in_spEvent)
     {
         HE_ASSERT(0 <= this->_sActiveQueue);
         HE_ASSERT(this->_sActiveQueue < EConstants_NumQueues);
 
-        if (this->ValidateHash(in_rEvent->VEventTypeHash()) == FALSE) return FALSE;
+        if (this->ValidateHash(in_spEvent->VEventTypeHash()) == FALSE) return FALSE;
 
-        this->_aQueue[this->_sActiveQueue].push_back(in_rEvent);
+        this->_aQueue[this->_sActiveQueue].push_back(in_spEvent);
 
         return TRUE;
     }
@@ -313,9 +313,9 @@ namespace Event
             // キュー内にイベントが残っている場合は次のフレームでイベントを処理するようにアクティブリストに入れる
             while (0 < this->_aQueue[sQueueToProcess].size())
             {
-                EventDataInterfacePtr event = this->_aQueue[sQueueToProcess].back();
+                EventDataInterfacePtr spEvent = this->_aQueue[sQueueToProcess].back();
                 this->_aQueue[sQueueToProcess].pop_back();
-                this->_aQueue[this->_sActiveQueue].push_front(event);
+                this->_aQueue[this->_sActiveQueue].push_front(spEvent);
             }
         }
 
