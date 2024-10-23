@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include "Engine/Common/UUID.h"
 #include "Engine/Core.h"
 
 namespace Core::Common
@@ -18,7 +17,7 @@ namespace Core::Common
 
         // ムーブセマンティクス
         // コピーと同じにする
-        Handle(Handle&& r) { this->_ulHandle = r._ulHandle; }
+        Handle(Handle&& r) HE_NOEXCEPT { this->_ulHandle = r._ulHandle; }
 
         /// <summary>
         /// 初期化

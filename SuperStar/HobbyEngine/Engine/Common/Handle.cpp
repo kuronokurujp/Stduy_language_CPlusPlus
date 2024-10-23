@@ -11,10 +11,11 @@ namespace Core::Common
         HE_ASSERT(this->Null());
         HE_ASSERT(in_uIndex <= E_MAX_INDEX);
 
-        // マジックナンバーは32bitのUUIDを使用
-        // 32bitなので衝突確率は1/100000で発生する
-        // しかしインデックスと組み合わせているので衝突確率はほぼないと思っている
-        Uint32 uMagicNumber = GenerateUUIDBy32Bit();
+        // Uint32の最大数は42億になるので,
+        // インデックスとマジックナンバーの組み合わせでかぶる事はないと思う
+        static Uint32 uMagicNumber = 0;
+        ++uMagicNumber;
+
         // インデックスとマジックナンバーを割り当て
         this->_handleField._index = in_uIndex;
         this->_handleField._magic = uMagicNumber;
