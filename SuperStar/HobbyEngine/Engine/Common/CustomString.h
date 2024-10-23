@@ -111,8 +111,11 @@ namespace Core::Common
         }
 
         Bool operator==(const StringBase& in_szrName) const { return operator==(in_szrName.Str()); }
-        Bool operator!=(const Char* in_szName) const { return !operator==(in_szName); }
-        Bool operator!=(const StringBase& in_szrName) const { return !operator==(in_szrName); }
+        Bool operator!=(const Char* in_szName) const { return (operator==(in_szName)) == FALSE; }
+        Bool operator!=(const StringBase& in_szrName) const
+        {
+            return (operator==(in_szrName)) == FALSE;
+        }
         Bool operator<(const Char* in_szName) const
         {
             return HE_STR_CMP(this->_szBuff, in_szName) < 0;
