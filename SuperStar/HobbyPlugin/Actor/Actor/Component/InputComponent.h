@@ -49,9 +49,9 @@ namespace Actor
         /// <summary>
         /// ストラテジー設定
         /// </summary>
-        void SetStrategy(std::shared_ptr<InputStrategyBase>);
+        void SetStrategy(Core::Memory::SharedPtr<InputStrategyBase>);
 
     private:
-        std::shared_ptr<InputStrategyBase> _spStrategy = NULL;
+        Core::Memory::SharedPtr<InputStrategyBase> _spStrategy = NULL;
     };
 }  // namespace Actor
