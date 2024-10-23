@@ -222,37 +222,27 @@ void HE_LOG_LINE(const Char* in_szFormat, Args... in_args)
     }
 
 // デフォルトコンストラクタを封印
-#define HE_CLASS_DEFAULT_CONSTRUCT_NG(_x_) \
-private:                                   \
-    _x_() = delete;
+#define HE_CLASS_DEFAULT_CONSTRUCT_NG(_x_) _x_() = delete;
 
 // クラスのコピー封印
 #define HE_CLASS_COPY_CONSTRUCT_NG(_x_) \
-private:                                \
     _x_(_x_&)       = delete;           \
     _x_(const _x_&) = delete;
 
 #define HE_CLASS_COPY_NG(_x_)            \
-private:                                 \
-    _x_(_x_&)       = delete;            \
-    _x_(const _x_&) = delete;            \
-                                         \
-private:                                 \
+    _x_(_x_&)                  = delete; \
+    _x_(const _x_&)            = delete; \
     _x_& operator=(_x_&)       = delete; \
     _x_& operator=(const _x_&) = delete;
 
 // セマンティクスコンストラクターと演算子を封印
 #define HE_CLASS_MOVE_CONSTRUCT_NG(_x_) \
-private:                                \
     _x_(_x_&&)       = delete;          \
     _x_(const _x_&&) = delete;
 
 #define HE_CLASS_MOVE_NG(_x_)             \
-private:                                  \
-    _x_(_x_&&)       = delete;            \
-    _x_(const _x_&&) = delete;            \
-                                          \
-private:                                  \
+    _x_(_x_&&)                  = delete; \
+    _x_(const _x_&&)            = delete; \
     _x_& operator=(_x_&&)       = delete; \
     _x_& operator=(const _x_&&) = delete;
 
