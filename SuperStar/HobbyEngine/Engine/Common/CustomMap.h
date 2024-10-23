@@ -108,11 +108,11 @@ namespace Core::Common
 
     public:
         // コンストラクタ
-        CustomFixMap() : _iteratorTail(&this->_tTail) { this->_Init(); }
+        CustomFixMap() : _iteratorTail(&this->_tail) { this->_Init(); }
 
         // コピーのコンストラクタ
         // ディープコピーにする
-        CustomFixMap(const CustomFixMap& in_mrOther) : _iteratorTail(&this->_tTail)
+        CustomFixMap(const CustomFixMap& in_mrOther) : _iteratorTail(&this->_tail)
         {
             this->_Init();
             this->_DeepCopy(&in_mrOther);
@@ -120,7 +120,7 @@ namespace Core::Common
 
         // コンストラクタ (initializer_listを受け取る)
         CustomFixMap(const std::initializer_list<std::pair<KEY, DATA>>& in_rInitList)
-            : _iteratorTail(&this->_tTail)
+            : _iteratorTail(&this->_tail)
         {
             this->_Init();
             for (const auto& item : in_rInitList)
@@ -154,19 +154,19 @@ namespace Core::Common
             HE_ASSERT(this->_uNodeNum == 0);
 
             // 線形リストの解除が正しく行われている
-            HE_ASSERT(this->_tHead._pPrev == NULL);
-            HE_ASSERT(this->_tHead._pNext == &this->_tTail);
-            HE_ASSERT(this->_tTail._pPrev == &this->_tHead);
-            HE_ASSERT(this->_tTail._pNext == NULL);
+            HE_ASSERT(this->_head._pPrev == NULL);
+            HE_ASSERT(this->_head._pNext == &this->_tail);
+            HE_ASSERT(this->_tail._pPrev == &this->_head);
+            HE_ASSERT(this->_tail._pNext == NULL);
 #endif
         }
 
         /// <summary>
         /// キーとデータを追加
         /// </summary>
-        Iterator Add(const KEY& in_trKey, const DATA& in_trData)
+        Iterator Add(const KEY& in_rKey, const DATA& in_rData)
         {
-            return this->_Add(in_trKey, &in_trData);
+            return this->_Add(in_rKey, &in_rData);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace Core::Common
             // ツリーが空なら終端を返す
             if (this->Empty()) return this->End();
 
-            Node* tpNode = this->_FindKey(this->_tpRoot, in_trKey);
+            Node* tpNode = this->_FindKey(this->_pRoot, in_trKey);
             if (tpNode == NULL)
             {
                 // 見つからなかった
@@ -198,7 +198,7 @@ namespace Core::Common
             // ツリーが空なら終端を返す
             if (this->Empty()) return this->End();
 
-            Node* tpNode = this->_FindData(this->_tpRoot, in_rData);
+            Node* tpNode = this->_FindData(this->_pRoot, in_rData);
             if (tpNode == NULL)
             {
                 // 見つからなかった
@@ -219,7 +219,7 @@ namespace Core::Common
             // ツリーが空なのでキーの要素はない
             if (this->Empty()) return FALSE;
 
-            Node* tpNode = this->_FindKey(this->_tpRoot, in_rKey);
+            Node* tpNode = this->_FindKey(this->_pRoot, in_rKey);
             if (tpNode == NULL) return FALSE;
 
             return TRUE;
@@ -233,10 +233,10 @@ namespace Core::Common
             if (this->Contains(in_rKey) == FALSE) return FALSE;
 
             // ツリーを辿って削除と再構築
-            this->_tpRoot = this->_Erase(this->_tpRoot, in_rKey);
+            this->_pRoot = this->_Erase(this->_pRoot, in_rKey);
 
             // まだツリーが存在するなら、ルートノードを黒にしておく
-            if (this->_tpRoot) this->_tpRoot->_uColor = Node::BLACK;
+            if (this->_pRoot) this->_pRoot->_uColor = Node::BLACK;
 
             return TRUE;
         }
@@ -250,10 +250,10 @@ namespace Core::Common
             if (in_iter == this->End()) return FALSE;
 
             // ツリーを辿って削除 &再構築
-            this->_tpRoot = this->_Erase(this->_tpRoot, in_iter._pNode->_pair.key);
+            this->_pRoot = this->_Erase(this->_pRoot, in_iter._pNode->_pair.key);
 
             // まだツリーが存在するなら、ルートノードを黒にしておく
-            if (this->_tpRoot) this->_tpRoot->_uColor = Node::BLACK;
+            if (this->_pRoot) this->_pRoot->_uColor = Node::BLACK;
 
             return TRUE;
         }
@@ -264,14 +264,14 @@ namespace Core::Common
         void Clear()
         {
             // ルートから辿って破棄
-            this->_Clear(this->_tpRoot);
+            this->_Clear(this->_pRoot);
             this->_Init();
         }
 
         /// <summary>
         /// マップが空かどうか
         /// </summary>
-        Bool Empty() const HE_NOEXCEPT { return (this->_tpRoot == NULL); }
+        Bool Empty() const HE_NOEXCEPT { return (this->_pRoot == NULL); }
 
         /// <summary>
         /// 要素数を返す
@@ -282,7 +282,7 @@ namespace Core::Common
         /// 先頭イテレーターを取得
         /// データが空なら終端イテレーターを取得
         /// </summary>
-        Iterator Begin() const HE_NOEXCEPT { return Iterator(this->_tHead._pNext); }
+        Iterator Begin() const HE_NOEXCEPT { return Iterator(this->_head._pNext); }
 
         /// <summary>
         /// 終端イテレーター取得
@@ -347,7 +347,7 @@ namespace Core::Common
         Bool CheckValidByDebug(const Uint32 in_uNodeNum)
         {
             Uint32 uCheckCount = 0;
-            Bool bResult       = this->CheckNodeByDebug(&uCheckCount, _tpRoot);
+            Bool bResult       = this->CheckNodeByDebug(&uCheckCount, _pRoot);
             if (bResult && in_uNodeNum == uCheckCount) return TRUE;
 
             return FALSE;
@@ -427,7 +427,7 @@ namespace Core::Common
             pNewNode->_uColor = Node::RED;
 
             // 線形アクセス用にPrev/Nextを繋ぐ
-            Node* pTailNode           = this->_tTail._pPrev;
+            Node* pTailNode           = this->_tail._pPrev;
             pTailNode->_pNext->_pPrev = pNewNode;
             pNewNode->_pNext          = pTailNode->_pNext;
             pTailNode->_pNext         = pNewNode;
@@ -455,24 +455,24 @@ namespace Core::Common
         }
 
         // ノードを追加する
-        Iterator _Add(const KEY& in_trKey, const DATA* in_tpData)
+        Iterator _Add(const KEY& in_rKey, const DATA* in_pData)
         {
             // 赤ノードを作る
             Node* pNode = this->_NewNode();
             if (pNode == NULL) return this->End();
 
-            pNode->_pair.key = in_trKey;
-            if (in_tpData != NULL)
+            pNode->_pair.key = in_rKey;
+            if (in_pData != NULL)
             {
                 // 添え字アクセスで作る場合はデータが無い
                 // コピーして渡す
-                pNode->_pair.data = *in_tpData;
+                pNode->_pair.data = *in_pData;
             }
 
             // ルートを親として追加
-            this->_tpRoot = this->_Insert(this->_tpRoot, pNode);
+            this->_pRoot = this->_Insert(this->_pRoot, pNode);
             // ルートは常に黒維持
-            this->_tpRoot->_uColor = Node::BLACK;
+            this->_pRoot->_uColor = Node::BLACK;
 
             return Iterator(pNode);
         }
@@ -697,8 +697,8 @@ namespace Core::Common
         void _DeepCopy(const CustomFixMap* in_mpOther)
         {
             HE_ASSERT(in_mpOther);
-            for (const Node* p                                = in_mpOther->_tHead._pNext;
-                 (p != &in_mpOther->_tTail) && (p != NULL); p = p->_pNext)
+            for (const Node* p = in_mpOther->_head._pNext; (p != &in_mpOther->_tail) && (p != NULL);
+                 p             = p->_pNext)
             {
                 this->Add(p->_pair.key, p->_pair.data);
             }
@@ -741,8 +741,8 @@ namespace Core::Common
 
             // 0と1を切り替え
             in_pNode->_uColor ^= 1;
-            in_pNode->_pLeft->_uColor ^= 1;
-            in_pNode->_pRight->_uColor ^= 1;
+            if (in_pNode->_pLeft != NULL) in_pNode->_pLeft->_uColor ^= 1;
+            if (in_pNode->_pRight != NULL) in_pNode->_pRight->_uColor ^= 1;
         }
 
         // 左に赤ノードを移動
@@ -773,7 +773,7 @@ namespace Core::Common
 
             this->_FlipColors(in_pNode);
 
-            if (this->_IsRed(in_pNode->_pLeft->_pLeft))
+            if (in_pNode->_pLeft && this->_IsRed(in_pNode->_pLeft->_pLeft))
             {
                 in_pNode = this->_RotateRight(in_pNode);
                 this->_FlipColors(in_pNode);
@@ -852,19 +852,19 @@ namespace Core::Common
         inline void _Init() HE_NOEXCEPT
         {
             // 線形アクセス用のリストを初期化
-            this->_tpRoot       = NULL;
-            this->_tHead._pPrev = NULL;
-            this->_tHead._pNext = &this->_tTail;
-            this->_tTail._pPrev = &this->_tHead;
-            this->_tTail._pNext = NULL;
+            this->_pRoot       = NULL;
+            this->_head._pPrev = NULL;
+            this->_head._pNext = &this->_tail;
+            this->_tail._pPrev = &this->_head;
+            this->_tail._pNext = NULL;
         }
 
     private:
-        Node* _tpRoot = NULL;
+        Node* _pRoot = NULL;
 
         // 線形アクセス用
-        Node _tHead;
-        Node _tTail;
+        Node _head;
+        Node _tail;
 
         Iterator _iteratorTail;
 
