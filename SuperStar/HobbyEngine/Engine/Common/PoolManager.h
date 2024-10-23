@@ -334,6 +334,8 @@ namespace Core::Common
         }
 
     private:
+        // TODO: 使う場所によってはスタックメモリを利用することになる
+        // ヒープ利用版も用意すべきか
         CustomArray<T, CAPACITY> _vUserSlot;
         CustomFixStack<Uint32, CAPACITY> _sFreeSlot;
         CustomFixVector<Uint32, CAPACITY> _vMagicNum;
