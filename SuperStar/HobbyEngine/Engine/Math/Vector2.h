@@ -9,7 +9,7 @@ namespace Core::Math
     class Vector2 final
     {
     public:
-        explicit Vector2() {}
+        explicit Vector2() { this->Zero(); }
 
         // コントラクト
         explicit Vector2(const Float32 in_fX, const Float32 in_fY) : _fX(in_fX), _fY(in_fY) {}
@@ -19,16 +19,23 @@ namespace Core::Math
         Vector2(Vector2& in_v) { this->_fX = in_v._fX, this->_fY = in_v._fY; }
 
         /// <summary>
-        /// Zeroes this instance.
+        /// 0で初期化
         /// </summary>
-        void Zero() HE_NOEXCEPT
+        inline void Zero() HE_NOEXCEPT
         {
             this->_fX = 0.f;
             this->_fY = 0.f;
         }
 
+        Bool IsZero() HE_NOEXCEPT
+        {
+            if (this->_fX != 0.0f) return FALSE;
+            if (this->_fY != 0.0f) return FALSE;
+            return TRUE;
+        }
+
         /// <summary>
-        /// Madds the specified a.
+        /// スケールしたベクトルを加算
         /// </summary>
         void Madd(const Vector2& in_rBase, const Float32 in_fScale) HE_NOEXCEPT
         {

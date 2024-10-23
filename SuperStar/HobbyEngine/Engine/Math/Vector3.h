@@ -37,8 +37,9 @@ namespace Core::Math
         /// <summary>
         /// 関数内のローカル変数の所有権の移動に=を使うのでexplicitを使わない
         /// </summary>
-        Vector3(Vector3&& other)
-            : _fX(std::move(other._fX)), _fY(std::move(other._fY)), _fZ(std::move(other._fZ))
+        Vector3(Vector3&& other) HE_NOEXCEPT : _fX(std::move(other._fX)),
+                                               _fY(std::move(other._fY)),
+                                               _fZ(std::move(other._fZ))
         {
         }
 
